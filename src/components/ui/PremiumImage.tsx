@@ -67,7 +67,8 @@ export function PremiumImage({
         src={imageSrc}
         alt={alt || 'Artwork'}
         fill={fill}
-        unoptimized          // serve images directly from CDN without Next.js edge processing
+        unoptimized={typeof imageSrc === 'string' && imageSrc.startsWith('http')} // Optimize local placeholders, unoptimize remote
+        sizes={fill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
         className={cn(
           'transition-opacity duration-500 ease-out',
           loading ? 'opacity-0' : 'opacity-100',

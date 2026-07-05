@@ -84,7 +84,7 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
       >
         <PremiumImage
           src={heroImage}
-          fallbackSrc="/images/placeholders/hero.png"
+          fallbackSrc="/images/placeholders/hero.webp"
           alt="Rongdhono Art Exhibition"
           fill
           priority

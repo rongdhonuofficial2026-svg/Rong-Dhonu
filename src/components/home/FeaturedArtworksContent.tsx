@@ -113,7 +113,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
                   <div className={`relative w-full ${heightClass}`}>
                     <PremiumImage
                       src={artwork.main_image_url}
-                      fallbackSrc={`/images/placeholders/artwork-${fallbackIdx}.png`}
+                      fallbackSrc={`/images/placeholders/artwork-${fallbackIdx}.webp`}
                       alt={artworkTitle}
                       fill
                       className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"

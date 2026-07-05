@@ -9,7 +9,7 @@ const fallbackExhibition = {
   end_date: new Date('2026-08-15'),
   venue_en: "Silva Tirtha Art Gallery",
   venue_bn: "সিলভা তীর্থ আর্ট গ্যালারি",
-  hero_image_url: "/images/placeholders/exhibition.png"
+  hero_image_url: "/images/placeholders/exhibition.webp"
 }
 
 export async function HomeExhibition({ locale, exhibition }: { locale: string, exhibition?: any }) {

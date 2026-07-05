@@ -88,7 +88,7 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
                       {/* Portrait image */}
                       <PremiumImage
                         src={artist.avatar_url}
-                        fallbackSrc="/images/placeholders/artist.png"
+                        fallbackSrc="/images/placeholders/artist.webp"
                         alt={name}
                         fill
                         className="object-cover object-top transition-transform duration-1000 group-hover:scale-[1.07]"

@@ -70,8 +70,8 @@ export function HomeAboutContent({ content, locale }: { content: any, locale?: s
 
               <motion.div style={{ y: imgY }} className="absolute inset-0 h-[115%] -top-[7.5%]">
                 <PremiumImage
-                  src="/images/placeholders/hero.png"
-                  fallbackSrc="/images/placeholders/hero.png"
+                  src="/images/placeholders/hero.webp"
+                  fallbackSrc="/images/placeholders/hero.webp"
                   alt="Artist at work"
                   fill
                   priority

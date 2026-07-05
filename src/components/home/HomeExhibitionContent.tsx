@@ -122,7 +122,7 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         <motion.div style={{ y: imgY }} className="absolute inset-0 h-[115%] -top-[7.5%]">
           <PremiumImage
             src={currentExhibition.hero_image_url}
-            fallbackSrc="/images/placeholders/exhibition.png"
+            fallbackSrc="/images/placeholders/exhibition.webp"
             alt={title}
             fill
             className="object-cover"
