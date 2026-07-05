@@ -93,7 +93,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
               : artwork.artist_name
             const year = artwork.year || new Date(artwork.created_at || Date.now()).getFullYear()
             const heightClass = HEIGHT_PATTERN[index % HEIGHT_PATTERN.length]
-            const fallbackIdx = (index % 2) + 1
+            const fallbackIdx = (index % 6) + 1
 
             return (
               <motion.div
