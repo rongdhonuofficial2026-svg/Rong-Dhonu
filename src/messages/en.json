@@ -1,0 +1,19 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About Rongdhono",
+    "exhibitions": "Annual Exhibitions",
+    "gallery": "Gallery",
+    "catalogs": "Catalogs",
+    "members": "Members",
+    "contact": "Contact",
+    "login": "Member Login",
+    "dashboard": "Dashboard"
+  },
+  "Home": {
+    "title": "Rongdhono Annual Art Exhibition",
+    "subtitle": "Celebrating Creativity Through Colors",
+    "explore": "Explore Exhibition",
+    "view_gallery": "View Gallery"
+  }
+}
