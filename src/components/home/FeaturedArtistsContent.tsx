@@ -3,112 +3,152 @@
 import { motion } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
 import { PremiumImage } from "@/components/ui/PremiumImage"
-import { Globe, ArrowUpRight, ArrowRight } from "lucide-react"
+import { ArrowUpRight, ArrowRight } from "lucide-react"
 
 export function FeaturedArtistsContent({ locale, artists }: { locale: string, artists: any[] }) {
   const title = locale === 'bn' ? "বিশিষ্ট শিল্পীবৃন্দ" : "Featured Artists"
-  
-  return (
-    <div className="relative w-full bg-[#FDFBF7] py-32 px-4 md:px-8 overflow-hidden">
-      
-      {/* Decorative paint strokes & Watercolor textures */}
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/watercolor.png')] opacity-[0.08] mix-blend-multiply pointer-events-none" />
-      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#1C1C1E] to-transparent -translate-y-full pointer-events-none" />
-      <div className="absolute top-1/4 left-10 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-[#CC5500]/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-[90rem] mx-auto relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+  return (
+    <section className="relative bg-[#FDFBF7] canvas-texture overflow-hidden">
+      {/* Top: already has gradient from exhibition dark → cream */}
+
+      {/* Ambient color pools */}
+      <div className="absolute top-0 left-1/4 w-[800px] h-[800px] rounded-full pointer-events-none -translate-y-1/2"
+        style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)' }}
+      />
+      <div className="absolute bottom-0 right-1/4 w-[700px] h-[700px] rounded-full pointer-events-none translate-y-1/3"
+        style={{ background: 'radial-gradient(circle, rgba(120,81,169,0.05) 0%, transparent 70%)' }}
+      />
+
+      {/* Decorative paint stroke lines */}
+      <div className="absolute top-24 left-0 w-full h-px pointer-events-none"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.2) 30%, rgba(212,175,55,0.2) 70%, transparent)' }}
+      />
+
+      <div className="relative z-10 max-w-[88rem] mx-auto px-4 md:px-8 py-28 md:py-40">
+
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-24 space-y-6"
+          className="text-center mb-20 md:mb-28"
         >
-          <h3 className="text-[10px] tracking-[0.5em] uppercase text-[#D4AF37] font-bold flex items-center justify-center gap-6">
-            <span className="w-12 h-[2px] bg-[#D4AF37]"></span>
-            The Creators
-            <span className="w-12 h-[2px] bg-[#D4AF37]"></span>
-          </h3>
-          <h2 className="font-serif text-5xl md:text-7xl text-[#1C1C1E] font-bold">{title}</h2>
+          <p className="text-[10px] tracking-[0.6em] uppercase text-[#D4AF37] font-bold flex items-center justify-center gap-5 mb-6">
+            <span className="w-14 h-[1px] bg-[#D4AF37]/60" />
+            {locale === 'bn' ? 'স্রষ্টাগণ' : 'The Creators'}
+            <span className="w-14 h-[1px] bg-[#D4AF37]/60" />
+          </p>
+          <h2 className="font-serif text-[3rem] md:text-[5rem] lg:text-[6rem] text-[#1C1C1E] font-bold leading-[1.04]">
+            {title}
+          </h2>
         </motion.div>
 
+        {/* Artist grid */}
         {artists.length === 0 ? (
-          <div className="text-center py-20 text-[#1C1C1E]/60 font-serif text-xl italic">
-            {locale === 'bn' ? "কোনো শিল্পী প্রদর্শিত হচ্ছে না।" : "No artists are currently featured."}
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center py-24"
+          >
+            <p className="font-serif text-2xl text-[#1C1C1E]/40 italic">
+              {locale === 'bn' ? 'শিল্পীদের প্রোফাইল শীঘ্রই আসছে।' : 'Artist profiles coming soon.'}
+            </p>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-20">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16 md:gap-x-12 md:gap-y-20">
             {artists.map((artist, index) => {
               const name = locale === 'bn' ? (artist.full_name_bn || artist.full_name_en) : artist.full_name_en
-              const role = artist.role === 'committee' ? (locale === 'bn' ? 'কমিটি সদস্য' : 'Committee Member') : (locale === 'bn' ? 'সদস্য' : 'Member')
-              const delay = index * 0.1
+              const roleLabel = artist.role === 'committee'
+                ? (locale === 'bn' ? 'কমিটি সদস্য' : 'Committee Member')
+                : (locale === 'bn' ? 'শিল্পী' : 'Artist')
 
               return (
-                <motion.div 
+                <motion.div
                   key={artist.id}
                   initial={{ opacity: 0, y: 60 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] }}
-                  className="group flex flex-col items-center text-center relative"
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.9, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                  className="group flex flex-col items-center text-center"
                 >
-                  {/* Collectible Card Style wrapper */}
-                  <div className="relative w-56 h-56 md:w-64 md:h-64 mb-8">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[#D4AF37] to-[#FF7F50] rounded-full scale-[1.03] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-md" />
-                    
-                    <Link href={`/artists/${artist.id}`} className="block relative w-full h-full overflow-hidden rounded-full museum-shadow group-hover:shadow-[0_20px_40px_rgba(212,175,55,0.3)] transition-all duration-700 bg-white">
-                      <PremiumImage 
+                  {/* Portrait — square card with sophisticated hover */}
+                  <Link href={`/artists/${artist.id}`} className="block w-full relative mb-6">
+                    {/* Gold glow on hover */}
+                    <motion.div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0"
+                      style={{ background: 'radial-gradient(ellipse at center, rgba(212,175,55,0.15) 0%, transparent 70%)' }}
+                    />
+
+                    <div className="relative w-full aspect-square overflow-hidden bg-[#E8E4DC]"
+                      style={{ boxShadow: '0 20px 50px -10px rgba(0,0,0,0.12)' }}>
+
+                      {/* Portrait image */}
+                      <PremiumImage
                         src={artist.avatar_url}
                         fallbackSrc="/images/placeholders/artist.png"
-                        alt={name} 
-                        fill 
-                        className="object-cover transition-all duration-1000 ease-[0.25,1,0.5,1] transform group-hover:scale-110"
+                        alt={name}
+                        fill
+                        className="object-cover object-top transition-transform duration-1000 group-hover:scale-[1.07]"
                       />
-                    <div className="absolute inset-0 border-2 border-transparent rounded-full group-hover:border-white/50 transition-colors duration-500 z-10" />
+
+                      {/* Warm gradient overlay always present — removed on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1E]/50 via-transparent to-transparent transition-opacity duration-700 group-hover:opacity-60" />
+
+                      {/* Hover overlay with CTA */}
+                      <div className="absolute inset-0 flex flex-col justify-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <span className="inline-flex items-center gap-2 bg-[#D4AF37] text-black px-4 py-2 text-[10px] uppercase tracking-[0.3em] font-bold self-start">
+                          {locale === 'bn' ? 'প্রোফাইল দেখুন' : 'View Profile'}
+                          <ArrowUpRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Gold corner accent */}
+                    <div className="absolute top-0 left-0 w-6 h-6 border-t border-l border-[#D4AF37]/0 group-hover:border-[#D4AF37]/80 transition-all duration-500 z-10" />
+                    <div className="absolute bottom-0 right-0 w-6 h-6 border-b border-r border-[#D4AF37]/0 group-hover:border-[#D4AF37]/80 transition-all duration-500 z-10" />
                   </Link>
-                  
-                  {/* Floating Social Badge */}
-                  <div className="absolute -bottom-4 right-4 flex gap-2 z-20 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
-                    {artist.instagram_url && (
-                      <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white text-[#1C1C1E] flex items-center justify-center shadow-lg hover:bg-[#D4AF37] hover:text-white transition-colors">
-                        <Globe className="w-4 h-4" />
-                      </a>
-                    )}
-                    <Link href={`/artists/${artist.id}`} className="w-10 h-10 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-lg hover:bg-[#D4AF37] transition-colors">
-                      <ArrowUpRight className="w-4 h-4" />
-                    </Link>
+
+                  {/* Artist info */}
+                  <div className="space-y-2">
+                    <h3 className="font-serif text-xl md:text-2xl text-[#1C1C1E] font-bold group-hover:text-[#D4AF37] transition-colors duration-400 leading-tight">
+                      <Link href={`/artists/${artist.id}`}>{name}</Link>
+                    </h3>
+                    <p className="text-[9px] tracking-[0.4em] uppercase text-[#1C1C1E]/45 font-bold">{roleLabel}</p>
                   </div>
-                </div>
-                
-                <h4 className="font-serif text-3xl text-[#1C1C1E] mb-3 group-hover:text-[#D4AF37] transition-colors font-bold mt-4">
-                  <Link href={`/artists/${artist.id}`}>{name}</Link>
-                </h4>
-                <p className="text-xs uppercase tracking-[0.2em] text-[#1C1C1E]/60 font-semibold">{role}</p>
-              </motion.div>
-            )
-          })}
-        </div>
+                </motion.div>
+              )
+            })}
+          </div>
         )}
-        
-        <motion.div 
+
+        {/* View all CTA */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-32 text-center"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mt-20 md:mt-28 text-center"
         >
-          <Link 
-            href="/artists" 
-            className="inline-flex items-center gap-4 text-sm tracking-[0.3em] uppercase font-bold text-[#1C1C1E] hover:text-[#D4AF37] transition-colors group"
+          <Link
+            href="/artists"
+            className="group inline-flex items-center gap-5 text-sm tracking-[0.3em] uppercase font-bold text-[#1C1C1E] hover:text-[#D4AF37] transition-colors duration-400"
           >
-            {locale === 'bn' ? "সম্পূর্ণ ডিরেক্টরি দেখুন" : "View Full Directory"}
-            <span className="w-12 h-[2px] bg-[#1C1C1E] group-hover:bg-[#D4AF37] transition-all group-hover:w-16 duration-500 relative">
-              <ArrowRight className="absolute -right-2 -top-2 w-4 h-4 text-[#1C1C1E] group-hover:text-[#D4AF37] transition-colors" />
+            {locale === 'bn' ? 'সম্পূর্ণ ডিরেক্টরি দেখুন' : 'View Full Directory'}
+            <span className="relative inline-flex items-center gap-1">
+              <span className="w-10 h-[1px] bg-current transition-all duration-400 group-hover:w-16" />
+              <ArrowRight className="w-4 h-4 absolute -right-5" />
             </span>
           </Link>
         </motion.div>
       </div>
-    </div>
+
+      {/* Bottom: blend to dark artworks section */}
+      <div className="h-32 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #FDFBF7, #111111)' }}
+      />
+    </section>
   )
 }

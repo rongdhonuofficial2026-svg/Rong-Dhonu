@@ -54,7 +54,7 @@ export default async function HomePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="flex flex-col w-full min-h-screen bg-background">
+      <main className="w-full">
         <HomeHero locale={locale} exhibition={exhibition} />
         <HomeAbout locale={locale} />
         <HomeExhibition locale={locale} exhibition={exhibition} />
@@ -63,7 +63,7 @@ export default async function HomePage({
         <HomeTestimonials locale={locale} />
         <HomeSponsors locale={locale} />
         <HomeNewsletter locale={locale} />
-      </div>
+      </main>
     </>
   )
 }

@@ -1,6 +1,3 @@
- 
- 
- 
 import { HomeExhibitionContent } from "./HomeExhibitionContent"
 
 const fallbackExhibition = {
@@ -12,7 +9,7 @@ const fallbackExhibition = {
   end_date: new Date('2026-08-15'),
   venue_en: "Silva Tirtha Art Gallery",
   venue_bn: "সিলভা তীর্থ আর্ট গ্যালারি",
-  hero_image_url: "https://images.unsplash.com/photo-1518998053401-878c735c908c?auto=format&fit=crop&q=80&w=1000"
+  hero_image_url: "https://images.unsplash.com/photo-1518998053401-878c735c908c?auto=format&fit=crop&q=80&w=1400"
 }
 
 export async function HomeExhibition({ locale, exhibition }: { locale: string, exhibition?: any }) {
@@ -25,14 +22,10 @@ export async function HomeExhibition({ locale, exhibition }: { locale: string, e
   ]
 
   return (
-    <section className="py-24 md:py-40 bg-[#111111] overflow-hidden">
-      <div className="container mx-auto px-6">
-        <HomeExhibitionContent 
-          locale={locale} 
-          currentExhibition={currentExhibition} 
-          timelineItems={timelineItems} 
-        />
-      </div>
-    </section>
+    <HomeExhibitionContent
+      locale={locale}
+      currentExhibition={currentExhibition}
+      timelineItems={timelineItems}
+    />
   )
 }
