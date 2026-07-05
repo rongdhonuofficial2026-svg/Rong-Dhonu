@@ -68,6 +68,7 @@ export async function registerAction(data: z.infer<typeof registerSchema>, local
       data: {
         full_name: result.data.fullName,
       },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`
     },
   });
 
@@ -92,7 +93,9 @@ export async function forgotPasswordAction(data: z.infer<typeof forgotPasswordSc
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(result.data.email);
+  const { error } = await supabase.auth.resetPasswordForEmail(result.data.email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback?next=/reset-password`
+  });
 
   if (error) {
     return { error: error.message };

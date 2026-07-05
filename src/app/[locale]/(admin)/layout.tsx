@@ -25,7 +25,7 @@ export default async function AdminLayout({
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'admin') {
+  if (!profile || !['admin', 'owner', 'committee'].includes(profile.role)) {
     redirect(`/${locale}/unauthorized`)
   }
 
