@@ -185,7 +185,7 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         {/* Year watermark */}
         <div className="absolute top-8 right-8 md:top-14 md:right-14 z-10 pointer-events-none">
           <p className="font-serif text-[8rem] md:text-[12rem] font-bold text-white/[0.04] leading-none select-none">
-            {new Date(currentExhibition.start_date || Date.now()).getFullYear()}
+            {currentExhibition.start_date ? new Date(currentExhibition.start_date).getFullYear() : 2026}
           </p>
         </div>
       </motion.div>

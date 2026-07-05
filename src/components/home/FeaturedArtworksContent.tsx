@@ -91,7 +91,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
             const artistName = hasData
               ? (locale === 'bn' ? (artwork.profiles?.full_name_bn || artwork.profiles?.full_name_en) : artwork.profiles?.full_name_en)
               : artwork.artist_name
-            const year = artwork.year || new Date(artwork.created_at || Date.now()).getFullYear()
+            const year = artwork.year || (artwork.created_at ? new Date(artwork.created_at).getFullYear() : 2026)
             const heightClass = HEIGHT_PATTERN[index % HEIGHT_PATTERN.length]
             const fallbackIdx = (index % 6) + 1
 
