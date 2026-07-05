@@ -63,11 +63,11 @@ export default async function UserManagementPage({ params }: { params: Promise<{
                       <div>
                         <h3 className="font-bold text-lg truncate flex items-center gap-2">
                           {user.first_name_en} {user.last_name_en}
-                          {user.role === 'admin' && <Shield className="w-4 h-4 text-indigo-500" />}
+                          {(user.role === 'admin' || user.role === 'owner') && <Shield className="w-4 h-4 text-indigo-500" />}
                         </h3>
                         <p className="text-sm text-muted-foreground truncate">{user.email || 'No email'}</p>
                       </div>
-                      <Badge variant={user.role === 'admin' ? 'default' : user.role === 'committee' ? 'secondary' : 'outline'} className="capitalize">
+                      <Badge variant={user.role === 'owner' ? 'destructive' : user.role === 'admin' ? 'default' : user.role === 'committee' ? 'secondary' : 'outline'} className="capitalize">
                         {user.role}
                       </Badge>
                     </div>

@@ -26,7 +26,7 @@ export default async function ProtectedLayout({
     .eq('id', user.id)
     .single()
 
-  if (profile?.role === 'admin') {
+  if (profile?.role === 'admin' || profile?.role === 'owner') {
     // If we have a separate admin dashboard, we could redirect them there
     // redirect(`/${locale}/admin`)
   }

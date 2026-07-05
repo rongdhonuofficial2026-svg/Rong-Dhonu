@@ -24,6 +24,31 @@ export async function loginAction(data: z.infer<typeof loginSchema>, locale: str
     return { error: error.message };
   }
 
+  // Retrieve user to check/create profile
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, role')
+      .eq('id', user.id)
+      .single();
+      
+    const isOwnerEmail = user.email === 'rongdhonuofficial2026@gmail.com';
+
+    if (!profile) {
+      // If profile doesn't exist, create it.
+      await supabase.from('profiles').insert({
+        id: user.id,
+        email: user.email,
+        role: isOwnerEmail ? 'owner' : 'member',
+        full_name_en: user.user_metadata?.full_name || user.email?.split('@')[0]
+      });
+    } else if (isOwnerEmail && profile.role !== 'owner') {
+      // Ensure owner role is assigned if they already have a profile but wrong role
+      await supabase.from('profiles').update({ role: 'owner' }).eq('id', user.id);
+    }
+  }
+
   revalidatePath('/');
   return { success: true };
 }

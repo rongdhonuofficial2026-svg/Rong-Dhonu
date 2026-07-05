@@ -62,7 +62,7 @@ export default async function proxy(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    if (profile?.role !== 'admin' && profile?.role !== 'committee') {
+    if (profile?.role !== 'admin' && profile?.role !== 'committee' && profile?.role !== 'owner') {
       const url = request.nextUrl.clone();
       const currentLocale = pathname.split('/')[1] || 'en';
       url.pathname = `/${currentLocale}/unauthorized`; // Or wherever you want to send unauthorized users
