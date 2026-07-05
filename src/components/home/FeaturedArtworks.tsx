@@ -1,12 +1,12 @@
 import { FeaturedArtworksContent } from "./FeaturedArtworksContent"
 
 const fallbackArtworks = [
-  { id: '1', title_en: "The Silent Symphony", title_bn: "নীরব সিম্ফনি", artist_name: "Abanindranath Tagore", medium_en: "Oil on Canvas", year: 2026, main_image_url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=800" },
-  { id: '2', title_en: "Echoes of Bengal", title_bn: "বাংলার প্রতিধ্বনি", artist_name: "Jamini Roy", medium_en: "Tempera on Cloth", year: 2025, main_image_url: "https://images.unsplash.com/photo-1582561424760-0321d6837943?auto=format&fit=crop&q=80&w=800" },
-  { id: '3', title_en: "Monsoon Dreams", title_bn: "বর্ষার স্বপ্ন", artist_name: "Nandalal Bose", medium_en: "Watercolor", year: 2026, main_image_url: "https://images.unsplash.com/photo-1578301978693-85fa9c026109?auto=format&fit=crop&q=80&w=800" },
-  { id: '4', title_en: "Golden Hour", title_bn: "সোনালী মুহূর্ত", artist_name: "Rabindranath Tagore", medium_en: "Mixed Media", year: 2026, main_image_url: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=80&w=800" },
-  { id: '5', title_en: "Abstract Forms", title_bn: "বিমূর্ত রূপ", artist_name: "Binode Bihari", medium_en: "Acrylic", year: 2025, main_image_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800" },
-  { id: '6', title_en: "River of Light", title_bn: "আলোর নদী", artist_name: "Pratima Devi", medium_en: "Pastel", year: 2026, main_image_url: "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=800" },
+  { id: '1', title_en: "The Silent Symphony", title_bn: "নীরব সিম্ফনি", artist_name: "Abanindranath Tagore", medium_en: "Oil on Canvas", year: 2026, main_image_url: "/images/placeholders/artwork-1.png" },
+  { id: '2', title_en: "Echoes of Bengal", title_bn: "বাংলার প্রতিধ্বনি", artist_name: "Jamini Roy", medium_en: "Tempera on Cloth", year: 2025, main_image_url: "/images/placeholders/artwork-2.png" },
+  { id: '3', title_en: "Monsoon Dreams", title_bn: "বর্ষার স্বপ্ন", artist_name: "Nandalal Bose", medium_en: "Watercolor", year: 2026, main_image_url: "/images/placeholders/exhibition.png" },
+  { id: '4', title_en: "Golden Hour", title_bn: "সোনালী মুহূর্ত", artist_name: "Rabindranath Tagore", medium_en: "Mixed Media", year: 2026, main_image_url: "/images/placeholders/artwork-1.png" },
+  { id: '5', title_en: "Abstract Forms", title_bn: "বিমূর্ত রূপ", artist_name: "Binode Bihari", medium_en: "Acrylic", year: 2025, main_image_url: "/images/placeholders/artwork-2.png" },
+  { id: '6', title_en: "River of Light", title_bn: "আলোর নদী", artist_name: "Pratima Devi", medium_en: "Pastel", year: 2026, main_image_url: "/images/placeholders/hero.png" },
 ]
 
 export async function HomeFeaturedArtworks({ locale, artworks }: { locale: string, artworks?: any[] }) {

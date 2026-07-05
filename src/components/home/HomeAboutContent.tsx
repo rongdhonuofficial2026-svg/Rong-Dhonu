@@ -70,10 +70,11 @@ export function HomeAboutContent({ content, locale }: { content: any, locale?: s
 
               <motion.div style={{ y: imgY }} className="absolute inset-0 h-[115%] -top-[7.5%]">
                 <PremiumImage
-                  src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=1400"
+                  src="/images/placeholders/hero.png"
                   fallbackSrc="/images/placeholders/hero.png"
                   alt="Artist at work"
                   fill
+                  priority
                   className="object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
                 />
                 {/* Warm overlay */}
