@@ -6,7 +6,7 @@ import { ArtworkCard } from "@/components/museum/artwork-card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/lib/i18n/routing"
 import { EmptyState } from "@/components/museum/states"
-import Image from "next/image"
+import { PremiumImage } from "@/components/ui/PremiumImage"
 
 interface FeaturedArtworksContentProps {
   locale: string
@@ -34,14 +34,19 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
   }
 
   if (displayData.length === 0) {
-    return <EmptyState title="No artworks available" />
+    return (
+      <div className="relative w-full bg-[#1A1A1A] py-32 px-4 md:px-8 text-center text-white/50 italic font-serif">
+        <p>{locale === 'bn' ? "শীঘ্রই আসছে। নতুন শিল্পকর্মের জন্য অপেক্ষা করুন।" : "Our curators are preparing the next collection."}</p>
+      </div>
+    )
   }
 
   return (
     <div className="relative w-full bg-[#1A1A1A] py-32 px-4 md:px-8">
       
-      {/* Decorative ambient light */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1C1C1E]/0 via-transparent to-transparent pointer-events-none" />
+      {/* Decorative ambient light & canvas grain */}
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#D4AF37]/5 via-transparent to-transparent pointer-events-none" />
 
       <div className="max-w-[100rem] mx-auto relative z-10">
         <motion.div 
@@ -77,25 +82,27 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
               // Create staggered heights for broken masonry feel
               const isLarge = index % 3 === 0
               const heightClass = isLarge ? "h-[600px]" : "h-[400px]"
+              const fallbackIdx = (index % 3) + 1
 
               return (
                 <motion.div key={artwork.id} variants={item} className="break-inside-avoid mb-8">
-                  <Link href={`/gallery/artwork/${artwork.id}`} className="group block relative w-full overflow-hidden museum-shadow-dark">
-                    <div className={`relative w-full ${heightClass} image-zoom-container`}>
-                      <Image
-                        src={artwork.main_image_url}
-                        alt={artworkTitle}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+                  <Link href={`/gallery/artwork/${artwork.id}`} className="group block relative w-full overflow-hidden museum-shadow-dark border border-white/5 bg-[#1C1C1E]">
+                    <PremiumImage
+                      src={artwork.main_image_url}
+                      fallbackSrc={`/images/placeholders/artwork-${fallbackIdx}.png`}
+                      alt={artworkTitle}
+                      fill
+                      containerClassName={`relative w-full ${heightClass} image-zoom-container`}
+                      className="object-cover"
+                    />
                     
                     {/* Glass Overlay for Details */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex flex-col justify-end p-8 border border-transparent group-hover:border-white/20">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex flex-col justify-end p-8 border border-transparent group-hover:border-[#D4AF37]/30">
                       <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-[0.16,1,0.3,1]">
-                        <h4 className="font-serif text-2xl text-white font-bold mb-2">{artworkTitle}</h4>
-                        <p className="text-white/80 text-sm tracking-widest uppercase mb-4">{artistName}</p>
-                        <p className="text-[#D4AF37] text-xs uppercase tracking-widest">{medium}</p>
+                        <h4 className="font-serif text-2xl text-white font-bold mb-2 tracking-wide leading-tight">{artworkTitle}</h4>
+                        <div className="w-8 h-[1px] bg-[#D4AF37] mb-4" />
+                        <p className="text-white/80 text-sm tracking-widest uppercase mb-1">{artistName}</p>
+                        <p className="text-white/50 text-xs uppercase tracking-widest">{medium}</p>
                       </div>
                     </div>
                   </Link>

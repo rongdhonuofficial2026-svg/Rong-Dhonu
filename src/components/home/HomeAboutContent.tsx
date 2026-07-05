@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/lib/i18n/routing"
-import Image from "next/image"
+import { PremiumImage } from "@/components/ui/PremiumImage"
 import { useRef } from "react"
 import { ArrowRight } from "lucide-react"
 
@@ -34,8 +34,9 @@ export function HomeAboutContent({ content, locale }: { content: any, locale?: s
           style={{ y }}
           className="absolute inset-0 w-full h-[120%]"
         >
-          <Image 
-            src="https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?auto=format&fit=crop&q=100&w=1200" 
+          <PremiumImage 
+            src="https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?auto=format&fit=crop&q=100&w=1200"
+            fallbackSrc="/images/placeholders/museum.png"
             alt="Artist creating masterpiece" 
             fill 
             className="object-cover transition-transform duration-1000 group-hover:scale-105"

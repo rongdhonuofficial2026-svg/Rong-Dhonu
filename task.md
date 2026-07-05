@@ -10,9 +10,28 @@
 - `[x]` Create Read-Only Audit Log widget
 
 ## 3. Exhibition Management (`/admin/exhibitions`)
-- `[x]` List all exhibitions with status badges
-- `[x]` Create/Edit Exhibition forms (Dates, Banner, Venue)
-- `[x]` Duplicate Exhibition logic
+- `[x]` 1. **Asset Generation & Preparation**
+  - `[x]` Create `/public/images/placeholders/` directory
+  - `[x]` Generate and save `hero.webp`, `exhibition.webp`, `artist.webp`, `artwork-1.webp`, `artwork-2.webp`, `artwork-3.webp` using specific artistic prompts
+- `[x]` 2. **Component Architecture**
+  - `[x]` Create `src/components/ui/PremiumImage.tsx` wrapping `next/image` to support skeletons, blur placeholders, and fallback logic
+- `[x]` 3. **Remove Section**
+  - `[x]` Remove `HomeStatistics` component from `HomeExtras.tsx` and `HomeExtrasContent.tsx`
+  - `[x]` Remove `HomeStatistics` usage from `src/app/[locale]/(public)/page.tsx`
+- `[x]` 4. **Hero Section Refinement**
+  - `[x]` Update `HomeHeroContent.tsx` to 100vh cinematic experience
+  - `[x]` Use `PremiumImage` with `/images/placeholders/hero.webp` fallback
+- `[x]` 5. **Featured Exhibition Refinement**
+  - `[x]` Update `HomeExhibitionContent.tsx` with elegant empty states ("Upcoming Exhibition")
+  - `[x]` Use `PremiumImage` with `/images/placeholders/exhibition.webp` fallback
+- `[x]` 6. **Featured Artists Refinement**
+  - `[x]` Update `FeaturedArtistsContent.tsx` to use `PremiumImage` and elegant styling
+- `[x]` 7. **Curated Collection Refinement**
+  - `[x]` Update `FeaturedArtworksContent.tsx` with masonry-like broken layouts and glass hover states
+  - `[x]` Rotate through `artwork-1.webp`, `artwork-2.webp`, `artwork-3.webp` fallbacks
+- `[x]` 8. **General Polish & Transitions**
+  - `[x]` Add artistic textures and gradients to separators
+  - `[x]` Use `PremiumImage` in `HomeAboutContent.tsx`
 
 ## 4. Artwork Moderation (`/admin/artworks`)
 - `[x]` Data table for pending artworks
@@ -38,6 +57,7 @@
 - `[x]` Edit roles / Disable accounts
 
 ## 9. Verification
-- `[/]` TypeScript & ESLint pass
-- `[/]` Build succeeds
-- `[/]` Role permissions verified
+- `[x]` 9. **Verification**
+  - `[x]` Run `npm run lint` and `npm run build`
+  - `[x]` Final visual audits
+- `[x]` Role permissions verified

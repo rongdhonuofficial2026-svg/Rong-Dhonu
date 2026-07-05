@@ -2,17 +2,19 @@
 
 import { motion } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
-import Image from "next/image"
+import { PremiumImage } from "@/components/ui/PremiumImage"
 import { Globe, ArrowUpRight, ArrowRight } from "lucide-react"
 
 export function FeaturedArtistsContent({ locale, artists }: { locale: string, artists: any[] }) {
   const title = locale === 'bn' ? "বিশিষ্ট শিল্পীবৃন্দ" : "Featured Artists"
   
   return (
-    <div className="relative w-full bg-gradient-to-b from-[#1C1C1E] via-[#FDFBF7] to-[#1A1A1A] py-32 px-4 md:px-8">
+    <div className="relative w-full bg-[#FDFBF7] py-32 px-4 md:px-8 overflow-hidden">
       
-      {/* Decorative paint strokes */}
-      <div className="absolute top-1/4 left-10 w-96 h-96 bg-[#7851A9]/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Decorative paint strokes & Watercolor textures */}
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/watercolor.png')] opacity-[0.08] mix-blend-multiply pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#1C1C1E] to-transparent -translate-y-full pointer-events-none" />
+      <div className="absolute top-1/4 left-10 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-[#CC5500]/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-[90rem] mx-auto relative z-10">
@@ -31,32 +33,38 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
           <h2 className="font-serif text-5xl md:text-7xl text-[#1C1C1E] font-bold">{title}</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-20">
-          {artists.map((artist, index) => {
-            const name = locale === 'bn' ? (artist.full_name_bn || artist.full_name_en) : artist.full_name_en
-            const role = artist.role === 'committee' ? (locale === 'bn' ? 'কমিটি সদস্য' : 'Committee Member') : (locale === 'bn' ? 'সদস্য' : 'Member')
-            const delay = index * 0.1
+        {artists.length === 0 ? (
+          <div className="text-center py-20 text-[#1C1C1E]/60 font-serif text-xl italic">
+            {locale === 'bn' ? "কোনো শিল্পী প্রদর্শিত হচ্ছে না।" : "No artists are currently featured."}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-20">
+            {artists.map((artist, index) => {
+              const name = locale === 'bn' ? (artist.full_name_bn || artist.full_name_en) : artist.full_name_en
+              const role = artist.role === 'committee' ? (locale === 'bn' ? 'কমিটি সদস্য' : 'Committee Member') : (locale === 'bn' ? 'সদস্য' : 'Member')
+              const delay = index * 0.1
 
-            return (
-              <motion.div 
-                key={artist.id}
-                initial={{ opacity: 0, y: 60 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] }}
-                className="group flex flex-col items-center text-center relative"
-              >
-                {/* Collectible Card Style wrapper */}
-                <div className="relative w-56 h-56 md:w-64 md:h-64 mb-8">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#D4AF37] to-[#FF7F50] rounded-full scale-[1.03] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-md" />
-                  
-                  <Link href={`/artists/${artist.id}`} className="block relative w-full h-full overflow-hidden rounded-full museum-shadow group-hover:shadow-[0_20px_40px_rgba(212,175,55,0.3)] transition-all duration-700 bg-white">
-                    <Image 
-                      src={artist.avatar_url || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600"} 
-                      alt={name} 
-                      fill 
-                      className="object-cover transition-all duration-1000 ease-[0.25,1,0.5,1] transform group-hover:scale-110"
-                    />
+              return (
+                <motion.div 
+                  key={artist.id}
+                  initial={{ opacity: 0, y: 60 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] }}
+                  className="group flex flex-col items-center text-center relative"
+                >
+                  {/* Collectible Card Style wrapper */}
+                  <div className="relative w-56 h-56 md:w-64 md:h-64 mb-8">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#D4AF37] to-[#FF7F50] rounded-full scale-[1.03] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-md" />
+                    
+                    <Link href={`/artists/${artist.id}`} className="block relative w-full h-full overflow-hidden rounded-full museum-shadow group-hover:shadow-[0_20px_40px_rgba(212,175,55,0.3)] transition-all duration-700 bg-white">
+                      <PremiumImage 
+                        src={artist.avatar_url}
+                        fallbackSrc="/images/placeholders/artist.png"
+                        alt={name} 
+                        fill 
+                        className="object-cover transition-all duration-1000 ease-[0.25,1,0.5,1] transform group-hover:scale-110"
+                      />
                     <div className="absolute inset-0 border-2 border-transparent rounded-full group-hover:border-white/50 transition-colors duration-500 z-10" />
                   </Link>
                   
@@ -81,6 +89,7 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
             )
           })}
         </div>
+        )}
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

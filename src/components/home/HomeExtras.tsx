@@ -1,17 +1,6 @@
 import { getCmsContent } from "@/lib/cms/content"
-import { HomeStatisticsContent, HomeNewsletterContent } from "./HomeExtrasContent"
+import { HomeNewsletterContent } from "./HomeExtrasContent"
 import Image from "next/image"
-
-export async function HomeStatistics({ locale, stats }: { locale: string, stats?: any }) {
-  return (
-    <section className="py-24 bg-[#1C1C1E] relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-32 bg-gradient-to-b from-transparent via-[#D4AF37]/50 to-transparent" />
-      <div className="container mx-auto px-6 relative z-10">
-        <HomeStatisticsContent locale={locale} stats={stats} />
-      </div>
-    </section>
-  )
-}
 
 export async function HomeNewsletter({ locale }: { locale: string }) {
   const content = await getCmsContent('homepage', 'contactCTA', locale)

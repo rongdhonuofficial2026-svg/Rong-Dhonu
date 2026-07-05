@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { PremiumImage } from "@/components/ui/PremiumImage"
 import { Calendar, MapPin, ArrowRight } from "lucide-react"
 
 interface HomeExhibitionContentProps {
@@ -13,6 +13,38 @@ interface HomeExhibitionContentProps {
 }
 
 export function HomeExhibitionContent({ locale, currentExhibition, timelineItems }: HomeExhibitionContentProps) {
+  
+  if (!currentExhibition) {
+    return (
+      <div className="relative w-full flex flex-col items-center bg-[#1C1C1E] py-24 md:py-40 mt-32">
+        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-[#FDFBF7] to-transparent -translate-y-full pointer-events-none" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#D4AF37]/10 via-transparent to-transparent opacity-50" />
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-16 space-y-6 relative z-10 px-4"
+        >
+          <h3 className="text-xs tracking-[0.5em] uppercase text-[#D4AF37] font-bold flex items-center justify-center gap-6">
+            <span className="w-16 h-[2px] bg-[#D4AF37]"></span>
+            {locale === 'bn' ? "শীঘ্রই আসছে" : "Upcoming Exhibition"}
+            <span className="w-16 h-[2px] bg-[#D4AF37]"></span>
+          </h3>
+          <h2 className="font-serif text-5xl md:text-7xl lg:text-[5.5rem] text-[#FDFBF7] max-w-5xl mx-auto leading-[1.1] font-bold text-shadow-elegant">
+            {locale === 'bn' ? "নতুন প্রদর্শনী প্রস্তুতি চলছে" : "Curating Our Next Masterpiece"}
+          </h2>
+          <p className="text-[#FDFBF7]/60 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto">
+            {locale === 'bn' 
+              ? "আমাদের পরবর্তী প্রদর্শনীর বিস্তারিত জানার জন্য সাথে থাকুন।" 
+              : "Stay tuned as we prepare our upcoming exhibition featuring exceptional artists from around the world."}
+          </p>
+        </motion.div>
+      </div>
+    )
+  }
+
   const title = locale === 'bn' ? (currentExhibition.title_bn || currentExhibition.title_en) : currentExhibition.title_en
   const venue = locale === 'bn' ? (currentExhibition.venue_bn || currentExhibition.venue_en) : currentExhibition.venue_en
   
@@ -56,14 +88,14 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         className="relative w-[95%] max-w-[120rem] mx-auto h-[60vh] md:h-[85vh] group overflow-hidden museum-shadow-dark"
       >
-        <div className="absolute inset-0 w-full h-full image-zoom-container">
-          <Image 
-            src={currentExhibition.hero_image_url} 
-            alt={title} 
-            fill 
-            className="object-cover"
-          />
-        </div>
+        <PremiumImage 
+          src={currentExhibition.hero_image_url} 
+          fallbackSrc="/images/placeholders/exhibition.png"
+          alt={title} 
+          fill 
+          containerClassName="absolute inset-0 w-full h-full image-zoom-container"
+          className="object-cover"
+        />
         
         {/* Cinematic Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1E] via-[#1C1C1E]/40 to-transparent pointer-events-none" />

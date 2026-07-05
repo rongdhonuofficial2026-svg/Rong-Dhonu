@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useScroll, useTransform, Variants } from 'framer-motion'
-import Image from 'next/image'
+import { PremiumImage } from '@/components/ui/PremiumImage'
 import { Link } from '@/lib/i18n/routing'
 import { Button } from '@/components/ui/button'
 import { useRef } from 'react'
@@ -24,9 +24,7 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1])
 
-  // Premium Colorful Abstract Art
-  const defaultImage = "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=100&w=2500" // Vibrant abstract painting
-  const heroImage = content?.imageUrl || exhibition?.hero_image_url || defaultImage
+  const heroImage = content?.imageUrl || exhibition?.hero_image_url
   
   const title = content?.title || (locale === 'bn' ? "সৃজনশীলতা ও ঐতিহ্যের মিলন" : "Where Creativity Meets Legacy")
   const subtitle = content?.subtitle || (locale === 'bn' ? "রংধনু শিল্পী সংঘের বার্ষিক প্রদর্শনী" : "The Annual Exhibition of Rongdhono Artists' Collective")
@@ -39,27 +37,27 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
   }
 
   return (
-    <div ref={ref} className="relative w-full h-[100svh] min-h-[600px] overflow-hidden bg-[#1C1C1E]">
+    <div ref={ref} className="relative w-full h-[100vh] overflow-hidden bg-[#1C1C1E]">
       
       {/* Parallax Background */}
       <motion.div 
         style={{ y, scale }}
         className="absolute inset-0 z-0 w-full h-full"
       >
-        <Image
+        <PremiumImage
           src={heroImage}
-          alt="Abstract Art Background"
+          fallbackSrc="/images/placeholders/hero.png"
+          alt="Exhibition Hero"
           fill
           priority
-          quality={100}
           className="object-cover"
         />
       </motion.div>
 
       {/* Storytelling Overlays: Rich lighting, color grading, and bleed into Cream (#FDFBF7) */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-transparent to-[#FDFBF7] pointer-events-none" />
-      <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#7851A9]/20 to-[#1A1B41]/80 mix-blend-multiply pointer-events-none" />
-      <div className="absolute inset-0 z-10 bg-[url('https://www.transparenttextures.com/patterns/canvas.png')] opacity-[0.06] mix-blend-overlay pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#1C1C1E]/60 via-transparent to-[#FDFBF7] pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#D4AF37]/10 to-[#1C1C1E]/80 mix-blend-multiply pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
 
       {/* Floating Particles / Orbs */}
       <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">

@@ -3,7 +3,7 @@ import { HomeAbout } from "@/components/home/HomeAbout"
 import { HomeFeaturedArtworks } from "@/components/home/FeaturedArtworks"
 import { HomeFeaturedArtists } from "@/components/home/FeaturedArtists"
 import { HomeExhibition } from "@/components/home/HomeExhibition"
-import { HomeStatistics, HomeNewsletter } from "@/components/home/HomeExtras"
+import { HomeNewsletter } from "@/components/home/HomeExtras"
 import { HomeSponsors, HomeTestimonials } from "@/components/home/HomeSponsors"
 import { generateDynamicMetadata, generateOrganizationSchema } from "@/lib/seo"
 import { createClient } from "@/lib/supabase/server"
@@ -60,7 +60,6 @@ export default async function HomePage({
         <HomeExhibition locale={locale} exhibition={exhibition} />
         <HomeFeaturedArtists locale={locale} artists={artists} />
         <HomeFeaturedArtworks locale={locale} artworks={artworks} />
-        <HomeStatistics locale={locale} stats={stats} />
         <HomeTestimonials locale={locale} />
         <HomeSponsors locale={locale} />
         <HomeNewsletter locale={locale} />
