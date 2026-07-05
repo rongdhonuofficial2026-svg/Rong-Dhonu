@@ -1,33 +1,20 @@
 import { getCmsContent } from "@/lib/cms/content"
-import { HeroBanner } from "@/components/museum/hero-banner"
-import { Button } from "@/components/ui/button"
-import { Link } from "@/lib/i18n/routing"
+import { HomeHeroContent } from "./HomeHeroContent"
 
-export async function HomeHero({ locale }: { locale: string }) {
+interface HomeHeroProps {
+  locale: string
+  exhibition?: any
+}
+
+export async function HomeHero({ locale, exhibition }: HomeHeroProps) {
   const content = await getCmsContent('homepage', 'hero', locale)
   
   return (
-    <section className="w-full">
-      <HeroBanner
-        title={content.title || "Where Art Meets Soul"}
-        subtitle={content.subtitle}
-        imageUrl={content.imageUrl || "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=2000"}
-        overlayOpacity="dark"
-        fullScreen={true}
-        primaryAction={
-          content.ctaPrimary ? (
-            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 px-10 py-7 text-lg rounded-none tracking-wide">
-              <Link href="/gallery">{content.ctaPrimary}</Link>
-            </Button>
-          ) : null
-        }
-        secondaryAction={
-          content.ctaSecondary ? (
-            <Button asChild variant="outline" size="lg" className="bg-transparent text-white hover:bg-white hover:text-black border-white px-10 py-7 text-lg rounded-none tracking-wide transition-colors">
-              <Link href="/about">{content.ctaSecondary}</Link>
-            </Button>
-          ) : null
-        }
+    <section className="w-full relative bg-black">
+      <HomeHeroContent 
+        locale={locale} 
+        content={content} 
+        exhibition={exhibition} 
       />
     </section>
   )

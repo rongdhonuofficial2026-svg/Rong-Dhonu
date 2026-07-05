@@ -1,10 +1,10 @@
 'use client'
 
 import { motion } from "framer-motion"
-import { ExhibitionCard } from "@/components/museum/exhibition-card"
-import { Timeline } from "@/components/museum/timeline"
 import { Link } from "@/lib/i18n/routing"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
+import { Calendar, MapPin, ArrowRight } from "lucide-react"
 
 interface HomeExhibitionContentProps {
   locale: string
@@ -13,56 +13,76 @@ interface HomeExhibitionContentProps {
 }
 
 export function HomeExhibitionContent({ locale, currentExhibition, timelineItems }: HomeExhibitionContentProps) {
+  const title = locale === 'bn' ? (currentExhibition.title_bn || currentExhibition.title_en) : currentExhibition.title_en
+  const venue = locale === 'bn' ? (currentExhibition.venue_bn || currentExhibition.venue_en) : currentExhibition.venue_en
+  
+  const startDate = new Date(currentExhibition.start_date)
+  const formattedDate = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-US', {
+    month: 'long', day: 'numeric', year: 'numeric'
+  }).format(startDate)
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mt-16 max-w-7xl mx-auto items-center">
+    <div className="max-w-7xl mx-auto flex flex-col items-center">
+      
+      {/* Header */}
       <motion.div 
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="lg:col-span-7"
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center mb-16 space-y-6"
       >
-        <div className="relative group">
-          <div className="absolute -inset-4 bg-gradient-to-r from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-2xl" />
-          <ExhibitionCard
-            id={currentExhibition.id}
-            title={locale === 'bn' ? (currentExhibition.title_bn || currentExhibition.title_en) : currentExhibition.title_en}
-            status={currentExhibition.status as any}
-            venue={locale === 'bn' ? (currentExhibition.venue_bn || currentExhibition.venue_en) : currentExhibition.venue_en}
-            startDate={new Date(currentExhibition.start_date)}
-            endDate={new Date(currentExhibition.end_date)}
-            coverImageUrl={currentExhibition.hero_image_url}
-            className="w-full shadow-2xl border-none ring-1 ring-border/50"
-          />
-        </div>
+        <h3 className="text-[10px] tracking-[0.4em] uppercase text-[#D4AF37] font-semibold flex items-center justify-center gap-4">
+          <span className="w-12 h-[1px] bg-[#D4AF37]"></span>
+          {locale === 'bn' ? "বর্তমান প্রদর্শনী" : "Featured Exhibition"}
+          <span className="w-12 h-[1px] bg-[#D4AF37]"></span>
+        </h3>
+        <h2 className="font-serif text-4xl md:text-6xl text-[#FDFBF7] max-w-4xl mx-auto leading-tight">
+          {title}
+        </h2>
       </motion.div>
-      
-      <motion.div 
-        initial={{ opacity: 0, x: 40 }}
-        whileInView={{ opacity: 1, x: 0 }}
+
+      {/* Large Banner Image */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-        className="lg:col-span-5 space-y-12 pl-0 lg:pl-10 border-l border-border/40"
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full h-[50vh] md:h-[70vh] group overflow-hidden"
       >
-        <div className="space-y-4">
-          <h3 className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-semibold">
-            {locale === 'bn' ? "সময়রেখা" : "The Timeline"}
-          </h3>
-          <h4 className="font-serif text-3xl md:text-4xl font-bold leading-tight">
-            {locale === 'bn' ? "প্রদর্শনীর সময়রেখা" : "Exhibition Journey"}
-          </h4>
-        </div>
+        <Image 
+          src={currentExhibition.hero_image_url} 
+          alt={title} 
+          fill 
+          className="object-cover transition-transform duration-1000 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/20 to-transparent" />
         
-        <Timeline items={timelineItems} />
-        
-        <div className="pt-4">
-          <Button asChild variant="outline" className="rounded-none px-8 py-6 text-sm tracking-widest uppercase border-foreground/20 hover:bg-foreground hover:text-background transition-all w-full sm:w-auto">
-            <Link href="/exhibitions">
-              {locale === 'bn' ? "সকল প্রদর্শনী দেখুন" : "View All Exhibitions"}
+        {/* Info Box Floating */}
+        <div className="absolute bottom-0 left-0 w-full p-8 md:p-12 flex flex-col md:flex-row justify-between items-end gap-6">
+          <div className="flex flex-col gap-4 text-[#FDFBF7]">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-5 h-5 text-[#D4AF37]" />
+              <span className="text-lg md:text-xl font-light tracking-wide">{formattedDate}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <MapPin className="w-5 h-5 text-[#D4AF37]" />
+              <span className="text-lg md:text-xl font-light tracking-wide">{venue}</span>
+            </div>
+          </div>
+          
+          <Button 
+            asChild 
+            className="bg-[#D4AF37] text-black hover:bg-[#FDFBF7] transition-colors duration-300 px-8 py-6 text-sm uppercase tracking-[0.2em] font-semibold rounded-none group/btn"
+          >
+            <Link href={`/exhibitions/${currentExhibition.id}`} className="flex items-center gap-3">
+              {locale === 'bn' ? "বিস্তারিত দেখুন" : "Explore Exhibition"}
+              <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
             </Link>
           </Button>
         </div>
       </motion.div>
+
     </div>
   )
 }

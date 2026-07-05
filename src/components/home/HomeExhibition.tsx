@@ -1,7 +1,6 @@
  
  
  
-import { createClient } from "@/lib/supabase/server"
 import { HomeExhibitionContent } from "./HomeExhibitionContent"
 
 const fallbackExhibition = {
@@ -16,17 +15,7 @@ const fallbackExhibition = {
   hero_image_url: "https://images.unsplash.com/photo-1518998053401-878c735c908c?auto=format&fit=crop&q=80&w=1000"
 }
 
-export async function HomeExhibition({ locale }: { locale: string }) {
-  const supabase = await createClient()
-  
-  const { data: exhibition } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .in('status', ['active', 'upcoming'])
-    .order('start_date', { ascending: false })
-    .limit(1)
-    .single()
-
+export async function HomeExhibition({ locale, exhibition }: { locale: string, exhibition?: any }) {
   const currentExhibition = exhibition || fallbackExhibition
 
   const timelineItems = [
@@ -36,7 +25,7 @@ export async function HomeExhibition({ locale }: { locale: string }) {
   ]
 
   return (
-    <section className="py-32 bg-background border-y border-border overflow-hidden">
+    <section className="py-24 md:py-40 bg-[#111111] overflow-hidden">
       <div className="container mx-auto px-6">
         <HomeExhibitionContent 
           locale={locale} 

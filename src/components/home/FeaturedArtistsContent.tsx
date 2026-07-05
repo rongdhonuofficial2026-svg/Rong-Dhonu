@@ -1,0 +1,90 @@
+'use client'
+
+import { motion } from "framer-motion"
+import { Link } from "@/lib/i18n/routing"
+import Image from "next/image"
+import { Globe, ArrowUpRight } from "lucide-react"
+
+export function FeaturedArtistsContent({ locale, artists }: { locale: string, artists: any[] }) {
+  const title = locale === 'bn' ? "বিশিষ্ট শিল্পীবৃন্দ" : "Featured Artists"
+  
+  return (
+    <div className="max-w-7xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center mb-20 space-y-6"
+      >
+        <h3 className="text-[10px] tracking-[0.4em] uppercase text-[#D4AF37] font-semibold flex items-center justify-center gap-4">
+          <span className="w-8 h-[1px] bg-[#D4AF37]"></span>
+          The Creators
+          <span className="w-8 h-[1px] bg-[#D4AF37]"></span>
+        </h3>
+        <h2 className="font-serif text-4xl md:text-5xl text-[#1C1C1E]">{title}</h2>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+        {artists.map((artist, index) => {
+          const name = locale === 'bn' ? (artist.full_name_bn || artist.full_name_en) : artist.full_name_en
+          const role = artist.role === 'committee' ? (locale === 'bn' ? 'কমিটি সদস্য' : 'Committee Member') : (locale === 'bn' ? 'সদস্য' : 'Member')
+          const delay = index * 0.15
+
+          return (
+            <motion.div 
+              key={artist.id}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+              className="group flex flex-col items-center text-center"
+            >
+              <Link href={`/artists/${artist.id}`} className="relative w-48 h-48 md:w-64 md:h-64 mb-8 overflow-hidden rounded-full">
+                <Image 
+                  src={artist.avatar_url || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400"} 
+                  alt={name} 
+                  fill 
+                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-out transform group-hover:scale-105"
+                />
+                <div className="absolute inset-0 border border-black/10 rounded-full group-hover:border-[#D4AF37] transition-colors duration-500" />
+              </Link>
+              
+              <h4 className="font-serif text-2xl text-[#1C1C1E] mb-2 group-hover:text-[#D4AF37] transition-colors">
+                <Link href={`/artists/${artist.id}`}>{name}</Link>
+              </h4>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">{role}</p>
+              
+              <div className="flex gap-4">
+                <Link href={`/artists/${artist.id}`} className="w-8 h-8 rounded-full border border-black/10 flex items-center justify-center text-muted-foreground hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors">
+                  <ArrowUpRight className="w-3 h-3" />
+                </Link>
+                {artist.instagram_url && (
+                  <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full border border-black/10 flex items-center justify-center text-muted-foreground hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors">
+                    <Globe className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        className="mt-20 text-center"
+      >
+        <Link 
+          href="/artists" 
+          className="inline-flex items-center gap-3 text-sm tracking-[0.2em] uppercase font-semibold text-[#1C1C1E] hover:text-[#D4AF37] transition-colors group"
+        >
+          {locale === 'bn' ? "সম্পূর্ণ ডিরেক্টরি দেখুন" : "View Full Directory"}
+          <span className="w-8 h-[1px] bg-[#1C1C1E] group-hover:bg-[#D4AF37] transition-colors group-hover:w-12 duration-300"></span>
+        </Link>
+      </motion.div>
+    </div>
+  )
+}
