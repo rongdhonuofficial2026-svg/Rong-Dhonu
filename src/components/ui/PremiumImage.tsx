@@ -33,9 +33,10 @@ export function PremiumImage({
       <Image
         src={imageSrc}
         alt={alt || "Artwork"}
+        unoptimized={true}
         className={cn(
-          "transition-all duration-700 ease-in-out z-10",
-          loading ? "scale-105 blur-md" : "scale-100 blur-0",
+          "transition-all duration-500 ease-out z-10",
+          loading ? "scale-105 opacity-0" : "scale-100 opacity-100",
           className
         )}
         onLoad={() => setLoading(false)}
