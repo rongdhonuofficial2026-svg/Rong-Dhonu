@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "@/lib/i18n/routing"
 import Image from "next/image"
+import { ExhibitionCard } from "@/components/museum/exhibition-card"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
@@ -58,26 +59,30 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
   const venue = locale === 'bn' && exhibition.venue_bn ? exhibition.venue_bn : exhibition.venue_en
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-background pb-32">
       {/* Hero Section */}
-      <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center text-white">
-        <div className="absolute inset-0 bg-black/60 z-10" />
+      <section className="relative h-[80vh] min-h-[600px] flex items-end justify-center text-white pb-32 overflow-hidden">
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/40 to-transparent" />
         {exhibition.hero_image_url && (
-          <Image src={exhibition.hero_image_url} alt={title} fill className="object-cover" priority />
+          <Image src={exhibition.hero_image_url} alt={title} fill className="object-cover scale-105" priority quality={100} />
         )}
-        <div className="relative z-20 text-center max-w-4xl px-4 space-y-6">
-          <Badge variant={exhibition.status === 'active' ? 'default' : 'secondary'} className="text-sm px-4 py-1 mb-4 shadow-xl">
-            {exhibition.status.toUpperCase()}
+        <div className="relative z-20 text-center max-w-5xl px-6 space-y-8 mt-auto w-full">
+          <Badge 
+            variant="outline" 
+            className="text-xs tracking-[0.3em] font-bold uppercase px-4 py-1.5 shadow-xl bg-white/10 backdrop-blur-md text-white border-white/20 rounded-none"
+          >
+            {exhibition.status === 'active' ? 'ongoing' : exhibition.status}
           </Badge>
-          <h1 className="font-serif text-5xl md:text-7xl font-bold drop-shadow-xl">{title}</h1>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-lg md:text-xl text-white/90 font-medium">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
+          <h1 className="font-serif text-6xl md:text-8xl font-bold drop-shadow-2xl leading-[1.1] tracking-tight">{title}</h1>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-lg md:text-xl text-white/90 font-light tracking-wide pt-4">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-5 h-5 text-white/60" strokeWidth={1.5} />
               <span>{exhibition.year}</span>
             </div>
             {venue && (
-              <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-white/60" strokeWidth={1.5} />
                 <span>{venue}</span>
               </div>
             )}
@@ -85,70 +90,85 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 space-y-24">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-24 space-y-40">
         
         {/* Description & Stats */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2 space-y-6 text-lg leading-relaxed text-muted-foreground">
-            <h2 className="font-serif text-3xl font-bold text-foreground">{locale === 'bn' ? 'প্রদর্শনীর সম্পর্কে' : 'About the Exhibition'}</h2>
-            <p>{desc}</p>
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+          <div className="lg:col-span-8 space-y-8 text-xl leading-relaxed text-foreground/80 font-serif">
+            <h2 className="text-xs uppercase tracking-[0.3em] font-sans font-bold text-muted-foreground mb-8 border-b border-border/50 pb-4">
+              {locale === 'bn' ? 'প্রদর্শনীর সম্পর্কে' : 'Curatorial Statement'}
+            </h2>
+            <div className="whitespace-pre-line drop-cap text-2xl leading-[1.8] text-foreground">
+              {desc}
+            </div>
           </div>
-          <div className="space-y-6 bg-muted/30 p-8 rounded-2xl border border-border">
-            <h3 className="font-bold text-xl">{locale === 'bn' ? 'সংক্ষিপ্ত তথ্য' : 'At a Glance'}</h3>
-            <ul className="space-y-4">
-              <li className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Artworks</span>
-                <span className="font-bold">{exhibition.artworks?.length || 0}</span>
-              </li>
-              <li className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Start Date</span>
-                <span className="font-bold">{exhibition.start_date ? new Date(exhibition.start_date).toLocaleDateString() : 'TBD'}</span>
-              </li>
-              <li className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">End Date</span>
-                <span className="font-bold">{exhibition.end_date ? new Date(exhibition.end_date).toLocaleDateString() : 'TBD'}</span>
-              </li>
-            </ul>
-            {catalog ? (
-              <a
-                href={`/api/catalogs/download?id=${catalog.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button className="w-full mt-4">
-                  <Download className="w-4 h-4 mr-2" />
-                  {locale === 'bn' ? 'অফিসিয়াল ক্যাটালগ ডাউনলোড করুন' : 'Download Official Catalog'}
-                </Button>
-              </a>
-            ) : (
-              <Button className="w-full mt-4" variant="outline" disabled>
-                <Download className="w-4 h-4 mr-2" />
-                {locale === 'bn' ? 'ক্যাটালগ শীঘ্রই আসছে' : 'Catalog Coming Soon'}
-              </Button>
-            )}
+          
+          <div className="lg:col-span-4">
+            <div className="sticky top-32 space-y-10 bg-muted/10 p-10 border border-border/50 backdrop-blur-sm shadow-sm">
+              <h3 className="font-bold text-xs tracking-[0.2em] uppercase text-muted-foreground border-b border-border/50 pb-4">
+                {locale === 'bn' ? 'সংক্ষিপ্ত তথ্য' : 'At a Glance'}
+              </h3>
+              <ul className="space-y-6">
+                <li className="flex justify-between items-center">
+                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">Artworks</span>
+                  <span className="font-serif text-2xl font-bold">{exhibition.artworks?.length || 0}</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">Start Date</span>
+                  <span className="font-serif text-lg">{exhibition.start_date ? new Date(exhibition.start_date).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">End Date</span>
+                  <span className="font-serif text-lg">{exhibition.end_date ? new Date(exhibition.end_date).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
+                </li>
+              </ul>
+              
+              <div className="pt-8 border-t border-border/50">
+                {catalog ? (
+                  <a
+                    href={`/api/catalogs/download?id=${catalog.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full h-14 rounded-none uppercase tracking-widest text-xs font-bold transition-all hover:scale-[1.02]">
+                      <Download className="w-4 h-4 mr-3" />
+                      {locale === 'bn' ? 'ক্যাটালগ ডাউনলোড' : 'Download Catalog'}
+                    </Button>
+                  </a>
+                ) : (
+                  <Button className="w-full h-14 rounded-none uppercase tracking-widest text-xs font-bold" variant="outline" disabled>
+                    <Download className="w-4 h-4 mr-3" />
+                    {locale === 'bn' ? 'ক্যাটালগ শীঘ্রই আসছে' : 'Catalog Pending'}
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Featured Artworks Preview */}
         {exhibition.artworks && exhibition.artworks.length > 0 && (
-          <section className="space-y-8">
-            <div className="flex justify-between items-end">
-              <h2 className="font-serif text-3xl font-bold">{locale === 'bn' ? 'নির্বাচিত শিল্পকর্ম' : 'Featured Artworks'}</h2>
-              <Button variant="ghost" asChild>
+          <section className="space-y-12">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-border/50 pb-6">
+              <h2 className="font-serif text-4xl font-bold">{locale === 'bn' ? 'নির্বাচিত শিল্পকর্ম' : 'Exhibition Highlights'}</h2>
+              <Button variant="link" className="uppercase tracking-widest text-xs font-bold px-0 text-foreground hover:text-foreground/70" asChild>
                 <Link href={`/gallery?exhibition=${exhibition.id}`}>
-                  {locale === 'bn' ? 'সব দেখুন' : 'View Gallery'} <ArrowRight className="w-4 h-4 ml-2" />
+                  {locale === 'bn' ? 'সম্পূর্ণ গ্যালারি' : 'View Full Gallery'} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {exhibition.artworks.slice(0, 4).map((art: Record<string, any>) => (
-                <Link key={art.id} href={`/gallery/artwork/${art.id}`} className="group relative aspect-square bg-muted overflow-hidden rounded-xl border border-border">
+                <Link key={art.id} href={`/gallery/artwork/${art.id}`} className="group relative aspect-[3/4] bg-muted overflow-hidden bg-card cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-black/20 transition-all duration-500">
                   {art.main_image_url && (
-                    <Image src={art.main_image_url} alt="Artwork" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <Image src={art.main_image_url} alt="Artwork" fill className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105" />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end text-white">
-                    <p className="font-bold truncate">{locale === 'bn' && art.title_bn ? art.title_bn : art.title_en}</p>
-                    <p className="text-xs text-white/80 truncate">by {art.profiles?.first_name_en}</p>
+                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 z-10 p-6 flex flex-col justify-end translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                    <p className="font-serif text-xl font-bold text-white line-clamp-1 drop-shadow-md">{locale === 'bn' && art.title_bn ? art.title_bn : art.title_en}</p>
+                    <div className="h-[1px] w-8 bg-white/50 my-3" />
+                    <p className="text-xs text-white/90 tracking-wide uppercase">{art.profiles?.first_name_en} {art.profiles?.last_name_en}</p>
                   </div>
                 </Link>
               ))}
@@ -158,24 +178,26 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
 
         {/* Committee Members */}
         {exhibition.committee_members && exhibition.committee_members.length > 0 && (
-          <section className="space-y-8">
-            <div className="text-center space-y-4">
-              <h2 className="font-serif text-3xl font-bold">{locale === 'bn' ? 'কমিটি' : 'Organizing Committee'}</h2>
-              <p className="text-muted-foreground">{locale === 'bn' ? 'এই প্রদর্শনীর রূপকারগণ' : 'The visionary team behind this exhibition.'}</p>
+          <section className="space-y-16">
+            <div className="text-center space-y-4 max-w-2xl mx-auto">
+              <h2 className="font-serif text-4xl font-bold">{locale === 'bn' ? 'কমিটি' : 'Curatorial Team'}</h2>
+              <p className="text-muted-foreground text-lg font-light">
+                {locale === 'bn' ? 'এই প্রদর্শনীর রূপকারগণ' : 'The visionary committee behind this exhibition.'}
+              </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <div className="flex flex-wrap justify-center gap-12 lg:gap-20">
               {exhibition.committee_members.map((member: Record<string, any>) => (
-                <div key={member.id} className="text-center space-y-4">
-                  <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden bg-muted border-2 border-border shadow-sm">
+                <div key={member.id} className="text-center space-y-6 group w-48">
+                  <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden bg-muted shadow-lg transition-transform duration-500 group-hover:scale-110">
                     {member.profiles?.avatar_url ? (
-                      <Image src={member.profiles.avatar_url} alt="Avatar" fill className="object-cover" />
+                      <Image src={member.profiles.avatar_url} alt="Avatar" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
                     ) : (
-                      <Users className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Users className="w-10 h-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/30" />
                     )}
                   </div>
                   <div>
-                    <p className="font-bold text-lg">{member.profiles?.first_name_en} {member.profiles?.last_name_en}</p>
-                    <p className="text-sm text-accent font-medium">{locale === 'bn' && member.role_title_bn ? member.role_title_bn : member.role_title_en}</p>
+                    <p className="font-serif text-xl font-bold group-hover:text-foreground/70 transition-colors">{member.profiles?.first_name_en} {member.profiles?.last_name_en}</p>
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground mt-2">{locale === 'bn' && member.role_title_bn ? member.role_title_bn : member.role_title_en}</p>
                   </div>
                 </div>
               ))}

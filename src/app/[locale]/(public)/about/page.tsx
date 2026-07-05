@@ -1,8 +1,9 @@
 import { getCmsContent } from "@/lib/cms/content"
-import { SectionHeading } from "@/components/museum/section-heading"
 import { generateDynamicMetadata } from "@/lib/seo"
+import { AboutContent } from "./AboutContent"
 
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   const content = await getCmsContent('homepage', 'about', locale)
   return generateDynamicMetadata({
     title: content.title || "About Us",
@@ -12,36 +13,32 @@ export async function generateMetadata({ params: { locale } }: { params: { local
   })
 }
 
-export default async function AboutPage({ params: { locale } }: { params: { locale: string } }) {
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   const content = await getCmsContent('homepage', 'about', locale)
 
   return (
-    <main className="flex flex-col w-full min-h-screen pt-32 pb-24">
-      <div className="container mx-auto px-6 max-w-4xl">
-        <SectionHeading title={content.title || "About Rongdhono"} />
+    <main className="flex flex-col w-full min-h-screen bg-background">
+      {/* Editorial Header */}
+      <section className="relative pt-32 pb-24 px-6 overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-[#F5F5F0]" />
         
-        <div className="mt-16 space-y-16">
-          <section className="space-y-6">
-            <h2 className="font-serif text-3xl font-bold text-accent">Our Mission</h2>
-            <p className="text-xl leading-relaxed text-muted-foreground">
-              {content.mission}
+        <div className="container relative z-10 mx-auto max-w-7xl">
+          <div className="max-w-3xl space-y-6">
+            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
+              {content.title || (locale === 'bn' ? 'আমাদের সম্পর্কে' : 'About Rongdhono')}
+            </h1>
+            <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl leading-relaxed">
+              {locale === 'bn' 
+                ? 'শিল্প ও শিল্পীর সেতুবন্ধন' 
+                : 'A legacy of fine arts, nurturing creativity and preserving heritage since 2010.'}
             </p>
-          </section>
-
-          <section className="space-y-6">
-            <h2 className="font-serif text-3xl font-bold text-accent">Our Vision</h2>
-            <p className="text-xl leading-relaxed text-muted-foreground">
-              {content.vision}
-            </p>
-          </section>
-
-          <section className="space-y-6 bg-muted/20 p-10 rounded-2xl border border-border">
-            <h2 className="font-serif text-3xl font-bold">History & Legacy</h2>
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              {content.history}
-            </p>
-          </section>
+          </div>
         </div>
+      </section>
+
+      <div className="container mx-auto px-6 max-w-7xl pt-24 pb-0">
+        <AboutContent content={content} locale={locale} />
       </div>
     </main>
   )

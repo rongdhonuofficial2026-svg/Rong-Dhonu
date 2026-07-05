@@ -13,16 +13,17 @@ export async function HomeHero({ locale }: { locale: string }) {
         subtitle={content.subtitle}
         imageUrl={content.imageUrl || "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=2000"}
         overlayOpacity="dark"
+        fullScreen={true}
         primaryAction={
           content.ctaPrimary ? (
-            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-6 text-lg">
+            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 px-10 py-7 text-lg rounded-none tracking-wide">
               <Link href="/gallery">{content.ctaPrimary}</Link>
             </Button>
           ) : null
         }
         secondaryAction={
           content.ctaSecondary ? (
-            <Button asChild variant="outline" size="lg" className="bg-white/10 text-white hover:bg-white/20 border-white/30 px-8 py-6 text-lg">
+            <Button asChild variant="outline" size="lg" className="bg-transparent text-white hover:bg-white hover:text-black border-white px-10 py-7 text-lg rounded-none tracking-wide transition-colors">
               <Link href="/about">{content.ctaSecondary}</Link>
             </Button>
           ) : null

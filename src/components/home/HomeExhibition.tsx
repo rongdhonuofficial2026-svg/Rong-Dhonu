@@ -2,11 +2,7 @@
  
  
 import { createClient } from "@/lib/supabase/server"
-import { SectionHeading } from "@/components/museum/section-heading"
-import { ExhibitionCard } from "@/components/museum/exhibition-card"
-import { Timeline } from "@/components/museum/timeline"
-import { Link } from "@/lib/i18n/routing"
-import { Button } from "@/components/ui/button"
+import { HomeExhibitionContent } from "./HomeExhibitionContent"
 
 const fallbackExhibition = {
   id: 'current-fallback',
@@ -40,38 +36,13 @@ export async function HomeExhibition({ locale }: { locale: string }) {
   ]
 
   return (
-    <section className="py-24 bg-muted/20 border-y border-border">
+    <section className="py-32 bg-background border-y border-border overflow-hidden">
       <div className="container mx-auto px-6">
-        <SectionHeading 
-          title={locale === 'bn' ? "বর্তমান প্রদর্শনী" : "Current Exhibition"} 
+        <HomeExhibitionContent 
+          locale={locale} 
+          currentExhibition={currentExhibition} 
+          timelineItems={timelineItems} 
         />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mt-12 items-center">
-          <div>
-            <ExhibitionCard
-              id={currentExhibition.id}
-              title={locale === 'bn' ? (currentExhibition.title_bn || currentExhibition.title_en) : currentExhibition.title_en}
-              status={currentExhibition.status as any}
-              venue={locale === 'bn' ? (currentExhibition.venue_bn || currentExhibition.venue_en) : currentExhibition.venue_en}
-              startDate={new Date(currentExhibition.start_date)}
-              endDate={new Date(currentExhibition.end_date)}
-              coverImageUrl={currentExhibition.hero_image_url}
-              className="w-full max-w-xl mx-auto"
-            />
-          </div>
-          
-          <div className="space-y-10">
-            <h3 className="font-serif text-3xl font-bold">
-              {locale === 'bn' ? "প্রদর্শনীর সময়রেখা" : "Exhibition Timeline"}
-            </h3>
-            <Timeline items={timelineItems} />
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/exhibitions">
-                {locale === 'bn' ? "সকল প্রদর্শনী দেখুন" : "View All Exhibitions"}
-              </Link>
-            </Button>
-          </div>
-        </div>
       </div>
     </section>
   )
