@@ -43,10 +43,10 @@ export function Navbar() {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500",
+        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-700 ease-[0.16,1,0.3,1]",
         isTransparent 
-          ? "bg-transparent border-transparent py-6" 
-          : "bg-background/80 backdrop-blur-xl border-b border-border/40 py-4 shadow-sm"
+          ? "bg-transparent border-transparent py-8" 
+          : "glass py-4 shadow-sm"
       )}
     >
       <div className="container mx-auto flex items-center justify-between px-4 md:px-8">

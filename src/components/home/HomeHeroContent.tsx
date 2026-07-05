@@ -20,11 +20,12 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
   })
 
   // Parallax effects
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"])
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1])
 
-  // Fallback museum image if no exhibition or content image
-  const defaultImage = "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=2500"
+  // Premium Colorful Abstract Art
+  const defaultImage = "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=100&w=2500" // Vibrant abstract painting
   const heroImage = content?.imageUrl || exhibition?.hero_image_url || defaultImage
   
   const title = content?.title || (locale === 'bn' ? "সৃজনশীলতা ও ঐতিহ্যের মিলন" : "Where Creativity Meets Legacy")
@@ -38,39 +39,38 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
   }
 
   return (
-    <div ref={ref} className="relative w-full h-[100svh] min-h-[600px] overflow-hidden bg-[#111111]">
+    <div ref={ref} className="relative w-full h-[100svh] min-h-[600px] overflow-hidden bg-[#1C1C1E]">
       
       {/* Parallax Background */}
       <motion.div 
-        style={{ y }}
+        style={{ y, scale }}
         className="absolute inset-0 z-0 w-full h-full"
       >
-        <motion.div
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
-          className="w-full h-full relative"
-        >
-          <Image
-            src={heroImage}
-            alt="Hero Background"
-            fill
-            priority
-            quality={90}
-            className="object-cover"
-          />
-        </motion.div>
+        <Image
+          src={heroImage}
+          alt="Abstract Art Background"
+          fill
+          priority
+          quality={100}
+          className="object-cover"
+        />
       </motion.div>
 
-      {/* Cinematic Overlays */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-[#111111] pointer-events-none" />
-      <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/20 to-black/80 pointer-events-none" />
-      <div className="absolute inset-0 z-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
+      {/* Storytelling Overlays: Rich lighting, color grading, and bleed into Cream (#FDFBF7) */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-transparent to-[#FDFBF7] pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#7851A9]/20 to-[#1A1B41]/80 mix-blend-multiply pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-[url('https://www.transparenttextures.com/patterns/canvas.png')] opacity-[0.06] mix-blend-overlay pointer-events-none" />
+
+      {/* Floating Particles / Orbs */}
+      <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
+        <div className="blob absolute -top-1/4 -right-1/4 w-[800px] h-[800px] bg-[#D4AF37]/20 blur-[100px] mix-blend-screen" />
+        <div className="blob absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-[#FF7F50]/20 blur-[100px] mix-blend-screen" style={{ animationDelay: '-4s' }} />
+      </div>
 
       {/* Content */}
       <motion.div 
         style={{ opacity }}
-        className="relative z-20 flex flex-col items-center justify-center h-full px-4 text-center"
+        className="relative z-20 flex flex-col items-center justify-center h-full px-4 text-center mt-[-5vh]"
       >
         <motion.div
           initial="hidden"
@@ -83,26 +83,26 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
         >
           <motion.h1 
             variants={textVariants}
-            className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold text-[#FDFBF7] tracking-tight leading-[1.05] drop-shadow-2xl"
+            className="font-serif text-6xl md:text-8xl lg:text-[7rem] font-bold text-[#FDFBF7] tracking-tight leading-[1] text-shadow-elegant"
           >
             {title}
           </motion.h1>
 
           <motion.p 
             variants={textVariants}
-            className="mt-8 text-lg md:text-2xl text-white/80 max-w-2xl font-light tracking-wide leading-relaxed"
+            className="mt-8 text-xl md:text-3xl text-white/90 max-w-2xl font-light tracking-wide leading-relaxed text-shadow-elegant"
           >
             {subtitle}
           </motion.p>
 
           <motion.div 
             variants={textVariants}
-            className="mt-12 flex flex-col sm:flex-row items-center gap-6"
+            className="mt-14 flex flex-col sm:flex-row items-center gap-6"
           >
             <Button 
               asChild 
               size="lg" 
-              className="bg-[#D4AF37] text-black hover:bg-[#FDFBF7] transition-colors duration-300 px-10 py-7 text-sm md:text-base uppercase tracking-[0.2em] font-medium rounded-none"
+              className="bg-[#D4AF37] text-black hover:bg-[#FDFBF7] transition-all duration-500 hover:scale-105 museum-shadow px-12 py-8 text-sm md:text-base uppercase tracking-[0.2em] font-semibold rounded-none"
             >
               <Link href={exhibition ? `/exhibitions/${exhibition.id}` : "/exhibitions"}>
                 {ctaPrimary}
@@ -113,7 +113,7 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
               asChild 
               variant="outline" 
               size="lg" 
-              className="bg-transparent text-white border-white/30 hover:bg-white hover:text-black transition-colors duration-300 px-10 py-7 text-sm md:text-base uppercase tracking-[0.2em] font-medium rounded-none backdrop-blur-sm"
+              className="glass text-white border-white/40 hover:bg-white hover:text-black transition-all duration-500 hover:scale-105 px-12 py-8 text-sm md:text-base uppercase tracking-[0.2em] font-medium rounded-none"
             >
               <Link href="/about">
                 {ctaSecondary}
@@ -128,17 +128,17 @@ export function HomeHeroContent({ locale, content, exhibition }: HomeHeroContent
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-4 pointer-events-none"
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-4 pointer-events-none"
       >
-        <span className="text-[10px] uppercase tracking-[0.4em] font-semibold text-white/50">
+        <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-[#1C1C1E]">
           Scroll to explore
         </span>
         <motion.div 
-          animate={{ y: [0, 8, 0] }} 
+          animate={{ y: [0, 10, 0] }} 
           transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          className="w-8 h-12 border border-white/20 rounded-full flex justify-center p-2"
+          className="w-8 h-12 border-2 border-[#1C1C1E]/30 rounded-full flex justify-center p-2"
         >
-          <div className="w-1 h-2 bg-[#D4AF37] rounded-full" />
+          <div className="w-1.5 h-2.5 bg-[#1C1C1E] rounded-full" />
         </motion.div>
       </motion.div>
     </div>

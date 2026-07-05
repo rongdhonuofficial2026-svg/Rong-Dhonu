@@ -8,9 +8,11 @@ export default function Footer() {
   const t = useTranslations('Navigation');
 
   return (
-    <footer className="relative bg-[#111111] text-[#E6E2D3] pt-24 pb-12 mt-auto overflow-hidden border-t border-white/5">
+    <footer className="relative bg-[#1C1C1E] text-[#E6E2D3] pt-24 pb-12 mt-auto overflow-hidden border-t border-white/5">
       {/* Background Texture Overlay */}
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/canvas.png')] opacity-[0.05] mix-blend-overlay pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent" />
+
       
       <div className="container relative z-10 mx-auto px-4 md:px-8">
         
