@@ -73,7 +73,7 @@ export async function registerAction(data: z.infer<typeof registerSchema>, local
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data: signUpData, error } = await supabase.auth.signUp({
     email: result.data.email,
     password: result.data.password,
     options: {
@@ -83,6 +83,8 @@ export async function registerAction(data: z.infer<typeof registerSchema>, local
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback?next=/dashboard`
     },
   });
+
+  console.log('Supabase signUp result:', { data: signUpData, error });
 
   if (error) {
     return { error: error.message };
