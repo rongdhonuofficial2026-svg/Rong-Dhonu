@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/Sidebar'
 import { TopNavigation } from '@/components/admin/TopNavigation'
 
+import { getUserRole, canAccessAdmin } from '@/lib/auth/roles'
+
 export default async function AdminLayout({
   children,
   params,
@@ -20,14 +22,10 @@ export default async function AdminLayout({
     redirect(`/${locale}/login`)
   }
 
-  // Check if user is admin
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', session.user.id)
-    .single()
+  // Check if user is admin, owner, or committee
+  const role = await getUserRole(supabase, session.user.id, session.user.email)
 
-  if (profile?.role !== 'admin') {
+  if (!canAccessAdmin(role)) {
     redirect(`/${locale}/dashboard`)
   }
 
