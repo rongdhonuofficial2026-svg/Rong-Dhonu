@@ -10,10 +10,15 @@ type ActionType =
   | 'reject_artwork'
   | 'update_exhibition'
   | 'update_user_role'
+  | 'upload_media'
+  | 'update_media'
+  | 'delete_media'
+  | 'bulk_update_media'
+  | 'bulk_delete_media'
 
 export async function logAudit(
   action: ActionType,
-  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user',
+  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media',
   entityId: string,
   details?: Record<string, any>
 ) {

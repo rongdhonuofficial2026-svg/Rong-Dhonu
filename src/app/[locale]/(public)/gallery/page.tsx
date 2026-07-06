@@ -1,39 +1,48 @@
 import { createClient } from "@/lib/supabase/server"
-import { GalleryGrid } from "@/components/public/GalleryGrid"
+import { AlbumGrid } from "@/components/public/AlbumGrid"
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   return {
-    title: locale === 'bn' ? 'গ্যালারি | রঙধনু' : 'Gallery | Rongdhono',
-    description: locale === 'bn' ? 'রঙধনু প্রদর্শনী ও ইভেন্টের মিডিয়া গ্যালারি।' : 'Explore the curated media gallery from Rongdhono exhibitions and events.',
+    title: locale === 'bn' ? 'অ্যালবাম | রঙধনু' : 'Albums | Rongdhono',
+    description: locale === 'bn' ? 'রঙধনু প্রদর্শনী ও ইভেন্টের মেমরি অ্যালবাম।' : 'Explore curated memory albums from Rongdhono exhibitions and events.',
   }
 }
 
-export default async function GalleryPage({ params, searchParams }: { params: Promise<{ locale: string }>, searchParams: Promise<any> }) {
+export default async function AlbumsPage({ params, searchParams }: { params: Promise<{ locale: string }>, searchParams: Promise<any> }) {
   const { locale } = await params
   const resolvedSearchParams = await searchParams
 
   const supabase = await createClient()
 
-  // Initial fetch for the first page
-  let query = supabase
-    .from('gallery_media')
-    .select('*, exhibitions(theme_en, theme_bn, year)')
+  // Fetch published exhibitions (Albums) and their media to calculate counts
+  const { data: exhibitions, error } = await supabase
+    .from('exhibitions')
+    .select(`
+      *,
+      gallery_media (
+        id,
+        media_type,
+        status
+      )
+    `)
     .eq('status', 'published')
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false })
-    .limit(20)
+    .order('year', { ascending: false })
+    .order('exhibition_start', { ascending: false })
 
-  // Apply filters if any
-  if (resolvedSearchParams.category) query = query.eq('category', resolvedSearchParams.category)
-  if (resolvedSearchParams.exhibition) query = query.eq('exhibition_id', resolvedSearchParams.exhibition)
-
-  const { data: initialMedia, error } = await query
-
-  // Also fetch exhibitions for the filter sidebar/dropdowns
-  const { data: filterExhibitions } = await supabase.from('exhibitions').select('id, year, theme_en, theme_bn').order('year', { ascending: false })
+  // Process data for the frontend
+  const albums = (exhibitions || []).map(ex => {
+    const publishedMedia = ex.gallery_media?.filter((m: any) => m.status === 'published') || []
+    return {
+      ...ex,
+      photoCount: publishedMedia.filter((m: any) => m.media_type === 'image').length,
+      videoCount: publishedMedia.filter((m: any) => m.media_type === 'video').length,
+      // We don't need to send the full media array to the client for this view
+      gallery_media: undefined
+    }
+  })
 
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">
@@ -50,12 +59,12 @@ export default async function GalleryPage({ params, searchParams }: { params: Pr
         <div className="container relative z-10 mx-auto max-w-7xl">
           <div className="max-w-4xl space-y-8 text-center mx-auto">
             <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
-              {locale === 'bn' ? 'মিডিয়া গ্যালারি' : 'Media Gallery'}
+              {locale === 'bn' ? 'প্রদর্শনী অ্যালবাম' : 'Exhibition Albums'}
             </h1>
             <div className="w-16 h-[1px] bg-foreground/20 mx-auto" />
             <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl mx-auto leading-relaxed">
               {locale === 'bn' 
-                ? 'আমাদের প্রদর্শনী, ইভেন্ট এবং পর্দার আড়ালের এক ঝলক।' 
+                ? 'আমাদের প্রদর্শনী ও ইভেন্টের স্মৃতিগুলো অন্বেষণ করুন।' 
                 : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes.'}
             </p>
           </div>
@@ -64,10 +73,9 @@ export default async function GalleryPage({ params, searchParams }: { params: Pr
 
       <div className="container mx-auto px-6 max-w-[1600px] pt-12 relative z-20">
         <Suspense fallback={<div className="flex justify-center p-32"><Loader2 className="w-10 h-10 animate-spin text-accent" strokeWidth={1} /></div>}>
-          <GalleryGrid 
-            initialMedia={initialMedia || []} 
+          <AlbumGrid 
+            albums={albums} 
             locale={locale} 
-            exhibitions={filterExhibitions || []} 
             searchParams={resolvedSearchParams} 
           />
         </Suspense>

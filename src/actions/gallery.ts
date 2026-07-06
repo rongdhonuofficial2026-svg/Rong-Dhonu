@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { GalleryMediaUpdate, GalleryMediaInsert } from '@/types/gallery'
+import { logAudit } from '@/lib/audit'
 
 export async function createGalleryMediaRecord(data: GalleryMediaInsert) {
   const supabase = await createClient()
@@ -26,6 +27,11 @@ export async function createGalleryMediaRecord(data: GalleryMediaInsert) {
     return { success: false, error: error.message }
   }
 
+  await logAudit('upload_media', 'gallery_media', record.id, { 
+    filename: data.original_file_name, 
+    category: data.category 
+  })
+
   revalidatePath('/admin/gallery')
   return { success: true, data: record }
 }
@@ -42,6 +48,8 @@ export async function updateGalleryMedia(id: string, updates: GalleryMediaUpdate
     console.error('Update media error:', error)
     return { success: false, error: error.message }
   }
+
+  await logAudit('update_media', 'gallery_media', id, updates)
 
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
@@ -74,6 +82,8 @@ export async function deleteGalleryMedia(id: string, storageUrl: string) {
     return { success: false, error: error.message }
   }
 
+  await logAudit('delete_media', 'gallery_media', id, { storageUrl })
+
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
   return { success: true }
@@ -91,6 +101,8 @@ export async function bulkUpdateGalleryStatus(ids: string[], status: 'draft' | '
     console.error('Bulk update error:', error)
     return { success: false, error: error.message }
   }
+
+  await logAudit('bulk_update_media', 'gallery_media', 'bulk', { count: ids.length, status })
 
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
@@ -127,6 +139,8 @@ export async function bulkDeleteGalleryMedia(items: { id: string, url: string }[
     console.error('Bulk delete error:', error)
     return { success: false, error: error.message }
   }
+
+  await logAudit('bulk_delete_media', 'gallery_media', 'bulk', { count: items.length })
 
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')

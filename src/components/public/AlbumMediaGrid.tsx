@@ -2,23 +2,19 @@
 
 import * as React from "react"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter, usePathname } from "next/navigation"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Loader2, X, ZoomIn, Filter, PlayCircle, Star } from "lucide-react"
+import { Loader2, X, PlayCircle, Star, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PremiumImage } from "@/components/ui/PremiumImage"
 import { cn } from "@/lib/utils"
-import { GALLERY_CATEGORIES } from "@/types/gallery"
 
-export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }: { initialMedia: any[], locale: string, exhibitions: any[], searchParams: any }) {
+export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initialMedia: any[], locale: string, exhibitionId: string }) {
   const [media, setMedia] = React.useState(initialMedia)
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasMore, setHasMore] = React.useState(initialMedia.length === 20)
   const [page, setPage] = React.useState(1)
   const [selectedItem, setSelectedItem] = React.useState<Record<string, any> | null>(null)
   
-  const router = useRouter()
-  const pathname = usePathname()
   const supabase = createClient()
 
   // Intersection Observer for Infinite Scroll
@@ -36,18 +32,15 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
     const from = (next - 1) * 20
     const to = from + 19
 
-    let query = supabase
+    const { data } = await supabase
       .from('gallery_media')
       .select('*, exhibitions(theme_en, theme_bn, year)')
       .eq('status', 'published')
+      .eq('exhibition_id', exhibitionId)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
       .range(from, to)
 
-    if (searchParams.exhibition) query = query.eq('exhibition_id', searchParams.exhibition)
-    if (searchParams.category) query = query.eq('category', searchParams.category)
-
-    const { data } = await query
     if (data && data.length > 0) {
       setMedia(prev => [...prev, ...data])
       setPage(next)
@@ -56,7 +49,7 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
       setHasMore(false)
     }
     setIsLoading(false)
-  }, [page, searchParams, supabase])
+  }, [page, exhibitionId, supabase])
 
   React.useEffect(() => {
     const currentTarget = observerTarget.current
@@ -78,111 +71,22 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
     }
   }, [hasMore, isLoading, loadMore])
 
-  const updateFilter = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams as Record<string, string>)
-    if (value && value !== 'all') {
-      params.set(key, value)
-    } else {
-      params.delete(key)
-    }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
-  }
-
-  const clearFilters = () => {
-    router.replace(pathname, { scroll: false })
-  }
-
-  // Broken grid height pattern
   const HEIGHT_PATTERN = [
     "h-[300px]", "h-[450px]", "h-[400px]", "h-[500px]", "h-[350px]"
   ]
 
   return (
     <div className="space-y-16">
-      {/* Horizontal Elegant Filters with Glass Effect */}
-      <div className="sticky top-[72px] z-30 bg-[#F5F5F0]/80 backdrop-blur-xl border-b border-foreground/5 py-6 px-6 -mx-6 mb-12 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-8 overflow-x-auto pb-4 md:pb-0 w-full no-scrollbar">
-          
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-foreground/40 whitespace-nowrap">Exhibition</span>
-            <div className="flex gap-2">
-              <Button 
-                variant={(searchParams.exhibition || 'all') === 'all' ? 'default' : 'outline'} 
-                size="sm" 
-                onClick={() => updateFilter('exhibition', 'all')}
-                className={cn(
-                  "rounded-full text-xs transition-all duration-300 border-0",
-                  (searchParams.exhibition || 'all') === 'all' ? "bg-foreground text-background shadow-lg" : "bg-white/50 text-foreground/70 hover:bg-white hover:text-foreground hover:shadow-md"
-                )}
-              >
-                All
-              </Button>
-              {exhibitions.map(ex => (
-                <Button 
-                  key={ex.id}
-                  variant={searchParams.exhibition === ex.id ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => updateFilter('exhibition', ex.id)}
-                  className={cn(
-                    "rounded-full text-xs whitespace-nowrap transition-all duration-300 border-0",
-                    searchParams.exhibition === ex.id ? "bg-foreground text-background shadow-lg" : "bg-white/50 text-foreground/70 hover:bg-white hover:text-foreground hover:shadow-md"
-                  )}
-                >
-                  {ex.year}
-                </Button>
-              ))}
-            </div>
-          </div>
-          
-          <div className="h-8 w-[1px] bg-foreground/10 hidden md:block" />
-          
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-foreground/40 whitespace-nowrap">Category</span>
-            <div className="flex gap-2">
-              <Button 
-                variant={(searchParams.category || 'all') === 'all' ? 'default' : 'outline'} 
-                size="sm" 
-                onClick={() => updateFilter('category', 'all')}
-                className={cn(
-                  "rounded-full text-xs capitalize whitespace-nowrap transition-all duration-300 border-0",
-                  (searchParams.category || 'all') === 'all' ? "bg-foreground text-background shadow-lg" : "bg-white/50 text-foreground/70 hover:bg-white hover:text-foreground hover:shadow-md"
-                )}
-              >
-                All
-              </Button>
-              {GALLERY_CATEGORIES.map(cat => (
-                <Button 
-                  key={cat}
-                  variant={searchParams.category === cat ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => updateFilter('category', cat)}
-                  className={cn(
-                    "rounded-full text-xs capitalize whitespace-nowrap transition-all duration-300 border-0",
-                    searchParams.category === cat ? "bg-foreground text-background shadow-lg" : "bg-white/50 text-foreground/70 hover:bg-white hover:text-foreground hover:shadow-md"
-                  )}
-                >
-                  {cat}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {(!!searchParams.exhibition || !!searchParams.category) && (
-          <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[10px] uppercase tracking-widest font-bold rounded-full shrink-0 hover:bg-foreground/5">
-            <X className="w-3 h-3 mr-2"/> Clear Filters
-          </Button>
-        )}
-      </div>
-
       {/* Masonry Grid */}
       <div className="w-full">
         {media.length === 0 ? (
-          <div className="py-32 text-center border-t border-b border-foreground/10 flex flex-col items-center justify-center">
-            <Filter className="w-12 h-12 text-foreground/20 mb-6" strokeWidth={1} />
-            <h3 className="font-serif text-3xl font-medium mb-3">No media found</h3>
-            <p className="text-foreground/60 text-lg max-w-md font-light">Adjust your curated filters to discover more media.</p>
-            <Button variant="outline" className="mt-10 rounded-full tracking-widest uppercase text-xs h-12 px-8" onClick={clearFilters}>Clear Filters</Button>
+          <div className="py-32 text-center flex flex-col items-center justify-center">
+            <h3 className="font-serif text-3xl font-medium mb-3">
+              {locale === 'bn' ? 'কোনো মিডিয়া পাওয়া যায়নি' : 'No media found'}
+            </h3>
+            <p className="text-foreground/60 text-lg max-w-md font-light">
+              {locale === 'bn' ? 'এই অ্যালবামে এখনও কোনো মিডিয়া যোগ করা হয়নি।' : 'This album does not have any media yet.'}
+            </p>
           </div>
         ) : (
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8 pb-20">
@@ -228,16 +132,13 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
                       <p className="font-serif text-2xl font-bold leading-tight drop-shadow-md mb-2">
                         {title}
                       </p>
-                      <div className="flex items-center gap-3 justify-between">
-                        <span className="text-[10px] uppercase tracking-widest text-white/70 font-semibold bg-white/10 px-2 py-0.5 rounded backdrop-blur-md">
-                          {item.category}
-                        </span>
-                        {item.exhibitions && (
+                      {item.exhibitions && (
+                        <div className="flex items-center gap-3 justify-between">
                           <span className="text-sm text-white/90 font-light drop-shadow-md truncate max-w-[200px]">
-                            {item.exhibitions.year} Exhibition
+                            {item.exhibitions.year} {locale === 'bn' ? 'প্রদর্শনী' : 'Exhibition'}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -283,10 +184,6 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
                 </div>
                 
                 <div className="space-y-8 text-sm text-white/80 flex-1 font-light tracking-wide">
-                  <div>
-                    <span className="block text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Category</span>
-                    <span className="text-lg">{selectedItem.category}</span>
-                  </div>
                   {selectedItem.photographer && (
                     <div>
                       <span className="block text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Photographer / Credit</span>
@@ -297,8 +194,10 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
                   )}
                   {selectedItem.exhibitions && (
                     <div>
-                      <span className="block text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Exhibition</span>
-                      <span className="text-lg">{selectedItem.exhibitions.year} - {locale === 'bn' && selectedItem.exhibitions.theme_bn ? selectedItem.exhibitions.theme_bn : selectedItem.exhibitions.theme_en}</span>
+                      <span className="block text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Exhibition Album</span>
+                      <span className="text-lg">
+                        {selectedItem.exhibitions.year} - {locale === 'bn' && selectedItem.exhibitions.theme_bn ? selectedItem.exhibitions.theme_bn : selectedItem.exhibitions.theme_en}
+                      </span>
                     </div>
                   )}
                   {(selectedItem.description_en || selectedItem.caption_en) && (

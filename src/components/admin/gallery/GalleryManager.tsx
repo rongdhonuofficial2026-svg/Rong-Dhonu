@@ -2,12 +2,11 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { GalleryUploader } from './GalleryUploader'
 import { GalleryGrid } from './GalleryGrid'
 import type { GalleryMediaWithExhibition, GalleryCategory } from '@/types/gallery'
-import { GALLERY_CATEGORIES } from '@/types/gallery'
+import type { Database } from '@/types/database'
 import { Input } from '@/components/ui/input'
-import { Search, Filter, Upload, X, Trash2, CheckSquare } from 'lucide-react'
+import { Search, Filter, Upload, X, Trash2, CheckSquare, Settings } from 'lucide-react'
 import { PremiumButton } from '@/components/admin/ui/PremiumButton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { bulkDeleteGalleryMedia, bulkUpdateGalleryStatus } from '@/actions/gallery'
@@ -16,11 +15,11 @@ import { Button } from '@/components/ui/button'
 
 interface GalleryManagerProps {
   initialMedia: GalleryMediaWithExhibition[]
+  categories: Database['public']['Tables']['gallery_categories']['Row'][]
 }
 
-export function GalleryManager({ initialMedia }: GalleryManagerProps) {
+export function GalleryManager({ initialMedia, categories }: GalleryManagerProps) {
   const [media, setMedia] = useState<GalleryMediaWithExhibition[]>(initialMedia)
-  const [showUploader, setShowUploader] = useState(false)
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -120,8 +119,8 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {GALLERY_CATEGORIES.map(c => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
+              {categories.map(c => (
+                <SelectItem key={c.id} value={c.slug}>{c.name_en}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -139,30 +138,23 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
           </Select>
         </div>
 
-        <div className="shrink-0">
+        <div className="shrink-0 flex items-center gap-2">
           <PremiumButton 
-            variant={showUploader ? "glass" : "primary"}
-            leftIcon={showUploader ? <X className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
-            onClick={() => setShowUploader(!showUploader)}
+            variant="glass"
+            leftIcon={<Settings className="w-4 h-4" />}
+            onClick={() => router.push('/admin/gallery/categories')}
           >
-            {showUploader ? 'Close Uploader' : 'Upload Media'}
+            Categories
+          </PremiumButton>
+          <PremiumButton 
+            variant="primary"
+            leftIcon={<Upload className="w-4 h-4" />}
+            onClick={() => router.push('/admin/exhibitions')}
+          >
+            Upload via Exhibitions
           </PremiumButton>
         </div>
       </div>
-
-      {/* Uploader Section */}
-      {showUploader && (
-        <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-          <GalleryUploader 
-            defaultCategory={filterCategory !== 'all' ? (filterCategory as GalleryCategory) : 'Artwork'} 
-            onUploadComplete={() => {
-              // Usually we would trigger a router.refresh() here, but since this is 
-              // wrapped in a Next.js App Router, the server action inside the uploader
-              // already calls `revalidatePath`, which triggers a top-level re-render automatically.
-            }}
-          />
-        </div>
-      )}
 
       {/* Bulk Actions Toolbar */}
       {selectedIds.length > 0 && (
@@ -196,6 +188,7 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
         selectedIds={selectedIds}
         onSelectToggle={handleSelectToggle}
         onSelectAll={() => handleSelectAll()}
+        categories={categories}
       />
     </div>
   )

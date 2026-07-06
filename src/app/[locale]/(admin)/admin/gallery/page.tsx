@@ -8,13 +8,25 @@ export default async function GalleryManagementPage({ params }: { params: Promis
   const supabase = await createClient()
 
   // Fetch gallery media (admin sees all including drafts and archived)
-  const { data: media, error } = await supabase
+  const { data: media, error: mediaErr } = await supabase
     .from('gallery_media')
-    .select('*, exhibitions(theme_en)')
+    .select(`
+      *,
+      exhibitions (
+        theme_en,
+        theme_bn,
+        year
+      )
+    `)
     .order('created_at', { ascending: false })
 
-  if (error) {
-    return <div className="p-8 text-destructive">Error loading gallery: {error.message}</div>
+  const { data: categories, error: catErr } = await supabase
+    .from('gallery_categories')
+    .select('*')
+    .order('sort_order', { ascending: true })
+
+  if (mediaErr || catErr) {
+    return <div className="p-8 text-destructive">Error loading gallery: {mediaErr?.message || catErr?.message}</div>
   }
 
   return (
@@ -49,7 +61,7 @@ export default async function GalleryManagementPage({ params }: { params: Promis
       </section>
 
       {/* Main Interactive Manager */}
-      <GalleryManager initialMedia={media || []} />
+      <GalleryManager initialMedia={media || []} categories={categories || []} />
 
     </div>
   )

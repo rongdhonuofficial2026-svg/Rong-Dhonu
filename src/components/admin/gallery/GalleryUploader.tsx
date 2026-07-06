@@ -1,24 +1,42 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { UploadCloud, X, FileImage, FileVideo, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { UploadCloud, X, FileImage, FileVideo, CheckCircle2, AlertCircle, Loader2, Pause, Play, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { createGalleryMediaRecord } from '@/actions/gallery'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { UploadProgress, GalleryCategory } from '@/types/gallery'
+import type { Database } from '@/types/database'
+import * as tus from 'tus-js-client'
 
 interface GalleryUploaderProps {
   onUploadComplete?: () => void
-  defaultCategory?: GalleryCategory
+  exhibitionId?: string
 }
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+const MAX_CONCURRENT_UPLOADS = 3
 
-export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' }: GalleryUploaderProps) {
+export function GalleryUploader({ onUploadComplete, exhibitionId }: GalleryUploaderProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [uploads, setUploads] = useState<UploadProgress[]>([])
+  const tusUploadsRef = useRef<Map<string, tus.Upload>>(new Map())
   const supabase = createClient()
+
+  // Concurrency check effect
+  const activeUploadsCount = uploads.filter(u => u.status === 'uploading').length
+
+  useEffect(() => {
+    const pendingUploads = uploads.filter(u => u.status === 'pending')
+    if (pendingUploads.length > 0 && activeUploadsCount < MAX_CONCURRENT_UPLOADS) {
+      const slotsAvailable = MAX_CONCURRENT_UPLOADS - activeUploadsCount
+      const toStart = pendingUploads.slice(0, slotsAvailable)
+      toStart.forEach(u => startTusUpload(u.id, u.file))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploads, activeUploadsCount])
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -36,10 +54,10 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
       file,
       progress: 0,
       status: 'pending',
-      previewUrl: URL.createObjectURL(file)
+      previewUrl: URL.createObjectURL(file),
+      category: 'album_media'
     }))
 
-    // Validate
     const validated = newUploads.map(u => {
       if (u.file.size > MAX_FILE_SIZE) {
         return { ...u, status: 'error' as const, error: 'File exceeds 50MB limit' }
@@ -51,9 +69,6 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
     })
 
     setUploads(prev => [...prev, ...validated])
-    
-    // Auto-start valid uploads
-    validated.filter(u => u.status === 'pending').forEach(uploadFile)
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -69,70 +84,118 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
     if (e.target.files && e.target.files.length > 0) {
       processFiles(e.target.files)
     }
+    // reset input
+    e.target.value = ''
   }
 
-  const uploadFile = async (upload: UploadProgress) => {
-    setUploads(prev => prev.map(u => u.id === upload.id ? { ...u, status: 'uploading', progress: 10 } : u))
+  // Category update removed, using fixed category 'album_media'
+
+  const startTusUpload = async (uploadId: string, file: File) => {
+    setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: 'uploading' } : u))
     
     try {
-      const ext = upload.file.name.split('.').pop()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Not authenticated')
+
+      const ext = file.name.split('.').pop()
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`
       const datePath = new Date().toISOString().split('T')[0].replace(/-/g, '/')
       const path = `uploads/${datePath}/${fileName}`
 
-      // 1. Upload to Storage
-      const { data: storageData, error: storageError } = await supabase.storage
-        .from('gallery')
-        .upload(path, upload.file, {
+      const upload = new tus.Upload(file, {
+        endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: {
+          authorization: `Bearer ${session.access_token}`,
+          'x-upsert': 'true',
+        },
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true,
+        metadata: {
+          bucketName: 'gallery',
+          objectName: path,
+          contentType: file.type,
           cacheControl: '3600',
-          upsert: false
-        })
+        },
+        chunkSize: 6 * 1024 * 1024,
+        onError: function (error) {
+          console.error("Tus upload failed:", error)
+          setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: 'error', error: error.message || 'Upload failed' } : u))
+          tusUploadsRef.current.delete(uploadId)
+        },
+        onProgress: function (bytesUploaded, bytesTotal) {
+          const percentage = (bytesUploaded / bytesTotal) * 100
+          setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, progress: percentage } : u))
+        },
+        onSuccess: async function () {
+          try {
+            const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(path)
+            const isVideo = file.type.startsWith('video/')
+            const currentUpload = uploads.find(u => u.id === uploadId)
+            
+            const dbResult = await createGalleryMediaRecord({
+              url: publicUrlData.publicUrl,
+              category: 'album_media',
+              exhibition_id: exhibitionId,
+              media_type: isVideo ? 'video' : 'image',
+              mime_type: file.type,
+              original_file_name: file.name,
+              size_bytes: file.size,
+              title_en: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' '),
+              status: 'published'
+            })
 
-      if (storageError) throw storageError
+            if (!dbResult.success) {
+              console.warn('DB insert failed, rolling back storage object:', path)
+              await supabase.storage.from('gallery').remove([path])
+              throw new Error(dbResult.error)
+            }
 
-      setUploads(prev => prev.map(u => u.id === upload.id ? { ...u, progress: 50 } : u))
-
-      // Get public URL
-      const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(path)
-      
-      // 2. Create DB Record
-      const isVideo = upload.file.type.startsWith('video/')
-      
-      const dbResult = await createGalleryMediaRecord({
-        url: publicUrlData.publicUrl,
-        category: defaultCategory,
-        media_type: isVideo ? 'video' : 'image',
-        mime_type: upload.file.type,
-        original_file_name: upload.file.name,
-        size_bytes: upload.file.size,
-        title_en: upload.file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' '), // derive title from filename
-        status: 'published'
+            setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: 'success', progress: 100 } : u))
+            tusUploadsRef.current.delete(uploadId)
+            
+            setTimeout(() => {
+              setUploads(current => {
+                const allDone = current.every(u => u.status === 'success' || u.status === 'error' || u.status === 'paused')
+                const anyPending = current.some(u => u.status === 'pending' || u.status === 'uploading')
+                if (allDone && !anyPending && onUploadComplete) onUploadComplete()
+                return current
+              })
+            }, 1000)
+            
+          } catch (dbErr: any) {
+             setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: 'error', error: dbErr.message || 'DB save failed' } : u))
+          }
+        }
       })
 
-      if (!dbResult.success) {
-        // Rollback storage upload if DB insert fails
-        console.warn('DB insert failed, rolling back storage object:', path)
-        await supabase.storage.from('gallery').remove([path])
-        throw new Error(dbResult.error)
-      }
-
-      setUploads(prev => prev.map(u => u.id === upload.id ? { ...u, status: 'success', progress: 100 } : u))
-      
-      // Check if all are done
-      setTimeout(() => {
-        setUploads(current => {
-          const allDone = current.every(u => u.status === 'success' || u.status === 'error')
-          if (allDone && onUploadComplete) onUploadComplete()
-          return current
-        })
-      }, 1000)
+      tusUploadsRef.current.set(uploadId, upload)
+      upload.start()
 
     } catch (err: any) {
-      setUploads(prev => prev.map(u => u.id === upload.id ? { ...u, status: 'error', error: err.message || 'Upload failed' } : u))
+      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: 'error', error: err.message || 'Initialization failed' } : u))
+    }
+  }
+
+  const togglePauseResume = (id: string) => {
+    const uploadInst = tusUploadsRef.current.get(id)
+    const targetState = uploads.find(u => u.id === id)
+    
+    if (targetState?.status === 'uploading' && uploadInst) {
+      uploadInst.abort()
+      setUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'paused' } : u))
+    } else if (targetState?.status === 'paused' && uploadInst) {
+      uploadInst.start()
+      setUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'uploading' } : u))
     }
   }
 
   const removeUpload = (id: string) => {
+    const uploadInst = tusUploadsRef.current.get(id)
+    if (uploadInst) {
+      uploadInst.abort()
+      tusUploadsRef.current.delete(id)
+    }
     setUploads(prev => {
       const target = prev.find(u => u.id === id)
       if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl)
@@ -142,12 +205,23 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
 
   const retryUpload = (id: string) => {
     const target = uploads.find(u => u.id === id)
-    if (target) uploadFile({ ...target, status: 'pending', error: undefined })
+    if (target) {
+      setUploads(prev => prev.map(u => u.id === id ? { ...u, status: 'pending', error: undefined, progress: 0 } : u))
+    }
+  }
+
+  const clearAll = () => {
+    uploads.forEach(u => {
+      if (u.previewUrl) URL.revokeObjectURL(u.previewUrl)
+      const inst = tusUploadsRef.current.get(u.id)
+      if (inst) inst.abort()
+    })
+    tusUploadsRef.current.clear()
+    setUploads([])
   }
 
   return (
     <div className="space-y-6">
-      {/* Dropzone */}
       <div
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -168,7 +242,7 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
           {isDragging ? 'Drop media files here' : 'Drag & drop media files'}
         </h3>
         <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
-          Upload high-resolution images or videos. Support for JPG, PNG, WEBP, MP4. Max 50MB per file.
+          Upload high-resolution images or videos. Support for JPG, PNG, WEBP, MP4. Max 50MB per file. Resumable uploads enabled.
         </p>
 
         <div className="relative">
@@ -185,29 +259,27 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
         </div>
       </div>
 
-      {/* Upload Progress List */}
       {uploads.length > 0 && (
         <div className="bg-background/40 backdrop-blur-xl border border-border/40 rounded-2xl p-4">
           <div className="flex items-center justify-between mb-4 px-2">
             <h4 className="text-sm font-semibold text-foreground">Upload Queue ({uploads.length})</h4>
-            <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground" onClick={() => setUploads([])}>
+            <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground hover:text-rose-500" onClick={clearAll}>
+              <Trash2 className="w-4 h-4 mr-2" />
               Clear All
             </Button>
           </div>
           
-          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
             {uploads.map(upload => (
               <div key={upload.id} className="flex items-center gap-4 p-3 rounded-xl border border-border/30 bg-muted/5 relative overflow-hidden group">
                 
-                {/* Progress Background */}
-                {upload.status === 'uploading' && (
+                {(upload.status === 'uploading' || upload.status === 'paused') && (
                   <div 
-                    className="absolute inset-0 bg-accent/5 transition-all duration-300 -z-10" 
+                    className={`absolute inset-0 transition-all duration-300 -z-10 ${upload.status === 'paused' ? 'bg-muted/30' : 'bg-accent/5'}`}
                     style={{ width: `${upload.progress}%` }} 
                   />
                 )}
 
-                {/* Preview Thumbnail */}
                 <div className="shrink-0 w-12 h-12 rounded-lg bg-black/50 overflow-hidden relative border border-border/50">
                   {upload.file.type.startsWith('image/') ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -217,7 +289,6 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
                   )}
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{upload.file.name}</p>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -229,23 +300,38 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
                       ${upload.status === 'success' ? 'text-emerald-500' : ''}
                       ${upload.status === 'error' ? 'text-rose-400' : ''}
                       ${upload.status === 'uploading' ? 'text-accent animate-pulse' : ''}
+                      ${upload.status === 'paused' ? 'text-amber-500' : ''}
                       ${upload.status === 'pending' ? 'text-muted-foreground' : ''}
                     `}>
-                      {upload.status === 'error' ? upload.error : upload.status}
+                      {upload.status === 'error' ? upload.error : 
+                       upload.status === 'uploading' ? `${upload.progress.toFixed(0)}%` : 
+                       upload.status}
                     </span>
                   </div>
                 </div>
 
-                {/* Status / Actions */}
                 <div className="shrink-0 flex items-center gap-2 pr-2">
-                  {upload.status === 'uploading' && <Loader2 className="w-4 h-4 text-accent animate-spin" />}
+                  {/* Category select removed for Album workflow */}
+                  {upload.status === 'uploading' && (
+                    <>
+                      <Button variant="ghost" size="icon" className="w-7 h-7 text-muted-foreground hover:text-amber-500" onClick={() => togglePauseResume(upload.id)}>
+                        <Pause className="w-4 h-4" />
+                      </Button>
+                      <Loader2 className="w-4 h-4 text-accent animate-spin" />
+                    </>
+                  )}
+                  {upload.status === 'paused' && (
+                    <Button variant="ghost" size="icon" className="w-7 h-7 text-amber-500 hover:text-emerald-500" onClick={() => togglePauseResume(upload.id)}>
+                      <Play className="w-4 h-4" />
+                    </Button>
+                  )}
                   {upload.status === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
                   {upload.status === 'error' && (
                     <Button variant="ghost" size="icon" className="w-7 h-7 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10" onClick={() => retryUpload(upload.id)}>
                       <AlertCircle className="w-4 h-4" />
                     </Button>
                   )}
-                  {upload.status !== 'uploading' && (
+                  {upload.status !== 'success' && (
                     <Button variant="ghost" size="icon" className="w-7 h-7 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeUpload(upload.id)}>
                       <X className="w-4 h-4" />
                     </Button>

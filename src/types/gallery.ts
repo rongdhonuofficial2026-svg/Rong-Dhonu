@@ -10,32 +10,14 @@ export interface GalleryMediaWithExhibition extends GalleryMediaRow {
   exhibitions: { theme_en: string; theme_bn: string | null; year: number } | null
 }
 
-export const GALLERY_CATEGORIES = [
-  'Artwork',
-  'Opening Ceremony',
-  'Award Ceremony',
-  'Exhibition Hall',
-  'Artists',
-  'Visitors',
-  'VIP Guests',
-  'Committee',
-  'Behind The Scenes',
-  'Workshops',
-  'Press',
-  'Media Coverage',
-  'Installation',
-  'Closing Ceremony',
-  'Promotional',
-  'Other'
-] as const
-
-export type GalleryCategory = typeof GALLERY_CATEGORIES[number]
+export type GalleryCategory = string
 
 export interface UploadProgress {
   id: string
   file: File
   progress: number
-  status: 'pending' | 'uploading' | 'success' | 'error'
+  status: 'pending' | 'uploading' | 'paused' | 'success' | 'error'
   error?: string
   previewUrl: string
+  category?: string
 }

@@ -9,34 +9,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import type { GalleryMediaRow, GalleryCategory, GalleryMediaStatus } from '@/types/gallery'
-import { GALLERY_CATEGORIES } from '@/types/gallery'
+import type { Database } from '@/types/database'
 import { updateGalleryMedia } from '@/actions/gallery'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 
 interface MetadataEditorProps {
-  item: GalleryMediaRow | null
+  media: GalleryMediaRow | null
   open: boolean
   onOpenChange: (open: boolean) => void
   onSaved?: () => void
+  categories: Database['public']['Tables']['gallery_categories']['Row'][]
 }
 
-export function MetadataEditor({ item, open, onOpenChange, onSaved }: MetadataEditorProps) {
+export function MetadataEditor({ media, open, onOpenChange, onSaved, categories }: MetadataEditorProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<Partial<GalleryMediaRow>>({})
 
   // Initialize form when item changes
   useEffect(() => {
-    if (item) setFormData(item)
-  }, [item])
+    if (media) setFormData(media)
+  }, [media])
 
   // Handle controlled input changes safely when initialized
-  if (!item) return null
+  if (!media) return null
 
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      const result = await updateGalleryMedia(item.id, formData)
+      const result = await updateGalleryMedia(media.id, formData)
       if (result.success) {
         toast.success('Metadata updated successfully')
         onSaved?.()
@@ -114,8 +115,8 @@ export function MetadataEditor({ item, open, onOpenChange, onSaved }: MetadataEd
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {GALLERY_CATEGORIES.map(cat => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  {categories.map(cat => (
+                    <SelectItem key={cat.id} value={cat.slug}>{cat.name_en}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { deleteGalleryMedia, updateGalleryMedia } from '@/actions/gallery'
 import type { GalleryMediaWithExhibition } from '@/types/gallery'
+import type { Database } from '@/types/database'
 import { toast } from 'sonner'
 import { MetadataEditor } from './MetadataEditor'
 
@@ -17,9 +18,10 @@ interface GalleryGridProps {
   selectedIds: string[]
   onSelectToggle: (id: string) => void
   onSelectAll: () => void
+  categories: Database['public']['Tables']['gallery_categories']['Row'][]
 }
 
-export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll }: GalleryGridProps) {
+export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, categories }: GalleryGridProps) {
   const [editingItem, setEditingItem] = useState<GalleryMediaWithExhibition | null>(null)
 
   const handleDelete = async (id: string, url: string) => {
@@ -170,9 +172,11 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll }:
                   <div className="transform translate-y-[10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-100 relative z-20">
                     <p className="font-serif text-lg text-white mb-1 line-clamp-1">{item.title_en || 'Untitled Artifact'}</p>
                     <div className="flex items-center justify-between">
-                      <p className="text-accent text-[10px] font-mono uppercase tracking-widest bg-black/40 px-2 py-0.5 rounded border border-white/10 inline-block">
-                        {item.category}
-                      </p>
+                      {item.exhibitions?.theme_en && (
+                        <p className="text-accent text-[10px] font-mono uppercase tracking-widest bg-black/40 px-2 py-0.5 rounded border border-white/10 inline-block">
+                          {item.exhibitions.theme_en}
+                        </p>
+                      )}
                       {item.size_bytes && (
                         <p className="text-white/40 text-[10px] font-mono">
                           {(item.size_bytes / 1024 / 1024).toFixed(1)}MB
@@ -188,9 +192,10 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll }:
       </div>
 
       <MetadataEditor 
-        item={editingItem} 
+        media={editingItem} 
         open={!!editingItem} 
-        onOpenChange={(open) => !open && setEditingItem(null)} 
+        onOpenChange={(isOpen) => !isOpen && setEditingItem(null)}
+        categories={categories}
       />
     </>
   )
