@@ -1,7 +1,8 @@
-'use client'
+'use client';
 
 import * as React from "react"
 import { Link, usePathname } from "@/lib/i18n/routing"
+import { motion } from "framer-motion"
 import { 
   LayoutDashboard, 
   Image as ImageIcon, 
@@ -19,6 +20,8 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { GlassPanel } from "./ui/GlassPanel"
+import { PremiumButton } from "./ui/PremiumButton"
 
 export function AdminSidebar({ locale }: { locale: string }) {
   const pathname = usePathname()
@@ -43,27 +46,37 @@ export function AdminSidebar({ locale }: { locale: string }) {
   ]
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-slate-950 text-slate-100 border-r border-slate-800">
-      <div className="p-6">
-        <h2 className="font-serif text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-          <Settings className="w-6 h-6 text-indigo-400" />
-          Rongdhono Admin
+    <GlassPanel intensity="medium" className="flex flex-col h-full m-6 border-white/20 dark:border-white/10 rounded-3xl">
+      <div className="p-8 pb-4">
+        <h2 className="font-serif text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-[#CC5500] flex items-center justify-center shadow-lg">
+            <span className="text-white font-serif italic font-bold">R</span>
+          </div>
+          Rongdhono
         </h2>
-        <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-mono">Administration Portal</p>
+        <p className="text-[10px] text-muted-foreground/80 mt-2 uppercase tracking-[0.2em] font-medium ml-11">Operating System</p>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+      <nav className="flex-1 px-4 space-y-1 mt-6 overflow-y-auto pb-6 relative">
         {links.map((link) => {
-          const isActive = pathname === link.href
+          const isActive = pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href))
           const Icon = link.icon
           return (
-            <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
-              <div className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm
+            <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)} className="block relative">
+              {isActive && (
+                <motion.div
+                  layoutId="active-sidebar-indicator"
+                  className="absolute inset-0 bg-accent/15 dark:bg-accent/20 rounded-2xl border border-accent/20"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+              <div className={`relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all font-medium text-sm z-10
                 ${isActive 
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/20' 
-                  : 'text-slate-300 hover:bg-slate-900 hover:text-white'}`}
+                  ? 'text-accent-foreground dark:text-accent font-semibold' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className={`w-5 h-5 transition-colors ${isActive ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
                 {link.label}
               </div>
             </Link>
@@ -71,43 +84,47 @@ export function AdminSidebar({ locale }: { locale: string }) {
         })}
       </nav>
 
-      <div className="p-4 mt-auto border-t border-slate-800">
-        <Button 
+      <div className="p-4 mt-auto border-t border-border/40 dark:border-white/10 bg-black/5 dark:bg-white/5">
+        <PremiumButton 
           variant="ghost" 
-          className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-900" 
+          className="w-full justify-start text-muted-foreground hover:text-foreground" 
           onClick={handleLogout}
+          leftIcon={<LogOut className="w-5 h-5 stroke-[1.5]" />}
         >
-          <LogOut className="w-5 h-5 mr-3" />
           {locale === 'bn' ? "লগ আউট" : "Logout"}
-        </Button>
-        <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between px-2">
-          <p className="text-xs text-slate-500">v2.0.0 Pro</p>
-          <Link href="/dashboard" className="text-xs text-indigo-400 hover:underline">Exit to Member Portal</Link>
+        </PremiumButton>
+        <div className="mt-4 pt-4 border-t border-border/40 flex items-center justify-between px-2">
+          <p className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-wider">v3.0 Luxury OS</p>
+          <Link href="/dashboard" className="text-xs text-accent font-medium hover:underline">Exit OS</Link>
         </div>
       </div>
-    </div>
+    </GlassPanel>
   )
 
   return (
     <>
-      <div className="md:hidden p-4 border-b border-border bg-slate-950 flex items-center justify-between sticky top-0 z-50">
-        <h2 className="font-serif text-xl font-bold text-white flex items-center gap-2">
-          <Settings className="w-5 h-5 text-indigo-400" />
-          Admin
+      {/* Mobile Topbar */}
+      <div className="md:hidden p-4 border-b border-border bg-background/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-50">
+        <h2 className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#D4AF37] to-[#CC5500] flex items-center justify-center">
+            <span className="text-white font-serif italic text-xs">R</span>
+          </div>
+          Rongdhono OS
         </h2>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-white hover:bg-slate-900">
+            <PremiumButton variant="ghost" size="icon">
               <Menu className="w-6 h-6" />
-            </Button>
+            </PremiumButton>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-72 border-r-slate-800 bg-slate-950">
+          <SheetContent side="left" className="p-0 w-80 bg-transparent border-none shadow-none">
             {sidebarContent}
           </SheetContent>
         </Sheet>
       </div>
 
-      <div className="hidden md:block w-72 h-screen sticky top-0">
+      {/* Desktop Floating Sidebar */}
+      <div className="hidden md:block w-[320px] h-screen sticky top-0 bg-transparent z-40">
         {sidebarContent}
       </div>
     </>
