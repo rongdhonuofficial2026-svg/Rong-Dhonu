@@ -80,10 +80,10 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
                 <ExhibitionCard 
                   key={ex.id}
                   id={ex.id}
-                  title={locale === 'bn' && ex.title_bn ? ex.title_bn : ex.title_en}
+                  title={locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en}
                   status={ex.status}
-                  startDate={new Date(ex.start_date)}
-                  endDate={new Date(ex.end_date)}
+                  startDate={ex.exhibition_start ? new Date(ex.exhibition_start) : null}
+                  endDate={ex.exhibition_end ? new Date(ex.exhibition_end) : null}
                   venue={locale === 'bn' && ex.venue_bn ? ex.venue_bn : ex.venue_en}
                   coverImageUrl={ex.hero_image_url}
                 />
@@ -108,10 +108,10 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
                 <ExhibitionCard 
                   key={ex.id}
                   id={ex.id}
-                  title={locale === 'bn' && ex.title_bn ? ex.title_bn : ex.title_en}
+                  title={locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en}
                   status={ex.status}
-                  startDate={new Date(ex.start_date)}
-                  endDate={new Date(ex.end_date)}
+                  startDate={ex.exhibition_start ? new Date(ex.exhibition_start) : null}
+                  endDate={ex.exhibition_end ? new Date(ex.exhibition_end) : null}
                   venue={locale === 'bn' && ex.venue_bn ? ex.venue_bn : ex.venue_en}
                   coverImageUrl={ex.hero_image_url}
                 />

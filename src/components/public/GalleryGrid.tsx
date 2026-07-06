@@ -38,7 +38,7 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
 
     let query = supabase
       .from('gallery_media')
-      .select('*, exhibitions(title_en, title_bn, year)')
+      .select('*, exhibitions(theme_en, theme_bn, year)')
       .eq('status', 'published')
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
@@ -298,7 +298,7 @@ export function GalleryGrid({ initialMedia, locale, exhibitions, searchParams }:
                   {selectedItem.exhibitions && (
                     <div>
                       <span className="block text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Exhibition</span>
-                      <span className="text-lg">{selectedItem.exhibitions.year} - {locale === 'bn' && selectedItem.exhibitions.title_bn ? selectedItem.exhibitions.title_bn : selectedItem.exhibitions.title_en}</span>
+                      <span className="text-lg">{selectedItem.exhibitions.year} - {locale === 'bn' && selectedItem.exhibitions.theme_bn ? selectedItem.exhibitions.theme_bn : selectedItem.exhibitions.theme_en}</span>
                     </div>
                   )}
                   {(selectedItem.description_en || selectedItem.caption_en) && (

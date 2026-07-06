@@ -20,7 +20,7 @@ export default async function GalleryPage({ params, searchParams }: { params: Pr
   // Initial fetch for the first page
   let query = supabase
     .from('gallery_media')
-    .select('*, exhibitions(title_en, title_bn, year)')
+    .select('*, exhibitions(theme_en, theme_bn, year)')
     .eq('status', 'published')
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false })
@@ -33,7 +33,7 @@ export default async function GalleryPage({ params, searchParams }: { params: Pr
   const { data: initialMedia, error } = await query
 
   // Also fetch exhibitions for the filter sidebar/dropdowns
-  const { data: filterExhibitions } = await supabase.from('exhibitions').select('id, year, title_en, title_bn').order('year', { ascending: false })
+  const { data: filterExhibitions } = await supabase.from('exhibitions').select('id, year, theme_en, theme_bn').order('year', { ascending: false })
 
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">

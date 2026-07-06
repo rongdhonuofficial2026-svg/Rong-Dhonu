@@ -16,7 +16,7 @@ interface GalleryGridProps {
   media: GalleryMediaWithExhibition[]
   selectedIds: string[]
   onSelectToggle: (id: string) => void
-  onSelectAll: (allIds: string[]) => void
+  onSelectAll: () => void
 }
 
 export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll }: GalleryGridProps) {

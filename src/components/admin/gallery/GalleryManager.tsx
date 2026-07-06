@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { GalleryUploader } from './GalleryUploader'
 import { GalleryGrid } from './GalleryGrid'
 import type { GalleryMediaWithExhibition, GalleryCategory } from '@/types/gallery'
@@ -23,9 +24,9 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
-  
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isBulkActioning, setIsBulkActioning] = useState(false)
+  const router = useRouter()
 
   // Filter media
   const filteredMedia = useMemo(() => {
@@ -64,9 +65,7 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
     if (res.success) {
       toast.success(`Successfully updated ${selectedIds.length} items to ${status}`, { id: 'bulk' })
       setSelectedIds([])
-      // Next.js Server Actions with revalidatePath will refresh the page data
-      // but since we keep a local state of `media` passed from props, we might need a hard refresh 
-      // or rely on the parent RSC. Because this is a client component, `initialMedia` updates when RSC re-renders.
+      router.refresh()
     } else {
       toast.error(res.error || 'Bulk update failed', { id: 'bulk' })
     }
@@ -89,6 +88,7 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
     if (res.success) {
       toast.success(`Successfully deleted ${selectedIds.length} items`, { id: 'bulk' })
       setSelectedIds([])
+      router.refresh()
     } else {
       toast.error(res.error || 'Bulk delete failed', { id: 'bulk' })
     }
@@ -195,7 +195,7 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
         media={filteredMedia} 
         selectedIds={selectedIds}
         onSelectToggle={handleSelectToggle}
-        onSelectAll={handleSelectAll}
+        onSelectAll={() => handleSelectAll()}
       />
     </div>
   )

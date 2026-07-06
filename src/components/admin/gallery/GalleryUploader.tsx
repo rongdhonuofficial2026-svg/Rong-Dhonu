@@ -109,7 +109,12 @@ export function GalleryUploader({ onUploadComplete, defaultCategory = 'Artwork' 
         status: 'published'
       })
 
-      if (!dbResult.success) throw new Error(dbResult.error)
+      if (!dbResult.success) {
+        // Rollback storage upload if DB insert fails
+        console.warn('DB insert failed, rolling back storage object:', path)
+        await supabase.storage.from('gallery').remove([path])
+        throw new Error(dbResult.error)
+      }
 
       setUploads(prev => prev.map(u => u.id === upload.id ? { ...u, status: 'success', progress: 100 } : u))
       

@@ -10,11 +10,11 @@ import { ExhibitionCard } from "@/components/museum/exhibition-card"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
   const supabase = await createClient()
-  const { data: exhibition } = await supabase.from('exhibitions').select('title_en, title_bn, description_en, description_bn, hero_image_url').eq('id', id).single()
+  const { data: exhibition } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn, hero_image_url').eq('id', id).single()
   
   if (!exhibition) return {}
 
-  const title = locale === 'bn' && exhibition.title_bn ? exhibition.title_bn : exhibition.title_en
+  const title = locale === 'bn' && exhibition.theme_bn ? exhibition.theme_bn : exhibition.theme_en
   const description = locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en
 
   return {
@@ -54,7 +54,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
     .eq('status', 'published')
     .maybeSingle()
 
-  const title = locale === 'bn' && exhibition.title_bn ? exhibition.title_bn : exhibition.title_en
+  const title = locale === 'bn' && exhibition.theme_bn ? exhibition.theme_bn : exhibition.theme_en
   const desc = locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en
   const venue = locale === 'bn' && exhibition.venue_bn ? exhibition.venue_bn : exhibition.venue_en
 
@@ -115,11 +115,11 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                 </li>
                 <li className="flex justify-between items-center">
                   <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">Start Date</span>
-                  <span className="font-serif text-lg">{exhibition.start_date ? new Date(exhibition.start_date).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
+                  <span className="font-serif text-lg">{exhibition.exhibition_start ? new Date(exhibition.exhibition_start).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
                 </li>
                 <li className="flex justify-between items-center">
                   <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">End Date</span>
-                  <span className="font-serif text-lg">{exhibition.end_date ? new Date(exhibition.end_date).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
+                  <span className="font-serif text-lg">{exhibition.exhibition_end ? new Date(exhibition.exhibition_end).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
                 </li>
               </ul>
               

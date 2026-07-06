@@ -8,9 +8,9 @@ interface ExhibitionCardProps {
   id: string
   title: string
   status: "upcoming" | "ongoing" | "past" | "draft" | "active" | "completed" | "archived"
-  startDate: Date
-  endDate: Date
-  venue: string
+  startDate: Date | null
+  endDate: Date | null
+  venue?: string | null
   coverImageUrl?: string
   className?: string
 }
@@ -26,7 +26,9 @@ export function ExhibitionCard({
   className
 }: ExhibitionCardProps) {
   
-  const formattedDates = `${startDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })} — ${endDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}`
+  const formattedDates = startDate && endDate
+    ? `${startDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })} — ${endDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}`
+    : 'Dates TBD'
   
   const isActive = status === 'ongoing' || status === 'active' || status === 'upcoming'
 

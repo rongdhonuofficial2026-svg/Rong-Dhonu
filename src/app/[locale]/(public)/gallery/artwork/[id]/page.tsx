@@ -44,7 +44,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
     .select(`
       *,
       profiles!inner(*),
-      exhibitions!inner(year, title_en, title_bn)
+      exhibitions!inner(year, theme_en, theme_bn)
     `)
     .eq('id', id)
     .eq('status', 'approved')
@@ -177,9 +177,9 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
                   <p className="font-medium text-foreground">{locale === 'bn' ? 'প্রদর্শনী' : 'Exhibited In'}</p>
                   <p>
                     {Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0]?.year : (artwork.exhibitions as any)?.year} - 
-                    {locale === 'bn' && (Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0]?.title_bn : (artwork.exhibitions as any)?.title_bn) 
-                      ? (Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0]?.title_bn : (artwork.exhibitions as any)?.title_bn) 
-                      : (Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0]?.title_en : (artwork.exhibitions as any)?.title_en)}
+                    {locale === 'bn' && (Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0]?.theme_bn : (artwork.exhibitions as any)?.theme_bn) 
+                      ? (Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0]?.theme_bn : (artwork.exhibitions as any)?.theme_bn) 
+                      : (Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0]?.theme_en : (artwork.exhibitions as any)?.theme_en)}
                   </p>
                 </div>
               </div>

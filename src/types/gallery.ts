@@ -7,7 +7,7 @@ export type GalleryMediaUpdate = Database['public']['Tables']['gallery_media']['
 export type GalleryMediaStatus = 'published' | 'draft' | 'archived'
 
 export interface GalleryMediaWithExhibition extends GalleryMediaRow {
-  exhibitions: { theme_en: string } | null
+  exhibitions: { theme_en: string; theme_bn: string | null; year: number } | null
 }
 
 export const GALLERY_CATEGORIES = [
