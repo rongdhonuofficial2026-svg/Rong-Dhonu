@@ -1,9 +1,7 @@
-'use client'
-
-import { useEffect, useRef } from 'react'
 import { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Link } from '@/lib/i18n/routing'
+import { AnimatedCounter } from './AnimatedCounter'
 
 interface MetricTileProps {
   title: string
@@ -27,26 +25,6 @@ const THEMES = {
   teal:    { text: 'text-teal-400',     bg: 'bg-teal-500/10',    glow: 'group-hover:shadow-[0_0_24px_rgba(20,184,166,0.2)]' },
 }
 
-function CountUp({ target }: { target: number }) {
-  const spanRef = useRef<HTMLSpanElement>(null)
-  useEffect(() => {
-    if (!spanRef.current) return
-    const duration = 1200
-    const start = performance.now()
-    const step = (now: number) => {
-      const elapsed = now - start
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      if (spanRef.current) {
-        spanRef.current.textContent = String(Math.round(target * eased))
-      }
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [target])
-  return <span ref={spanRef}>0</span>
-}
-
 export function MetricTile({ title, value, subtitle, icon: Icon, colorTheme, href, trend, trendPositive }: MetricTileProps) {
   const theme = THEMES[colorTheme]
 
@@ -66,7 +44,7 @@ export function MetricTile({ title, value, subtitle, icon: Icon, colorTheme, hre
 
       {/* Value */}
       <div className="font-serif text-4xl font-bold text-foreground tabular-nums leading-none mb-1">
-        <CountUp target={value} />
+        <AnimatedCounter target={value} />
       </div>
 
       {/* Title */}
