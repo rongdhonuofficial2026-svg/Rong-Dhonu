@@ -1,0 +1,1 @@
+fetch("http://localhost:3000/en/admin/gallery").then(r => r.text()).then(html => { const start = html.indexOf("Something went wrong"); if (start > -1) { console.log("FOUND ERROR:", html.substring(start, start + 1000)); } else { console.log("NO ERROR BOUNDARY FOUND"); } }).catch(e => console.error(e));

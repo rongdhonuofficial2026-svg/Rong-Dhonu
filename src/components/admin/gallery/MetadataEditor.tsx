@@ -64,14 +64,7 @@ export function MetadataEditor({ media, open, onOpenChange, onSaved, categories 
           
           {/* Left Column - Core Data */}
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title (English)</Label>
-              <Input 
-                value={formData.title_en || ''} 
-                onChange={e => setFormData(p => ({ ...p, title_en: e.target.value }))}
-                placeholder="e.g. Opening Ceremony 2026"
-              />
-            </div>
+
             
             <div className="space-y-2">
               <Label>Caption (English)</Label>

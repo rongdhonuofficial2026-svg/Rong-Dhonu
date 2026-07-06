@@ -31,8 +31,8 @@ export function GalleryManager({ initialMedia, categories }: GalleryManagerProps
   const filteredMedia = useMemo(() => {
     return media.filter(m => {
       const matchesSearch = !search || 
-        (m.title_en || '').toLowerCase().includes(search.toLowerCase()) ||
         (m.caption_en || '').toLowerCase().includes(search.toLowerCase()) ||
+        (m.caption_bn || '').toLowerCase().includes(search.toLowerCase()) ||
         (m.category || '').toLowerCase().includes(search.toLowerCase())
       
       const matchesCategory = filterCategory === 'all' || m.category === filterCategory

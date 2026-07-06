@@ -141,7 +141,7 @@ export function GalleryUploader({ onUploadComplete, exhibitionId }: GalleryUploa
               mime_type: file.type,
               original_file_name: file.name,
               size_bytes: file.size,
-              title_en: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' '),
+              caption_en: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' '),
               status: 'published'
             })
 

@@ -115,7 +115,7 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, c
                 {item.media_type === 'image' ? (
                   <Image 
                     src={item.url} 
-                    alt={item.title_en || "Gallery item"} 
+                    alt={item.caption_en || "Gallery item"} 
                     fill 
                     className={`object-cover transition-all duration-700 ${!isPublished ? 'grayscale-[30%] opacity-60' : 'opacity-90'} group-hover:scale-110 group-hover:opacity-100`} 
                     sizes="(max-width: 768px) 50vw, 25vw" 
@@ -170,7 +170,7 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, c
                   
                   {/* Bottom Text */}
                   <div className="transform translate-y-[10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-100 relative z-20">
-                    <p className="font-serif text-lg text-white mb-1 line-clamp-1">{item.title_en || 'Untitled Artifact'}</p>
+                    <p className="font-serif text-lg text-white mb-1 line-clamp-1">{item.caption_en || 'Untitled Artifact'}</p>
                     <div className="flex items-center justify-between">
                       {item.exhibitions?.theme_en && (
                         <p className="text-accent text-[10px] font-mono uppercase tracking-widest bg-black/40 px-2 py-0.5 rounded border border-white/10 inline-block">
