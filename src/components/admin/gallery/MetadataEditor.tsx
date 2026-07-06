@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,9 +26,9 @@ export function MetadataEditor({ item, open, onOpenChange, onSaved }: MetadataEd
   const [formData, setFormData] = useState<Partial<GalleryMediaRow>>({})
 
   // Initialize form when item changes
-  useState(() => {
+  useEffect(() => {
     if (item) setFormData(item)
-  })
+  }, [item])
 
   // Handle controlled input changes safely when initialized
   if (!item) return null

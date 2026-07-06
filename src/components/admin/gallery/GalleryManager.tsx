@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { GalleryUploader } from './GalleryUploader'
 import { GalleryGrid } from './GalleryGrid'
 import type { GalleryMediaWithExhibition, GalleryCategory } from '@/types/gallery'
@@ -95,8 +95,7 @@ export function GalleryManager({ initialMedia }: GalleryManagerProps) {
     setIsBulkActioning(false)
   }
 
-  // Sync state when props change (due to Server Action revalidatePath)
-  useMemo(() => {
+  useEffect(() => {
     setMedia(initialMedia)
   }, [initialMedia])
 
