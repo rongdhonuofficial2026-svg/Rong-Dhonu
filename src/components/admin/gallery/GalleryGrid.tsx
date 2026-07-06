@@ -34,7 +34,7 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll }:
     }
   }
 
-  const handleToggleStatus = async (id: string, currentStatus: string) => {
+  const handleToggleStatus = async (id: string, currentStatus: string | null) => {
     const newStatus = currentStatus === 'published' ? 'archived' : 'published'
     const res = await updateGalleryMedia(id, { status: newStatus })
     if (res.success) {

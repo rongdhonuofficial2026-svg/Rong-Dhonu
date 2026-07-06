@@ -43,7 +43,7 @@ function StatRow({ label, value }: { label: string; value: string | number }) {
 export function PlatformMiniPanels({ catalogStatusBreakdown, galleryBreakdown, cmsSections, kpis }: PlatformMiniPanelsProps) {
   // Find most recently updated CMS section
   const lastCmsUpdate = cmsSections.length > 0
-    ? [...cmsSections].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0]
+    ? [...cmsSections].sort((a, b) => new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime())[0]
     : null
 
   const lastUploadDate = galleryBreakdown.lastUpload
@@ -78,7 +78,7 @@ export function PlatformMiniPanels({ catalogStatusBreakdown, galleryBreakdown, c
           {lastCmsUpdate && (
             <StatRow
               label="Last Updated"
-              value={new Date(lastCmsUpdate.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              value={new Date(lastCmsUpdate.updated_at || 0).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             />
           )}
           <StatRow label="Section" value={lastCmsUpdate?.section ?? '—'} />

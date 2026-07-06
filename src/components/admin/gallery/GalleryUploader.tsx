@@ -5,6 +5,7 @@ import { UploadCloud, X, FileImage, FileVideo, CheckCircle2, AlertCircle, Loader
 import { createClient } from '@/lib/supabase/client'
 import { createGalleryMediaRecord } from '@/actions/gallery'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { UploadProgress, GalleryCategory } from '@/types/gallery'
 
 interface GalleryUploaderProps {

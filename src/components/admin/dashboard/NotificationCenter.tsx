@@ -77,7 +77,7 @@ export function NotificationCenter({ notifications }: NotificationCenterProps) {
                     {notif.message_en}
                   </p>
                   <p className="text-[10px] text-muted-foreground/60 font-mono mt-1">
-                    {getRelativeTime(notif.created_at)}
+                    {getRelativeTime(notif.created_at || new Date().toISOString())}
                   </p>
                 </div>
               </div>

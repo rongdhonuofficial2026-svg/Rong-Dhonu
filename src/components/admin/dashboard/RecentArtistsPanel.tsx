@@ -26,7 +26,7 @@ export function RecentArtistsPanel({ artists }: RecentArtistsPanelProps) {
         <div className="space-y-4">
           {artists.map((artist) => {
             const initial = (artist.full_name_en ?? 'A').charAt(0).toUpperCase()
-            const joinDate = new Date(artist.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            const joinDate = new Date(artist.created_at || new Date().toISOString()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             return (
               <div key={artist.id} className="flex items-center gap-3 group">
                 {/* Avatar */}
