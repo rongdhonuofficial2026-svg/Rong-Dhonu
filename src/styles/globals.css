@@ -196,6 +196,11 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-[#D4AF37] to-[#C8A96A];
   }
 
+  .text-shadow-elegant {
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+
   /* Image Reveal Masks */
   .image-reveal-wrapper {
     @apply overflow-hidden relative;
