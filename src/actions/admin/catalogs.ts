@@ -11,8 +11,7 @@ type CatalogUpdate = Database['public']['Tables']['catalogs']['Update']
 export async function createCatalog(data: CatalogInsert) {
   const supabase = await createClient()
   
-  // Only one published allowed logic
-  if (data.status === 'published') {
+  if (data.status === 'published' && data.exhibition_id) {
     await unpublishOtherCatalogs(supabase, data.exhibition_id, data.language || 'bilingual')
   }
 
