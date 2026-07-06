@@ -111,7 +111,7 @@ export default async function UserManagementPage({ params }: { params: Promise<{
                         <Image src={user.avatar_url} alt="Avatar" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center font-bold text-muted-foreground/50 font-serif text-2xl bg-gradient-to-br from-black to-accent/10">
-                          {user.first_name_en?.charAt(0) || 'U'}
+                          {user.full_name_en?.charAt(0) || 'U'}
                         </div>
                       )}
                     </div>
@@ -119,7 +119,7 @@ export default async function UserManagementPage({ params }: { params: Promise<{
                     {/* User Info */}
                     <div className="flex-1 min-w-0 pt-1">
                       <h3 className="font-serif font-bold text-xl text-foreground truncate flex items-center gap-2 group-hover:text-gradient-gold transition-all duration-500">
-                        {user.first_name_en} {user.last_name_en}
+                        {user.full_name_en}
                         {(user.role === 'admin' || user.role === 'owner') && <Shield className="w-4 h-4 text-indigo-400" />}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground/70 mt-1 truncate">

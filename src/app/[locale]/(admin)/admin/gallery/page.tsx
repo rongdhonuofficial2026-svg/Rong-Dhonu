@@ -12,7 +12,7 @@ export default async function GalleryManagementPage({ params }: { params: Promis
   // Fetch gallery media
   const { data: media, error } = await supabase
     .from('gallery_media')
-    .select('*, exhibitions(title_en)')
+    .select('*, exhibitions(theme_en)')
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -114,7 +114,7 @@ export default async function GalleryManagementPage({ params }: { params: Promis
                     <div className="transform translate-y-[10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-75">
                       <p className="font-serif text-lg text-white mb-1 line-clamp-1">{item.caption_en || 'Untitled Artifact'}</p>
                       <p className="text-accent text-xs font-mono uppercase tracking-widest">
-                        {item.exhibitions?.title_en || 'General Archive'}
+                        {item.exhibitions?.theme_en || 'General Archive'}
                       </p>
                     </div>
                   </div>

@@ -16,14 +16,14 @@ export async function createExhibition(payload: any) {
   await requireAdmin(supabase, user)
 
   const { data, error } = await supabase.from('exhibitions').insert([{
-    title_en: payload.title_en,
-    title_bn: payload.title_bn,
+    theme_en: payload.theme_en,
+    theme_bn: payload.theme_bn,
     description_en: payload.description_en,
     description_bn: payload.description_bn,
-    start_date: payload.start_date,
-    end_date: payload.end_date,
+    exhibition_start: payload.exhibition_start,
+    exhibition_end: payload.exhibition_end,
     registration_start: payload.registration_start,
-    registration_end: payload.registration_end,
+    submission_end: payload.submission_end,
     venue_en: payload.venue_en,
     venue_bn: payload.venue_bn,
     status: payload.status || 'draft',
@@ -34,11 +34,11 @@ export async function createExhibition(payload: any) {
   
   // Log action
   await supabase.from('audit_logs').insert([{
-    user_id: user!.id,
+    actor_id: user!.id,
     action: 'CREATE_EXHIBITION',
     entity_type: 'exhibition',
     entity_id: data.id,
-    details: { title: payload.title_en }
+    details: { theme: payload.theme_en }
   }])
 
   revalidatePath('/[locale]/(admin)/admin/exhibitions', 'page')
@@ -51,14 +51,14 @@ export async function updateExhibition(id: string, payload: any) {
   await requireAdmin(supabase, user)
 
   const { data, error } = await supabase.from('exhibitions').update({
-    title_en: payload.title_en,
-    title_bn: payload.title_bn,
+    theme_en: payload.theme_en,
+    theme_bn: payload.theme_bn,
     description_en: payload.description_en,
     description_bn: payload.description_bn,
-    start_date: payload.start_date,
-    end_date: payload.end_date,
+    exhibition_start: payload.exhibition_start,
+    exhibition_end: payload.exhibition_end,
     registration_start: payload.registration_start,
-    registration_end: payload.registration_end,
+    submission_end: payload.submission_end,
     venue_en: payload.venue_en,
     venue_bn: payload.venue_bn,
     status: payload.status,
@@ -68,11 +68,11 @@ export async function updateExhibition(id: string, payload: any) {
   if (error) return { error: error.message }
   
   await supabase.from('audit_logs').insert([{
-    user_id: user!.id,
+    actor_id: user!.id,
     action: 'UPDATE_EXHIBITION',
     entity_type: 'exhibition',
     entity_id: id,
-    details: { title: payload.title_en }
+    details: { theme: payload.theme_en }
   }])
 
   revalidatePath('/[locale]/(admin)/admin/exhibitions', 'page')
@@ -90,14 +90,14 @@ export async function duplicateExhibition(id: string) {
 
   // Create copy
   const { id: _, created_at, updated_at, ...copyPayload } = original
-  copyPayload.title_en = `${copyPayload.title_en} (Copy)`
+  copyPayload.theme_en = `${copyPayload.theme_en} (Copy)`
   copyPayload.status = 'draft' // Duplicates should always be drafts
 
   const { data, error } = await supabase.from('exhibitions').insert([copyPayload]).select().single()
   if (error) return { error: error.message }
 
   await supabase.from('audit_logs').insert([{
-    user_id: user!.id,
+    actor_id: user!.id,
     action: 'DUPLICATE_EXHIBITION',
     entity_type: 'exhibition',
     entity_id: data.id,
@@ -117,7 +117,7 @@ export async function archiveExhibition(id: string) {
   if (error) return { error: error.message }
 
   await supabase.from('audit_logs').insert([{
-    user_id: user!.id,
+    actor_id: user!.id,
     action: 'ARCHIVE_EXHIBITION',
     entity_type: 'exhibition',
     entity_id: id

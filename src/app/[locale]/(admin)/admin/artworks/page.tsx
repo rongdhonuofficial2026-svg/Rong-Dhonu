@@ -12,7 +12,7 @@ export default async function ArtworkModerationPage({ params }: { params: Promis
     .select(`
       *,
       profiles!artist_id (
-        first_name_en, last_name_en, phone
+        full_name_en, phone
       )
     `)
     .order('created_at', { ascending: false })

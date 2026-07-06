@@ -14,7 +14,7 @@ export default async function ExhibitionsManagementPage({ params }: { params: Pr
   const { data: exhibitions, error } = await supabase
     .from('exhibitions')
     .select('*')
-    .order('start_date', { ascending: false })
+    .order('exhibition_start', { ascending: false })
 
   if (error) {
     return <div className="p-8 text-destructive">Error loading exhibitions: {error.message}</div>
@@ -112,10 +112,10 @@ export default async function ExhibitionsManagementPage({ params }: { params: Pr
                   <div className="sm:w-3/5 p-6 flex flex-col">
                     <div className="mb-2">
                       <p className="text-xs font-mono text-accent tracking-widest uppercase mb-1">
-                        {ex.start_date ? new Date(ex.start_date).getFullYear() : 'TBD'} Season
+                        {ex.exhibition_start ? new Date(ex.exhibition_start).getFullYear() : 'TBD'} Season
                       </p>
                       <h3 className="font-serif text-2xl leading-tight mb-2 group-hover:text-accent transition-colors">
-                        {ex.title_en}
+                        {ex.theme_en}
                       </h3>
                     </div>
                     
@@ -123,8 +123,8 @@ export default async function ExhibitionsManagementPage({ params }: { params: Pr
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <Calendar className="w-4 h-4 text-muted-foreground/70" />
                         <span>
-                          {ex.start_date ? new Date(ex.start_date).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'}) : 'TBD'} 
-                          {ex.end_date ? ` — ${new Date(ex.end_date).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})}` : ''}
+                          {ex.exhibition_start ? new Date(ex.exhibition_start).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'}) : 'TBD'} 
+                          {ex.exhibition_end ? ` — ${new Date(ex.exhibition_end).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})}` : ''}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">

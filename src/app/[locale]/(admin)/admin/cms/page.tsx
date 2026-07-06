@@ -7,12 +7,18 @@ export default async function CMSManagementPage({ params }: { params: Promise<{ 
   const { locale } = await params
   const supabase = await createClient()
 
-  // We fetch the current published content, and if there is a draft, we fetch that too.
-  const { data: cmsData } = await supabase
+  const { data: cmsHero } = await supabase
     .from('cms_content')
     .select('*')
-    .eq('page_key', 'homepage')
-    .eq('locale', locale)
+    .eq('page', 'homepage')
+    .eq('section', 'hero')
+    .single()
+
+  const { data: cmsAbout } = await supabase
+    .from('cms_content')
+    .select('*')
+    .eq('page', 'homepage')
+    .eq('section', 'about')
     .single()
 
   // Fallback structure if database is empty
@@ -27,7 +33,10 @@ export default async function CMSManagementPage({ params }: { params: Promise<{ 
     }
   }
 
-  const initialData = cmsData?.content || defaultContent
+  const initialData = {
+    hero: locale === 'bn' ? (cmsHero?.content_bn || defaultContent.hero) : (cmsHero?.content_en || defaultContent.hero),
+    about: locale === 'bn' ? (cmsAbout?.content_bn || defaultContent.about) : (cmsAbout?.content_en || defaultContent.about)
+  }
 
   return (
     <div className="space-y-12 pb-20">

@@ -20,14 +20,14 @@ export function ExhibitionForm({ initialData = null, locale }: { initialData?: a
   const [uploadProgress, setUploadProgress] = React.useState(0)
 
   const [formData, setFormData] = React.useState({
-    title_en: initialData?.title_en || "",
-    title_bn: initialData?.title_bn || "",
+    theme_en: initialData?.theme_en || "",
+    theme_bn: initialData?.theme_bn || "",
     description_en: initialData?.description_en || "",
     description_bn: initialData?.description_bn || "",
-    start_date: initialData?.start_date ? initialData.start_date.split('T')[0] : "",
-    end_date: initialData?.end_date ? initialData.end_date.split('T')[0] : "",
+    exhibition_start: initialData?.exhibition_start ? initialData.exhibition_start.split('T')[0] : "",
+    exhibition_end: initialData?.exhibition_end ? initialData.exhibition_end.split('T')[0] : "",
     registration_start: initialData?.registration_start ? initialData.registration_start.split('T')[0] : "",
-    registration_end: initialData?.registration_end ? initialData.registration_end.split('T')[0] : "",
+    submission_end: initialData?.submission_end ? initialData.submission_end.split('T')[0] : "",
     venue_en: initialData?.venue_en || "",
     venue_bn: initialData?.venue_bn || "",
     status: initialData?.status || "draft",
@@ -103,12 +103,12 @@ export function ExhibitionForm({ initialData = null, locale }: { initialData?: a
         <CardContent className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Title (English) *</label>
-              <Input value={formData.title_en} onChange={(e) => updateField('title_en', e.target.value)} required />
+              <label className="text-sm font-medium">Theme (English) *</label>
+              <Input value={formData.theme_en} onChange={(e) => updateField('theme_en', e.target.value)} required />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Title (Bengali)</label>
-              <Input value={formData.title_bn} onChange={(e) => updateField('title_bn', e.target.value)} />
+              <label className="text-sm font-medium">Theme (Bengali)</label>
+              <Input value={formData.theme_bn} onChange={(e) => updateField('theme_bn', e.target.value)} />
             </div>
             
             <div className="space-y-2 md:col-span-2">
@@ -125,17 +125,17 @@ export function ExhibitionForm({ initialData = null, locale }: { initialData?: a
               <Input type="date" value={formData.registration_start} onChange={(e) => updateField('registration_start', e.target.value)} />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Registration End Date</label>
-              <Input type="date" value={formData.registration_end} onChange={(e) => updateField('registration_end', e.target.value)} />
+              <label className="text-sm font-medium">Registration End Date (Submission End)</label>
+              <Input type="date" value={formData.submission_end} onChange={(e) => updateField('submission_end', e.target.value)} />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Exhibition Start Date</label>
-              <Input type="date" value={formData.start_date} onChange={(e) => updateField('start_date', e.target.value)} />
+              <Input type="date" value={formData.exhibition_start} onChange={(e) => updateField('exhibition_start', e.target.value)} />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Exhibition End Date</label>
-              <Input type="date" value={formData.end_date} onChange={(e) => updateField('end_date', e.target.value)} />
+              <Input type="date" value={formData.exhibition_end} onChange={(e) => updateField('exhibition_end', e.target.value)} />
             </div>
 
             <div className="space-y-2">

@@ -24,7 +24,7 @@ export function ModerationTable({ artworks, locale }: { artworks: any[], locale:
   const filteredArtworks = artworks.filter(a => 
     a.status === filter && 
     (a.title_en?.toLowerCase().includes(search.toLowerCase()) || 
-     a.profiles?.first_name_en?.toLowerCase().includes(search.toLowerCase()))
+     a.profiles?.full_name_en?.toLowerCase().includes(search.toLowerCase()))
   )
 
   const handleAction = async (status: 'approved' | 'rejected' | 'changes_requested') => {
@@ -118,7 +118,7 @@ export function ModerationTable({ artworks, locale }: { artworks: any[], locale:
               {/* Info Area */}
               <div className="p-5">
                 <p className="text-xs font-mono text-accent tracking-widest uppercase mb-1 line-clamp-1">
-                  By {a.profiles?.first_name_en} {a.profiles?.last_name_en}
+                  By {a.profiles?.full_name_en}
                 </p>
                 <h3 className="font-serif text-xl leading-tight text-foreground">{a.title_en}</h3>
               </div>
@@ -159,7 +159,7 @@ export function ModerationTable({ artworks, locale }: { artworks: any[], locale:
                     {selectedArtwork.title_en}
                   </DialogTitle>
                   <DialogDescription className="text-lg text-white/70">
-                    By {selectedArtwork.profiles?.first_name_en} {selectedArtwork.profiles?.last_name_en}
+                    By {selectedArtwork.profiles?.full_name_en}
                   </DialogDescription>
                 </div>
                 

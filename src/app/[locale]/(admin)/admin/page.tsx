@@ -23,7 +23,7 @@ export default async function AdminDashboardOverview({ params }: { params: Promi
     supabase.from('artworks').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'member'),
     supabase.from('exhibitions').select('*', { count: 'exact', head: true }).in('status', ['active', 'upcoming']),
-    supabase.from('audit_logs').select('*, profiles(first_name_en, last_name_en)').order('created_at', { ascending: false }).limit(6)
+    supabase.from('audit_logs').select('*, profiles(full_name_en)').order('created_at', { ascending: false }).limit(6)
   ])
 
   return (
@@ -128,7 +128,7 @@ export default async function AdminDashboardOverview({ params }: { params: Promi
                     <GlassPanel intensity="light" className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 transition-all hover:bg-white/60 dark:hover:bg-black/60">
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold text-sm text-foreground">
-                          {log.profiles ? `${log.profiles.first_name_en} ${log.profiles.last_name_en}` : 'System'}
+                          {log.profiles ? log.profiles.full_name_en : 'System'}
                         </span>
                         <time className="text-xs font-mono text-muted-foreground/80">{new Date(log.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</time>
                       </div>

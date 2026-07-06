@@ -12,7 +12,7 @@ export default async function CommitteeManagementPage({ params }: { params: Prom
   // Fetch committee members with their profiles
   const { data: members, error } = await supabase
     .from('committee_members')
-    .select('*, profiles(*), exhibitions(year, title_en)')
+    .select('*, profiles(*), exhibitions(year, theme_en)')
     .order('created_at', { ascending: true })
 
   if (error) {
@@ -89,7 +89,7 @@ export default async function CommitteeManagementPage({ params }: { params: Prom
                       <Image src={member.profiles.avatar_url} alt="Avatar" fill className="object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center font-bold text-muted-foreground/50 font-serif text-xl bg-gradient-to-br from-black to-accent/20">
-                        {member.profiles?.first_name_en?.charAt(0) || 'U'}
+                        {member.profiles?.full_name_en?.charAt(0) || 'U'}
                       </div>
                     )}
                   </div>
@@ -97,12 +97,12 @@ export default async function CommitteeManagementPage({ params }: { params: Prom
                   {/* Member Info */}
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <p className="font-serif font-bold text-xl truncate text-foreground group-hover:text-accent transition-colors">
-                      {member.profiles?.first_name_en} {member.profiles?.last_name_en}
+                      {member.profiles?.full_name_en}
                     </p>
                     <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-muted-foreground mt-1 uppercase tracking-widest">
-                      <span className="font-medium text-accent">{member.role_title_en}</span>
+                      <span className="font-medium text-accent">{member.role_en}</span>
                       <span className="opacity-50">&bull;</span>
-                      <span>{member.exhibitions?.title_en || `Exhibition ${member.exhibitions?.year}` || 'Global'}</span>
+                      <span>{member.exhibitions?.theme_en || `Exhibition ${member.exhibitions?.year}` || 'Global'}</span>
                     </div>
                   </div>
                   
