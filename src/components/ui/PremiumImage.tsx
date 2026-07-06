@@ -1,86 +1,55 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Image, { ImageProps } from 'next/image'
-import { cn } from '@/lib/utils'
+import Image, { ImageProps } from 'next/image';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { ImageIcon } from 'lucide-react';
 
-interface PremiumImageProps extends Omit<ImageProps, 'src'> {
-  src: string | null | undefined
-  fallbackSrc: string
-  /**
-   * Optional class(es) for the wrapper div.
-   *
-   * ──────────────────────────────────────────────────────────────────────────
-   * IMPORTANT: When you pass `fill`, Next.js makes the <Image> element
-   * position:absolute inset-0. The wrapper div MUST have an explicit size.
-   *
-   * • If the parent already has a defined size (e.g. `absolute inset-0`,
-   *   `w-full h-[500px]`), pass nothing and PremiumImage will default to
-   *   `absolute inset-0 overflow-hidden` so it fills that parent.
-   *
-   * • If PremiumImage itself should provide the size (e.g. masonry cards),
-   *   pass the size through containerClassName:
-   *       containerClassName="relative w-full h-[500px]"
-   * ──────────────────────────────────────────────────────────────────────────
-   */
-  containerClassName?: string
+interface PremiumImageProps extends Omit<ImageProps, 'src' | 'onLoad' | 'onError'> {
+  src?: string | null;
+  fallbackSrc?: string;
+  containerClassName?: string;
 }
 
 export function PremiumImage({
   src,
-  fallbackSrc,
   alt,
   className,
   containerClassName,
-  fill,
+  fallbackSrc = '/images/placeholder.jpg', // Default placeholder
   ...props
 }: PremiumImageProps) {
-  const [error, setError] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const imageSrc = (src && !error) ? src : fallbackSrc
+  // If no source is provided at all
+  if (!src) {
+    return (
+      <div className={cn("flex items-center justify-center bg-gray-100 rounded-lg", containerClassName)}>
+        <ImageIcon className="text-gray-300 w-1/4 h-1/4" />
+      </div>
+    );
+  }
 
-  /**
-   * Container strategy:
-   * - With `fill`: default to `absolute inset-0 overflow-hidden` so the image
-   *   fills whatever positioned ancestor wraps this component.
-   *   containerClassName can override to e.g. `relative w-full h-[400px]` when
-   *   PremiumImage itself should own the sizing.
-   * - Without `fill`: default to `relative overflow-hidden` (standard block).
-   */
-  const defaultContainer = fill
-    ? 'absolute inset-0 overflow-hidden'
-    : 'relative overflow-hidden'
-
-  const containerClass = containerClassName
-    ? containerClassName          // caller fully controls the container
-    : defaultContainer            // smart default based on fill mode
+  const imageSrc = (error || !src) ? fallbackSrc : src;
 
   return (
-    <div className={containerClass}>
-      {/* Skeleton shimmer — shown until image loads */}
-      {loading && (
-        <div className="absolute inset-0 z-10 bg-gradient-to-br from-neutral-200/60 to-neutral-300/40 animate-pulse pointer-events-none" />
-      )}
-
+    <div className={cn('relative overflow-hidden bg-muted/20', containerClassName)}>
       <Image
         src={imageSrc}
-        alt={alt || 'Artwork'}
-        fill={fill}
-        unoptimized={typeof imageSrc === 'string' && imageSrc.startsWith('http')} // Optimize local placeholders, unoptimize remote
-        sizes={fill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
+        alt={alt || 'Image'}
         className={cn(
-          'transition-opacity duration-500 ease-out',
-          loading ? 'opacity-0' : 'opacity-100',
+          'transition-all duration-700 ease-in-out',
+          isLoading ? 'scale-105 blur-sm opacity-0' : 'scale-100 blur-0 opacity-100',
           className
         )}
-        onLoad={() => setLoading(false)}
+        onLoad={() => setIsLoading(false)}
         onError={() => {
-          setError(true)    // swap to local fallback on any network/remote error
-          setLoading(false)
+          setIsLoading(false);
+          setError(true);
         }}
         {...props}
       />
     </div>
-  )
+  );
 }

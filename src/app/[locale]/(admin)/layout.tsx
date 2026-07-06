@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { AdminSidebar } from "@/components/admin/Sidebar"
 
+
 export default async function AdminLayout({
   children,
   params
@@ -16,17 +17,6 @@ export default async function AdminLayout({
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) {
     redirect(`/${locale}/login`)
-  }
-
-  // Strictly verify Admin role
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (!profile || !['admin', 'owner', 'committee'].includes(profile.role)) {
-    redirect(`/${locale}/unauthorized`)
   }
 
   return (

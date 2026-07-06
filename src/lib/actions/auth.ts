@@ -6,6 +6,7 @@ import { loginSchema, registerSchema, resetPasswordSchema, forgotPasswordSchema 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from '@/lib/i18n/routing';
+import { getUserRole as getCentralUserRole } from '@/lib/auth/roles';
 
 export async function loginAction(data: z.infer<typeof loginSchema>, locale: string) {
   const result = loginSchema.safeParse(data);
@@ -26,6 +27,8 @@ export async function loginAction(data: z.infer<typeof loginSchema>, locale: str
 
   // Retrieve user to check/create profile
   const { data: { user } } = await supabase.auth.getUser();
+  let finalRole = 'member';
+
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -43,14 +46,23 @@ export async function loginAction(data: z.infer<typeof loginSchema>, locale: str
         role: isOwnerEmail ? 'owner' : 'member',
         full_name_en: user.user_metadata?.full_name || user.email?.split('@')[0]
       });
+      finalRole = isOwnerEmail ? 'owner' : 'member';
     } else if (isOwnerEmail && profile.role !== 'owner') {
       // Ensure owner role is assigned if they already have a profile but wrong role
       await supabase.from('profiles').update({ role: 'owner' }).eq('id', user.id);
+      finalRole = 'owner';
+    } else {
+      finalRole = profile.role || (isOwnerEmail ? 'owner' : 'member');
     }
   }
 
   revalidatePath('/');
-  return { success: true };
+  
+  // Dynamically resolve dashboard route using central utility
+  const { resolveDashboardRoute } = await import('@/lib/auth/roles');
+  const targetRoute = resolveDashboardRoute(finalRole);
+
+  return { success: true, redirectTo: targetRoute };
 }
 
 export async function registerAction(data: z.infer<typeof registerSchema>, locale: string) {
@@ -68,7 +80,7 @@ export async function registerAction(data: z.infer<typeof registerSchema>, local
       data: {
         full_name: result.data.fullName,
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback?next=/dashboard`
     },
   });
 
@@ -129,11 +141,5 @@ export async function getUserRole() {
   
   if (!user) return null;
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  return profile?.role || 'member';
+  return getCentralUserRole(supabase, user.id, user.email);
 }

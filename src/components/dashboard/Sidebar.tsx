@@ -49,12 +49,12 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
   ]
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-card border-r border-border">
-      <div className="p-6">
-        <Link href="/" className="font-serif text-2xl font-bold tracking-tight text-accent">
+    <div className="flex flex-col h-full bg-[#FAF9F6] border-r border-[#E5E0D8]">
+      <div className="p-8 pb-4">
+        <Link href="/" className="font-serif text-3xl font-bold tracking-tight text-accent-gold">
           Rongdhono
         </Link>
-        <p className="text-sm text-muted-foreground mt-1">Artist Portal</p>
+        <p className="text-sm text-[#6B655C] mt-2 font-medium tracking-wide uppercase">Artist Portal</p>
       </div>
       
       <div className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
@@ -69,15 +69,17 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
               asChild
               variant={isActive ? "secondary" : "ghost"}
               className={cn(
-                "w-full justify-start gap-3 h-12 text-base relative",
-                isActive ? "bg-accent/10 text-accent hover:bg-accent/20 font-medium" : "text-muted-foreground hover:text-foreground"
+                "w-full justify-start gap-3 h-12 text-base relative transition-all duration-300 rounded-xl",
+                isActive 
+                  ? "bg-white text-charcoal shadow-sm border border-[#E5E0D8] font-medium" 
+                  : "text-[#6B655C] hover:text-charcoal hover:bg-white/50"
               )}
             >
               <Link href={item.href as any}>
                 <Icon className="w-5 h-5" />
                 <span className="flex-1 text-left">{item.name}</span>
                 {item.badge ? (
-                  <span className="absolute right-4 px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-xs font-bold">
+                  <span className="absolute right-4 px-2 py-0.5 rounded-full bg-accent-gold text-white text-xs font-bold shadow-sm">
                     {item.badge > 99 ? '99+' : item.badge}
                   </span>
                 ) : null}
@@ -87,8 +89,8 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
         })}
       </div>
       
-      <div className="p-4 border-t border-border">
-        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive" onClick={handleLogout}>
+      <div className="p-4 border-t border-[#E5E0D8] bg-[#F5F2EB]/50">
+        <Button variant="ghost" className="w-full justify-start gap-3 text-[#6B655C] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" onClick={handleLogout}>
           <LogOut className="w-5 h-5" />
           {locale === 'bn' ? "লগ আউট" : "Log out"}
         </Button>
@@ -104,8 +106,8 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
       </aside>
 
       {/* Mobile Topbar & Sheet */}
-      <div className="lg:hidden fixed top-0 inset-x-0 h-16 bg-card border-b border-border z-50 flex items-center justify-between px-4">
-        <Link href="/" className="font-serif text-xl font-bold text-accent">
+      <div className="lg:hidden fixed top-0 inset-x-0 h-16 bg-[#FAF9F6] border-b border-[#E5E0D8] z-50 flex items-center justify-between px-4">
+        <Link href="/" className="font-serif text-2xl font-bold text-accent-gold">
           Rongdhono
         </Link>
         <Sheet>

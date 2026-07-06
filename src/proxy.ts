@@ -4,6 +4,8 @@ import createMiddleware from 'next-intl/middleware';
 import { routing } from './lib/i18n/routing';
 import { createServerClient } from '@supabase/ssr';
 
+import { getUserRole, canAccessAdmin, resolveDashboardRoute } from './lib/auth/roles';
+
 const intlMiddleware = createMiddleware(routing);
 
 export default async function proxy(request: NextRequest) {
@@ -35,13 +37,25 @@ export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   // Remove locale prefix for checking paths
   const pathWithoutLocale = pathname.replace(/^\/(en|bn)/, '') || '/';
+  const currentLocale = pathname.split('/')[1] || 'en';
+
+  // Fetch role if user exists
+  let role = 'guest';
+  if (user) {
+    role = await getUserRole(supabase, user.id, user.email);
+  }
 
   // Protect /dashboard routes
   if (pathWithoutLocale.startsWith('/dashboard')) {
     if (!user) {
       const url = request.nextUrl.clone();
-      const currentLocale = pathname.split('/')[1] || 'en';
       url.pathname = `/${currentLocale}/login`;
+      return NextResponse.redirect(url);
+    }
+
+    if (canAccessAdmin(role)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${currentLocale}/admin`;
       return NextResponse.redirect(url);
     }
   }
@@ -50,32 +64,22 @@ export default async function proxy(request: NextRequest) {
   if (pathWithoutLocale.startsWith('/admin')) {
     if (!user) {
       const url = request.nextUrl.clone();
-      const currentLocale = pathname.split('/')[1] || 'en';
       url.pathname = `/${currentLocale}/login`;
       return NextResponse.redirect(url);
     }
 
-    // Check Role
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (profile?.role !== 'admin' && profile?.role !== 'committee' && profile?.role !== 'owner') {
+    if (!canAccessAdmin(role)) {
       const url = request.nextUrl.clone();
-      const currentLocale = pathname.split('/')[1] || 'en';
-      url.pathname = `/${currentLocale}/unauthorized`; // Or wherever you want to send unauthorized users
+      url.pathname = `/${currentLocale}/unauthorized`;
       return NextResponse.redirect(url);
     }
   }
   
-  // Bounce authenticated users from auth pages
+  // Bounce authenticated users from auth pages or base /dashboard route appropriately
   if (pathWithoutLocale === '/login' || pathWithoutLocale === '/register') {
     if (user) {
       const url = request.nextUrl.clone();
-      const currentLocale = pathname.split('/')[1] || 'en';
-      url.pathname = `/${currentLocale}/dashboard`;
+      url.pathname = `/${currentLocale}${resolveDashboardRoute(role)}`;
       return NextResponse.redirect(url);
     }
   }

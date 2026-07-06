@@ -27,8 +27,10 @@ export default function LoginPage() {
     const result = await loginAction(data, locale);
     if (result.error) {
       setError(result.error);
+    } else if (result.redirectTo) {
+      router.push(result.redirectTo as any);
     } else {
-      router.push('/member/dashboard');
+      router.push('/dashboard');
     }
   };
 
