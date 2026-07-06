@@ -103,7 +103,7 @@ export function ActivityTimeline({ audits }: ActivityTimelineProps) {
                       )}
                     </div>
                     <time className="shrink-0 text-xs font-mono text-muted-foreground/60">
-                      {getRelativeTime(log.created_at)}
+                      {getRelativeTime(log.created_at || new Date().toISOString())}
                     </time>
                   </div>
                 </div>
