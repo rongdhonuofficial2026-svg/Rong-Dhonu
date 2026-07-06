@@ -73,7 +73,7 @@ export async function registerAction(data: z.infer<typeof registerSchema>, local
   }
 
   const supabase = await createClient();
-  const { data: signUpData, error } = await supabase.auth.signUp({
+  const { data: signupData, error } = await supabase.auth.signUp({
     email: result.data.email,
     password: result.data.password,
     options: {
@@ -84,7 +84,21 @@ export async function registerAction(data: z.infer<typeof registerSchema>, local
     },
   });
 
-  console.log('Supabase signUp result:', { data: signUpData, error });
+  console.log("FULL SIGNUP RESULT");
+
+  console.dir(
+    {
+      signupData,
+      error,
+      message: error?.message,
+      status: error?.status,
+      code: error?.code,
+      cause: error?.cause,
+      name: error?.name,
+      stack: error?.stack,
+    },
+    { depth: null }
+  );
 
   if (error) {
     return { error: error.message };
