@@ -1,103 +1,159 @@
 import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/lib/i18n/routing'
-import { Button } from '@/components/ui/button'
-import { Plus, Edit, Trash, FileText, Download, CheckCircle, Clock } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import { Plus, Edit, Trash, FileText, Download, CheckCircle, Clock, BookOpen, Search, MoreVertical } from 'lucide-react'
+import Image from "next/image"
+import { Input } from "@/components/ui/input"
+import { LuxuryCard } from "@/components/admin/ui/LuxuryCard"
+import { PremiumButton } from "@/components/admin/ui/PremiumButton"
+import { GlassPanel } from "@/components/admin/ui/GlassPanel"
 
 export default async function AdminCatalogsPage() {
   const supabase = await createClient()
-  const t = await getTranslations('Admin')
 
   const { data: catalogs, error } = await supabase
     .from('catalogs')
     .select('*, exhibitions(theme_en, year)')
     .order('created_at', { ascending: false })
 
-  return (
-    <div className="space-y-6 max-w-6xl mx-auto py-8 px-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Catalogs (DMS)</h1>
-          <p className="text-muted-foreground">Manage official exhibition catalog documents.</p>
-        </div>
-        <Button asChild>
-          <Link href="/admin/catalogs/new">
-            <Plus className="mr-2 h-4 w-4" /> Upload Catalog
-          </Link>
-        </Button>
-      </div>
+  if (error) {
+    return <div className="p-8 text-destructive">Error loading catalogs: {error.message}</div>
+  }
 
-      <div className="bg-card rounded-lg border shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-muted/50 border-b">
-              <tr>
-                <th className="px-6 py-4 font-medium">Document</th>
-                <th className="px-6 py-4 font-medium">Exhibition</th>
-                <th className="px-6 py-4 font-medium">Version</th>
-                <th className="px-6 py-4 font-medium">Status</th>
-                <th className="px-6 py-4 font-medium">Downloads</th>
-                <th className="px-6 py-4 font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!catalogs || catalogs.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
-                    <FileText className="h-8 w-8 mx-auto mb-3 opacity-50" />
-                    No catalogs found. Upload a new catalog to get started.
-                  </td>
-                </tr>
-              ) : (
-                catalogs.map((cat) => (
-                  <tr key={cat.id} className="border-b last:border-0 hover:bg-muted/30">
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-base">{cat.title_en}</div>
-                      <div className="text-xs text-muted-foreground">{cat.language.toUpperCase()}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {(cat.exhibitions as any)?.theme_en || 'Unknown'} ({(cat.exhibitions as any)?.year})
-                    </td>
-                    <td className="px-6 py-4">
-                      v{cat.version}
-                    </td>
-                    <td className="px-6 py-4">
-                      {cat.status === 'published' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                          <CheckCircle className="w-3.5 h-3.5" /> Published
-                        </span>
-                      ) : cat.status === 'archived' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400">
-                          Archived
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500">
-                          <Clock className="w-3.5 h-3.5" /> Draft
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        <Download className="w-3 h-3 text-muted-foreground" />
-                        {cat.total_downloads || 0}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <Link href={`/admin/catalogs/${cat.id}`}>
-                            <Edit className="w-4 h-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+  return (
+    <div className="space-y-12 pb-20">
+      {/* Immersive Hero Section */}
+      <section className="relative rounded-3xl overflow-hidden min-h-[300px] flex flex-col justify-end p-8 md:p-12 museum-shadow">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/images/catalogs_hero.png" 
+            alt="Historical Catalogs" 
+            fill 
+            className="object-cover object-center image-reveal scale-105"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
         </div>
-      </div>
+        
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+          <div className="max-w-3xl text-white">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border-white/20 mb-6">
+              <BookOpen className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-medium tracking-widest uppercase">Digital Archives</span>
+            </div>
+            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-elegant">
+              Historical <span className="text-gradient-gold">Catalogs</span>
+            </h1>
+            <p className="text-white/80 text-lg font-light">
+              Manage the official exhibition catalog documents. Upload, version, and publish historic records of the world's finest artwork.
+            </p>
+          </div>
+          
+          <div className="w-full sm:w-auto">
+            <PremiumButton variant="primary" asChild leftIcon={<Plus className="w-4 h-4" />}>
+              <Link href="/admin/catalogs/new">
+                Archive Catalog
+              </Link>
+            </PremiumButton>
+          </div>
+        </div>
+      </section>
+
+      {/* Directory Section */}
+      <section className="space-y-8">
+        <GlassPanel intensity="medium" className="p-4 rounded-2xl flex flex-col sm:flex-row justify-between gap-4 items-center">
+          <div className="relative w-full sm:flex-1 max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search documents by title or year..." 
+              className="pl-11 bg-black/20 border-white/10 focus-visible:ring-accent rounded-xl h-11 text-foreground placeholder:text-muted-foreground/70"
+            />
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
+            <button className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm whitespace-nowrap hover:bg-white/20 transition-colors">All Documents</button>
+            <button className="px-4 py-2 rounded-lg bg-black/40 text-muted-foreground text-sm whitespace-nowrap hover:bg-white/10 hover:text-white transition-colors border border-white/5">Published</button>
+            <button className="px-4 py-2 rounded-lg bg-black/40 text-muted-foreground text-sm whitespace-nowrap hover:bg-white/10 hover:text-white transition-colors border border-white/5">Drafts</button>
+          </div>
+        </GlassPanel>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {!catalogs || catalogs.length === 0 ? (
+            <div className="col-span-full py-20 text-center">
+              <div className="w-20 h-20 rounded-full border border-white/10 glass flex items-center justify-center mb-6 mx-auto">
+                <FileText className="w-10 h-10 text-muted-foreground/50" />
+              </div>
+              <h3 className="font-serif text-2xl mb-2">No catalogs found</h3>
+              <p className="text-muted-foreground">Upload the first historical document to begin the archive.</p>
+            </div>
+          ) : (
+            catalogs.map((cat: any) => (
+              <LuxuryCard key={cat.id} padding="none" className="overflow-hidden group">
+                <div className="p-6 relative z-10 flex flex-col h-full">
+                  {/* Status Badge */}
+                  <div className="absolute top-6 right-6">
+                    {cat.status === 'published' ? (
+                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-emerald-500/20 text-emerald-300 border-emerald-500/40 flex items-center gap-1.5">
+                        <CheckCircle className="w-3 h-3" /> Published
+                      </span>
+                    ) : cat.status === 'archived' ? (
+                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-white/5 text-white/70 border-white/10">
+                        Archived
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-amber-500/20 text-amber-300 border-amber-500/40 flex items-center gap-1.5">
+                        <Clock className="w-3 h-3" /> Draft
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-black border border-amber-500/30 flex items-center justify-center shrink-0">
+                      <FileText className="w-6 h-6 text-amber-400/80" />
+                    </div>
+                    <div className="flex-1 min-w-0 pt-1 pr-16">
+                      <h3 className="font-serif font-bold text-xl text-foreground line-clamp-1 group-hover:text-gradient-gold transition-all duration-500">
+                        {cat.title_en}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground/70 mt-1">
+                        <span className="uppercase tracking-widest font-mono text-[10px] border border-white/10 px-2 py-0.5 rounded text-white/50">{cat.language}</span>
+                        <span>v{cat.version}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-2 mb-6">
+                    <p className="text-sm text-muted-foreground/80 line-clamp-2">
+                      Exhibition: {(cat.exhibitions as any)?.theme_en || 'Unknown'} ({(cat.exhibitions as any)?.year})
+                    </p>
+                  </div>
+
+                  {/* Stats & Meta */}
+                  <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+                    <div className="flex gap-6 text-sm text-muted-foreground/80">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1 flex items-center gap-1.5"><Download className="w-3 h-3"/> Downloads</span>
+                        <span className="font-medium text-foreground">{cat.total_downloads || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hover Actions Footer */}
+                <div className="bg-black/40 border-t border-white/5 p-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <PremiumButton variant="glass" className="flex-1 h-10 text-xs" asChild>
+                    <Link href={`/admin/catalogs/${cat.id}`}>
+                      Edit Document
+                    </Link>
+                  </PremiumButton>
+                  <PremiumButton variant="glass" className="w-10 h-10 px-0 flex items-center justify-center border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500">
+                    <Trash className="w-4 h-4" />
+                  </PremiumButton>
+                </div>
+              </LuxuryCard>
+            ))
+          )}
+        </div>
+      </section>
     </div>
   )
 }
