@@ -44,6 +44,7 @@ ON catalogs FOR SELECT
 TO public 
 USING (status = 'published');
 
+DROP POLICY IF EXISTS "Admins can manage catalogs" ON catalogs;
 CREATE POLICY "Admins can manage catalogs" 
 ON catalogs FOR ALL 
 TO authenticated 

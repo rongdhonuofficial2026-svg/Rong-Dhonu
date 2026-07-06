@@ -88,6 +88,9 @@ export async function registerAction(data: z.infer<typeof registerSchema>, local
     return { error: error.message };
   }
 
+  // Force revalidation so Next.js does not drop the response body behind next-intl middleware
+  revalidatePath('/');
+
   return { success: true, message: 'Check your email for the verification link.' };
 }
 
@@ -131,6 +134,9 @@ export async function resetPasswordAction(data: z.infer<typeof resetPasswordSche
   if (error) {
     return { error: error.message };
   }
+
+  // Force revalidation so Next.js does not drop the response body behind next-intl middleware
+  revalidatePath('/');
 
   return { success: true };
 }
