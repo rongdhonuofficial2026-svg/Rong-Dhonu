@@ -69,7 +69,7 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
-    minimumCacheTTL: 86400, // 24 hours
+    minimumCacheTTL: 31536000, // 1 year (instant browser loading on revisit)
   },
 
   async headers() {
@@ -78,6 +78,16 @@ const nextConfig: NextConfig = {
         // Apply security headers to all routes
         source: '/(.*)',
         headers: securityHeaders,
+      },
+      {
+        // Force aggressive browser caching for static images
+        source: '/images/:all*(svg|jpg|jpeg|png|webp|avif|gif|ico)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
       },
     ]
   },
