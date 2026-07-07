@@ -34,31 +34,33 @@ export const PremiumButton = React.forwardRef<HTMLButtonElement, PremiumButtonPr
       icon: "h-11 w-11 rounded-xl"
     };
 
-    const Comp = asChild ? Slot : "button";
+    if (asChild) {
+      return (
+        <Slot
+          ref={ref}
+          className={cn(baseStyles, "hover:scale-[1.02] active:scale-[0.98]", variants[variant], sizes[size], className)}
+          {...props as any}
+        >
+          {children}
+        </Slot>
+      );
+    }
 
     return (
-      <Comp
+      <button
         ref={ref}
         className={cn(baseStyles, "hover:scale-[1.02] active:scale-[0.98]", variants[variant], sizes[size], className)}
         disabled={isLoading || disabled}
         {...props as any}
       >
-        {/* Subtle hover glow effect */}
-        {variant === 'primary' && !asChild && (
+        {variant === 'primary' && (
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
         )}
-        
-        {asChild ? (
-          children
-        ) : (
-          <>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {!isLoading && leftIcon && <span className="mr-2">{leftIcon}</span>}
-            {children}
-            {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}
-          </>
-        )}
-      </Comp>
+        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {!isLoading && leftIcon && <span className="mr-2">{leftIcon}</span>}
+        {children}
+        {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}
+      </button>
     );
   }
 );

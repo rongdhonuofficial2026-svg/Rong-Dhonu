@@ -30,6 +30,13 @@ export default function Error({
           We encountered an unexpected error while preparing this gallery for you. Please try refreshing or return to the main hall.
         </p>
         
+        {/* DEBUGGING OUTPUT */}
+        <div className="bg-red-50 text-red-900 p-4 rounded-md text-left text-sm font-mono overflow-auto mb-8 whitespace-pre-wrap max-h-96">
+          <strong>{error.name}: {error.message}</strong>
+          <br /><br />
+          {error.stack}
+        </div>
+        
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 
             onClick={() => reset()} 
