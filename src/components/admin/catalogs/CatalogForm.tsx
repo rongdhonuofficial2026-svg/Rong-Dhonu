@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { createCatalog, updateCatalog } from '@/actions/catalogs'
@@ -15,10 +15,12 @@ import Image from 'next/image'
 
 export function CatalogForm({ 
   exhibitions, 
-  initialData = null 
+  initialData = null,
+  defaultExhibitionId,
 }: { 
   exhibitions: any[], 
-  initialData?: any 
+  initialData?: any,
+  defaultExhibitionId?: string,
 }) {
   const router = useRouter()
   const params = useParams()
@@ -40,7 +42,7 @@ export function CatalogForm({
   const coverInputRef = useRef<HTMLInputElement>(null)
   
   const [formData, setFormData] = useState({
-    exhibition_id: initialData?.exhibition_id || '',
+    exhibition_id: initialData?.exhibition_id || defaultExhibitionId || '',
     title_en: initialData?.title_en || '',
     title_bn: initialData?.title_bn || '',
     description_en: initialData?.description_en || '',
@@ -68,6 +70,14 @@ export function CatalogForm({
       }))
     }
   }
+
+  // When arriving from exhibition dashboard, auto-fill titles on first render
+  useEffect(() => {
+    if (defaultExhibitionId && !initialData) {
+      handleExhibitionChange(defaultExhibitionId)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── PDF File Handling ────────────────────────────────────────────────
   const handlePdfChange = (file: File) => {

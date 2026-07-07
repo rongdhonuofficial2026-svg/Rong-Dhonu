@@ -139,15 +139,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                 <h3 className="font-bold text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">
                   {locale === 'bn' ? 'অফিসিয়াল ক্যাটালগ' : 'Official Catalog'}
                 </h3>
-                {exhibition.status === 'upcoming' || exhibition.status === 'draft' ? (
-                  <div className="text-center py-6 border border-dashed border-border/50 bg-background/50">
-                    <p className="text-sm italic text-muted-foreground">
-                      {locale === 'bn' 
-                        ? 'প্রদর্শনী শুরু হওয়ার পর ক্যাটালগ উপলব্ধ হবে।' 
-                        : 'Catalog will be available once the exhibition opens.'}
-                    </p>
-                  </div>
-                ) : catalog ? (
+                {catalog ? (
                   <div className="flex flex-col gap-3">
                     <p className="text-sm text-foreground/80 leading-relaxed mb-2">
                       {locale === 'bn' 
@@ -164,6 +156,14 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                       catalog={catalog} 
                       className="w-full h-12 rounded-none uppercase tracking-widest text-xs font-bold transition-all flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90" 
                     />
+                  </div>
+                ) : (exhibition.status === 'upcoming' || exhibition.status === 'draft') ? (
+                  <div className="text-center py-6 border border-dashed border-border/50 bg-background/50">
+                    <p className="text-sm italic text-muted-foreground">
+                      {locale === 'bn' 
+                        ? 'প্রদর্শনী শুরু হওয়ার পর ক্যাটালগ উপলব্ধ হবে।' 
+                        : 'Catalog will be available once the exhibition opens.'}
+                    </p>
                   </div>
                 ) : (
                   <div className="text-center py-6 border border-dashed border-border/50 bg-background/50">

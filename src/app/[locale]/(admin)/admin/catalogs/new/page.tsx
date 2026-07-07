@@ -2,8 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { CatalogForm } from '@/components/admin/catalogs/CatalogForm'
 import { BookOpen } from 'lucide-react'
 
-export default async function NewCatalogPage() {
+export default async function NewCatalogPage({ searchParams }: { searchParams: Promise<{ exhibition_id?: string }> }) {
   const supabase = await createClient()
+  const { exhibition_id } = await searchParams
 
   // Fetch ALL exhibitions — we now support multiple catalogs/versions per exhibition
   const { data: exhibitions } = await supabase
@@ -26,7 +27,7 @@ export default async function NewCatalogPage() {
         </p>
       </div>
 
-      <CatalogForm exhibitions={exhibitions || []} />
+      <CatalogForm exhibitions={exhibitions || []} defaultExhibitionId={exhibition_id} />
     </div>
   )
 }

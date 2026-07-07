@@ -4,16 +4,28 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { logAudit } from '@/lib/audit'
 
-// Helper to delete a file from Supabase storage and swallow errors to prevent breaking db transactions
+// Helper to delete a file from Supabase storage.
+// Correctly resolves nested folder paths like covers/filename.jpg
 async function deleteStorageFile(supabase: any, url: string | null) {
   if (!url) return
   try {
-    const fileName = url.split('/').pop()
-    if (fileName) {
-      await supabase.storage.from('catalogs').remove([fileName])
+    const bucketMarker = '/storage/v1/object/public/catalogs/'
+    const markerIndex = url.indexOf(bucketMarker)
+    if (markerIndex !== -1) {
+      // Extracts 'covers/filename.jpg' or 'filename.pdf' correctly
+      const storagePath = url.substring(markerIndex + bucketMarker.length)
+      if (storagePath) {
+        const { error } = await supabase.storage.from('catalogs').remove([storagePath])
+        if (error) console.error('[Storage Cleanup] Failed to delete:', storagePath, error.message)
+        else console.log('[Storage Cleanup] Deleted:', storagePath)
+      }
+    } else {
+      // Fallback for non-standard URLs
+      const fallback = url.split('/').pop()
+      if (fallback) await supabase.storage.from('catalogs').remove([fallback])
     }
   } catch (err) {
-    console.error('[Storage Cleanup] Failed to delete file:', url, err)
+    console.error('[Storage Cleanup] Unexpected error deleting:', url, err)
   }
 }
 
@@ -169,11 +181,18 @@ export async function createCatalog(data: any) {
     status: newCatalog.status
   })
 
-  // Targeted cache invalidations
+  // Targeted cache invalidations — both locales + layout patterns
+  const locales = ['en', 'bn']
+  locales.forEach(loc => {
+    revalidatePath(`/${loc}/admin/catalogs`)
+    revalidatePath(`/${loc}/admin/exhibitions/${data.exhibition_id}`)
+    revalidatePath(`/${loc}/catalogs`)
+    revalidatePath(`/${loc}/exhibitions/${data.exhibition_id}`)
+  })
   revalidatePath('/[locale]/(admin)/admin/catalogs', 'layout')
+  revalidatePath('/[locale]/(admin)/admin/exhibitions/[id]', 'layout')
   revalidatePath('/[locale]/(public)/catalogs', 'layout')
   revalidatePath('/[locale]/(public)/exhibitions', 'layout')
-  revalidatePath(`/[locale]/(public)/exhibitions/${data.exhibition_id}`, 'layout')
 
   return { success: true, data: newCatalog }
 }
@@ -329,11 +348,19 @@ export async function updateCatalog(id: string, data: any) {
     new_state: { status: updatedCatalog.status, version: updatedCatalog.version }
   })
 
-  // Targeted cache invalidations
+  // Targeted cache invalidations — both locales + layout patterns
+  const locales = ['en', 'bn']
+  locales.forEach(loc => {
+    revalidatePath(`/${loc}/admin/catalogs`)
+    revalidatePath(`/${loc}/admin/exhibitions/${updatedCatalog.exhibition_id}`)
+    revalidatePath(`/${loc}/catalogs`)
+    revalidatePath(`/${loc}/catalogs/${id}`)
+    revalidatePath(`/${loc}/exhibitions/${updatedCatalog.exhibition_id}`)
+  })
   revalidatePath('/[locale]/(admin)/admin/catalogs', 'layout')
+  revalidatePath('/[locale]/(admin)/admin/exhibitions/[id]', 'layout')
   revalidatePath('/[locale]/(public)/catalogs', 'layout')
   revalidatePath('/[locale]/(public)/exhibitions', 'layout')
-  revalidatePath(`/[locale]/(public)/exhibitions/${updatedCatalog.exhibition_id}`, 'layout')
 
   return { success: true, data: updatedCatalog }
 }
@@ -394,10 +421,18 @@ export async function publishCatalog(id: string, publish: boolean) {
     new_state: targetStatus
   })
 
+  const locales = ['en', 'bn']
+  locales.forEach(loc => {
+    revalidatePath(`/${loc}/admin/catalogs`)
+    revalidatePath(`/${loc}/admin/exhibitions/${currentCatalog.exhibition_id}`)
+    revalidatePath(`/${loc}/catalogs`)
+    revalidatePath(`/${loc}/catalogs/${id}`)
+    revalidatePath(`/${loc}/exhibitions/${currentCatalog.exhibition_id}`)
+  })
   revalidatePath('/[locale]/(admin)/admin/catalogs', 'layout')
+  revalidatePath('/[locale]/(admin)/admin/exhibitions/[id]', 'layout')
   revalidatePath('/[locale]/(public)/catalogs', 'layout')
   revalidatePath('/[locale]/(public)/exhibitions', 'layout')
-  revalidatePath(`/[locale]/(public)/exhibitions/${currentCatalog.exhibition_id}`, 'layout')
 
   return { success: true }
 }
@@ -455,8 +490,14 @@ export async function duplicateCatalog(id: string) {
     version: newCatalog.version
   })
 
+  const locales = ['en', 'bn']
+  locales.forEach(loc => {
+    revalidatePath(`/${loc}/admin/catalogs`)
+    revalidatePath(`/${loc}/admin/exhibitions/${source.exhibition_id}`)
+    revalidatePath(`/${loc}/catalogs`)
+  })
   revalidatePath('/[locale]/(admin)/admin/catalogs', 'layout')
-  revalidatePath('/[locale]/(public)/catalogs', 'layout')
+  revalidatePath('/[locale]/(admin)/admin/exhibitions/[id]', 'layout')
 
   return { success: true, data: newCatalog }
 }
@@ -503,10 +544,18 @@ export async function deleteCatalog(id: string) {
     exhibition_id: catalog.exhibition_id
   })
 
+  const locales = ['en', 'bn']
+  locales.forEach(loc => {
+    revalidatePath(`/${loc}/admin/catalogs`)
+    revalidatePath(`/${loc}/admin/exhibitions/${catalog.exhibition_id}`)
+    revalidatePath(`/${loc}/catalogs`)
+    revalidatePath(`/${loc}/catalogs/${id}`)
+    revalidatePath(`/${loc}/exhibitions/${catalog.exhibition_id}`)
+  })
   revalidatePath('/[locale]/(admin)/admin/catalogs', 'layout')
+  revalidatePath('/[locale]/(admin)/admin/exhibitions/[id]', 'layout')
   revalidatePath('/[locale]/(public)/catalogs', 'layout')
   revalidatePath('/[locale]/(public)/exhibitions', 'layout')
-  revalidatePath(`/[locale]/(public)/exhibitions/${catalog.exhibition_id}`, 'layout')
 
   return { success: true }
 }

@@ -33,13 +33,13 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
   // Fetch related counts and catalog
   const [galleryRes, catalogRes, artistsRes, artworksRes] = await Promise.all([
     supabase.from('gallery').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
-    supabase.from('catalogs').select('*').eq('exhibition_id', id).maybeSingle(),
+    supabase.from('catalogs').select('*').eq('exhibition_id', id).order('version', { ascending: false }),
     supabase.from('exhibition_artists').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
     supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
   ])
 
   const galleryCount = galleryRes.count || 0
-  const catalog = catalogRes.data || null
+  const catalogs = catalogRes.data || []
   const artistsCount = artistsRes?.count || 0
   const artworksCount = artworksRes?.count || 0
 
@@ -65,7 +65,7 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
           <BasicInfoCard exhibition={exhibition} />
           <HeroBannerCard exhibition={exhibition} />
           <GalleryAlbumCard exhibition={exhibition} />
-          <CatalogManagementCard exhibition={exhibition} catalog={catalog} />
+          <CatalogManagementCard exhibition={exhibition} catalogs={catalogs} />
         </div>
         
         <div className="space-y-8">
@@ -74,7 +74,7 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
             artworksCount={artworksCount} 
             artistsCount={artistsCount} 
             galleryCount={galleryCount} 
-            hasCatalog={!!catalog} 
+            hasCatalog={catalogs.length > 0} 
           />
           <HomepagePromotionCard exhibition={exhibition} />
           <ArtistParticipationCard exhibition={exhibition} count={artistsCount} />
