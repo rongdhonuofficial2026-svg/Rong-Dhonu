@@ -1,20 +1,35 @@
 import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/lib/i18n/routing'
-import { Plus, FileText, CheckCircle, Clock, BookOpen, Search, ArrowDownToLine } from 'lucide-react'
+import { Plus, FileText, CheckCircle, Clock, BookOpen, ArrowDownToLine } from 'lucide-react'
 import Image from "next/image"
-import { Input } from "@/components/ui/input"
 import { LuxuryCard } from "@/components/admin/ui/LuxuryCard"
 import { GlassPanel } from "@/components/admin/ui/GlassPanel"
 import { CatalogActions } from '@/components/admin/catalogs/CatalogActions'
+import { CatalogSearch } from '@/components/admin/catalogs/CatalogSearch'
+import { CatalogFilter } from '@/components/admin/catalogs/CatalogFilter'
 
-export default async function AdminCatalogsPage() {
+export default async function AdminCatalogsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ query?: string; status?: string }>
+}) {
   const supabase = await createClient()
+  const { query, status } = await searchParams
 
-  // We fetch exhibitions.hero_image_url to use as catalog cover
-  const { data: catalogs, error } = await supabase
+  let queryBuilder = supabase
     .from('catalogs')
-    .select('*, exhibitions(theme_en, year, hero_image_url)')
+    .select('*, exhibitions!inner(theme_en, year, hero_image_url)')
     .order('created_at', { ascending: false })
+
+  if (status && status !== 'all') {
+    queryBuilder = queryBuilder.eq('status', status)
+  }
+
+  if (query) {
+    queryBuilder = queryBuilder.or(`title_en.ilike.%${query}%,title_bn.ilike.%${query}%,exhibitions.theme_en.ilike.%${query}%`)
+  }
+
+  const { data: catalogs, error } = await queryBuilder
 
   if (error) {
     return <div className="p-8 text-destructive">Error loading catalogs: {error.message}</div>
@@ -65,18 +80,8 @@ export default async function AdminCatalogsPage() {
       {/* Directory Section */}
       <section className="space-y-8">
         <GlassPanel intensity="medium" className="p-4 rounded-2xl flex flex-col sm:flex-row justify-between gap-4 items-center">
-          <div className="relative w-full sm:flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search documents by title or exhibition..." 
-              className="pl-11 bg-black/20 border-white/10 focus-visible:ring-accent rounded-xl h-11 text-foreground placeholder:text-muted-foreground/70"
-            />
-          </div>
-          <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-            <button className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm whitespace-nowrap hover:bg-white/20 transition-colors">All Documents</button>
-            <button className="px-4 py-2 rounded-lg bg-black/40 text-muted-foreground text-sm whitespace-nowrap hover:bg-white/10 hover:text-white transition-colors border border-white/5">Published</button>
-            <button className="px-4 py-2 rounded-lg bg-black/40 text-muted-foreground text-sm whitespace-nowrap hover:bg-white/10 hover:text-white transition-colors border border-white/5">Drafts</button>
-          </div>
+          <CatalogSearch />
+          <CatalogFilter />
         </GlassPanel>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
