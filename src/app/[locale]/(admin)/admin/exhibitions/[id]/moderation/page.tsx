@@ -27,7 +27,8 @@ export default async function ExhibitionModerationPage({
     .from('artworks')
     .select(`
       id, title_en, title_bn, medium_en, medium_bn, dimensions,
-      category, theme, description_en, price, status, notes,
+      category, theme, description_en, price, status,
+      notes, moderator_feedback, approved_at, approved_by,
       main_image_url, created_at, artist_id, exhibition_id,
       profiles!artist_id (
         id, full_name_en, full_name_bn, phone, avatar_url, instagram_url, website_url
@@ -35,6 +36,7 @@ export default async function ExhibitionModerationPage({
     `)
     .eq('exhibition_id', id)
     .order('created_at', { ascending: false })
+
 
   if (error) {
     return <div className="p-8 text-destructive">Error loading artworks: {error.message}</div>

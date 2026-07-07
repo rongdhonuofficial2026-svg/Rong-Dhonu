@@ -6,7 +6,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { Loader2, Search, Check, X, MessageSquare, ZoomIn, Info, User, Calendar, ExternalLink } from "lucide-react"
+import {
+  Loader2, Search, Check, X, MessageSquare, ZoomIn, Info,
+  User, Calendar, ExternalLink, AlertCircle
+} from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { LuxuryCard } from "@/components/admin/ui/LuxuryCard"
 import { PremiumButton } from "@/components/admin/ui/PremiumButton"
@@ -35,13 +38,14 @@ interface Artwork {
   price?: number | null
   status: string
   notes?: string | null
+  moderator_feedback?: string | null
   main_image_url?: string | null
   created_at?: string
-  // Supabase foreign-table join can return [] or a single object depending on cardinality
+  approved_at?: string | null
   profiles?: ArtworkProfile | ArtworkProfile[] | null
 }
 
-// Helper to always get a single profile from the Supabase join result
+// Helper: always return a single profile from Supabase join (array or object)
 function getProfile(profiles: ArtworkProfile | ArtworkProfile[] | null | undefined): ArtworkProfile | null {
   if (!profiles) return null
   if (Array.isArray(profiles)) return profiles[0] ?? null
@@ -50,15 +54,15 @@ function getProfile(profiles: ArtworkProfile | ArtworkProfile[] | null | undefin
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    pending: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-    approved: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-    rejected: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+    pending:           'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    approved:          'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    rejected:          'bg-rose-500/10 text-rose-400 border-rose-500/30',
     changes_requested: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
   }
   const labels: Record<string, string> = {
-    pending: 'Pending',
-    approved: 'Approved',
-    rejected: 'Rejected',
+    pending:           'Pending',
+    approved:          'Approved',
+    rejected:          'Rejected',
     changes_requested: 'Revision Requested',
   }
   return (
@@ -84,19 +88,27 @@ function ArtistAvatar({ url, name, size = 40 }: { url?: string | null; name?: st
   )
 }
 
-export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; locale: string }) {
+export function ModerationTable({ artworks: initialArtworks, locale }: { artworks: Artwork[]; locale: string }) {
+  // Optimistic local state — artwork list that updates immediately on moderation action
+  const [artworks, setArtworks] = React.useState<Artwork[]>(initialArtworks)
   const [filter, setFilter] = React.useState('pending')
   const [search, setSearch] = React.useState('')
   const [selectedArtwork, setSelectedArtwork] = React.useState<Artwork | null>(null)
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [feedback, setFeedback] = React.useState('')
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [feedbackError, setFeedbackError] = React.useState(false)
+
+  // Sync with server-provided artworks (e.g., after revalidation)
+  React.useEffect(() => {
+    setArtworks(initialArtworks)
+  }, [initialArtworks])
 
   const counts = React.useMemo(() => ({
-    pending: artworks.filter(a => a.status === 'pending').length,
+    pending:           artworks.filter(a => a.status === 'pending').length,
     changes_requested: artworks.filter(a => a.status === 'changes_requested').length,
-    approved: artworks.filter(a => a.status === 'approved').length,
-    rejected: artworks.filter(a => a.status === 'rejected').length,
+    approved:          artworks.filter(a => a.status === 'approved').length,
+    rejected:          artworks.filter(a => a.status === 'rejected').length,
   }), [artworks])
 
   const filteredArtworks = artworks.filter(a => {
@@ -110,33 +122,77 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
 
   const handleAction = async (status: 'approved' | 'rejected' | 'changes_requested') => {
     if (!selectedArtwork) return
+
+    // Validate feedback requirement before calling server
     if ((status === 'rejected' || status === 'changes_requested') && !feedback.trim()) {
-      toast.error("Feedback Required", { description: "Please provide feedback for the artist before rejecting or requesting revisions." })
+      setFeedbackError(true)
+      toast.error('Feedback Required', {
+        description: `Moderator feedback is required before ${status === 'rejected' ? 'rejecting' : 'requesting revisions'}.`,
+      })
       return
     }
+    setFeedbackError(false)
+
+    const artworkId = selectedArtwork.id
+    const prevStatus = selectedArtwork.status
+    const trimmedFeedback = feedback.trim()
+
+    // ── Optimistic update ─────────────────────────────────────────────────────
+    setArtworks(prev =>
+      prev.map(a =>
+        a.id === artworkId
+          ? {
+              ...a,
+              status: status,
+              moderator_feedback: trimmedFeedback || a.moderator_feedback,
+              notes: trimmedFeedback || a.notes,
+              ...(status === 'approved' ? { approved_at: new Date().toISOString() } : {}),
+            }
+          : a
+      )
+    )
+    setSelectedArtwork(prev => prev ? { ...prev, status } : null)
+    setIsDialogOpen(false)
+    // ─────────────────────────────────────────────────────────────────────────
 
     setIsSubmitting(true)
-    const res = await moderateArtwork(selectedArtwork.id, status, feedback)
-    if (res.error) {
-      toast.error("Action Failed", { description: res.error })
-    } else {
-      toast.success("Decision Recorded", {
-        description: `Artwork has been ${status === 'changes_requested' ? 'sent back for revision' : status}.`
-      })
-      setIsDialogOpen(false)
-      setSelectedArtwork(null)
-      setFeedback('')
+    try {
+      const res = await moderateArtwork(artworkId, status, trimmedFeedback || undefined)
+      if (res.error) {
+        // Rollback optimistic update on failure
+        setArtworks(prev =>
+          prev.map(a => a.id === artworkId ? { ...a, status: prevStatus } : a)
+        )
+        setSelectedArtwork(null)
+        setFeedback('')
+        toast.error('Action Failed', { description: res.error })
+      } else {
+        const actionLabel = status === 'approved' ? 'approved' : status === 'rejected' ? 'rejected' : 'sent for revision'
+        toast.success('Decision Recorded', {
+          description: `Artwork "${selectedArtwork.title_en}" has been ${actionLabel}.`,
+        })
+        setSelectedArtwork(null)
+        setFeedback('')
+      }
+    } catch {
+      // Rollback on unexpected error
+      setArtworks(prev =>
+        prev.map(a => a.id === artworkId ? { ...a, status: prevStatus } : a)
+      )
+      toast.error('Unexpected Error', { description: 'Please try again.' })
+    } finally {
+      setIsSubmitting(false)
     }
-    setIsSubmitting(false)
   }
 
   const openModeration = (artwork: Artwork) => {
     setSelectedArtwork(artwork)
-    setFeedback(artwork.notes ?? '')
+    setFeedback(artwork.moderator_feedback ?? artwork.notes ?? '')
+    setFeedbackError(false)
     setIsDialogOpen(true)
   }
 
-  const formatDate = (iso?: string) => {
+  const formatDate = (iso?: string | null) => {
     if (!iso) return '—'
     return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   }
@@ -225,7 +281,7 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
                 )}
               </div>
 
-              {/* Card Info — Artist + Title */}
+              {/* Card Info */}
               <div className="p-4 flex items-center gap-3">
                 {(() => {
                   const p = getProfile(a.profiles)
@@ -249,7 +305,10 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
       </div>
 
       {/* Full Screen Moderation Appraisal Modal */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        setIsDialogOpen(open)
+        if (!open) { setFeedback(''); setFeedbackError(false) }
+      }}>
         <DialogContent className="max-w-[95vw] w-full h-[95vh] p-0 overflow-hidden bg-[#0A0A0A] border border-white/10 rounded-2xl flex flex-col md:flex-row shadow-2xl">
           {selectedArtwork && (
             <>
@@ -314,6 +373,11 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
                       <span className="text-white/40 text-xs flex items-center gap-1">
                         <Calendar className="w-3 h-3" /> Submitted {formatDate(selectedArtwork.created_at)}
                       </span>
+                      {selectedArtwork.approved_at && (
+                        <span className="text-emerald-400/60 text-xs flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Approved {formatDate(selectedArtwork.approved_at)}
+                        </span>
+                      )}
                     </div>
                   </DialogDescription>
                 </div>
@@ -324,12 +388,12 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
                   {/* Metadata Grid */}
                   <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                     {[
-                      { label: 'Medium', value: selectedArtwork.medium_en || 'Not specified' },
+                      { label: 'Medium',     value: selectedArtwork.medium_en || 'Not specified' },
                       { label: 'Dimensions', value: selectedArtwork.dimensions || 'Not specified' },
-                      { label: 'Category', value: selectedArtwork.category || 'Not specified' },
-                      { label: 'Theme', value: selectedArtwork.theme || 'Not specified' },
-                      { label: 'Price', value: selectedArtwork.price ? `₹${selectedArtwork.price}` : 'Not for sale' },
-                      { label: 'Phone', value: getProfile(selectedArtwork.profiles)?.phone || '—' },
+                      { label: 'Category',   value: selectedArtwork.category || 'Not specified' },
+                      { label: 'Theme',      value: selectedArtwork.theme || 'Not specified' },
+                      { label: 'Price',      value: selectedArtwork.price ? `৳${selectedArtwork.price}` : 'Not for sale' },
+                      { label: 'Phone',      value: getProfile(selectedArtwork.profiles)?.phone || '—' },
                     ].map(item => (
                       <div key={item.label}>
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 block mb-1">{item.label}</span>
@@ -348,24 +412,33 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
                     </p>
                   </div>
 
-                  {/* Previous Moderator Notes (if any) */}
-                  {selectedArtwork.notes && (
+                  {/* Previous Moderator Feedback */}
+                  {(selectedArtwork.moderator_feedback || selectedArtwork.notes) && (
                     <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 block mb-2">Previous Feedback</span>
-                      <p className="text-sm text-amber-200/80 leading-relaxed">{selectedArtwork.notes}</p>
+                      <p className="text-sm text-amber-200/80 leading-relaxed">
+                        {selectedArtwork.moderator_feedback || selectedArtwork.notes}
+                      </p>
                     </div>
                   )}
 
-                  {/* Feedback / Notes */}
-                  <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                  {/* New Feedback Input */}
+                  <div className={`p-4 rounded-xl border transition-colors ${feedbackError ? 'bg-rose-500/5 border-rose-500/40' : 'bg-white/5 border-white/5'}`}>
                     <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 block mb-3">
-                      Curatorial Feedback <span className="text-rose-400/80 normal-case font-normal">(required for rejection / revision)</span>
+                      Curatorial Feedback{' '}
+                      <span className="text-rose-400/80 normal-case font-normal">(required for rejection / revision)</span>
                     </label>
+                    {feedbackError && (
+                      <div className="flex items-center gap-2 text-rose-400 text-xs mb-2">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        Feedback is required before taking this action.
+                      </div>
+                    )}
                     <Textarea
                       placeholder="Add specific feedback for the artist regarding this decision..."
                       value={feedback}
-                      onChange={(e) => setFeedback(e.target.value)}
-                      className="bg-black/50 border-white/10 text-white resize-none h-28 focus-visible:ring-accent rounded-lg placeholder:text-white/20 text-sm"
+                      onChange={(e) => { setFeedback(e.target.value); if (e.target.value.trim()) setFeedbackError(false) }}
+                      className={`bg-black/50 border-white/10 text-white resize-none h-28 focus-visible:ring-accent rounded-lg placeholder:text-white/20 text-sm ${feedbackError ? 'border-rose-500/50' : ''}`}
                     />
                   </div>
                 </div>
@@ -382,7 +455,7 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
                       Approve
                     </PremiumButton>
                   )}
-                  {selectedArtwork.status !== 'changes_requested' && (
+                  {selectedArtwork.status !== 'changes_requested' && selectedArtwork.status !== 'approved' && (
                     <PremiumButton
                       onClick={() => handleAction('changes_requested')}
                       disabled={isSubmitting}
@@ -393,7 +466,7 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
                       Request Revision
                     </PremiumButton>
                   )}
-                  {selectedArtwork.status !== 'rejected' && (
+                  {selectedArtwork.status !== 'rejected' && selectedArtwork.status !== 'approved' && (
                     <PremiumButton
                       onClick={() => handleAction('rejected')}
                       disabled={isSubmitting}
@@ -403,6 +476,12 @@ export function ModerationTable({ artworks, locale }: { artworks: Artwork[]; loc
                       {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4 mr-1.5" />}
                       Reject
                     </PremiumButton>
+                  )}
+                  {selectedArtwork.status === 'approved' && (
+                    <div className="flex-1 flex items-center justify-center gap-2 text-emerald-400 text-sm font-medium">
+                      <Check className="w-4 h-4" />
+                      This artwork has been approved.
+                    </div>
                   )}
                 </div>
               </div>
