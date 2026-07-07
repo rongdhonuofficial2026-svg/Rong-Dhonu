@@ -2,26 +2,11 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
-import { z } from "zod"
-
-const profileSchema = z.object({
-  full_name_en: z.string().min(2),
-  full_name_bn: z.string().optional(),
-  bio_en: z.string().optional(),
-  bio_bn: z.string().optional(),
-  phone: z.string().optional(),
-  instagram_url: z.string().url().optional().or(z.literal('')),
-  website_url: z.string().url().optional().or(z.literal('')),
-  notify_email: z.boolean().optional(),
-  notify_in_app: z.boolean().optional(),
-  notify_exhibition_announcements: z.boolean().optional(),
-  notify_deadline_reminders: z.boolean().optional(),
-  notify_artwork_updates: z.boolean().optional(),
-})
+import { profileUpdateSchema } from "@/lib/validations/schemas"
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user }, error: userError } = await supabase.auth.getUser()
   if (userError || !user) {
     return { error: 'Unauthorized' }
@@ -29,12 +14,12 @@ export async function updateProfile(formData: FormData) {
 
   const rawData = {
     full_name_en: formData.get('full_name_en') as string,
-    full_name_bn: formData.get('full_name_bn') as string,
-    bio_en: formData.get('bio_en') as string,
-    bio_bn: formData.get('bio_bn') as string,
-    phone: formData.get('phone') as string,
-    instagram_url: formData.get('instagram_url') as string,
-    website_url: formData.get('website_url') as string,
+    full_name_bn: (formData.get('full_name_bn') as string) || undefined,
+    bio_en: (formData.get('bio_en') as string) || undefined,
+    bio_bn: (formData.get('bio_bn') as string) || undefined,
+    phone: (formData.get('phone') as string) || undefined,
+    instagram_url: (formData.get('instagram_url') as string) || undefined,
+    website_url: (formData.get('website_url') as string) || undefined,
     notify_email: formData.get('notify_email') === 'true',
     notify_in_app: formData.get('notify_in_app') === 'true',
     notify_exhibition_announcements: formData.get('notify_exhibition_announcements') === 'true',
@@ -42,10 +27,11 @@ export async function updateProfile(formData: FormData) {
     notify_artwork_updates: formData.get('notify_artwork_updates') === 'true',
   }
 
-  const validatedFields = profileSchema.safeParse(rawData)
+  const validatedFields = profileUpdateSchema.safeParse(rawData)
 
   if (!validatedFields.success) {
-    return { error: 'Invalid fields', details: validatedFields.error.flatten().fieldErrors }
+    const firstError = validatedFields.error.issues[0]
+    return { error: `${firstError.path.join('.')}: ${firstError.message}` }
   }
 
   const { error } = await supabase
@@ -57,6 +43,68 @@ export async function updateProfile(formData: FormData) {
     return { error: error.message }
   }
 
-  revalidatePath('/[locale]/dashboard/profile', 'page')
+  revalidatePath(`/en/dashboard/profile`)
+  revalidatePath(`/bn/dashboard/profile`)
+  revalidatePath(`/en/artists`)
+  revalidatePath(`/bn/artists`)
+
+  return { success: true }
+}
+
+export async function uploadAvatar(avatarUrl: string) {
+  const supabase = await createClient()
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (userError || !user) {
+    return { error: 'Unauthorized' }
+  }
+
+  // Validate it is a valid URL
+  try {
+    new URL(avatarUrl)
+  } catch {
+    return { error: 'Invalid avatar URL.' }
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ avatar_url: avatarUrl })
+    .eq('id', user.id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  // Revalidate everywhere profile pictures are shown
+  revalidatePath(`/en/dashboard/profile`)
+  revalidatePath(`/bn/dashboard/profile`)
+  revalidatePath(`/en/artists`)
+  revalidatePath(`/bn/artists`)
+  revalidatePath(`/en`)
+  revalidatePath(`/bn`)
+  revalidatePath(`/en/gallery`)
+  revalidatePath(`/bn/gallery`)
+
+  return { success: true }
+}
+
+export async function deleteAvatar() {
+  const supabase = await createClient()
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (userError || !user) {
+    return { error: 'Unauthorized' }
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ avatar_url: null })
+    .eq('id', user.id)
+
+  if (error) return { error: error.message }
+
+  revalidatePath(`/en/dashboard/profile`)
+  revalidatePath(`/bn/dashboard/profile`)
+
   return { success: true }
 }

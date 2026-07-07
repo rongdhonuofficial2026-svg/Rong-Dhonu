@@ -2,9 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
-import { createNotification } from "@/actions/notifications"
-import { logAudit } from "@/lib/audit"
-import { artworkSubmissionSchema } from "@/lib/validations/schemas"
 
 export async function submitArtwork(payload: {
   title_en: string
@@ -19,40 +16,38 @@ export async function submitArtwork(payload: {
   price?: string
   main_image_url?: string
   exhibitionId?: string
-  // Allow extra UI-only fields (e.g. theme, category, availability, image_file) to pass through
+  category?: string
+  theme?: string
+  availability?: string
   [key: string]: unknown
 }) {
   const supabase = await createClient()
 
   const { data: { user }, error: userError } = await supabase.auth.getUser()
   if (userError || !user) {
-    return { error: 'Unauthorized' }
+    return { error: 'Unauthorized. Please sign in and try again.' }
   }
 
-  // Validate with Zod
-  const validation = artworkSubmissionSchema.safeParse({
-    title_en: payload.title_en,
-    title_bn: payload.title_bn,
-    description_en: payload.description_en,
-    description_bn: payload.description_bn,
-    medium_en: payload.medium_en,
-    medium_bn: payload.medium_bn,
-    width: payload.width,
-    height: payload.height,
-    framed: payload.framed,
-    price: payload.price,
-    main_image_url: payload.main_image_url,
-    exhibitionId: payload.exhibitionId,
-  })
-
-  if (!validation.success) {
-    return { error: validation.error.issues[0].message }
+  // Validate required fields
+  const title = payload.title_en?.trim()
+  if (!title || title.length < 2) {
+    return { error: 'Artwork title (English) is required and must be at least 2 characters.' }
   }
 
-  const data = validation.data
+  // Resolve exhibition: explicit selection takes priority, then auto-assign to active exhibition
+  let targetExhibitionId: string | null = null
+  
+  const rawExhibitionId = payload.exhibitionId
+  if (rawExhibitionId && rawExhibitionId !== 'none' && rawExhibitionId !== '') {
+    // Validate it looks like a UUID before using it
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (uuidRegex.test(rawExhibitionId)) {
+      targetExhibitionId = rawExhibitionId
+    }
+  }
 
-  let targetExhibitionId = data.exhibitionId
   if (!targetExhibitionId) {
+    // Auto-assign to active submission window
     const { getFeaturedExhibition } = await import("@/lib/exhibition-lifecycle")
     const featured = await getFeaturedExhibition()
     if (featured) {
@@ -60,39 +55,64 @@ export async function submitArtwork(payload: {
     }
   }
 
+  // Build dimensions string
+  const dimensionsStr = payload.width && payload.height
+    ? `${payload.width} x ${payload.height} inches${payload.framed ? ' (Framed)' : ''}`
+    : null
+
+  // Build price value
+  const priceVal = payload.price && payload.price !== '' 
+    ? parseFloat(payload.price) 
+    : null
+
   const artworkRecord = {
     artist_id: user.id,
-    exhibition_id: targetExhibitionId || null,
-    title_en: data.title_en,
-    title_bn: data.title_bn || null,
-    description_en: data.description_en || null,
-    description_bn: data.description_bn || null,
-    medium_en: data.medium_en || null,
-    medium_bn: data.medium_bn || null,
-    dimensions:
-      data.width && data.height
-        ? `${data.width} x ${data.height} cm${data.framed ? ' (Framed)' : ''}`
-        : null,
+    exhibition_id: targetExhibitionId,
+    title_en: title,
+    title_bn: payload.title_bn?.trim() || null,
+    description_en: payload.description_en?.trim() || null,
+    description_bn: payload.description_bn?.trim() || null,
+    medium_en: payload.medium_en?.trim() || null,
+    medium_bn: payload.medium_bn?.trim() || null,
+    materials_en: null,
+    materials_bn: null,
+    dimensions: dimensionsStr,
+    category: payload.category || null,
+    theme: payload.theme || null,
+    framed: payload.framed || false,
     year: new Date().getFullYear(),
     status: 'pending' as const,
-    price: data.price ? parseFloat(data.price) : null,
-    main_image_url: data.main_image_url || null,
+    price: priceVal,
+    main_image_url: payload.main_image_url || null,
+    availability: (payload.availability === 'available' ? 'available' : 'not_for_sale') as 'available' | 'not_for_sale',
   }
 
-  const { data: inserted, error } = await supabase
+  const { data: inserted, error: insertError } = await supabase
     .from('artworks')
     .insert([artworkRecord])
-    .select('id')
+    .select('id, title_en')
     .single()
 
-  if (error) {
-    console.error('Artwork submission error:', error.message)
-    return { error: 'Failed to submit artwork. Please try again.' }
+  if (insertError) {
+    console.error('Artwork insert error:', insertError)
+    return { error: `Failed to save artwork: ${insertError.message}` }
   }
 
   const artworkId = inserted.id
 
-  // Handle exhibition registration if targetExhibitionId was found
+  // If we have an image URL, also insert into artwork_images table
+  if (payload.main_image_url) {
+    await supabase.from('artwork_images').insert({
+      artwork_id: artworkId,
+      type: 'main',
+      url_medium: payload.main_image_url,
+      url_high: payload.main_image_url,
+      url_thumbnail: payload.main_image_url,
+      order_index: 0,
+    })
+  }
+
+  // Auto-register artist as participant for the exhibition
   if (targetExhibitionId) {
     const { data: existingReg } = await supabase
       .from('exhibition_participants')
@@ -110,25 +130,61 @@ export async function submitArtwork(payload: {
     }
   }
 
-  // Audit log
-  await logAudit('submit_artwork', 'artwork', artworkId, {
-    action: 'submit',
-    title: data.title_en,
+  // Create submission confirmation notification for the artist
+  await supabase.from('notifications').insert({
+    user_id: user.id,
+    type: 'submission_received',
+    message_en: `Your artwork "${title}" has been received and is pending review by our team.`,
+    message_bn: `আপনার শিল্পকর্ম "${payload.title_bn || title}" সফলভাবে জমা দেওয়া হয়েছে। আমাদের টিম শীঘ্রই পর্যালোচনা করবে।`,
   })
 
-  // Confirmation notification to the artist
-  await createNotification(
-    user.id,
-    'submission_received',
-    `Your artwork "${data.title_en}" has been received and is pending review.`,
-    `আপনার শিল্পকর্ম "${data.title_bn || data.title_en}" সফলভাবে জমা দেওয়া হয়েছে এবং পর্যালোচনার অপেক্ষায় রয়েছে।`,
-    {
-      subject: 'Rongdhonu: Artwork Submission Received',
-      html: `<p>Hello,</p><p>We have received your artwork <strong>${data.title_en}</strong>. Our admins will review it shortly.</p>`,
-      category: 'notify_artwork_updates',
-    }
-  )
+  // Audit log
+  await supabase.from('audit_logs').insert({
+    actor_id: user.id,
+    action: 'submit_artwork',
+    entity_type: 'artwork',
+    entity_id: artworkId,
+    details: { title: title, exhibition_id: targetExhibitionId },
+  })
 
-  revalidatePath('/[locale]/(protected)/dashboard/artworks', 'page')
+  // Revalidate all affected pages
+  revalidatePath(`/en/dashboard/artworks`)
+  revalidatePath(`/bn/dashboard/artworks`)
+  revalidatePath(`/en/admin/artworks`)
+  revalidatePath(`/bn/admin/artworks`)
+  revalidatePath(`/en/admin/exhibitions`)
+  revalidatePath(`/bn/admin/exhibitions`)
+
   return { success: true, artworkId }
+}
+
+export async function updateArtworkStatus(
+  artworkId: string,
+  status: 'pending' | 'approved' | 'rejected' | 'changes_requested',
+  notes?: string
+) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  // Verify admin
+  const { data: profile } = await supabase
+    .from('profiles').select('role').eq('id', user.id).single()
+  if (!profile || profile.role !== 'admin') return { error: 'Forbidden' }
+
+  const { error } = await supabase
+    .from('artworks')
+    .update({ status, notes: notes || null })
+    .eq('id', artworkId)
+
+  if (error) return { error: error.message }
+
+  revalidatePath(`/en/admin/artworks`)
+  revalidatePath(`/bn/admin/artworks`)
+  revalidatePath(`/en/gallery`)
+  revalidatePath(`/bn/gallery`)
+  revalidatePath(`/en`)
+  revalidatePath(`/bn`)
+
+  return { success: true }
 }

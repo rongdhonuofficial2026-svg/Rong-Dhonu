@@ -22,13 +22,15 @@ export default async function ExhibitionModerationPage({
     notFound()
   }
 
-  // Fetch artworks specific to this exhibition
+  // Fetch artworks specific to this exhibition with full artist profile
   const { data: artworks, error } = await supabase
     .from('artworks')
     .select(`
-      *,
+      id, title_en, title_bn, medium_en, medium_bn, dimensions,
+      category, theme, description_en, price, status, notes,
+      main_image_url, created_at, artist_id, exhibition_id,
       profiles!artist_id (
-        full_name_en, phone
+        id, full_name_en, full_name_bn, phone, avatar_url, instagram_url, website_url
       )
     `)
     .eq('exhibition_id', id)

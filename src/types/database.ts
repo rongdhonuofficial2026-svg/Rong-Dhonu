@@ -88,13 +88,14 @@ export type Database = {
           artist_id: string | null
           availability:
             | Database["public"]["Enums"]["availability_status"]
+            | string
             | null
           category: string | null
           created_at: string | null
           creation_date: string | null
           description_bn: string | null
           description_en: string | null
-          dimensions: string
+          dimensions: string | null
           display_location: string | null
           exhibition_id: string | null
           framed: boolean | null
@@ -102,31 +103,34 @@ export type Database = {
           gdrive_backup_id: string | null
           id: string
           insurance_value: number | null
-          materials_bn: string
-          materials_en: string
-          medium_bn: string
-          medium_en: string
+          main_image_url: string | null
+          materials_bn: string | null
+          materials_en: string | null
+          medium_bn: string | null
+          medium_en: string | null
           notes: string | null
           orientation: string | null
           price: number | null
           status: Database["public"]["Enums"]["artwork_status"] | null
           theme: string | null
-          title_bn: string
+          title_bn: string | null
           title_en: string
           updated_at: string | null
           weight: string | null
+          year: number | null
         }
         Insert: {
           artist_id?: string | null
           availability?:
             | Database["public"]["Enums"]["availability_status"]
+            | string
             | null
           category?: string | null
           created_at?: string | null
           creation_date?: string | null
           description_bn?: string | null
           description_en?: string | null
-          dimensions: string
+          dimensions?: string | null
           display_location?: string | null
           exhibition_id?: string | null
           framed?: boolean | null
@@ -134,31 +138,34 @@ export type Database = {
           gdrive_backup_id?: string | null
           id?: string
           insurance_value?: number | null
-          materials_bn: string
-          materials_en: string
-          medium_bn: string
-          medium_en: string
+          main_image_url?: string | null
+          materials_bn?: string | null
+          materials_en?: string | null
+          medium_bn?: string | null
+          medium_en?: string | null
           notes?: string | null
           orientation?: string | null
           price?: number | null
           status?: Database["public"]["Enums"]["artwork_status"] | null
           theme?: string | null
-          title_bn: string
+          title_bn?: string | null
           title_en: string
           updated_at?: string | null
           weight?: string | null
+          year?: number | null
         }
         Update: {
           artist_id?: string | null
           availability?:
             | Database["public"]["Enums"]["availability_status"]
+            | string
             | null
           category?: string | null
           created_at?: string | null
           creation_date?: string | null
           description_bn?: string | null
           description_en?: string | null
-          dimensions?: string
+          dimensions?: string | null
           display_location?: string | null
           exhibition_id?: string | null
           framed?: boolean | null
@@ -166,19 +173,21 @@ export type Database = {
           gdrive_backup_id?: string | null
           id?: string
           insurance_value?: number | null
-          materials_bn?: string
-          materials_en?: string
-          medium_bn?: string
-          medium_en?: string
+          main_image_url?: string | null
+          materials_bn?: string | null
+          materials_en?: string | null
+          medium_bn?: string | null
+          medium_en?: string | null
           notes?: string | null
           orientation?: string | null
           price?: number | null
           status?: Database["public"]["Enums"]["artwork_status"] | null
           theme?: string | null
-          title_bn?: string
+          title_bn?: string | null
           title_en?: string
           updated_at?: string | null
           weight?: string | null
+          year?: number | null
         }
         Relationships: [
           {
@@ -803,6 +812,7 @@ export type Database = {
           full_name_bn: string | null
           full_name_en: string | null
           id: string
+          instagram_url: string | null
           notify_artwork_updates: boolean | null
           notify_deadline_reminders: boolean | null
           notify_email: boolean | null
@@ -814,6 +824,7 @@ export type Database = {
           social_links: Json | null
           statistics: Json | null
           updated_at: string | null
+          website_url: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -825,6 +836,7 @@ export type Database = {
           full_name_bn?: string | null
           full_name_en?: string | null
           id: string
+          instagram_url?: string | null
           notify_artwork_updates?: boolean | null
           notify_deadline_reminders?: boolean | null
           notify_email?: boolean | null
@@ -836,6 +848,7 @@ export type Database = {
           social_links?: Json | null
           statistics?: Json | null
           updated_at?: string | null
+          website_url?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -847,6 +860,7 @@ export type Database = {
           full_name_bn?: string | null
           full_name_en?: string | null
           id?: string
+          instagram_url?: string | null
           notify_artwork_updates?: boolean | null
           notify_deadline_reminders?: boolean | null
           notify_email?: boolean | null
@@ -858,6 +872,7 @@ export type Database = {
           social_links?: Json | null
           statistics?: Json | null
           updated_at?: string | null
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -878,6 +893,8 @@ export type Database = {
       availability_status: "available" | "sold" | "not_for_sale"
       exhibition_status:
         | "draft"
+        | "upcoming"
+        | "ongoing"
         | "registration_open"
         | "submission_open"
         | "submission_closed"

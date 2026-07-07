@@ -2,23 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
-import { SupabaseClient, User } from "@supabase/supabase-js"
-import { createNotification } from "@/actions/notifications"
-import { logAudit } from "@/lib/audit"
 import { moderateArtworkSchema } from "@/lib/validations/schemas"
-
-// Validate admin helper
-async function requireAdmin(supabase: SupabaseClient, user: User | null): Promise<void> {
-  if (!user) throw new Error('Unauthorized')
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  if (!profile || profile.role !== 'admin') {
-    throw new Error('Forbidden: Admin access required')
-  }
-}
 
 export async function moderateArtwork(
   artworkId: string,
@@ -37,10 +21,15 @@ export async function moderateArtwork(
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) return { error: 'Unauthorized' }
 
-  try {
-    await requireAdmin(supabase, user)
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : 'Forbidden' }
+  // Verify admin role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile || profile.role !== 'admin') {
+    return { error: 'Forbidden: Admin access required' }
   }
 
   // Use the transactional RPC to update status, audit log, and notify the artist
@@ -53,9 +42,17 @@ export async function moderateArtwork(
 
   if (rpcError) return { error: rpcError.message }
 
-  revalidatePath('/[locale]/(admin)/admin/exhibitions/[id]/moderation', 'page')
-  revalidatePath('/[locale]/(admin)/admin/artworks', 'page')
-  revalidatePath('/[locale]/(public)/gallery', 'page')
-  revalidatePath('/', 'layout') // Revalidate entire app to update Homepage Featured Artists and Exhibition Counts
+  // Broad revalidation so all UIs update immediately
+  revalidatePath(`/en/admin/exhibitions`)
+  revalidatePath(`/bn/admin/exhibitions`)
+  revalidatePath(`/en/admin/artworks`)
+  revalidatePath(`/bn/admin/artworks`)
+  revalidatePath(`/en/gallery`)
+  revalidatePath(`/bn/gallery`)
+  revalidatePath(`/en`)
+  revalidatePath(`/bn`)
+  revalidatePath(`/en/dashboard/artworks`)
+  revalidatePath(`/bn/dashboard/artworks`)
+
   return { success: true }
 }
