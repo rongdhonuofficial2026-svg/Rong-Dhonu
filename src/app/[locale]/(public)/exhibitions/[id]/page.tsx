@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Link } from "@/lib/i18n/routing"
 import Image from "next/image"
 import { ExhibitionCard } from "@/components/museum/exhibition-card"
+import { CatalogDownloadButton } from "@/components/public/catalogs/CatalogDownloadButton"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
@@ -125,16 +126,10 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
               
               <div className="pt-8 border-t border-border/50">
                 {catalog ? (
-                  <a
-                    href={`/api/catalogs/download?id=${catalog.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="w-full h-14 rounded-none uppercase tracking-widest text-xs font-bold transition-all hover:scale-[1.02]">
-                      <Download className="w-4 h-4 mr-3" />
-                      {locale === 'bn' ? 'ক্যাটালগ ডাউনলোড' : 'Download Catalog'}
-                    </Button>
-                  </a>
+                  <CatalogDownloadButton 
+                    catalog={catalog} 
+                    className="w-full h-14 rounded-none uppercase tracking-widest text-xs font-bold transition-all hover:scale-[1.02] flex items-center justify-center gap-3 bg-primary text-primary-foreground hover:bg-primary/90" 
+                  />
                 ) : (
                   <Button className="w-full h-14 rounded-none uppercase tracking-widest text-xs font-bold" variant="outline" disabled>
                     <Download className="w-4 h-4 mr-3" />

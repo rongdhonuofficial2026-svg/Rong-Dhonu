@@ -1,18 +1,19 @@
 import { createClient } from '@/lib/supabase/server'
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
-import { Download, BookOpen, Calendar, Globe } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { BookOpen, Calendar, Globe } from 'lucide-react'
+import { CatalogDownloadButton } from '@/components/public/catalogs/CatalogDownloadButton'
 
-export default async function PublicCatalogsPage({ params: { locale } }: { params: { locale: string } }) {
+export default async function PublicCatalogsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   const supabase = await createClient()
   const t = await getTranslations('Public')
 
   const { data: catalogs } = await supabase
     .from('catalogs')
-    .select('*, exhibitions(theme_en, theme_bn, year)')
+    .select('*, exhibitions(theme_en, theme_bn, year, hero_image_url)')
     .eq('status', 'published')
-    .order('year', { ascending: false })
+    .order('published_at', { ascending: false })
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-6xl">
@@ -36,30 +37,25 @@ export default async function PublicCatalogsPage({ params: { locale } }: { param
             const exhibitionTitle = locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en
             const title = locale === 'bn' && cat.title_bn ? cat.title_bn : cat.title_en
             const description = locale === 'bn' && cat.description_bn ? cat.description_bn : cat.description_en
+            const coverImage = ex.hero_image_url || '/images/catalogs_hero.png'
 
             return (
               <div key={cat.id} className="group relative bg-card rounded-2xl border shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
-                <div className="aspect-[3/4] relative bg-muted overflow-hidden">
-                  {cat.cover_image_url ? (
-                    <Image
-                      src={cat.cover_image_url}
-                      alt={title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30">
-                      <BookOpen className="w-24 h-24" />
-                    </div>
-                  )}
+                <div className="aspect-[4/3] relative bg-muted overflow-hidden">
+                  <Image
+                    src={coverImage}
+                    alt={title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-center gap-2 text-xs font-medium text-primary mb-3">
                     <Calendar className="w-3.5 h-3.5" />
-                    {cat.year}
+                    {ex.year}
                     <span className="text-muted-foreground/50 mx-1">•</span>
                     <Globe className="w-3.5 h-3.5" />
                     {cat.language.toUpperCase()}
@@ -76,14 +72,9 @@ export default async function PublicCatalogsPage({ params: { locale } }: { param
                   
                   <div className="mt-auto pt-4 border-t flex items-center justify-between">
                     <div className="text-xs text-muted-foreground">
-                      v{cat.version} • {cat.total_downloads || 0} downloads
+                      v{cat.version} • {(cat.file_size / 1024 / 1024).toFixed(1)} MB
                     </div>
-                    <Button size="sm" className="gap-2" asChild>
-                      <a href={cat.pdf_url} target="_blank" rel="noopener noreferrer">
-                        <Download className="w-4 h-4" />
-                        Download PDF
-                      </a>
-                    </Button>
+                    <CatalogDownloadButton catalog={cat} />
                   </div>
                 </div>
               </div>

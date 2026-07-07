@@ -1,19 +1,39 @@
 import { createClient } from '@/lib/supabase/server'
-import { CatalogForm } from '@/components/admin/CatalogForm'
-import { notFound } from 'next/navigation'
+import { CatalogForm } from '@/components/admin/catalogs/CatalogForm'
+import { BookOpen } from 'lucide-react'
 
 export default async function NewCatalogPage() {
   const supabase = await createClient()
-  
+
+  // Fetch exhibitions that DO NOT already have a catalog
   const { data: exhibitions } = await supabase
     .from('exhibitions')
-    .select('id, theme_en, year')
+    .select('id, theme_en, theme_bn, year')
     .order('year', { ascending: false })
 
+  const { data: existingCatalogs } = await supabase
+    .from('catalogs')
+    .select('exhibition_id')
+
+  const existingIds = new Set(existingCatalogs?.map(c => c.exhibition_id) || [])
+  const availableExhibitions = exhibitions?.filter(ex => !existingIds.has(ex.id)) || []
+
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Upload Catalog Document</h1>
-      <CatalogForm exhibitions={exhibitions || []} />
+    <div className="space-y-10 pb-20">
+      <div className="flex flex-col gap-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border-white/20 w-max mb-2">
+          <BookOpen className="w-4 h-4 text-amber-400" />
+          <span className="text-xs font-medium tracking-widest uppercase">New Catalog</span>
+        </div>
+        <h1 className="font-serif text-4xl font-bold text-shadow-elegant">
+          Archive <span className="text-gradient-gold">Exhibition Catalog</span>
+        </h1>
+        <p className="text-muted-foreground max-w-2xl text-lg">
+          Upload the official PDF catalog for an exhibition. Each exhibition can only have one official catalog.
+        </p>
+      </div>
+
+      <CatalogForm exhibitions={availableExhibitions} />
     </div>
   )
 }

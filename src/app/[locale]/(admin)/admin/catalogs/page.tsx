@@ -1,18 +1,20 @@
 import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/lib/i18n/routing'
-import { Plus, Edit, Trash, FileText, Download, CheckCircle, Clock, BookOpen, Search, MoreVertical } from 'lucide-react'
+import { Plus, Edit, Trash, FileText, Download, CheckCircle, Clock, BookOpen, Search, Eye, Power, ArrowDownToLine } from 'lucide-react'
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { LuxuryCard } from "@/components/admin/ui/LuxuryCard"
 import { PremiumButton } from "@/components/admin/ui/PremiumButton"
 import { GlassPanel } from "@/components/admin/ui/GlassPanel"
+import { CatalogActions } from '@/components/admin/catalogs/CatalogActions' // I will create this client component
 
 export default async function AdminCatalogsPage() {
   const supabase = await createClient()
 
+  // We fetch exhibitions.hero_image_url to use as catalog cover
   const { data: catalogs, error } = await supabase
     .from('catalogs')
-    .select('*, exhibitions(theme_en, year)')
+    .select('*, exhibitions(theme_en, year, hero_image_url)')
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -52,7 +54,7 @@ export default async function AdminCatalogsPage() {
           <div className="w-full sm:w-auto">
             <PremiumButton variant="primary" asChild leftIcon={<Plus className="w-4 h-4" />}>
               <Link href="/admin/catalogs/new">
-                Archive Catalog
+                Create Catalog
               </Link>
             </PremiumButton>
           </div>
@@ -65,7 +67,7 @@ export default async function AdminCatalogsPage() {
           <div className="relative w-full sm:flex-1 max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
-              placeholder="Search documents by title or year..." 
+              placeholder="Search documents by title or exhibition..." 
               className="pl-11 bg-black/20 border-white/10 focus-visible:ring-accent rounded-xl h-11 text-foreground placeholder:text-muted-foreground/70"
             />
           </div>
@@ -83,47 +85,60 @@ export default async function AdminCatalogsPage() {
                 <FileText className="w-10 h-10 text-muted-foreground/50" />
               </div>
               <h3 className="font-serif text-2xl mb-2">No catalogs found</h3>
-              <p className="text-muted-foreground">Upload the first historical document to begin the archive.</p>
+              <p className="text-muted-foreground">Upload the first official catalog for an exhibition.</p>
             </div>
           ) : (
-            catalogs.map((cat: any) => (
-              <LuxuryCard key={cat.id} padding="none" className="overflow-hidden group">
-                <div className="p-6 relative z-10 flex flex-col h-full">
+            catalogs.map((cat: any) => {
+              const exhibition = cat.exhibitions as any;
+              const coverImage = exhibition?.hero_image_url || '/images/catalogs_hero.png';
+              
+              return (
+              <LuxuryCard key={cat.id} padding="none" className="overflow-hidden group h-[380px] flex flex-col">
+                <div className="relative h-40 w-full shrink-0">
+                  <Image 
+                    src={coverImage} 
+                    alt={cat.title_en}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90" />
+                  
                   {/* Status Badge */}
-                  <div className="absolute top-6 right-6">
+                  <div className="absolute top-4 right-4">
                     {cat.status === 'published' ? (
-                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-emerald-500/20 text-emerald-300 border-emerald-500/40 flex items-center gap-1.5">
+                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-emerald-500/20 text-emerald-300 border-emerald-500/40 flex items-center gap-1.5 shadow-xl">
                         <CheckCircle className="w-3 h-3" /> Published
                       </span>
-                    ) : cat.status === 'archived' ? (
-                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-white/5 text-white/70 border-white/10">
-                        Archived
-                      </span>
                     ) : (
-                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-amber-500/20 text-amber-300 border-amber-500/40 flex items-center gap-1.5">
+                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-amber-500/20 text-amber-300 border-amber-500/40 flex items-center gap-1.5 shadow-xl">
                         <Clock className="w-3 h-3" /> Draft
                       </span>
                     )}
                   </div>
+                </div>
 
+                <div className="p-6 relative z-10 flex flex-col flex-1 mt-[-60px]">
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-black border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-black border border-amber-500/30 flex items-center justify-center shrink-0 shadow-xl backdrop-blur-md">
                       <FileText className="w-6 h-6 text-amber-400/80" />
                     </div>
-                    <div className="flex-1 min-w-0 pt-1 pr-16">
+                    <div className="flex-1 min-w-0 pt-1 pr-2">
                       <h3 className="font-serif font-bold text-xl text-foreground line-clamp-1 group-hover:text-gradient-gold transition-all duration-500">
                         {cat.title_en}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground/70 mt-1">
                         <span className="uppercase tracking-widest font-mono text-[10px] border border-white/10 px-2 py-0.5 rounded text-white/50">{cat.language}</span>
-                        <span>v{cat.version}</span>
+                        <span className="uppercase tracking-widest font-mono text-[10px] border border-white/10 px-2 py-0.5 rounded text-white/50">v{cat.version}</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="mt-2 mb-6">
-                    <p className="text-sm text-muted-foreground/80 line-clamp-2">
-                      Exhibition: {(cat.exhibitions as any)?.theme_en || 'Unknown'} ({(cat.exhibitions as any)?.year})
+                  <div className="mt-2 mb-4 flex-1">
+                    <p className="text-sm text-muted-foreground/80 line-clamp-1">
+                      Exhibition: {exhibition?.theme_en || 'Unknown'} ({exhibition?.year})
+                    </p>
+                    <p className="text-xs text-muted-foreground/60 mt-1">
+                      {cat.file_size ? (cat.file_size / 1024 / 1024).toFixed(2) + ' MB' : 'Unknown Size'} • {new Date(cat.created_at).toLocaleDateString()}
                     </p>
                   </div>
 
@@ -131,26 +146,26 @@ export default async function AdminCatalogsPage() {
                   <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
                     <div className="flex gap-6 text-sm text-muted-foreground/80">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1 flex items-center gap-1.5"><Download className="w-3 h-3"/> Downloads</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1 flex items-center gap-1.5"><ArrowDownToLine className="w-3 h-3"/> Downloads</span>
                         <span className="font-medium text-foreground">{cat.total_downloads || 0}</span>
                       </div>
                     </div>
+                    
+                    {cat.published_at && (
+                      <div className="flex flex-col text-right">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1">Published Date</span>
+                        <span className="text-xs text-foreground font-mono">{new Date(cat.published_at).toLocaleDateString()}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Hover Actions Footer */}
-                <div className="bg-black/40 border-t border-white/5 p-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <PremiumButton variant="glass" className="flex-1 h-10 text-xs" asChild>
-                    <Link href={`/admin/catalogs/${cat.id}`}>
-                      Edit Document
-                    </Link>
-                  </PremiumButton>
-                  <PremiumButton variant="glass" className="w-10 h-10 px-0 flex items-center justify-center border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500">
-                    <Trash className="w-4 h-4" />
-                  </PremiumButton>
+                <div className="bg-black/60 backdrop-blur-xl border-t border-white/10 p-3 flex gap-2 absolute bottom-0 left-0 right-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
+                  <CatalogActions catalog={cat} />
                 </div>
               </LuxuryCard>
-            ))
+            )})
           )}
         </div>
       </section>
