@@ -33,7 +33,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
   const { locale, id } = await params
   const supabase = await createClient()
 
-  const { data: exhibition, error } = await supabase
+  const { data: initialExhibition, error } = await supabase
     .from('exhibitions')
     .select(`
       *,
@@ -43,7 +43,9 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
     .eq('id', id)
     .maybeSingle()
 
-  if (error || !exhibition || exhibition.is_deleted) return notFound()
+  if (error || !initialExhibition || initialExhibition.is_deleted) return notFound()
+
+  let exhibition = initialExhibition
 
   // Lazy sync the exhibition lifecycle
   const { syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle')
