@@ -25,7 +25,7 @@ export function generateDynamicMetadata({
       template: `%s | Rongdhono`
     },
     description,
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://rong-dhonu.vercel.app'),
     alternates: {
       canonical: url,
       languages: {
