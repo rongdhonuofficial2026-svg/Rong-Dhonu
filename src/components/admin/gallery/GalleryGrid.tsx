@@ -142,13 +142,12 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, c
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <PremiumButton 
-                          variant="glass" size="icon" 
-                          className="h-12 w-12 rounded-full backdrop-blur-xl bg-white/10 border-white/20 hover:bg-white/30"
+                        <button 
+                          className="h-12 w-12 flex items-center justify-center rounded-full backdrop-blur-xl bg-white/10 border border-white/20 hover:bg-white/30 transition-all duration-300"
                           onClick={e => e.stopPropagation()}
                         >
                           <MoreVertical className="w-5 h-5 text-white" />
-                        </PremiumButton>
+                        </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="center" className="w-48 bg-background/95 backdrop-blur-xl border-border/50">
                         <DropdownMenuItem onClick={() => handleToggleStatus(item.id, item.status)}>
