@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { createCatalog, updateCatalog } from '@/actions/catalogs'
@@ -9,8 +9,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { Loader2, FileText, CheckCircle, X, UploadCloud } from 'lucide-react'
+import { Loader2, FileText, CheckCircle, X, UploadCloud, ImageIcon } from 'lucide-react'
 import { GlassPanel } from '@/components/admin/ui/GlassPanel'
+import Image from 'next/image'
 
 export function CatalogForm({ 
   exhibitions, 
@@ -25,9 +26,18 @@ export function CatalogForm({
   const supabase = createClient()
   
   const [loading, setLoading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
+  const [pdfUploadProgress, setPdfUploadProgress] = useState(0)
+  const [coverUploadProgress, setCoverUploadProgress] = useState(0)
+
+  // PDF file state
+  const [selectedPdf, setSelectedPdf] = useState<File | null>(null)
+  const [isPdfDragging, setIsPdfDragging] = useState(false)
+
+  // Cover image state
+  const [selectedCover, setSelectedCover] = useState<File | null>(null)
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(initialData?.cover_image_url || null)
+  const [isCoverDragging, setIsCoverDragging] = useState(false)
+  const coverInputRef = useRef<HTMLInputElement>(null)
   
   const [formData, setFormData] = useState({
     exhibition_id: initialData?.exhibition_id || '',
@@ -39,7 +49,11 @@ export function CatalogForm({
     version: initialData?.version || '1.0',
     status: initialData?.status || 'draft',
     pdf_url: initialData?.pdf_url || '',
-    file_size: initialData?.file_size || 0
+    cover_image_url: initialData?.cover_image_url || '',
+    file_size: initialData?.file_size || 0,
+    page_count: initialData?.page_count || '',
+    category: initialData?.category || 'exhibition',
+    visibility: initialData?.visibility || 'public',
   })
 
   // Auto-fill titles when an exhibition is selected (only if titles are empty)
@@ -55,7 +69,8 @@ export function CatalogForm({
     }
   }
 
-  const handleFileChange = (file: File) => {
+  // ── PDF File Handling ────────────────────────────────────────────────
+  const handlePdfChange = (file: File) => {
     if (file.type !== 'application/pdf') {
       toast.error('Only PDF files are accepted.')
       return
@@ -64,56 +79,93 @@ export function CatalogForm({
       toast.error('File size exceeds 50 MB limit.')
       return
     }
-    setSelectedFile(file)
+    setSelectedPdf(file)
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) handleFileChange(file)
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
+  const handlePdfDrop = (e: React.DragEvent) => {
     e.preventDefault()
-    setIsDragging(false)
+    setIsPdfDragging(false)
     const file = e.dataTransfer.files?.[0]
-    if (file) handleFileChange(file)
+    if (file) handlePdfChange(file)
   }
 
+  // ── Cover Image Handling ─────────────────────────────────────────────
+  const handleCoverChange = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Only image files are accepted for the cover.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Cover image must be under 5 MB.')
+      return
+    }
+    setSelectedCover(file)
+    const objectUrl = URL.createObjectURL(file)
+    setCoverPreviewUrl(objectUrl)
+  }
+
+  const handleCoverDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsCoverDragging(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleCoverChange(file)
+  }
+
+  // ── Save Handler ─────────────────────────────────────────────────────
   const handleSave = async (publish: boolean) => {
     if (!formData.exhibition_id) return toast.error('Please select an exhibition.')
     if (!formData.title_en.trim()) return toast.error('Please enter an English title.')
-    if (!selectedFile && !formData.pdf_url) return toast.error('Please upload a PDF catalog file.')
+    if (!selectedPdf && !formData.pdf_url) return toast.error('Please upload a PDF catalog file.')
+    if (!selectedCover && !formData.cover_image_url) return toast.error('Please upload a cover image.')
 
     setLoading(true)
     let finalPdfUrl = formData.pdf_url
     let finalFileSize = formData.file_size
+    let finalCoverUrl = formData.cover_image_url
 
     try {
-      // Upload PDF if a new file was selected
-      if (selectedFile) {
-        setUploadProgress(20)
-        
+      // 1. Upload Cover Image (if new file selected)
+      if (selectedCover) {
+        setCoverUploadProgress(20)
+        const ext = selectedCover.name.split('.').pop() || 'jpg'
+        const safeTitle = formData.title_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)
+        const coverFileName = `covers/rongdhonu-${safeTitle}-${Date.now()}.${ext}`
+
+        const { data: coverData, error: coverError } = await supabase.storage
+          .from('catalogs')
+          .upload(coverFileName, selectedCover, { upsert: false, contentType: selectedCover.type })
+
+        if (coverError) throw new Error(`Cover upload failed: ${coverError.message}`)
+        setCoverUploadProgress(100)
+
+        const { data: coverUrlData } = supabase.storage.from('catalogs').getPublicUrl(coverData.path)
+        finalCoverUrl = coverUrlData.publicUrl
+      }
+
+      // 2. Upload PDF (if new file selected)
+      if (selectedPdf) {
+        setPdfUploadProgress(20)
         const safeTitle = formData.title_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 60)
         const fileName = `rongdhonu-${safeTitle}-${Date.now()}.pdf`
 
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('catalogs')
-          .upload(fileName, selectedFile, {
-            upsert: false,
-            contentType: 'application/pdf'
-          })
+          .upload(fileName, selectedPdf, { upsert: false, contentType: 'application/pdf' })
 
-        if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
+        if (uploadError) {
+          // Cleanup cover if PDF upload fails
+          if (selectedCover && finalCoverUrl) {
+            const path = finalCoverUrl.split('/').slice(-2).join('/')
+            await supabase.storage.from('catalogs').remove([path])
+          }
+          throw new Error(`PDF upload failed: ${uploadError.message}`)
+        }
         
-        setUploadProgress(80)
-        
-        const { data: publicUrlData } = supabase.storage
-          .from('catalogs')
-          .getPublicUrl(uploadData.path)
-
+        setPdfUploadProgress(90)
+        const { data: publicUrlData } = supabase.storage.from('catalogs').getPublicUrl(uploadData.path)
         finalPdfUrl = publicUrlData.publicUrl
-        finalFileSize = selectedFile.size
-        setUploadProgress(100)
+        finalFileSize = selectedPdf.size
+        setPdfUploadProgress(100)
       }
 
       const payload = {
@@ -125,7 +177,11 @@ export function CatalogForm({
         language: formData.language,
         version: formData.version,
         pdf_url: finalPdfUrl,
+        cover_image_url: finalCoverUrl,
         file_size: finalFileSize,
+        page_count: formData.page_count ? parseInt(formData.page_count, 10) : null,
+        category: formData.category,
+        visibility: formData.visibility,
         status: publish ? 'published' : 'draft'
       }
 
@@ -139,7 +195,6 @@ export function CatalogForm({
       if (!res.success) throw new Error(res.message)
 
       toast.success(publish ? 'Catalog published successfully!' : 'Catalog saved as draft!')
-      // Use locale-prefixed path to avoid 404 after redirect
       router.push(`/${locale}/admin/catalogs`)
       router.refresh()
 
@@ -147,12 +202,12 @@ export function CatalogForm({
       toast.error(err.message || 'An unexpected error occurred.')
     } finally {
       setLoading(false)
-      setUploadProgress(0)
+      setPdfUploadProgress(0)
+      setCoverUploadProgress(0)
     }
   }
 
   const isEditing = !!initialData?.id
-  const currentExhibition = exhibitions.find(e => e.id === formData.exhibition_id)
 
   return (
     <div className="max-w-4xl space-y-8">
@@ -277,6 +332,123 @@ export function CatalogForm({
               className="bg-black/20 border-white/10 h-12"
             />
           </div>
+
+          {/* Category & Visibility */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold tracking-wide uppercase text-muted-foreground/70">
+              Category
+            </Label>
+            <Select 
+              value={formData.category} 
+              onValueChange={v => setFormData({...formData, category: v})}
+            >
+              <SelectTrigger className="bg-black/20 border-white/10 h-12">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="exhibition">Exhibition</SelectItem>
+                <SelectItem value="retrospective">Retrospective</SelectItem>
+                <SelectItem value="solo">Solo Exhibition</SelectItem>
+                <SelectItem value="group">Group Exhibition</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold tracking-wide uppercase text-muted-foreground/70">
+              Visibility
+            </Label>
+            <Select 
+              value={formData.visibility} 
+              onValueChange={v => setFormData({...formData, visibility: v})}
+            >
+              <SelectTrigger className="bg-black/20 border-white/10 h-12">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public">🌐 Public — visible to everyone</SelectItem>
+                <SelectItem value="private">🔒 Private — admin only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Page Count */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold tracking-wide uppercase text-muted-foreground/70">
+              Page Count
+            </Label>
+            <Input 
+              type="number"
+              min="1"
+              value={formData.page_count}
+              onChange={e => setFormData({...formData, page_count: e.target.value})}
+              placeholder="e.g. 72"
+              className="bg-black/20 border-white/10 h-12"
+            />
+          </div>
+        </div>
+
+        {/* Cover Image Upload Zone */}
+        <div className="space-y-3">
+          <Label className="text-sm font-semibold tracking-wide uppercase text-muted-foreground/70">
+            Cover Image {isEditing ? '(Leave empty to keep current)' : '*'}
+          </Label>
+
+          <div
+            className={`border-2 border-dashed rounded-2xl transition-all duration-200 relative cursor-pointer overflow-hidden
+              ${isCoverDragging ? 'border-amber-400/80 bg-amber-500/10' : 'border-white/20 bg-black/10 hover:bg-black/20 hover:border-white/30'}
+              ${loading ? 'pointer-events-none opacity-60' : ''}
+            `}
+            onDragOver={(e) => { e.preventDefault(); setIsCoverDragging(true) }}
+            onDragLeave={() => setIsCoverDragging(false)}
+            onDrop={handleCoverDrop}
+            onClick={() => !loading && coverInputRef.current?.click()}
+          >
+            <input 
+              ref={coverInputRef}
+              type="file" 
+              accept="image/*"
+              className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleCoverChange(f) }}
+            />
+
+            {coverPreviewUrl ? (
+              <div className="relative h-48 w-full group">
+                <Image
+                  src={coverPreviewUrl}
+                  alt="Cover preview"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <span className="text-white font-medium text-sm">Click to replace</span>
+                </div>
+                <button 
+                  type="button"
+                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-rose-500 transition-colors z-10"
+                  onClick={(e) => { e.stopPropagation(); setSelectedCover(null); setCoverPreviewUrl(null); setFormData(p => ({...p, cover_image_url: ''})) }}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                {coverUploadProgress > 0 && coverUploadProgress < 100 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
+                    <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${coverUploadProgress}%` }} />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-10 flex flex-col items-center justify-center text-center gap-4">
+                <div className="w-16 h-16 rounded-2xl glass bg-white/5 border border-white/15 flex items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-muted-foreground/70" />
+                </div>
+                <div>
+                  <p className="font-semibold text-lg text-foreground">Click or drag & drop cover image</p>
+                  <p className="text-sm text-muted-foreground mt-1">JPEG, PNG, WebP — max 5 MB</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* PDF Upload Zone */}
@@ -287,12 +459,12 @@ export function CatalogForm({
 
           <div 
             className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all duration-200 relative cursor-pointer
-              ${isDragging ? 'border-amber-400/80 bg-amber-500/10' : 'border-white/20 bg-black/10 hover:bg-black/20 hover:border-white/30'}
+              ${isPdfDragging ? 'border-amber-400/80 bg-amber-500/10' : 'border-white/20 bg-black/10 hover:bg-black/20 hover:border-white/30'}
               ${loading ? 'pointer-events-none opacity-60' : ''}
             `}
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
+            onDragOver={(e) => { e.preventDefault(); setIsPdfDragging(true) }}
+            onDragLeave={() => setIsPdfDragging(false)}
+            onDrop={handlePdfDrop}
             onClick={() => !loading && document.getElementById('pdf-upload-input')?.click()}
           >
             <input 
@@ -300,24 +472,24 @@ export function CatalogForm({
               type="file" 
               accept=".pdf,application/pdf"
               className="hidden"
-              onChange={handleInputChange}
+              onChange={e => { const f = e.target.files?.[0]; if (f) handlePdfChange(f) }}
             />
 
-            {selectedFile ? (
+            {selectedPdf ? (
               <div className="flex flex-col items-center gap-3">
                 <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
                   <CheckCircle className="w-8 h-8 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-lg text-foreground">{selectedFile.name}</p>
+                  <p className="font-semibold text-lg text-foreground">{selectedPdf.name}</p>
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB — PDF ready to upload
+                    {(selectedPdf.size / 1024 / 1024).toFixed(2)} MB — PDF ready to upload
                   </p>
                 </div>
                 <button 
                   type="button"
                   className="text-xs text-muted-foreground/60 hover:text-rose-400 transition-colors flex items-center gap-1 mt-1"
-                  onClick={(e) => { e.stopPropagation(); setSelectedFile(null) }}
+                  onClick={(e) => { e.stopPropagation(); setSelectedPdf(null) }}
                 >
                   <X className="w-3 h-3" /> Remove file
                 </button>
@@ -349,12 +521,12 @@ export function CatalogForm({
               </div>
             )}
 
-            {/* Upload progress bar */}
-            {uploadProgress > 0 && uploadProgress < 100 && (
+            {/* PDF Upload progress bar */}
+            {pdfUploadProgress > 0 && pdfUploadProgress < 100 && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 rounded-b-2xl overflow-hidden">
                 <div 
                   className="h-full bg-amber-500 transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
+                  style={{ width: `${pdfUploadProgress}%` }}
                 />
               </div>
             )}
@@ -363,7 +535,7 @@ export function CatalogForm({
 
       </GlassPanel>
 
-      {/* Action Buttons — no PremiumButton asChild to avoid motion.create crash */}
+      {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row justify-end gap-4">
         <button
           type="button"
@@ -380,7 +552,7 @@ export function CatalogForm({
           disabled={loading || exhibitions.length === 0}
           className="h-11 px-6 text-sm font-medium rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          {loading && formData.status !== 'published' && <Loader2 className="w-4 h-4 animate-spin" />}
+          {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           {isEditing ? 'Save Changes' : 'Save as Draft'}
         </button>
 
@@ -391,7 +563,7 @@ export function CatalogForm({
           className="h-11 px-8 text-sm font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-wider"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {loading ? 'Publishing...' : 'Publish Catalog'}
+          {loading ? 'Saving...' : 'Publish Catalog'}
         </button>
       </div>
     </div>

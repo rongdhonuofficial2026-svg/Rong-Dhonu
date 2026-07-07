@@ -3,8 +3,9 @@ import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { Link } from '@/lib/i18n/routing'
-import { Calendar, Globe, FileText, ArrowDownToLine, ChevronLeft, Info, Eye } from 'lucide-react'
+import { Calendar, Globe, FileText, ArrowDownToLine, ChevronLeft, Info, BookOpen } from 'lucide-react'
 import { CatalogDownloadButton } from '@/components/public/catalogs/CatalogDownloadButton'
+import { CatalogPreviewButton } from '@/components/public/catalogs/CatalogPreviewButton'
 import { Metadata } from 'next'
 
 type Props = {
@@ -28,7 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = catalog.title_en || 'Catalog'
   const description = catalog.description_en || 'Official Exhibition Catalog'
-  const image = (catalog.exhibitions as any)?.hero_image_url || '/images/catalogs_hero.png'
+  // Prefer catalog cover image for OG meta
+  const image = catalog.cover_image_url || (catalog.exhibitions as any)?.hero_image_url || '/images/catalogs_hero.png'
 
   return {
     title: `${title} | Rongdhono Art Gallery`,
@@ -61,7 +63,8 @@ export default async function CatalogDetailPage({ params }: Props) {
   const exhibitionTitle = locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en
   const title = locale === 'bn' && catalog.title_bn ? catalog.title_bn : catalog.title_en
   const description = locale === 'bn' && catalog.description_bn ? catalog.description_bn : catalog.description_en
-  const coverImage = ex.hero_image_url || '/images/catalogs_hero.png'
+  // Prefer catalog cover_image_url, fall back to exhibition hero image
+  const coverImage = catalog.cover_image_url || ex.hero_image_url || '/images/catalogs_hero.png'
 
   // Format date
   const publishedDate = new Date(catalog.published_at || catalog.created_at).toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', {
@@ -106,17 +109,15 @@ export default async function CatalogDetailPage({ params }: Props) {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link 
-                href={catalog.pdf_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 h-14 text-base font-semibold rounded-xl border-2 bg-background hover:bg-muted transition-colors shadow-sm"
-              >
-                <Eye className="w-5 h-5" /> Preview PDF
-              </Link>
+              {/* Preview button — opens fullscreen modal */}
+              <CatalogPreviewButton 
+                pdfUrl={catalog.pdf_url}
+                title={title}
+                catalogId={catalog.id}
+                className="flex-1"
+              />
               
               <div className="flex-1">
-                {/* Re-use the existing download button but make it full width and tall */}
                 <CatalogDownloadButton catalog={catalog} className="w-full h-14 text-base font-semibold rounded-xl shadow-md" />
               </div>
             </div>
@@ -167,6 +168,13 @@ export default async function CatalogDetailPage({ params }: Props) {
                 <span className="text-base font-semibold flex items-center gap-2"><ArrowDownToLine className="w-4 h-4 text-muted-foreground" /> {catalog.total_downloads || 0}</span>
               </div>
             </div>
+
+            {catalog.page_count && (
+              <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
+                <BookOpen className="w-4 h-4" />
+                <span>{catalog.page_count} pages</span>
+              </div>
+            )}
 
             <div className="mt-8 flex flex-col gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -28,50 +28,63 @@ export default async function PublicCatalogsPage({
   searchParams
 }: { 
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ q?: string; year?: string; sort?: string }>
+  searchParams: Promise<{ q?: string; year?: string; sort?: string; language?: string; category?: string }>
 }) {
   const { locale } = await params
-  const { q, year, sort } = await searchParams
+  const { q, year, sort, language, category } = await searchParams
   const supabase = await createClient()
 
-  // Build the query
+  // Build the query — CRITICAL: Only show catalogs from ARCHIVED exhibitions in the global archive
+  // Published catalogs for ongoing/upcoming exhibitions appear on their Exhibition Detail page only.
   let query = supabase
     .from('catalogs')
-    .select('*, exhibitions!inner(theme_en, theme_bn, year, hero_image_url, status)')
+    .select('*, exhibitions!inner(id, theme_en, theme_bn, year, hero_image_url, status)')
     .eq('status', 'published')
-    .in('exhibitions.status', ['ongoing', 'archived'])
+    .eq('visibility', 'public')
+    .eq('exhibitions.status', 'archived')
+
   if (q) {
-    query = query.or(`title_en.ilike.%${q}%,title_bn.ilike.%${q}%,exhibitions.theme_en.ilike.%${q}%`)
+    query = query.or(`title_en.ilike.%${q}%,title_bn.ilike.%${q}%`)
+  }
+  if (language && language !== 'all') {
+    query = query.eq('language', language)
+  }
+  if (category && category !== 'all') {
+    query = query.eq('category', category)
   }
 
   // Sorting
   if (sort === 'oldest') {
     query = query.order('published_at', { ascending: true })
+  } else if (sort === 'downloads') {
+    query = query.order('total_downloads', { ascending: false })
   } else {
-    // Default newest first
+    // Default: newest first
     query = query.order('published_at', { ascending: false })
   }
 
   const { data: catalogs, error } = await query
 
-  // Client-side year filtering because Supabase joined columns filtering can be tricky if we want all years for the dropdown
-  // First get all unique years for the dropdown (from ALL published catalogs)
-  const { data: allCatalogs } = await supabase
+  // Get all unique years for the year filter dropdown (from ALL archived exhibition catalogs)
+  const { data: allArchivedCatalogs } = await supabase
     .from('catalogs')
     .select('exhibitions!inner(year, status)')
     .eq('status', 'published')
-    .in('exhibitions.status', ['ongoing', 'archived'])
+    .eq('visibility', 'public')
+    .eq('exhibitions.status', 'archived')
 
-  const uniqueYears = Array.from(new Set(allCatalogs?.map(c => (c.exhibitions as any).year).filter(Boolean) as number[])).sort((a, b) => b - a)
+  const uniqueYears = Array.from(
+    new Set(allArchivedCatalogs?.map(c => (c.exhibitions as any).year).filter(Boolean) as number[])
+  ).sort((a, b) => b - a)
 
-  // Then filter the fetched results by year if selected
+  // Then apply year filter client-side (for dropdown population without extra query)
   const filteredCatalogs = catalogs?.filter(cat => {
     if (!year || year === 'all') return true
     return (cat.exhibitions as any).year.toString() === year
   }) || []
 
-  const isSearchEmpty = filteredCatalogs.length === 0 && (q || (year && year !== 'all'))
-  const isTotallyEmpty = filteredCatalogs.length === 0 && !q && (!year || year === 'all')
+  const isSearchEmpty = filteredCatalogs.length === 0 && (q || language || category || (year && year !== 'all'))
+  const isTotallyEmpty = filteredCatalogs.length === 0 && !q && !language && !category && (!year || year === 'all')
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -141,7 +154,8 @@ export default async function PublicCatalogsPage({
               const exhibitionTitle = locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en
               const title = locale === 'bn' && cat.title_bn ? cat.title_bn : cat.title_en
               const description = locale === 'bn' && cat.description_bn ? cat.description_bn : cat.description_en
-              const coverImage = ex.hero_image_url || '/images/catalogs_hero.png'
+              // Prefer catalog cover image, fall back to exhibition hero
+              const coverImage = cat.cover_image_url || ex.hero_image_url || '/images/catalogs_hero.png'
 
               return (
                 <div key={cat.id} className="group relative bg-card rounded-2xl border shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden flex flex-col h-full hover:-translate-y-1">

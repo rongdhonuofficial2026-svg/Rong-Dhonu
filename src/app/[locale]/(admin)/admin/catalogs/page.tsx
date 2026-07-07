@@ -110,7 +110,7 @@ export default async function AdminCatalogsPage({
           ) : (
             catalogs.map((cat: any) => {
               const exhibition = cat.exhibitions as any;
-              const coverImage = exhibition?.hero_image_url || '/images/catalogs_hero.png';
+              const coverImage = cat.cover_image_url || exhibition?.hero_image_url || '/images/catalogs_hero.png';
               
               return (
               <LuxuryCard key={cat.id} padding="none" className="overflow-hidden group h-[380px] flex flex-col">

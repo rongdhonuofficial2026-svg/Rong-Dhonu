@@ -5,18 +5,11 @@ import { BookOpen } from 'lucide-react'
 export default async function NewCatalogPage() {
   const supabase = await createClient()
 
-  // Fetch exhibitions that DO NOT already have a catalog
+  // Fetch ALL exhibitions — we now support multiple catalogs/versions per exhibition
   const { data: exhibitions } = await supabase
     .from('exhibitions')
     .select('id, theme_en, theme_bn, year')
     .order('year', { ascending: false })
-
-  const { data: existingCatalogs } = await supabase
-    .from('catalogs')
-    .select('exhibition_id')
-
-  const existingIds = new Set(existingCatalogs?.map(c => c.exhibition_id) || [])
-  const availableExhibitions = exhibitions?.filter(ex => !existingIds.has(ex.id)) || []
 
   return (
     <div className="space-y-10 pb-20">
@@ -29,11 +22,11 @@ export default async function NewCatalogPage() {
           Archive <span className="text-gradient-gold">Exhibition Catalog</span>
         </h1>
         <p className="text-muted-foreground max-w-2xl text-lg">
-          Upload the official PDF catalog for an exhibition. Each exhibition can only have one official catalog.
+          Upload an official PDF catalog for an exhibition. Each exhibition supports multiple catalog versions.
         </p>
       </div>
 
-      <CatalogForm exhibitions={availableExhibitions} />
+      <CatalogForm exhibitions={exhibitions || []} />
     </div>
   )
 }

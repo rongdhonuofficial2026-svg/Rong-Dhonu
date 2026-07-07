@@ -24,9 +24,10 @@ export async function GET(request: NextRequest) {
   // 3. Fetch only published catalog
   const { data: catalog, error } = await supabase
     .from('catalogs')
-    .select('id, pdf_url, title_en, status')
+    .select('id, pdf_url, title_en, status, visibility')
     .eq('id', catalogId)
     .eq('status', 'published')
+    .eq('visibility', 'public')
     .single()
 
   if (error || !catalog) {
@@ -61,13 +62,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid catalog URL' }, { status: 400 })
   }
 
-  // 5. Atomically increment download counter (fire-and-forget)
+  // 5. Extract analytics metadata
+  const { data: { user } } = await supabase.auth.getUser()
+  const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') || null
+  const country = request.headers.get('x-vercel-ip-country') || null
+
+  // 6. Log download analytics (fire-and-forget — do not block the redirect)
   supabase
-    .rpc('increment_catalog_downloads', { catalog_id: catalogId })
+    .rpc('increment_catalog_downloads', {
+      catalog_id: catalogId,
+      p_user_id: user?.id || null,
+      p_ip: ipAddress,
+      p_country: country
+    })
     .then(({ error: rpcError }) => {
-      if (rpcError) console.warn('Download counter failed:', rpcError.message)
+      if (rpcError) console.warn('[Analytics] Download log failed:', rpcError.message)
     })
 
-  // 6. Safe redirect to validated PDF URL
+  // 7. Safe redirect to validated PDF URL
   return NextResponse.redirect(catalog.pdf_url, { status: 302 })
 }
