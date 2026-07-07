@@ -2,8 +2,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/lib/i18n/routing';
-import { Navbar } from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import '@/styles/globals.css';
 import { Inter, Playfair_Display, Noto_Sans_Bengali, Noto_Serif_Bengali } from 'next/font/google';
 
@@ -38,11 +36,9 @@ export default async function LocaleLayout({
           <a href="#main-content" className="skip-to-content">
             {locale === 'bn' ? 'মূল বিষয়বস্তুতে যান' : 'Skip to main content'}
           </a>
-          <Navbar />
-          <main id="main-content" className="flex-grow" tabIndex={-1}>
+          <main id="main-content" className="flex-grow flex flex-col" tabIndex={-1}>
             {children}
           </main>
-          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>
