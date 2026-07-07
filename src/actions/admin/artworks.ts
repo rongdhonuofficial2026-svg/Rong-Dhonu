@@ -263,13 +263,17 @@ export async function moderateArtwork(
 export async function resubmitArtwork(
   artworkId: string,
   updates: {
+    title_en?: string
+    title_bn?: string
     description_en?: string
     description_bn?: string
     medium_en?: string
     medium_bn?: string
     dimensions?: string
+    category?: string
     main_image_url?: string
     price?: number | null
+    revision_notes?: string
   }
 ) {
   const supabase = await createClient()
@@ -278,7 +282,11 @@ export async function resubmitArtwork(
 
   // Apply field updates before transition (only if status = changes_requested)
   const filteredUpdates = Object.fromEntries(
-    Object.entries(updates).filter(([, v]) => v !== undefined && v !== '')
+    Object.entries(updates).map(([k, v]) => {
+      // Map empty strings to null so they can clear out in the database if desired
+      if (v === '') return [k, null]
+      return [k, v]
+    }).filter(([, v]) => v !== undefined)
   )
   if (Object.keys(filteredUpdates).length > 0) {
     const { error: updateError } = await supabase

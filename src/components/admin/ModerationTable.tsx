@@ -43,6 +43,7 @@ interface Artwork {
   created_at?: string
   approved_at?: string | null
   profiles?: ArtworkProfile | ArtworkProfile[] | null
+  revision_notes?: string | null
 }
 
 // Helper: always return a single profile from Supabase join (array or object)
@@ -471,6 +472,16 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
                       <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 block mb-2">Previous Feedback</span>
                       <p className="text-sm text-amber-200/80 leading-relaxed">
                         {selectedArtwork.moderator_feedback || selectedArtwork.notes}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Artist Revision Notes */}
+                  {selectedArtwork.revision_notes && (
+                    <div className="bg-blue-500/10 border border-blue-500/30 p-4 rounded-xl">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 block mb-2">Artist Revision Notes</span>
+                      <p className="text-sm text-blue-200/80 leading-relaxed font-mono">
+                        {selectedArtwork.revision_notes}
                       </p>
                     </div>
                   )}

@@ -15,9 +15,9 @@ export default async function MyArtworksPage({ params }: { params: Promise<{ loc
   const { data: artworks } = await supabase
     .from('artworks')
     .select(`
-      id, title_en, title_bn, main_image_url, status, created_at,
-      category, medium_en, dimensions, price,
-      moderator_feedback, notes, approved_at,
+      id, title_en, title_bn, description_en, description_bn, main_image_url, status, created_at,
+      category, medium_en, medium_bn, dimensions, price,
+      moderator_feedback, notes, approved_at, revision_notes,
       exhibition_id,
       exhibitions!exhibition_id(id, theme_en, theme_bn, year)
     `)

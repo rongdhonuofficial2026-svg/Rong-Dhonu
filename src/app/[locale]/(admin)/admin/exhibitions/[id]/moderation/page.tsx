@@ -29,7 +29,7 @@ export default async function ExhibitionModerationPage({
       id, title_en, title_bn, medium_en, medium_bn, dimensions,
       category, theme, description_en, price, status,
       notes, moderator_feedback, approved_at, approved_by,
-      main_image_url, created_at, artist_id, exhibition_id,
+      main_image_url, created_at, artist_id, exhibition_id, revision_notes,
       profiles!artist_id (
         id, full_name_en, full_name_bn, phone, avatar_url, instagram_url, website_url
       )
