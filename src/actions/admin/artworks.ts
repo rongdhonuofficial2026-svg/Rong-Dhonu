@@ -5,6 +5,40 @@ import { revalidatePath } from "next/cache"
 import { moderateArtworkSchema } from "@/lib/validations/schemas"
 
 // ─────────────────────────────────────────────────────────────────────────────
+// DEBUG LOGGER — structured, timestamped, step-numbered
+// Remove after root cause is confirmed.
+// ─────────────────────────────────────────────────────────────────────────────
+function log(step: number, label: string, data?: unknown) {
+  const ts = new Date().toISOString()
+  console.log(`\n[MODERATION-DEBUG][${ts}] STEP ${step}: ${label}`)
+  if (data !== undefined) {
+    try {
+      console.log(JSON.stringify(data, null, 2))
+    } catch {
+      console.log(String(data))
+    }
+  }
+}
+
+function logError(step: number, label: string, err: unknown) {
+  const ts = new Date().toISOString()
+  console.error(`\n[MODERATION-DEBUG][${ts}] STEP ${step} ERROR: ${label}`)
+  if (err && typeof err === 'object') {
+    const e = err as Record<string, unknown>
+    console.error(JSON.stringify({
+      message:  e.message,
+      code:     e.code,
+      hint:     e.hint,
+      details:  e.details,
+      status:   e.status,
+      statusText: e.statusText,
+    }, null, 2))
+  } else {
+    console.error(String(err))
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Helper: revalidate every affected page in both locales
 // ─────────────────────────────────────────────────────────────────────────────
 function revalidateAll(exhibitionId?: string | null, artistId?: string | null) {
@@ -16,70 +50,96 @@ function revalidateAll(exhibitionId?: string | null, artistId?: string | null) {
     '/gallery',
     '/',
   ]
+  const revalidated: string[] = []
   for (const locale of locales) {
     for (const path of staticPaths) {
-      revalidatePath(`/${locale}${path}`)
+      const full = `/${locale}${path}`
+      revalidatePath(full)
+      revalidated.push(full)
     }
     if (exhibitionId) {
-      revalidatePath(`/${locale}/admin/exhibitions/${exhibitionId}/moderation`)
-      revalidatePath(`/${locale}/admin/exhibitions/${exhibitionId}`)
-      revalidatePath(`/${locale}/exhibitions/${exhibitionId}`)
+      const paths = [
+        `/${locale}/admin/exhibitions/${exhibitionId}/moderation`,
+        `/${locale}/admin/exhibitions/${exhibitionId}`,
+        `/${locale}/exhibitions/${exhibitionId}`,
+      ]
+      paths.forEach(p => { revalidatePath(p); revalidated.push(p) })
     }
     if (artistId) {
-      revalidatePath(`/${locale}/artists/${artistId}`)
+      const p = `/${locale}/artists/${artistId}`
+      revalidatePath(p)
+      revalidated.push(p)
     }
   }
+  return revalidated
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// moderateArtwork — Approve / Reject / Request Revision
-//
-// Architecture note:
-// The RPC only performs the atomic artwork status UPDATE (state machine).
-// This server action handles all side effects (audit log, notifications)
-// using the Supabase client which runs as 'authenticated' — the role
-// that RLS policies allow. This avoids the SECURITY DEFINER / RLS conflict
-// that caused the transaction rollback and state revert bug.
+// moderateArtwork — FULLY INSTRUMENTED DEBUG VERSION
 // ─────────────────────────────────────────────────────────────────────────────
 export async function moderateArtwork(
   artworkId: string,
   status: 'approved' | 'rejected' | 'changes_requested',
   feedback?: string
 ) {
-  // 1. Validate inputs
+  log(1, 'SERVER ACTION STARTED', { artworkId, status, feedbackLength: feedback?.length ?? 0 })
+
+  // ── Step 2: Schema validation ──────────────────────────────────────────────
   const validation = moderateArtworkSchema.safeParse({ artworkId, status, feedback })
   if (!validation.success) {
+    logError(2, 'ZOD VALIDATION FAILED', validation.error.issues[0])
     return { error: validation.error.issues[0].message }
   }
+  log(2, 'ZOD VALIDATION PASSED', { artworkId, status })
 
-  // 2. Client-side feedback enforcement (belt-and-suspenders; DB also validates)
+  // ── Step 3: Client-side feedback guard ────────────────────────────────────
   if ((status === 'rejected' || status === 'changes_requested') && !feedback?.trim()) {
+    log(3, 'FEEDBACK GUARD BLOCKED — feedback required but missing')
     return { error: 'Moderator feedback is required for rejection or revision requests.' }
   }
+  log(3, 'FEEDBACK GUARD PASSED')
 
   const { artworkId: validId, status: validStatus, feedback: validFeedback } = validation.data
   const trimmedFeedback = validFeedback?.trim() || null
 
+  // ── Step 4: Auth ───────────────────────────────────────────────────────────
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) return { error: 'Unauthorized' }
+  if (authError || !user) {
+    logError(4, 'AUTH FAILED', authError)
+    return { error: 'Unauthorized' }
+  }
+  log(4, 'AUTH PASSED', { userId: user.id, email: user.email })
 
-  // 3. Verify admin role
-  const { data: adminProfile } = await supabase
+  // ── Step 5: Admin role check ───────────────────────────────────────────────
+  const { data: adminProfile, error: roleError } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
 
-  if (!adminProfile || adminProfile.role !== 'admin') {
+  if (roleError || !adminProfile || adminProfile.role !== 'admin') {
+    logError(5, 'ROLE CHECK FAILED', { roleError, role: adminProfile?.role })
     return { error: 'Forbidden: Admin access required' }
   }
+  log(5, 'ROLE CHECK PASSED', { role: adminProfile.role })
 
-  // 4. ──────────────────────────────────────────────────────────────────────
-  //    ATOMIC STATE MACHINE: Execute only the artwork status UPDATE via RPC.
-  //    The RPC uses FOR UPDATE (row lock) and validates the state machine.
-  //    No INSERTs happen inside the RPC — this guarantees it commits.
-  // ──────────────────────────────────────────────────────────────────────────
+  // ── Step 6: Pre-RPC database state ────────────────────────────────────────
+  const { data: prePRC, error: preRpcError } = await supabase
+    .from('artworks')
+    .select('id, status, updated_at')
+    .eq('id', validId)
+    .single()
+  log(6, 'PRE-RPC DATABASE STATE', { data: prePRC, error: preRpcError?.message })
+
+  // ── Step 7: RPC call ───────────────────────────────────────────────────────
+  log(7, 'CALLING RPC: moderate_artwork_transaction', {
+    p_artwork_id: validId,
+    p_status:     validStatus,
+    p_admin_id:   user.id,
+    p_reason:     trimmedFeedback,
+  })
+
   const { data: rpcResult, error: rpcError } = await supabase.rpc('moderate_artwork_transaction', {
     p_artwork_id: validId,
     p_status:     validStatus,
@@ -88,12 +148,24 @@ export async function moderateArtwork(
   })
 
   if (rpcError) {
-    // The state machine raised an exception (invalid transition, missing feedback, etc.)
-    console.error('[moderateArtwork] RPC error:', rpcError.message)
+    logError(7, 'RPC RETURNED ERROR', rpcError)
     return { error: rpcError.message }
   }
+  log(7, 'RPC RETURNED SUCCESS', rpcResult)
 
-  // RPC committed — artwork status is now updated in the database.
+  // ── Step 8: Post-RPC database verification ────────────────────────────────
+  const { data: postRPC, error: postRpcError } = await supabase
+    .from('artworks')
+    .select('id, status, updated_at, approved_at, approved_by, moderator_feedback')
+    .eq('id', validId)
+    .single()
+  log(8, 'POST-RPC DATABASE STATE (ground truth)', {
+    data: postRPC,
+    error: postRpcError?.message,
+    statusChangedSuccessfully: postRPC?.status === validStatus,
+  })
+
+  // ── Step 9: Audit log ─────────────────────────────────────────────────────
   const result = rpcResult as {
     artwork_id:    string
     old_status:    string
@@ -107,13 +179,7 @@ export async function moderateArtwork(
   const artistId     = result?.artist_id ?? null
   const artworkTitle = result?.title ?? 'your artwork'
 
-  // 5. ──────────────────────────────────────────────────────────────────────
-  //    SIDE EFFECTS: Run as authenticated client (correct RLS role).
-  //    These are best-effort — if they fail, the main update is already done.
-  // ──────────────────────────────────────────────────────────────────────────
-
-  // 5a. Audit log
-  await supabase.from('audit_logs').insert({
+  const { error: auditError } = await supabase.from('audit_logs').insert({
     actor_id:    user.id,
     action:      'moderate_artwork',
     entity_type: 'artwork',
@@ -125,8 +191,13 @@ export async function moderateArtwork(
       reason:        trimmedFeedback,
     },
   })
+  if (auditError) {
+    logError(9, 'AUDIT LOG INSERT FAILED', auditError)
+  } else {
+    log(9, 'AUDIT LOG INSERT SUCCESS')
+  }
 
-  // 5b. Notification for the artist
+  // ── Step 10: Notification ─────────────────────────────────────────────────
   const notifType =
     validStatus === 'approved'          ? 'submission_approved'  :
     validStatus === 'rejected'          ? 'submission_rejected'  :
@@ -147,18 +218,39 @@ export async function moderateArtwork(
       : `Your artwork requires revisions.`
 
   if (artistId) {
-    await supabase.from('notifications').insert({
+    const { error: notifError } = await supabase.from('notifications').insert({
       user_id:    artistId,
       type:       notifType,
       message_en: notifMsgEn,
       message_bn: notifMsgBn,
     })
+    if (notifError) {
+      logError(10, 'NOTIFICATION INSERT FAILED', notifError)
+    } else {
+      log(10, 'NOTIFICATION INSERT SUCCESS', { artistId, notifType })
+    }
+  } else {
+    log(10, 'NOTIFICATION SKIPPED — no artistId from RPC result')
   }
 
-  // 6. Cache invalidation — runs AFTER the DB commit
-  revalidateAll(exhibitionId, artistId)
+  // ── Step 11: Cache revalidation ───────────────────────────────────────────
+  const revalidated = revalidateAll(exhibitionId, artistId)
+  log(11, 'CACHE REVALIDATED', { count: revalidated.length, paths: revalidated })
 
-  return { success: true, result }
+  // ── Step 12: Final response ───────────────────────────────────────────────
+  const finalResponse = {
+    success: true,
+    debug: {
+      requestedStatus:  validStatus,
+      preRpcStatus:     prePRC?.status,
+      postRpcStatus:    postRPC?.status,
+      statusCommitted:  postRPC?.status === validStatus,
+      rpcResult:        rpcResult,
+    }
+  }
+  log(12, 'RETURNING TO CLIENT', finalResponse)
+
+  return finalResponse
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -195,7 +287,7 @@ export async function resubmitArtwork(
     if (updateError) return { error: updateError.message }
   }
 
-  // Transition via RPC (validates ownership + state, then changes_requested → pending)
+  // Transition via RPC
   const { data: rpcResult, error: rpcError } = await supabase.rpc('resubmit_artwork', {
     p_artwork_id: artworkId,
     p_artist_id:  user.id,

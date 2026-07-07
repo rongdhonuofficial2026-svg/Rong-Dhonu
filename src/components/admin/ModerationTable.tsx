@@ -100,7 +100,18 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
   const [feedbackError, setFeedbackError] = React.useState(false)
 
   // Sync with server-provided artworks (e.g., after revalidation)
+  // DEBUG: log every time the server pushes new initialArtworks so we can
+  // detect whether a stale re-render is overwriting the optimistic update.
   React.useEffect(() => {
+    const statusMap = initialArtworks.reduce<Record<string, string>>((acc, a) => {
+      acc[a.id] = a.status
+      return acc
+    }, {})
+    console.log(
+      '[MODERATION-CLIENT] useEffect: initialArtworks changed — syncing local state.\n' +
+      'Count:', initialArtworks.length, '\n' +
+      'Status map:', JSON.stringify(statusMap, null, 2)
+    )
     setArtworks(initialArtworks)
   }, [initialArtworks])
 
@@ -123,14 +134,25 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
   const handleAction = async (status: 'approved' | 'rejected' | 'changes_requested') => {
     if (!selectedArtwork) return
 
+    console.log(
+      '\n[MODERATION-CLIENT] ══════════════════════════════════════',
+      '\n[MODERATION-CLIENT] STEP C1: Button clicked',
+      '\n  artworkId:', selectedArtwork.id,
+      '\n  currentStatus:', selectedArtwork.status,
+      '\n  requestedStatus:', status,
+      '\n  feedbackLength:', feedback.trim().length,
+    )
+
     // Validate feedback requirement before calling server
     if ((status === 'rejected' || status === 'changes_requested') && !feedback.trim()) {
+      console.warn('[MODERATION-CLIENT] STEP C2: BLOCKED — feedback required but missing')
       setFeedbackError(true)
       toast.error('Feedback Required', {
         description: `Moderator feedback is required before ${status === 'rejected' ? 'rejecting' : 'requesting revisions'}.`,
       })
       return
     }
+    console.log('[MODERATION-CLIENT] STEP C2: Feedback validation PASSED')
     setFeedbackError(false)
 
     const artworkId = selectedArtwork.id
@@ -138,6 +160,9 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
     const trimmedFeedback = feedback.trim()
 
     // ── Optimistic update ─────────────────────────────────────────────────────
+    console.log('[MODERATION-CLIENT] STEP C3: Applying OPTIMISTIC UPDATE', {
+      artworkId, from: prevStatus, to: status
+    })
     setArtworks(prev =>
       prev.map(a =>
         a.id === artworkId
@@ -153,12 +178,23 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
     )
     setSelectedArtwork(prev => prev ? { ...prev, status } : null)
     setIsDialogOpen(false)
+    console.log('[MODERATION-CLIENT] STEP C3: Optimistic update applied — dialog closed')
     // ─────────────────────────────────────────────────────────────────────────
 
     setIsSubmitting(true)
     try {
+      console.log('[MODERATION-CLIENT] STEP C4: Calling moderateArtwork server action...')
+      const t0 = Date.now()
       const res = await moderateArtwork(artworkId, status, trimmedFeedback || undefined)
-      if (res.error) {
+      const elapsed = Date.now() - t0
+      console.log(`[MODERATION-CLIENT] STEP C5: Server action returned (${elapsed}ms)`, res)
+
+      if ('error' in res && res.error) {
+        console.error('[MODERATION-CLIENT] STEP C6: SERVER RETURNED ERROR — rolling back optimistic update', {
+          error: res.error,
+          artworkId,
+          rollingBackTo: prevStatus,
+        })
         // Rollback optimistic update on failure
         setArtworks(prev =>
           prev.map(a => a.id === artworkId ? { ...a, status: prevStatus } : a)
@@ -167,6 +203,21 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
         setFeedback('')
         toast.error('Action Failed', { description: res.error })
       } else {
+        // Check server debug payload
+        const debugPayload = 'debug' in res ? res.debug : null
+        console.log('[MODERATION-CLIENT] STEP C6: SUCCESS — server returned no error', {
+          debugPayload,
+          statusCommitted: debugPayload?.statusCommitted,
+          preRpcStatus:   debugPayload?.preRpcStatus,
+          postRpcStatus:  debugPayload?.postRpcStatus,
+        })
+        if (debugPayload && !debugPayload.statusCommitted) {
+          console.error(
+            '[MODERATION-CLIENT] ⚠️ SERVER RETURNED SUCCESS BUT DATABASE STATUS DID NOT CHANGE!',
+            '\n  Expected:', status,
+            '\n  Actual in DB:', debugPayload.postRpcStatus,
+          )
+        }
         const actionLabel = status === 'approved' ? 'approved' : status === 'rejected' ? 'rejected' : 'sent for revision'
         toast.success('Decision Recorded', {
           description: `Artwork "${selectedArtwork.title_en}" has been ${actionLabel}.`,
@@ -174,7 +225,8 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
         setSelectedArtwork(null)
         setFeedback('')
       }
-    } catch {
+    } catch (err) {
+      console.error('[MODERATION-CLIENT] STEP C6: UNEXPECTED EXCEPTION — rolling back', err)
       // Rollback on unexpected error
       setArtworks(prev =>
         prev.map(a => a.id === artworkId ? { ...a, status: prevStatus } : a)
@@ -182,6 +234,7 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
       toast.error('Unexpected Error', { description: 'Please try again.' })
     } finally {
       setIsSubmitting(false)
+      console.log('[MODERATION-CLIENT] ══════════════════════════════════════\n')
     }
   }
 
