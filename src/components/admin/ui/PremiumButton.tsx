@@ -1,12 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { Slot } from '@radix-ui/react-slot';
 
-export interface PremiumButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
+export interface PremiumButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "ref"> {
   variant?: 'primary' | 'secondary' | 'glass' | 'ghost' | 'destructive';
   size?: 'sm' | 'md' | 'lg' | 'icon';
   isLoading?: boolean;
@@ -36,14 +35,11 @@ export const PremiumButton = React.forwardRef<HTMLButtonElement, PremiumButtonPr
     };
 
     const Comp = asChild ? Slot : "button";
-    const MotionComp = motion.create(Comp as any);
 
     return (
-      <MotionComp
+      <Comp
         ref={ref}
-        className={cn(baseStyles, variants[variant], sizes[size], className)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        className={cn(baseStyles, "hover:scale-[1.02] active:scale-[0.98]", variants[variant], sizes[size], className)}
         disabled={isLoading || disabled}
         {...props as any}
       >
@@ -62,7 +58,7 @@ export const PremiumButton = React.forwardRef<HTMLButtonElement, PremiumButtonPr
             {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}
           </>
         )}
-      </MotionComp>
+      </Comp>
     );
   }
 );
