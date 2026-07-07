@@ -1,12 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/lib/i18n/routing'
-import { Plus, Edit, Trash, FileText, Download, CheckCircle, Clock, BookOpen, Search, Eye, Power, ArrowDownToLine } from 'lucide-react'
+import { Plus, FileText, CheckCircle, Clock, BookOpen, Search, ArrowDownToLine } from 'lucide-react'
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { LuxuryCard } from "@/components/admin/ui/LuxuryCard"
-import { PremiumButton } from "@/components/admin/ui/PremiumButton"
 import { GlassPanel } from "@/components/admin/ui/GlassPanel"
-import { CatalogActions } from '@/components/admin/catalogs/CatalogActions' // I will create this client component
+import { CatalogActions } from '@/components/admin/catalogs/CatalogActions'
 
 export default async function AdminCatalogsPage() {
   const supabase = await createClient()
@@ -52,11 +51,13 @@ export default async function AdminCatalogsPage() {
           </div>
           
           <div className="w-full sm:w-auto">
-            <PremiumButton variant="primary" asChild leftIcon={<Plus className="w-4 h-4" />}>
-              <Link href="/admin/catalogs/new">
-                Create Catalog
-              </Link>
-            </PremiumButton>
+            <Link
+              href="/admin/catalogs/new"
+              className="inline-flex items-center justify-center gap-2 h-11 px-6 text-sm font-medium rounded-xl bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Create Catalog
+            </Link>
           </div>
         </div>
       </section>

@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import { Link } from '@/lib/i18n/routing'
 import { deleteCatalog, publishCatalog } from '@/actions/catalogs'
-import { PremiumButton } from '@/components/admin/ui/PremiumButton'
-import { Edit, Trash, Power, Eye, ArrowDownToLine, Loader2 } from 'lucide-react'
+import { Edit, Trash, Power, Eye, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -50,38 +49,47 @@ export function CatalogActions({ catalog }: { catalog: any }) {
     }
   }
 
+  // IMPORTANT: Do NOT use PremiumButton with asChild here.
+  // PremiumButton uses motion.create(Slot) which creates a new component type on every render,
+  // breaking React reconciliation and causing an infinite update loop → Error Boundary crash.
+  // Use plain <a>, <Link>, or <button> elements instead.
   return (
     <>
-      <PremiumButton variant="glass" className="flex-1 h-9 px-0" asChild>
-        <Link href={`/admin/catalogs/${catalog.id}`}>
-          <Edit className="w-4 h-4 mr-2" /> Edit
-        </Link>
-      </PremiumButton>
+      <Link
+        href={`/admin/catalogs/${catalog.id}`}
+        className="flex-1 h-9 px-3 inline-flex items-center justify-center text-xs font-medium rounded-lg glass border border-white/20 text-foreground hover:bg-white/50 transition-all"
+      >
+        <Edit className="w-3.5 h-3.5 mr-1.5" /> Edit
+      </Link>
 
-      <PremiumButton 
-        variant="glass" 
-        className="flex-1 h-9 px-0"
+      <button
+        className={`flex-1 h-9 px-3 inline-flex items-center justify-center text-xs font-medium rounded-lg glass border border-white/20 text-foreground hover:bg-white/50 transition-all disabled:opacity-50`}
         onClick={handleTogglePublish}
         disabled={isPublishing || isDeleting}
       >
-        {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Power className={`w-4 h-4 mr-2 ${catalog.status === 'published' ? 'text-rose-400' : 'text-emerald-400'}`} />}
+        {isPublishing
+          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          : <Power className={`w-3.5 h-3.5 mr-1.5 ${catalog.status === 'published' ? 'text-rose-400' : 'text-emerald-400'}`} />
+        }
         {catalog.status === 'published' ? 'Unpublish' : 'Publish'}
-      </PremiumButton>
+      </button>
 
-      <PremiumButton variant="glass" className="flex-1 h-9 px-0" asChild>
-        <a href={catalog.pdf_url} target="_blank" rel="noopener noreferrer">
-          <Eye className="w-4 h-4 mr-2" /> View
-        </a>
-      </PremiumButton>
+      <a
+        href={catalog.pdf_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex-1 h-9 px-3 inline-flex items-center justify-center text-xs font-medium rounded-lg glass border border-white/20 text-foreground hover:bg-white/50 transition-all"
+      >
+        <Eye className="w-3.5 h-3.5 mr-1.5" /> View
+      </a>
 
-      <PremiumButton 
-        variant="glass" 
-        className="w-9 h-9 px-0 flex-shrink-0 flex items-center justify-center border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500"
+      <button
+        className="w-9 h-9 px-0 flex-shrink-0 flex items-center justify-center rounded-lg glass border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all disabled:opacity-50"
         onClick={handleDelete}
         disabled={isPublishing || isDeleting}
       >
-        {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash className="w-4 h-4" />}
-      </PremiumButton>
+        {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash className="w-3.5 h-3.5" />}
+      </button>
     </>
   )
 }
