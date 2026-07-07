@@ -1,1 +1,0 @@
-const fs = require("fs"); const data = JSON.parse(fs.readFileSync("messages/en.json")); data.Navigation = data.Navigation || {}; data.Navigation.register = "Register"; fs.writeFileSync("messages/en.json", JSON.stringify(data, null, 2));

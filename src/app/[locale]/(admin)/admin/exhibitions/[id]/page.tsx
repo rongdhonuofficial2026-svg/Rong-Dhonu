@@ -19,7 +19,7 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
   const { id } = await params
   const supabase = await createClient()
 
-  let { data: exhibition, error } = await supabase
+  const { data: exhibition, error } = await supabase
     .from('exhibitions')
     .select('*')
     .eq('id', id)

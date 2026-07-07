@@ -33,7 +33,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
   const { locale, id } = await params
   const supabase = await createClient()
 
-  let { data: exhibition, error } = await supabase
+  const { data: exhibition, error } = await supabase
     .from('exhibitions')
     .select(`
       *,

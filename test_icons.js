@@ -1,1 +1,0 @@
-const lucide = require("lucide-react"); console.log("PlayCircle:", !!lucide.PlayCircle, "Edit2:", !!lucide.Edit2, "Trash2:", !!lucide.Trash2, "Star:", !!lucide.Star, "MoreVertical:", !!lucide.MoreVertical, "ShieldAlert:", !!lucide.ShieldAlert);
