@@ -11,13 +11,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const supabase = await createClient()
   const { data: profile } = await supabase
     .from('profiles')
-    .select('first_name_en, last_name_en, full_name_bn, bio_en, bio_bn, avatar_url')
+    .select('full_name_en, full_name_bn, bio_en, bio_bn, avatar_url')
     .eq('id', id)
     .maybeSingle()
   
   if (!profile) return {}
 
-  const name = locale === 'bn' && profile.full_name_bn ? profile.full_name_bn : `${profile.first_name_en} ${profile.last_name_en}`
+  const name = locale === 'bn' && profile.full_name_bn ? profile.full_name_bn : (profile.full_name_en || 'Artist')
   const bio = locale === 'bn' && profile.bio_bn ? profile.bio_bn : profile.bio_en
 
   return {
@@ -38,9 +38,13 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
   const { data: profile, error } = await supabase
     .from('profiles')
     .select(`
-      *,
-      artworks!artist_id(id, title_en, title_bn, main_image_url, category, status),
-      exhibition_participants(role, exhibitions(id, year, title_en, title_bn))
+      id, full_name_en, full_name_bn, bio_en, bio_bn, phone,
+      avatar_url, instagram_url, website_url, slug, role,
+      artworks!artist_id(
+        id, title_en, title_bn, main_image_url, category, medium_en, status,
+        exhibitions(id, year, theme_en, theme_bn)
+      ),
+      exhibition_participants(role, exhibitions(id, year, theme_en, theme_bn))
     `)
     .eq('id', id)
     .maybeSingle()
@@ -51,7 +55,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: `${profile.first_name_en} ${profile.last_name_en}`,
+    name: profile.full_name_en || profile.full_name_bn,
     alternateName: profile.full_name_bn,
     image: profile.avatar_url,
     description: profile.bio_en,
@@ -59,10 +63,10 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
     url: `https://rongdhono.org/${locale}/artists/${profile.id}`
   }
 
-  const name = locale === 'bn' && profile.full_name_bn ? profile.full_name_bn : `${profile.first_name_en} ${profile.last_name_en}`
+  const name = locale === 'bn' && profile.full_name_bn ? profile.full_name_bn : (profile.full_name_en || 'Artist')
   const bio = locale === 'bn' && profile.bio_bn ? profile.bio_bn : profile.bio_en
-  const approvedArtworks = profile.artworks?.filter((art: Record<string, any>) => art.status === 'approved') || []
-  const exhibitions = profile.exhibition_participants?.map((p: Record<string, any>) => p.exhibitions) || []
+  const approvedArtworks = (profile.artworks as any[])?.filter((art) => art.status === 'approved') || []
+  const exhibitions = (profile.exhibition_participants as any[])?.map((p) => p.exhibitions).filter(Boolean) || []
 
   return (
     <main className="min-h-screen py-16 px-4 md:px-8 max-w-7xl mx-auto space-y-16">
@@ -105,11 +109,11 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
             </p>
           )}
 
-          {profile.portfolio_url && (
+          {profile.website_url && (
             <Button variant="outline" className="mt-4" asChild>
-              <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer">
+              <a href={profile.website_url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-4 h-4 mr-2" />
-                {locale === 'bn' ? 'পোর্টফোলিও দেখুন' : 'View External Portfolio'}
+                {locale === 'bn' ? 'পোর্টফোলিও দেখুন' : 'View Portfolio'}
               </a>
             </Button>
           )}

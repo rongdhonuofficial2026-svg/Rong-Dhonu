@@ -58,7 +58,24 @@ export function AdminSidebar({ locale }: { locale: string }) {
 
       <nav className="flex-1 px-4 space-y-1 mt-6 overflow-y-auto pb-6 relative">
         {links.map((link) => {
-          const isActive = pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href))
+          // Moderation routes (/admin/exhibitions/*/moderation and /admin/artworks)
+          // must highlight "Moderation", not "Exhibitions"
+          const isModerationRoute = pathname.includes('/moderation') || pathname.startsWith('/admin/artworks')
+          const isExhibitionsLink = link.href === '/admin/exhibitions'
+          const isModerationLink = link.href === '/admin/artworks'
+
+          let isActive: boolean
+          if (isModerationLink) {
+            // Highlight Moderation for /admin/artworks AND any .../moderation sub-route
+            isActive = pathname.startsWith('/admin/artworks') || pathname.includes('/moderation')
+          } else if (isExhibitionsLink) {
+            // Highlight Exhibitions ONLY for exhibition routes that are NOT moderation
+            isActive = pathname.startsWith('/admin/exhibitions') && !pathname.includes('/moderation')
+          } else if (link.href === '/admin') {
+            isActive = pathname === '/admin'
+          } else {
+            isActive = pathname.startsWith(link.href)
+          }
           const Icon = link.icon
           return (
             <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)} className="block relative">

@@ -38,7 +38,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
     .select(`
       *,
       events(*),
-      committee_members(*, profiles(first_name_en, last_name_en, avatar_url))
+      committee_members(*, profiles(full_name_en, full_name_bn, avatar_url))
     `)
     .eq('id', id)
     .maybeSingle()
@@ -48,7 +48,10 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
   // Safely fetch ONLY approved artworks without forcing an inner join on the parent exhibition
   const { data: artworks } = await supabase
     .from('artworks')
-    .select('id, title_en, title_bn, main_image_url, profiles(first_name_en, last_name_en)')
+    .select(`
+      id, title_en, title_bn, main_image_url, category, medium_en,
+      profiles!artist_id(id, full_name_en, full_name_bn, avatar_url)
+    `)
     .eq('exhibition_id', id)
     .eq('status', 'approved')
     
@@ -198,7 +201,13 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                   <div className="absolute inset-x-0 bottom-0 z-10 p-6 flex flex-col justify-end translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
                     <p className="font-serif text-xl font-bold text-white line-clamp-1 drop-shadow-md">{locale === 'bn' && art.title_bn ? art.title_bn : art.title_en}</p>
                     <div className="h-[1px] w-8 bg-white/50 my-3" />
-                    <p className="text-xs text-white/90 tracking-wide uppercase">{art.profiles?.first_name_en} {art.profiles?.last_name_en}</p>
+                    <p className="text-xs text-white/90 tracking-wide uppercase">
+                      {(() => {
+                        const p = Array.isArray(art.profiles) ? art.profiles[0] : art.profiles
+                        if (!p) return null
+                        return p.full_name_en || p.full_name_bn || null
+                      })()}
+                    </p>
                   </div>
                 </Link>
               ))}
@@ -226,7 +235,12 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                     )}
                   </div>
                   <div>
-                    <p className="font-serif text-xl font-bold group-hover:text-foreground/70 transition-colors">{member.profiles?.first_name_en} {member.profiles?.last_name_en}</p>
+                    <p className="font-serif text-xl font-bold group-hover:text-foreground/70 transition-colors">
+                      {(() => {
+                        const p = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles
+                        return p?.full_name_en || p?.full_name_bn || 'Committee Member'
+                      })()}
+                    </p>
                     <p className="text-xs uppercase tracking-widest text-muted-foreground mt-2">{locale === 'bn' && member.role_title_bn ? member.role_title_bn : member.role_title_en}</p>
                   </div>
                 </div>

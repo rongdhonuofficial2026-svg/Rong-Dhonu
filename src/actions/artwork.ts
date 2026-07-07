@@ -80,7 +80,6 @@ export async function submitArtwork(payload: {
     category: payload.category || null,
     theme: payload.theme || null,
     framed: payload.framed || false,
-    year: new Date().getFullYear(),
     status: 'pending' as const,
     price: priceVal,
     main_image_url: payload.main_image_url || null,
@@ -147,13 +146,19 @@ export async function submitArtwork(payload: {
     details: { title: title, exhibition_id: targetExhibitionId },
   })
 
-  // Revalidate all affected pages
+  // Revalidate all affected pages so moderation + dashboards refresh immediately
   revalidatePath(`/en/dashboard/artworks`)
   revalidatePath(`/bn/dashboard/artworks`)
   revalidatePath(`/en/admin/artworks`)
   revalidatePath(`/bn/admin/artworks`)
   revalidatePath(`/en/admin/exhibitions`)
   revalidatePath(`/bn/admin/exhibitions`)
+  if (targetExhibitionId) {
+    revalidatePath(`/en/admin/exhibitions/${targetExhibitionId}/moderation`)
+    revalidatePath(`/bn/admin/exhibitions/${targetExhibitionId}/moderation`)
+    revalidatePath(`/en/exhibitions/${targetExhibitionId}`)
+    revalidatePath(`/bn/exhibitions/${targetExhibitionId}`)
+  }
 
   return { success: true, artworkId }
 }

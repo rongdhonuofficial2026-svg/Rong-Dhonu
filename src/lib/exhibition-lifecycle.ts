@@ -73,12 +73,12 @@ export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
 
 /**
  * Fetches the currently featured exhibition and ensures its lifecycle status is synchronized.
- * If no exhibition is featured, falls back to the most relevant one (ongoing -> upcoming).
+ * Priority: manually featured → any active (non-draft, non-archived) exhibition → most recent archived.
  */
 export async function getFeaturedExhibition() {
   const supabase = await createClient();
 
-  // Try to find the manually featured exhibition first
+  // 1. Try manually featured first
   let { data: featured } = await supabase
     .from('exhibitions')
     .select('*')
@@ -88,38 +88,41 @@ export async function getFeaturedExhibition() {
     .maybeSingle();
 
   if (!featured) {
-    // Fallback: Find the most recent ongoing exhibition
-    const { data: ongoing } = await supabase
+    // 2. Fallback: any active exhibition (all non-draft, non-archived statuses)
+    //    Ordered by priority: ongoing > submission_open > upcoming > registration_open > etc.
+    const { data: active } = await supabase
       .from('exhibitions')
       .select('*')
-      .eq('status', 'ongoing')
+      .not('status', 'in', '("draft","archived")')
       .neq('is_deleted', true)
-      .order('exhibition_start', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
-    
-    featured = ongoing;
+
+    featured = active;
   }
 
   if (!featured) {
-    // Fallback: Find the next upcoming exhibition
-    const { data: upcoming } = await supabase
+    // 3. Last resort: most recent archived (show something rather than nothing)
+    const { data: archived } = await supabase
       .from('exhibitions')
       .select('*')
-      .eq('status', 'upcoming')
+      .eq('status', 'archived')
       .neq('is_deleted', true)
-      .order('exhibition_start', { ascending: true })
-      .order('created_at', { ascending: false })
+      .order('exhibition_end', { ascending: false })
       .limit(1)
       .maybeSingle();
-    
-    featured = upcoming;
+
+    featured = archived;
   }
 
   if (featured) {
-    // Lazy evaluation to transition states if needed
-    featured = await syncExhibitionLifecycle(featured, supabase);
+    // Lazy sync: only auto-advance status for ongoing/upcoming/archived transitions
+    // Do NOT override manually set statuses like submission_open, reviewing, published
+    const autoSyncStatuses = ['ongoing', 'upcoming', 'archived']
+    if (autoSyncStatuses.includes(featured.status)) {
+      featured = await syncExhibitionLifecycle(featured, supabase);
+    }
   }
 
   return featured;

@@ -32,7 +32,14 @@ export async function moderateArtwork(
     return { error: 'Forbidden: Admin access required' }
   }
 
-  // Use the transactional RPC to update status, audit log, and notify the artist
+  // Fetch artwork to get exhibition_id for targeted revalidation
+  const { data: artwork } = await supabase
+    .from('artworks')
+    .select('exhibition_id, artist_id')
+    .eq('id', validId)
+    .single()
+
+  // Use the transactional RPC to atomically update status, notes, audit log, and notify artist
   const { error: rpcError } = await supabase.rpc('moderate_artwork_transaction', {
     p_artwork_id: validId,
     p_status: validStatus,
@@ -42,7 +49,7 @@ export async function moderateArtwork(
 
   if (rpcError) return { error: rpcError.message }
 
-  // Broad revalidation so all UIs update immediately
+  // Broad revalidation — all UIs that display artwork status must refresh
   revalidatePath(`/en/admin/exhibitions`)
   revalidatePath(`/bn/admin/exhibitions`)
   revalidatePath(`/en/admin/artworks`)
@@ -53,6 +60,21 @@ export async function moderateArtwork(
   revalidatePath(`/bn`)
   revalidatePath(`/en/dashboard/artworks`)
   revalidatePath(`/bn/dashboard/artworks`)
+
+  // Targeted revalidation for the specific exhibition moderation page + public exhibition
+  if (artwork?.exhibition_id) {
+    const exhId = artwork.exhibition_id
+    revalidatePath(`/en/admin/exhibitions/${exhId}/moderation`)
+    revalidatePath(`/bn/admin/exhibitions/${exhId}/moderation`)
+    revalidatePath(`/en/exhibitions/${exhId}`)
+    revalidatePath(`/bn/exhibitions/${exhId}`)
+  }
+
+  // Revalidate artist public profile
+  if (artwork?.artist_id) {
+    revalidatePath(`/en/artists/${artwork.artist_id}`)
+    revalidatePath(`/bn/artists/${artwork.artist_id}`)
+  }
 
   return { success: true }
 }

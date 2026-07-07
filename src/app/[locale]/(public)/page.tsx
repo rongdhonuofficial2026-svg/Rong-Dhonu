@@ -40,22 +40,25 @@ export default async function HomePage({
   const exhibition = await getFeaturedExhibition();
 
   // If no exhibition at all, handle gracefully.
-  let artworks = []
-  let artists = []
+  let artworks: any[] = []
+  let artists: any[] = []
   let stats = null
 
   if (exhibition) {
     const [artworksRes, artistsRes, countsRes] = await Promise.all([
-      // Artworks from this specific exhibition
+      // Artworks with full artist profile (avatar + name)
       supabase.from('artworks')
-        .select('*, profiles(full_name_en, full_name_bn)')
+        .select(`
+          id, title_en, title_bn, main_image_url, category, medium_en,
+          profiles!artist_id(id, full_name_en, full_name_bn, avatar_url)
+        `)
         .eq('status', 'approved')
         .eq('exhibition_id', exhibition.id)
         .limit(8),
       
-      // Approved participants for this specific exhibition
+      // Approved participants with full profile (for Featured Artists section)
       supabase.from('exhibition_participants')
-        .select('*, profiles(*)')
+        .select('profiles(id, full_name_en, full_name_bn, avatar_url, bio_en, slug)')
         .eq('status', 'approved')
         .eq('exhibition_id', exhibition.id)
         .limit(6),
