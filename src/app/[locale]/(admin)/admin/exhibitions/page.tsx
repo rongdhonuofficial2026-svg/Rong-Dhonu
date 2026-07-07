@@ -95,9 +95,14 @@ export default async function ExhibitionsManagementPage({
       <section className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border/40 pb-4 gap-4">
           <h2 className="font-serif text-2xl tracking-tight">Exhibition Roster</h2>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500"/> Active</span>
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"/> Upcoming</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500"/> Active</span>
+              <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"/> Upcoming</span>
+            </div>
+            <PremiumButton variant="primary" size="sm" asChild leftIcon={<Plus className="w-4 h-4" />}>
+              <Link href="/admin/exhibitions/new">Create Exhibition</Link>
+            </PremiumButton>
           </div>
         </div>
 

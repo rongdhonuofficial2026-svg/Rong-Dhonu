@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
+import { Switch } from "@/components/ui/switch"
 import {
   Loader2, Upload, X, Sparkles, Calendar, MapPin, FileText,
-  Image as ImageIcon, ArrowRight, CheckCircle2, Info,
+  Image as ImageIcon, ArrowRight, CheckCircle2, Info, Star, Settings,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -27,6 +28,7 @@ interface FormData {
   submission_end: string
   venue_en: string
   venue_bn: string
+  is_featured: boolean
 }
 
 /* ─── Section badge ──────────────────────────────────────── */
@@ -82,6 +84,7 @@ export function ExhibitionForm({ locale }: { locale: string }) {
     submission_end: "",
     venue_en: "",
     venue_bn: "",
+    is_featured: false,
   })
 
   const updateField = (field: keyof FormData, value: string) => {
@@ -139,18 +142,18 @@ export function ExhibitionForm({ locale }: { locale: string }) {
         ...formData,
         status: "draft",
         hero_image_url,
-        is_featured: false,
+        is_featured: formData.is_featured,
       }
 
       const res = await createExhibition(payload)
       if (res.error) throw new Error(res.error)
 
-      toast.success("Exhibition Initialised", {
-        description: "Redirecting to your new exhibition dashboard…",
+      toast.success("Exhibition Created", {
+        description: "Your new exhibition has been added to the roster.",
         icon: <Sparkles className="w-4 h-4 text-yellow-400" />,
       })
 
-      router.push(`/${locale}/admin/exhibitions/${res.data.id}`)
+      router.push(`/${locale}/admin/exhibitions`)
 
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)
@@ -177,6 +180,7 @@ export function ExhibitionForm({ locale }: { locale: string }) {
     { label: "Date Timeline", filled: !!formData.exhibition_start },
     { label: "Hero Banner", filled: !!heroImageFile },
     { label: "Venue", filled: !!formData.venue_en },
+    { label: "Settings", filled: true },
   ]
   const completedCount = sections.filter(s => s.filled).length
 
@@ -385,6 +389,55 @@ export function ExhibitionForm({ locale }: { locale: string }) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Section 5: Display Settings */}
+          <Card className="overflow-hidden border border-border/60">
+            <div className="h-1 bg-gradient-to-r from-amber-500 via-amber-500/60 to-transparent" />
+            <CardContent className="p-6 pt-7">
+              <SectionBadge number={5} label="Display Settings" icon={<Settings className="w-4 h-4" />} />
+              <div className="space-y-5">
+                {/* Featured Toggle */}
+                <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                      formData.is_featured
+                        ? "bg-amber-500/20 border border-amber-500/30"
+                        : "bg-muted/50 border border-border/40"
+                    }`}>
+                      <Star className={`w-4 h-4 transition-colors ${
+                        formData.is_featured ? "text-amber-400 fill-amber-400/30" : "text-muted-foreground"
+                      }`} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Featured Exhibition</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Pin to homepage and highlight in public listings.
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    id="is_featured"
+                    checked={formData.is_featured}
+                    onCheckedChange={(checked) =>
+                      setFormData(prev => ({ ...prev, is_featured: checked }))
+                    }
+                    aria-label="Feature this exhibition on homepage"
+                  />
+                </div>
+
+                {/* Status note */}
+                <div className="flex items-start gap-3 p-4 rounded-xl border border-border/40 bg-muted/10">
+                  <div className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 shrink-0 animate-pulse" />
+                  <div>
+                    <p className="text-sm font-medium">Initial status: Draft</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      All exhibitions start as <strong>Draft</strong>. Lifecycle transitions to Upcoming → Ongoing → Archived are automated by date. You can configure catalogs, gallery, moderation, and jury from the dashboard.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* ── Right: Sticky preview + actions ─────────── */}
@@ -444,7 +497,7 @@ export function ExhibitionForm({ locale }: { locale: string }) {
               <p className="text-sm font-medium flex items-center gap-2 mb-4">
                 <CheckCircle2 className="w-4 h-4 text-accent" />
                 Setup Checklist
-                <span className="ml-auto text-xs font-normal text-muted-foreground">{completedCount}/4</span>
+                <span className="ml-auto text-xs font-normal text-muted-foreground">{completedCount}/5</span>
               </p>
               {sections.map(s => (
                 <div key={s.label} className="flex items-center gap-3">
@@ -497,7 +550,7 @@ export function ExhibitionForm({ locale }: { locale: string }) {
 
           {/* Note */}
           <p className="text-xs text-muted-foreground text-center leading-relaxed px-2">
-            The exhibition will be saved as a <strong>Draft</strong>. You can configure catalogs, gallery, and moderation from the dashboard.
+            Saved as <strong>Draft</strong> · Lifecycle is fully automated · Visible in the roster immediately after creation.
           </p>
         </div>
       </div>
