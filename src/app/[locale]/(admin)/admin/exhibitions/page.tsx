@@ -51,7 +51,8 @@ export default async function ExhibitionsManagementPage({
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'active': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+      case 'active':
+      case 'ongoing': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
       case 'upcoming': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
       case 'draft': return 'bg-white/10 text-muted-foreground border-white/20';
       case 'archived': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';

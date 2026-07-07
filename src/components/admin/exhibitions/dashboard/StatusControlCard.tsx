@@ -40,16 +40,21 @@ export function StatusControlCard({ exhibition }: { exhibition: any }) {
             <p className="font-medium capitalize">Current Phase: {exhibition.status}</p>
             <p className="text-sm text-muted-foreground mt-1">
               {exhibition.status === 'draft' && 'Private. Setup gallery and catalog before publishing.'}
-              {exhibition.status === 'upcoming' && 'Publicly visible. Registration/Submissions can be active.'}
-              {exhibition.status === 'ongoing' && 'Live event. Gallery and Catalog are unlocked.'}
+              {exhibition.status === 'upcoming' && `Publicly visible. Transitions to Ongoing automatically on start date (${exhibition.exhibition_start ? new Date(exhibition.exhibition_start).toLocaleDateString() : 'TBD'}).`}
+              {exhibition.status === 'ongoing' && `Live event. Transitions to Archived automatically after end date (${exhibition.exhibition_end ? new Date(exhibition.exhibition_end).toLocaleDateString() : 'TBD'}).`}
               {exhibition.status === 'archived' && 'Permanent archive. Read-only for visitors.'}
             </p>
           </div>
-          {nextStage && (
+          {exhibition.status === 'draft' && nextStage && (
             <Button onClick={handleAdvance} disabled={isSubmitting} className="shrink-0 ml-4">
               {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               Advance to {nextStage} <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
+          )}
+          {exhibition.status !== 'draft' && (
+            <span className="text-xs font-semibold uppercase tracking-wider text-accent border border-accent/20 bg-accent/5 px-2.5 py-1 rounded-md shrink-0 ml-4">
+              Auto-Managed
+            </span>
           )}
         </div>
       </CardContent>

@@ -36,9 +36,9 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
 
   // Fetch related counts and catalog
   const [galleryRes, catalogRes, artistsRes, artworksRes] = await Promise.all([
-    supabase.from('gallery').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+    supabase.from('gallery_media').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
     supabase.from('catalogs').select('*').eq('exhibition_id', id).order('version', { ascending: false }),
-    supabase.from('exhibition_artists').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+    supabase.from('exhibition_participants').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
     supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
   ])
 
