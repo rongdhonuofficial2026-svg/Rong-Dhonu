@@ -72,7 +72,7 @@ export default async function PublicCatalogsPage({ params }: { params: Promise<{
                   
                   <div className="mt-auto pt-4 border-t flex items-center justify-between">
                     <div className="text-xs text-muted-foreground">
-                      v{cat.version} • {(cat.file_size / 1024 / 1024).toFixed(1)} MB
+                      v{cat.version}{cat.file_size ? ` • ${(cat.file_size / 1024 / 1024).toFixed(1)} MB` : ''}
                     </div>
                     <CatalogDownloadButton catalog={cat} />
                   </div>

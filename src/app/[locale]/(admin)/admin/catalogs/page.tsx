@@ -18,7 +18,7 @@ export default async function AdminCatalogsPage({
 
   let queryBuilder = supabase
     .from('catalogs')
-    .select('*, exhibitions!inner(theme_en, year, hero_image_url)')
+    .select('*, exhibitions(theme_en, year, hero_image_url)')
     .order('created_at', { ascending: false })
 
   if (status && status !== 'all') {
@@ -26,7 +26,7 @@ export default async function AdminCatalogsPage({
   }
 
   if (query) {
-    queryBuilder = queryBuilder.or(`title_en.ilike.%${query}%,title_bn.ilike.%${query}%,exhibitions.theme_en.ilike.%${query}%`)
+    queryBuilder = queryBuilder.ilike('title_en', `%${query}%`)
   }
 
   const { data: catalogs, error } = await queryBuilder
@@ -86,12 +86,26 @@ export default async function AdminCatalogsPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {!catalogs || catalogs.length === 0 ? (
-            <div className="col-span-full py-20 text-center">
+            <div className="col-span-full py-24 text-center">
               <div className="w-20 h-20 rounded-full border border-white/10 glass flex items-center justify-center mb-6 mx-auto">
                 <FileText className="w-10 h-10 text-muted-foreground/50" />
               </div>
               <h3 className="font-serif text-2xl mb-2">No catalogs found</h3>
-              <p className="text-muted-foreground">Upload the first official catalog for an exhibition.</p>
+              <p className="text-muted-foreground mb-8">
+                {query || (status && status !== 'all') 
+                  ? 'No catalogs match your current search or filter.'
+                  : 'Upload the first official catalog for an exhibition.'
+                }
+              </p>
+              {(!query && (!status || status === 'all')) && (
+                <Link
+                  href="/admin/catalogs/new"
+                  className="inline-flex items-center justify-center gap-2 h-11 px-6 text-sm font-medium rounded-xl bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create First Catalog
+                </Link>
+              )}
             </div>
           ) : (
             catalogs.map((cat: any) => {
