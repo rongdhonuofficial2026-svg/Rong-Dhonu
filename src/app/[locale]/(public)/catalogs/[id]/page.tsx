@@ -55,11 +55,19 @@ export default async function CatalogDetailPage({ params }: Props) {
     .eq('status', 'published') // CRITICAL: Only allow published catalogs
     .maybeSingle()
 
-  if (error || !catalog) {
+  if (error || !catalog || !catalog.exhibitions) {
     notFound()
   }
 
+  // Lazy sync the exhibition lifecycle
+  const { syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle')
+  const syncedEx = await syncExhibitionLifecycle(catalog.exhibitions, supabase)
+  if (syncedEx) catalog.exhibitions = syncedEx
+
   const ex = catalog.exhibitions as any
+  if (ex.status === 'draft' || ex.status === 'upcoming') {
+    notFound()
+  }
   const exhibitionTitle = locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en
   const title = locale === 'bn' && catalog.title_bn ? catalog.title_bn : catalog.title_en
   const description = locale === 'bn' && catalog.description_bn ? catalog.description_bn : catalog.description_en

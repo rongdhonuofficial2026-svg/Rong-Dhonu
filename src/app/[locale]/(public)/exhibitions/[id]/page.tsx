@@ -33,7 +33,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
   const { locale, id } = await params
   const supabase = await createClient()
 
-  const { data: exhibition, error } = await supabase
+  let { data: exhibition, error } = await supabase
     .from('exhibitions')
     .select(`
       *,
@@ -44,6 +44,11 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
     .maybeSingle()
 
   if (error || !exhibition || exhibition.is_deleted) return notFound()
+
+  // Lazy sync the exhibition lifecycle
+  const { syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle')
+  const synced = await syncExhibitionLifecycle(exhibition, supabase)
+  if (synced) exhibition = synced
 
   // Safely fetch ONLY approved artworks without forcing an inner join on the parent exhibition
   const { data: artworks } = await supabase
@@ -139,7 +144,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                 <h3 className="font-bold text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">
                   {locale === 'bn' ? 'অফিসিয়াল ক্যাটালগ' : 'Official Catalog'}
                 </h3>
-                {catalog ? (
+                {catalog && exhibition.status !== 'upcoming' && exhibition.status !== 'draft' ? (
                   <div className="flex flex-col gap-3">
                     <p className="text-sm text-foreground/80 leading-relaxed mb-2">
                       {locale === 'bn' 

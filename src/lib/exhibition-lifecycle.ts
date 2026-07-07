@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
+import { createNotification } from '@/actions/notifications';
+import { revalidatePath } from 'next/cache';
 
 /**
  * Evaluates the status of an exhibition based on its configured dates and the current time.
@@ -9,29 +11,41 @@ export function evaluateExhibitionStatus(exhibition: any): string {
   const end = exhibition.exhibition_end ? new Date(exhibition.exhibition_end) : null;
 
   if (exhibition.status === 'draft') return 'draft';
+  if (exhibition.status === 'archived') return 'archived'; // Archived remains Archived forever
 
-  // If the end date has passed, it is archived
-  if (end && now > end) {
-    return 'archived';
+  // Pseudo logic:
+  // if status == Upcoming: if today >= exhibition_start_date -> automatically transition to Ongoing
+  // if status == Ongoing: if today > exhibition_end_date -> automatically transition to Archived
+  
+  if (exhibition.status === 'upcoming') {
+    if (start && now >= start) {
+      if (end && now > end) {
+        return 'archived';
+      }
+      return 'ongoing';
+    }
+    return 'upcoming';
   }
 
-  // If the start date has passed, it is ongoing
-  if (start && now >= start) {
+  if (exhibition.status === 'ongoing') {
+    if (end && now > end) {
+      return 'archived';
+    }
     return 'ongoing';
   }
 
-  // Otherwise, if it's published, it's upcoming
-  return 'upcoming';
+  // Fallback / legacy status values
+  if (end && now > end) return 'archived';
+  if (start && now >= start) return 'ongoing';
+  return exhibition.status || 'upcoming';
 }
-
-import { createNotification } from '@/actions/notifications';
 
 /**
  * Lazy Server-Side Evaluation: Checks an exhibition's expected status vs its current database status.
- * If there is a mismatch, it updates the database and triggers cache revalidation.
+ * If there is a mismatch, it updates the database, dispatches notifications, and invalidates caches.
  */
 export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
-  if (!exhibition || exhibition.status === 'draft') return exhibition;
+  if (!exhibition || exhibition.status === 'draft' || exhibition.status === 'archived') return exhibition;
 
   const expectedStatus = evaluateExhibitionStatus(exhibition);
 
@@ -49,9 +63,6 @@ export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
         const titleEn = `The exhibition "${data.theme_en}" has officially started!`;
         const titleBn = `"${data.theme_bn || data.theme_en}" প্রদর্শনী শুরু হয়েছে!`;
         
-        // Use user_id = null or a special mechanism to broadcast, 
-        // For now we'll fetch all active members and committee and send them a notification
-        // Note: In a massive scale app this should be a queue, but here it's fine for the scope.
         const { data: users } = await supabase.from('profiles').select('id').in('role', ['member', 'committee', 'admin']);
         if (users) {
           for (const u of users) {
@@ -64,6 +75,35 @@ export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
         }
       }
 
+      // Revalidate Next.js caches!
+      try {
+        const locales = ['en', 'bn'];
+        locales.forEach(loc => {
+          revalidatePath(`/${loc}`);
+          revalidatePath(`/${loc}/exhibitions`);
+          revalidatePath(`/${loc}/exhibitions/${data.id}`);
+          revalidatePath(`/${loc}/catalogs`);
+          revalidatePath(`/${loc}/admin/exhibitions`);
+          revalidatePath(`/${loc}/admin/exhibitions/${data.id}`);
+        });
+
+        // Query catalogs for this exhibition to revalidate catalog detail page cache
+        const { data: catalogs } = await supabase
+          .from('catalogs')
+          .select('id')
+          .eq('exhibition_id', data.id);
+        
+        if (catalogs) {
+          catalogs.forEach((cat: any) => {
+            locales.forEach(loc => {
+              revalidatePath(`/${loc}/catalogs/${cat.id}`);
+            });
+          });
+        }
+      } catch (err) {
+        console.error('[Lifecycle Sync] Revalidation failed:', err);
+      }
+
       return data;
     }
   }
@@ -72,11 +112,42 @@ export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
 }
 
 /**
+ * Batch synchronization of all active exhibition lifecycles.
+ * Queries ONLY exhibitions that require state transitions based on today's date.
+ */
+export async function batchSyncExhibitions(supabase: any) {
+  const now = new Date().toISOString();
+
+  // Find exhibitions that need transition
+  const { data: toOngoing } = await supabase
+    .from('exhibitions')
+    .select('id, status, exhibition_start, exhibition_end')
+    .eq('status', 'upcoming')
+    .lte('exhibition_start', now);
+
+  const { data: toArchived } = await supabase
+    .from('exhibitions')
+    .select('id, status, exhibition_start, exhibition_end')
+    .eq('status', 'ongoing')
+    .lt('exhibition_end', now);
+
+  const candidates = [...(toOngoing || []), ...(toArchived || [])];
+  if (candidates.length === 0) return;
+
+  for (const exh of candidates) {
+    await syncExhibitionLifecycle(exh, supabase);
+  }
+}
+
+/**
  * Fetches the currently featured exhibition and ensures its lifecycle status is synchronized.
  * Priority: manually featured → any active (non-draft, non-archived) exhibition → most recent archived.
  */
 export async function getFeaturedExhibition() {
   const supabase = await createClient();
+
+  // Run a quick batch sync first to ensure database consistency before fetching
+  await batchSyncExhibitions(supabase).catch(err => console.error('[Featured Exhibition] batchSync failed:', err));
 
   // 1. Try manually featured first
   let { data: featured } = await supabase

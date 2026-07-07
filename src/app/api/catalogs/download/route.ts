@@ -21,16 +21,29 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient()
 
-  // 3. Fetch only published catalog
+  // 3. Fetch only published catalog with its associated exhibition
   const { data: catalog, error } = await supabase
     .from('catalogs')
-    .select('id, pdf_url, title_en, status, visibility')
+    .select('id, pdf_url, title_en, status, visibility, exhibitions(*)')
     .eq('id', catalogId)
     .eq('status', 'published')
     .eq('visibility', 'public')
     .single()
 
-  if (error || !catalog) {
+  if (error || !catalog || !catalog.exhibitions) {
+    return NextResponse.json(
+      { error: 'Catalog not found or not published' },
+      { status: 404 }
+    )
+  }
+
+  // Lazy sync the exhibition lifecycle
+  const { syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle')
+  const syncedEx = await syncExhibitionLifecycle(catalog.exhibitions, supabase)
+  if (syncedEx) catalog.exhibitions = syncedEx
+
+  const ex = catalog.exhibitions as any
+  if (ex.status === 'draft' || ex.status === 'upcoming') {
     return NextResponse.json(
       { error: 'Catalog not found or not published' },
       { status: 404 }

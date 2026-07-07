@@ -6,6 +6,7 @@ import { BookOpen, Calendar, Globe, ArrowDownToLine, Eye, FileText, Search } fro
 import { CatalogDownloadButton } from '@/components/public/catalogs/CatalogDownloadButton'
 import { PublicCatalogSearchFilter } from '@/components/public/catalogs/PublicCatalogSearchFilter'
 import { Metadata } from 'next'
+import { batchSyncExhibitions } from '@/lib/exhibition-lifecycle'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -34,14 +35,17 @@ export default async function PublicCatalogsPage({
   const { q, year, sort, language, category } = await searchParams
   const supabase = await createClient()
 
-  // Build the query — CRITICAL: Only show catalogs from ARCHIVED exhibitions in the global archive
-  // Published catalogs for ongoing/upcoming exhibitions appear on their Exhibition Detail page only.
+  // Pre-sync all exhibition lifecycles before querying
+  await batchSyncExhibitions(supabase).catch(err => console.error('[Public Catalogs] batchSync failed:', err))
+
+  // Build the query — CRITICAL: Show catalogs from ONGOING or ARCHIVED exhibitions in the global archive
+  // Published catalogs for draft/upcoming exhibitions are hidden.
   let query = supabase
     .from('catalogs')
     .select('*, exhibitions!inner(id, theme_en, theme_bn, year, hero_image_url, status)')
     .eq('status', 'published')
     .eq('visibility', 'public')
-    .eq('exhibitions.status', 'archived')
+    .in('exhibitions.status', ['ongoing', 'archived'])
 
   if (q) {
     query = query.or(`title_en.ilike.%${q}%,title_bn.ilike.%${q}%`)
@@ -65,13 +69,13 @@ export default async function PublicCatalogsPage({
 
   const { data: catalogs, error } = await query
 
-  // Get all unique years for the year filter dropdown (from ALL archived exhibition catalogs)
+  // Get all unique years for the year filter dropdown (from ALL ongoing/archived exhibition catalogs)
   const { data: allArchivedCatalogs } = await supabase
     .from('catalogs')
     .select('exhibitions!inner(year, status)')
     .eq('status', 'published')
     .eq('visibility', 'public')
-    .eq('exhibitions.status', 'archived')
+    .in('exhibitions.status', ['ongoing', 'archived'])
 
   const uniqueYears = Array.from(
     new Set(allArchivedCatalogs?.map(c => (c.exhibitions as any).year).filter(Boolean) as number[])

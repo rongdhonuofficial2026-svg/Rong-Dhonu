@@ -19,8 +19,7 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
   const { id } = await params
   const supabase = await createClient()
 
-  // Fetch exhibition
-  const { data: exhibition, error } = await supabase
+  let { data: exhibition, error } = await supabase
     .from('exhibitions')
     .select('*')
     .eq('id', id)
@@ -29,6 +28,11 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
   if (error || !exhibition) {
     return <div className="p-8 text-destructive">Exhibition not found.</div>
   }
+
+  // Lazy sync the exhibition lifecycle
+  const { syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle')
+  const synced = await syncExhibitionLifecycle(exhibition, supabase)
+  if (synced) exhibition = synced
 
   // Fetch related counts and catalog
   const [galleryRes, catalogRes, artistsRes, artworksRes] = await Promise.all([
