@@ -73,6 +73,13 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, c
         {media.map((item) => {
           const isSelected = selectedIds.includes(item.id)
           const isPublished = item.status === 'published'
+          const cat = categories.find(c => c.slug === item.category)
+          const categoryLabel = cat ? cat.name_en : (item.category ? item.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Unknown')
+          const uploadDateStr = item.created_at ? new Date(item.created_at).toLocaleDateString(undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+          }) : 'Unknown'
 
           return (
             <LuxuryCard 
@@ -169,17 +176,28 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, c
                   
                   {/* Bottom Text */}
                   <div className="transform translate-y-[10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-100 relative z-20">
-                    <p className="font-serif text-lg text-white mb-1 line-clamp-1">{item.caption_en || 'Untitled Artifact'}</p>
-                    <div className="flex items-center justify-between">
-                      {item.exhibitions?.theme_en && (
-                        <p className="text-accent text-[10px] font-mono uppercase tracking-widest bg-black/40 px-2 py-0.5 rounded border border-white/10 inline-block">
-                          {item.exhibitions.theme_en}
-                        </p>
+                    <p className="font-serif text-lg text-white mb-1 line-clamp-1">{item.title_en || item.caption_en || 'Untitled Artifact'}</p>
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                      <span className="text-[9px] font-medium tracking-wider uppercase bg-white/15 px-1.5 py-0.5 rounded text-white border border-white/10">
+                        {categoryLabel}
+                      </span>
+                      {item.media_type === 'video' && (
+                        <span className="text-[9px] font-mono uppercase bg-accent/20 px-1.5 py-0.5 rounded text-accent border border-accent/20">
+                          Video
+                        </span>
                       )}
+                      {item.exhibitions?.theme_en && (
+                        <span className="text-accent text-[9px] font-mono uppercase tracking-widest bg-black/40 px-1.5 py-0.5 rounded border border-white/10 inline-block truncate max-w-[150px]" title={item.exhibitions.theme_en}>
+                          {item.exhibitions.theme_en}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] font-mono text-white/50">
+                      <span>Uploaded {uploadDateStr}</span>
                       {item.size_bytes && (
-                        <p className="text-white/40 text-[10px] font-mono">
+                        <span>
                           {(item.size_bytes / 1024 / 1024).toFixed(1)}MB
-                        </p>
+                        </span>
                       )}
                     </div>
                   </div>

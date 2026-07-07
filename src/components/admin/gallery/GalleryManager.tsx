@@ -6,7 +6,7 @@ import { GalleryGrid } from './GalleryGrid'
 import type { GalleryMediaWithExhibition, GalleryCategory } from '@/types/gallery'
 import type { Database } from '@/types/database'
 import { Input } from '@/components/ui/input'
-import { Search, Filter, Upload, X, Trash2, CheckSquare, Settings } from 'lucide-react'
+import { Search, Filter, Upload, X, Trash2, CheckSquare, Settings, Plus } from 'lucide-react'
 import { PremiumButton } from '@/components/admin/ui/PremiumButton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { bulkDeleteGalleryMedia, bulkUpdateGalleryStatus } from '@/actions/gallery'
@@ -147,11 +147,18 @@ export function GalleryManager({ initialMedia, categories }: GalleryManagerProps
             Categories
           </PremiumButton>
           <PremiumButton 
-            variant="primary"
+            variant="glass"
             leftIcon={<Upload className="w-4 h-4" />}
             onClick={() => router.push('/admin/exhibitions')}
           >
             Upload via Exhibitions
+          </PremiumButton>
+          <PremiumButton 
+            variant="primary"
+            leftIcon={<Plus className="w-4 h-4" />}
+            onClick={() => router.push('/admin/gallery/new')}
+          >
+            Custom Upload
           </PremiumButton>
         </div>
       </div>
