@@ -37,10 +37,9 @@ export default async function PublicCatalogsPage({
   // Build the query
   let query = supabase
     .from('catalogs')
-    .select('*, exhibitions!inner(theme_en, theme_bn, year, hero_image_url)')
+    .select('*, exhibitions!inner(theme_en, theme_bn, year, hero_image_url, status)')
     .eq('status', 'published')
-
-  // Search filter
+    .in('exhibitions.status', ['ongoing', 'archived'])
   if (q) {
     query = query.or(`title_en.ilike.%${q}%,title_bn.ilike.%${q}%,exhibitions.theme_en.ilike.%${q}%`)
   }
@@ -59,8 +58,9 @@ export default async function PublicCatalogsPage({
   // First get all unique years for the dropdown (from ALL published catalogs)
   const { data: allCatalogs } = await supabase
     .from('catalogs')
-    .select('exhibitions!inner(year)')
+    .select('exhibitions!inner(year, status)')
     .eq('status', 'published')
+    .in('exhibitions.status', ['ongoing', 'archived'])
 
   const uniqueYears = Array.from(new Set(allCatalogs?.map(c => (c.exhibitions as any).year).filter(Boolean) as number[])).sort((a, b) => b - a)
 

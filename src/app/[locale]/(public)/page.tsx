@@ -35,44 +35,43 @@ export default async function HomePage({
   
   const supabase = await createClient()
 
-  // 1. Determine which exhibition to show based on priority rules
-  let exhibition = null
-  
-  // Rule 1: Featured Exhibition
-  const { data: featured } = await supabase.from('exhibitions').select('*').eq('is_featured', true).limit(1).maybeSingle()
-  
-  if (featured) {
-    exhibition = featured
-  } else {
-    // Rule 2: Upcoming Exhibition (earliest first)
-    const { data: upcoming } = await supabase.from('exhibitions').select('*').eq('status', 'upcoming').order('exhibition_start', { ascending: true }).limit(1).maybeSingle()
-    
-    if (upcoming) {
-      exhibition = upcoming
-    } else {
-      // Rule 3: Ongoing Exhibition (latest first)
-      const { data: ongoing } = await supabase.from('exhibitions').select('*').eq('status', 'ongoing').order('exhibition_start', { ascending: false }).limit(1).maybeSingle()
+  // 1. Determine which exhibition to show based on priority rules + lazy lifecycle sync
+  const { getFeaturedExhibition, syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle');
+  let exhibition = await getFeaturedExhibition();
+
+  // If no exhibition at all, handle gracefully.
+  let artworks = []
+  let artists = []
+  let stats = null
+
+  if (exhibition) {
+    const [artworksRes, artistsRes, countsRes] = await Promise.all([
+      // Artworks from this specific exhibition
+      supabase.from('artworks')
+        .select('*, profiles(full_name_en, full_name_bn)')
+        .eq('status', 'approved')
+        .eq('exhibition_id', exhibition.id)
+        .limit(8),
       
-      if (ongoing) {
-        exhibition = ongoing
-      } else {
-        // Rule 4: Archived Exhibition (latest first)
-        const { data: archived } = await supabase.from('exhibitions').select('*').eq('status', 'archived').order('exhibition_start', { ascending: false }).limit(1).maybeSingle()
-        exhibition = archived
-      }
+      // Approved participants for this specific exhibition
+      supabase.from('exhibition_participants')
+        .select('*, profiles(*)')
+        .eq('status', 'approved')
+        .eq('exhibition_id', exhibition.id)
+        .limit(6),
+        
+      supabase.rpc('get_homepage_stats').maybeSingle() // Optional
+    ])
+
+    artworks = artworksRes.data || []
+    
+    // Map participants to their profile objects
+    if (artistsRes.data) {
+      artists = artistsRes.data.map(p => p.profiles).filter(Boolean)
     }
+    
+    stats = countsRes.data || null
   }
-
-  // Fetch remaining data safely without throwing errors
-  const [artworksRes, artistsRes, countsRes] = await Promise.all([
-    supabase.from('artworks').select('*, profiles(full_name_en, full_name_bn)').eq('status', 'approved').limit(8),
-    supabase.from('profiles').select('*').in('role', ['member', 'committee']).limit(6),
-    supabase.rpc('get_homepage_stats').maybeSingle() // Optional
-  ])
-
-  const artworks = artworksRes.data || []
-  const artists = artistsRes.data || []
-  const stats = countsRes.data || null
 
   return (
     <>

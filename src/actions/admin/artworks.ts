@@ -86,5 +86,6 @@ export async function moderateArtwork(
 
   revalidatePath('/[locale]/(admin)/admin/artworks', 'page')
   revalidatePath('/[locale]/(public)/gallery', 'page')
+  revalidatePath('/', 'layout') // Revalidate entire app to update Homepage Featured Artists and Exhibition Counts
   return { success: true }
 }

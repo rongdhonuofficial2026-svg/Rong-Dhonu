@@ -28,7 +28,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
         status
       )
     `)
-    .eq('status', 'published')
+    .in('status', ['ongoing', 'archived'])
     .order('year', { ascending: false })
     .order('exhibition_start', { ascending: false })
 

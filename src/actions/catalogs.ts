@@ -166,6 +166,7 @@ export async function publishCatalog(id: string, publish: boolean) {
 
 export async function incrementDownloadCount(id: string) {
   const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+  const { trackExhibitionMetric } = await import('@/lib/analytics');
   
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -174,7 +175,7 @@ export async function incrementDownloadCount(id: string) {
   
   const { data: catalog } = await supabaseAdmin
     .from('catalogs')
-    .select('total_downloads')
+    .select('total_downloads, exhibition_id')
     .eq('id', id)
     .single()
 
@@ -183,6 +184,10 @@ export async function incrementDownloadCount(id: string) {
       .from('catalogs')
       .update({ total_downloads: (catalog.total_downloads || 0) + 1 })
       .eq('id', id)
+      
+    if (catalog.exhibition_id) {
+      await trackExhibitionMetric(catalog.exhibition_id, 'catalog_downloads_count')
+    }
     return { success: true }
   }
 

@@ -3,14 +3,38 @@ import { SubmissionWizard } from "@/components/dashboard/artworks/SubmissionWiza
 
 export default async function NewArtworkPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
+  const { getFeaturedExhibition, isRegistrationOpen } = await import("@/lib/exhibition-lifecycle")
   const supabase = await createClient()
 
-  // Fetch active/upcoming exhibitions for the dropdown selection
-  const { data: exhibitions } = await supabase
-    .from('exhibitions')
-    .select('id, title_en, title_bn')
-    .in('status', ['active', 'upcoming'])
-    .order('start_date', { ascending: false })
+  // Find the featured/upcoming exhibition
+  const exhibition = await getFeaturedExhibition()
+  
+  // Check if registration is open
+  const registrationOpen = isRegistrationOpen(exhibition)
+
+  if (!registrationOpen) {
+    return (
+      <div className="space-y-8 pb-12">
+        <div className="max-w-3xl mx-auto text-center py-20">
+          <h1 className="font-serif text-3xl font-bold mb-4 text-red-500">
+            {locale === 'bn' ? "নিবন্ধন বন্ধ আছে" : "Registration Closed"}
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            {locale === 'bn' 
+              ? "বর্তমানে কোনো প্রদর্শনীর জন্য শিল্পকর্ম জমা নেওয়া হচ্ছে না। পরবর্তী প্রদর্শনীর জন্য অপেক্ষা করুন।" 
+              : "We are not currently accepting artwork submissions. Please wait for the next exhibition's registration window."}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Format exhibition for the wizard dropdown
+  const formattedExhibition = {
+    id: exhibition.id,
+    title_en: exhibition.theme_en,
+    title_bn: exhibition.theme_bn,
+  }
 
   return (
     <div className="space-y-8 pb-12">
@@ -23,7 +47,7 @@ export default async function NewArtworkPage({ params }: { params: Promise<{ loc
         </p>
       </div>
 
-      <SubmissionWizard locale={locale} exhibitions={exhibitions || []} />
+      <SubmissionWizard locale={locale} exhibitions={[formattedExhibition]} />
     </div>
   )
 }
