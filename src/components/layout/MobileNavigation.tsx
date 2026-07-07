@@ -22,6 +22,7 @@ export function MobileNavigation() {
     { name: t('about'), href: '/about' },
     { name: t('exhibitions'), href: '/exhibitions' },
     { name: t('gallery'), href: '/gallery' },
+    { name: t('catalogs'), href: '/catalogs' },
     { name: t('contact'), href: '/contact' },
   ]
 

@@ -125,16 +125,35 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
               </ul>
               
               <div className="pt-8 border-t border-border/50">
+                <h3 className="font-bold text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">
+                  {locale === 'bn' ? 'অফিসিয়াল ক্যাটালগ' : 'Official Catalog'}
+                </h3>
                 {catalog ? (
-                  <CatalogDownloadButton 
-                    catalog={catalog} 
-                    className="w-full h-14 rounded-none uppercase tracking-widest text-xs font-bold transition-all hover:scale-[1.02] flex items-center justify-center gap-3 bg-primary text-primary-foreground hover:bg-primary/90" 
-                  />
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm text-foreground/80 leading-relaxed mb-2">
+                      {locale === 'bn' 
+                        ? 'প্রদর্শনী, শিল্পকর্ম এবং শিল্পীদের বিবরণ সম্বলিত অফিসিয়াল প্রকাশনা।' 
+                        : 'Download the official exhibition publication containing featured artworks, participating artists, and exhibition highlights.'}
+                    </p>
+                    <Link 
+                      href={`/catalogs/${catalog.id}`}
+                      className="w-full h-12 flex items-center justify-center gap-2 rounded-none border border-border/50 bg-background hover:bg-muted text-xs font-bold uppercase tracking-widest transition-all"
+                    >
+                      Preview Catalog
+                    </Link>
+                    <CatalogDownloadButton 
+                      catalog={catalog} 
+                      className="w-full h-12 rounded-none uppercase tracking-widest text-xs font-bold transition-all flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90" 
+                    />
+                  </div>
                 ) : (
-                  <Button className="w-full h-14 rounded-none uppercase tracking-widest text-xs font-bold" variant="outline" disabled>
-                    <Download className="w-4 h-4 mr-3" />
-                    {locale === 'bn' ? 'ক্যাটালগ শীঘ্রই আসছে' : 'Catalog Pending'}
-                  </Button>
+                  <div className="text-center py-6 border border-dashed border-border/50 bg-background/50">
+                    <p className="text-sm italic text-muted-foreground">
+                      {locale === 'bn' 
+                        ? 'এই প্রদর্শনীর জন্য কোনো অফিসিয়াল ক্যাটালগ প্রকাশিত হয়নি।' 
+                        : 'No official catalog has been published for this exhibition.'}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
