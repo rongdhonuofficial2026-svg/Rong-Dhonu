@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { moderateArtworkSchema } from "@/lib/validations/schemas"
+import { canAccessAdmin } from "@/lib/auth/roles"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DEBUG LOGGER — structured, timestamped, step-numbered
@@ -118,7 +119,10 @@ export async function moderateArtwork(
     .eq('id', user.id)
     .single()
 
-  if (roleError || !adminProfile || adminProfile.role !== 'admin') {
+  // is_admin() in the DB grants access to role IN ('admin', 'owner')
+  // (see migration 20260705000003_add_owner_role.sql)
+  // Use the canonical canAccessAdmin() helper which mirrors this exactly.
+  if (roleError || !adminProfile || !canAccessAdmin(adminProfile.role)) {
     logError(5, 'ROLE CHECK FAILED', { roleError, role: adminProfile?.role })
     return { error: 'Forbidden: Admin access required' }
   }

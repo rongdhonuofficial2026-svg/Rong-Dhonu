@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import { canAccessAdmin } from "@/lib/auth/roles"
 
 export async function submitArtwork(payload: {
   title_en: string
@@ -175,7 +176,7 @@ export async function updateArtworkStatus(
   // Verify admin
   const { data: profile } = await supabase
     .from('profiles').select('role').eq('id', user.id).single()
-  if (!profile || profile.role !== 'admin') return { error: 'Forbidden' }
+  if (!profile || !canAccessAdmin(profile.role)) return { error: 'Forbidden' }
 
   const { error } = await supabase
     .from('artworks')
