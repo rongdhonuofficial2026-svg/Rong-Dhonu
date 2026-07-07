@@ -38,7 +38,6 @@ export function AdminSidebar({ locale }: { locale: string }) {
     { href: "/admin", label: locale === 'bn' ? "ড্যাশবোর্ড" : "Overview", icon: LayoutDashboard },
     { href: "/admin/exhibitions", label: locale === 'bn' ? "প্রদর্শনী" : "Exhibitions", icon: Paintbrush },
     { href: "/admin/artworks", label: locale === 'bn' ? "শিল্পকর্ম মডারেশন" : "Moderation", icon: ImageIcon },
-    { href: "/admin/committee", label: locale === 'bn' ? "কমিটি" : "Committee", icon: ShieldAlert },
     { href: "/admin/cms", label: locale === 'bn' ? "সিএমএস" : "CMS Engine", icon: FileText },
     { href: "/admin/gallery", label: locale === 'bn' ? "গ্যালারি" : "Gallery Media", icon: ImagePlus },
     { href: "/admin/catalogs", label: locale === 'bn' ? "ক্যাটালগ" : "Catalogs", icon: BookOpen },

@@ -37,7 +37,7 @@ export default async function HomePage({
 
   // 1. Determine which exhibition to show based on priority rules + lazy lifecycle sync
   const { getFeaturedExhibition, syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle');
-  let exhibition = await getFeaturedExhibition();
+  const exhibition = await getFeaturedExhibition();
 
   // If no exhibition at all, handle gracefully.
   let artworks = []

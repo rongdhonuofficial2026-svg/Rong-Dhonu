@@ -8,6 +8,8 @@ type ActionType =
   | 'delete_catalog'
   | 'approve_artwork'
   | 'reject_artwork'
+  | 'submit_artwork'
+  | 'moderate_artwork'
   | 'update_exhibition'
   | 'update_user_role'
   | 'upload_media'

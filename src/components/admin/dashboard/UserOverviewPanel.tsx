@@ -25,7 +25,7 @@ function RoleBar({ label, count, total, color }: { label: string; count: number;
 }
 
 export function UserOverviewPanel({ kpis }: UserOverviewPanelProps) {
-  const totalUsers = kpis.totalArtists + kpis.totalAdmins + kpis.totalCommitteeUsers
+  const totalUsers = kpis.totalArtists + kpis.totalAdmins
 
   return (
     <div className="bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-2xl p-6 h-full">
@@ -56,12 +56,7 @@ export function UserOverviewPanel({ kpis }: UserOverviewPanelProps) {
           total={totalUsers}
           color="bg-emerald-500"
         />
-        <RoleBar
-          label="Committee Members"
-          count={kpis.totalCommitteeUsers}
-          total={totalUsers}
-          color="bg-indigo-500"
-        />
+
         <RoleBar
           label="Administrators"
           count={kpis.totalAdmins}

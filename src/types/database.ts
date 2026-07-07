@@ -874,7 +874,7 @@ export type Database = {
       is_committee: { Args: never; Returns: boolean }
     }
     Enums: {
-      artwork_status: "pending" | "approved" | "rejected"
+      artwork_status: "pending" | "approved" | "rejected" | "changes_requested"
       availability_status: "available" | "sold" | "not_for_sale"
       exhibition_status:
         | "draft"
@@ -893,8 +893,9 @@ export type Database = {
         | "deadline_reminder"
         | "catalog_published"
         | "new_exhibition"
+        | "changes_requested"
       participant_status: "pending" | "approved" | "rejected"
-      user_role: "admin" | "member" | "committee" | "owner"
+      user_role: "admin" | "member" | "owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1025,7 +1026,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      artwork_status: ["pending", "approved", "rejected"],
+      artwork_status: ["pending", "approved", "rejected", "changes_requested"],
       availability_status: ["available", "sold", "not_for_sale"],
       exhibition_status: [
         "draft",
@@ -1045,9 +1046,10 @@ export const Constants = {
         "deadline_reminder",
         "catalog_published",
         "new_exhibition",
+        "changes_requested",
       ],
       participant_status: ["pending", "approved", "rejected"],
-      user_role: ["admin", "member", "committee", "owner"],
+      user_role: ["admin", "member", "owner"],
     },
   },
 } as const

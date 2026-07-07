@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 
-export type UserRole = 'owner' | 'admin' | 'committee' | 'member' | 'guest'
+export type UserRole = 'owner' | 'admin' | 'member' | 'guest'
 
 /**
  * Resolves the canonical dashboard route based on user role.
@@ -9,7 +9,6 @@ export function resolveDashboardRoute(role: UserRole | string | null | undefined
   switch (role) {
     case 'owner':
     case 'admin':
-    case 'committee':
       return '/admin'
     case 'member':
       return '/dashboard'
@@ -45,5 +44,5 @@ export async function getUserRole(supabase: SupabaseClient, userId: string, user
  * Validates if the user has permission to access the admin dashboard.
  */
 export function canAccessAdmin(role: UserRole | string | null | undefined): boolean {
-  return role === 'owner' || role === 'admin' || role === 'committee'
+  return role === 'owner' || role === 'admin'
 }

@@ -13,7 +13,7 @@ import { RecentArtworksPanel }   from '@/components/admin/dashboard/RecentArtwor
 import { RecentArtistsPanel }    from '@/components/admin/dashboard/RecentArtistsPanel'
 import { UpcomingEvents }        from '@/components/admin/dashboard/UpcomingEvents'
 import { PlatformMiniPanels }    from '@/components/admin/dashboard/PlatformMiniPanels'
-import { CommitteeStatusPanel }  from '@/components/admin/dashboard/CommitteeStatusPanel'
+
 import { NotificationCenter }    from '@/components/admin/dashboard/NotificationCenter'
 import { UserOverviewPanel }     from '@/components/admin/dashboard/UserOverviewPanel'
 import { SystemHealthPanel }     from '@/components/admin/dashboard/SystemHealthPanel'
@@ -78,9 +78,8 @@ export default async function AdminDashboardOverview({
         kpis={{ totalCatalogDownloads: data.kpis.totalCatalogDownloads }}
       />
 
-      {/* 8. Committee + Notifications */}
+      {/* 8. Notifications */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CommitteeStatusPanel members={data.committeeMembers} />
         <NotificationCenter notifications={data.recentNotifications} />
       </section>
 

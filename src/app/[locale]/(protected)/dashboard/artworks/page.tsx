@@ -24,6 +24,7 @@ export default async function MyArtworksPage({ params }: { params: Promise<{ loc
     switch(status) {
       case 'approved': return 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20'
       case 'pending': return 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20'
+      case 'changes_requested': return 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
       case 'rejected': return 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20'
       default: return 'bg-muted text-muted-foreground border-border'
     }
@@ -88,14 +89,22 @@ export default async function MyArtworksPage({ params }: { params: Promise<{ loc
                     {artwork.year && <p>Year: {artwork.year}</p>}
                   </div>
                   
-                  {artwork.status === 'pending' && (
-                    <div className="flex gap-2 mt-auto pt-4 border-t border-border">
-                      <Button variant="outline" size="sm" className="flex-1 gap-2">
-                        <Edit2 className="w-4 h-4" /> Edit
-                      </Button>
-                      <Button variant="outline" size="sm" className="flex-1 gap-2 text-destructive hover:text-destructive hover:bg-destructive/10">
-                        <Trash2 className="w-4 h-4" /> Delete
-                      </Button>
+                  {(artwork.status === 'pending' || artwork.status === 'changes_requested') && (
+                    <div className="flex flex-col gap-2 mt-auto pt-4 border-t border-border">
+                      {artwork.status === 'changes_requested' && artwork.notes && (
+                        <div className="bg-amber-500/10 p-3 rounded-lg text-sm text-amber-600 dark:text-amber-400 border border-amber-500/20 mb-2">
+                          <span className="font-bold block mb-1">Moderator Notes:</span>
+                          {artwork.notes}
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1 gap-2">
+                          <Edit2 className="w-4 h-4" /> {artwork.status === 'changes_requested' ? 'Submit Revision' : 'Edit'}
+                        </Button>
+                        <Button variant="outline" size="sm" className="flex-1 gap-2 text-destructive hover:text-destructive hover:bg-destructive/10">
+                          <Trash2 className="w-4 h-4" /> Delete
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>

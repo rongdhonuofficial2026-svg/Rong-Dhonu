@@ -15,7 +15,7 @@ interface QuickAction {
 const ACTIONS: QuickAction[] = [
   { label: 'New Exhibition',   icon: Paintbrush, href: '/en/admin/exhibitions/new', color: 'text-purple-400', bg: 'bg-purple-500/10 hover:bg-purple-500/20' },
   { label: 'Review Artworks',  icon: Eye,        href: '/en/admin/artworks',         color: 'text-amber-400',  bg: 'bg-amber-500/10  hover:bg-amber-500/20' },
-  { label: 'Add Committee',    icon: UserPlus,   href: '/en/admin/committee',         color: 'text-indigo-400', bg: 'bg-indigo-500/10 hover:bg-indigo-500/20' },
+
   { label: 'Upload Gallery',   icon: Upload,     href: '/en/admin/gallery',           color: 'text-rose-400',   bg: 'bg-rose-500/10   hover:bg-rose-500/20' },
   { label: 'New Catalog',      icon: BookOpen,   href: '/en/admin/catalogs/new',      color: 'text-teal-400',   bg: 'bg-teal-500/10   hover:bg-teal-500/20' },
   { label: 'Edit Homepage',    icon: Globe,      href: '/en/admin/cms',               color: 'text-cyan-400',   bg: 'bg-cyan-500/10   hover:bg-cyan-500/20' },

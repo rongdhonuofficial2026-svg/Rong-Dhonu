@@ -17,7 +17,7 @@ const STAGES: Stage[] = [
   { id: 1, label: 'Registration',     sublabel: 'Artists sign up',          statuses: ['registration_open'] },
   { id: 2, label: 'Submission',       sublabel: 'Artworks submitted',        statuses: ['submission_open'] },
   { id: 3, label: 'Closed',           sublabel: 'Submissions locked',        statuses: ['submission_closed'] },
-  { id: 4, label: 'Review',           sublabel: 'Committee evaluates',       statuses: ['reviewing'] },
+  { id: 4, label: 'Review',           sublabel: 'Admin evaluates',       statuses: ['reviewing'] },
   { id: 5, label: 'Selection',        sublabel: 'Final choices made',        statuses: [] }, // derived
   { id: 6, label: 'Published',        sublabel: 'Public gallery live',       statuses: ['published'] },
   { id: 7, label: 'Archived',         sublabel: 'Exhibition history',        statuses: ['archived'] },

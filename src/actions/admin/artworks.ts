@@ -15,7 +15,7 @@ async function requireAdmin(supabase: SupabaseClient, user: User | null): Promis
     .select('role')
     .eq('id', user.id)
     .single()
-  if (!profile || !['admin', 'committee'].includes(profile.role)) {
+  if (!profile || profile.role !== 'admin') {
     throw new Error('Forbidden: Admin access required')
   }
 }
@@ -43,47 +43,17 @@ export async function moderateArtwork(
     return { error: e instanceof Error ? e.message : 'Forbidden' }
   }
 
-  // Map changes_requested → keep 'pending' status in DB, but track notes
-  const dbStatus = validStatus === 'changes_requested' ? 'pending' : validStatus
-
-  const { data: artwork, error: updateError } = await supabase
-    .from('artworks')
-    .update({
-      status: dbStatus,
-      notes: validFeedback || null,
-    })
-    .eq('id', validId)
-    .select('id, title_en, title_bn, artist_id')
-    .single()
-
-  if (updateError) return { error: updateError.message }
-
-  // Audit log
-  const auditAction = validStatus === 'approved' ? 'approve_artwork' : 'reject_artwork'
-  await logAudit(auditAction, 'artwork', validId, { feedback: validFeedback, status: validStatus })
-
-  // Notification
-  const notifType =
-    validStatus === 'approved'
-      ? 'submission_approved'
-      : validStatus === 'rejected'
-      ? 'submission_rejected'
-      : 'submission_received'
-
-  const msgEn = validFeedback
-    ? `Your artwork "${artwork.title_en}" has been ${validStatus}. Feedback: ${validFeedback}`
-    : `Your artwork "${artwork.title_en}" has been ${validStatus}.`
-
-  const msgBn = validFeedback
-    ? `আপনার শিল্পকর্ম "${artwork.title_bn || artwork.title_en}" ${validStatus} হয়েছে। মন্তব্য: ${validFeedback}`
-    : `আপনার শিল্পকর্ম "${artwork.title_bn || artwork.title_en}" ${validStatus} হয়েছে।`
-
-  await createNotification(artwork.artist_id, notifType, msgEn, msgBn, {
-    subject: `Rongdhonu: Artwork ${validStatus}`,
-    html: `<p>Hello,</p><p>Your artwork <strong>${artwork.title_en}</strong> has been marked as <strong>${validStatus}</strong>.</p>${validFeedback ? `<p><strong>Feedback:</strong> ${validFeedback}</p>` : ''}`,
-    category: 'notify_artwork_updates',
+  // Use the transactional RPC to update status, audit log, and notify the artist
+  const { error: rpcError } = await supabase.rpc('moderate_artwork_transaction', {
+    p_artwork_id: validId,
+    p_status: validStatus,
+    p_admin_id: user.id,
+    p_reason: validFeedback || null,
   })
 
+  if (rpcError) return { error: rpcError.message }
+
+  revalidatePath('/[locale]/(admin)/admin/exhibitions/[id]/moderation', 'page')
   revalidatePath('/[locale]/(admin)/admin/artworks', 'page')
   revalidatePath('/[locale]/(public)/gallery', 'page')
   revalidatePath('/', 'layout') // Revalidate entire app to update Homepage Featured Artists and Exhibition Counts

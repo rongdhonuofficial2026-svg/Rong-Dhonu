@@ -4,7 +4,6 @@ import type {
   DashboardKPIs,
   AuditLogWithProfile,
   ArtworkWithArtistAndImage,
-  CommitteeMemberFull,
 } from '@/types/dashboard'
 import { safeData, safeCount } from '@/types/dashboard'
 
@@ -36,20 +35,17 @@ export async function fetchDashboardData(
     r_rejectedArtworks,
     r_totalExhibitions,
     r_activeExhibitions,
-    r_totalCommitteeMembers,
     r_publishedCatalogs,
     r_draftCatalogs,
     r_totalGallery,
     r_unreadNotifications,
     r_pendingParticipants,
     r_totalAdmins,
-    r_totalCommitteeUsers,
     // ── Data arrays ──
     r_recentAudits,
     r_pendingArtworkList,
     r_recentArtists,
     r_recentArtworks,
-    r_committeeMembers,
     r_upcomingEvents,
     r_notifications,
     r_catalogStats,
@@ -99,9 +95,6 @@ export async function fetchDashboardData(
     supabase.from('exhibitions').select('*', { count: 'exact', head: true })
       .in('status', ['registration_open', 'submission_open', 'submission_closed', 'reviewing', 'published']),
 
-    // KPI: Total committee members (across all exhibitions)
-    supabase.from('committee_members').select('*', { count: 'exact', head: true }),
-
     // KPI: Published catalogs
     supabase.from('catalogs').select('*', { count: 'exact', head: true }).eq('status', 'published'),
 
@@ -120,9 +113,6 @@ export async function fetchDashboardData(
 
     // KPI: Users with admin/owner role
     supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'admin'),
-
-    // KPI: Users with committee role
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'committee'),
 
     // Activity: Recent audit logs with actor name
     supabase
@@ -153,13 +143,6 @@ export async function fetchDashboardData(
       .select('id, title_en, medium_en, category, status, created_at, artist_id, profiles!artist_id(full_name_en), artwork_images(url_thumbnail, order_index)')
       .order('created_at', { ascending: false })
       .limit(6),
-
-    // Committee members with profile + exhibition info
-    supabase
-      .from('committee_members')
-      .select('id, role_en, year, created_at, profiles!profile_id(full_name_en, avatar_url), exhibitions!exhibition_id(theme_en, year)')
-      .order('created_at', { ascending: false })
-      .limit(8),
 
     // Upcoming events (future only)
     supabase
@@ -199,21 +182,18 @@ export async function fetchDashboardData(
   const rejectedArtworks    = safeCount(r_rejectedArtworks as any)
   const totalExhibitions    = safeCount(r_totalExhibitions as any)
   const activeExhibitions   = safeCount(r_activeExhibitions as any)
-  const totalCommitteeMembers = safeCount(r_totalCommitteeMembers as any)
   const publishedCatalogs   = safeCount(r_publishedCatalogs as any)
   const draftCatalogs       = safeCount(r_draftCatalogs as any)
   const totalGalleryMedia   = safeCount(r_totalGallery as any)
   const unreadNotifications = safeCount(r_unreadNotifications as any)
   const pendingParticipants = safeCount(r_pendingParticipants as any)
   const totalAdmins         = safeCount(r_totalAdmins as any)
-  const totalCommitteeUsers = safeCount(r_totalCommitteeUsers as any)
 
   // ─── Unwrap data arrays ────────────────────────────────────────────────────
   const recentAudits      = safeData(r_recentAudits as any, []) as AuditLogWithProfile[]
   const pendingArtworkList = safeData(r_pendingArtworkList as any, []) as ArtworkWithArtistAndImage[]
   const recentArtists     = safeData(r_recentArtists as any, [])
   const recentArtworks    = safeData(r_recentArtworks as any, []) as ArtworkWithArtistAndImage[]
-  const committeeMembers  = safeData(r_committeeMembers as any, []) as CommitteeMemberFull[]
   const upcomingEvents    = safeData(r_upcomingEvents as any, [])
   const recentNotifications = safeData(r_notifications as any, [])
   const catalogRaw        = safeData(r_catalogStats as any, []) as { status: string; total_downloads: number | null }[]
@@ -255,7 +235,6 @@ export async function fetchDashboardData(
     rejectedArtworks,
     totalExhibitions,
     activeExhibitions,
-    totalCommitteeMembers,
     publishedCatalogs,
     draftCatalogs,
     totalCatalogDownloads,
@@ -265,7 +244,6 @@ export async function fetchDashboardData(
     unreadNotifications,
     pendingParticipants,
     totalAdmins,
-    totalCommitteeUsers,
     approvalRate,
   }
 
@@ -277,7 +255,6 @@ export async function fetchDashboardData(
     pendingArtworkList,
     recentArtists: recentArtists as DashboardData['recentArtists'],
     recentArtworks,
-    committeeMembers,
     upcomingEvents: upcomingEvents as DashboardData['upcomingEvents'],
     recentNotifications: recentNotifications as DashboardData['recentNotifications'],
     cmsSections: cmsSections as DashboardData['cmsSections'],

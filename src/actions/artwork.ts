@@ -51,8 +51,18 @@ export async function submitArtwork(payload: {
 
   const data = validation.data
 
+  let targetExhibitionId = data.exhibitionId
+  if (!targetExhibitionId) {
+    const { getFeaturedExhibition } = await import("@/lib/exhibition-lifecycle")
+    const featured = await getFeaturedExhibition()
+    if (featured) {
+      targetExhibitionId = featured.id
+    }
+  }
+
   const artworkRecord = {
     artist_id: user.id,
+    exhibition_id: targetExhibitionId || null,
     title_en: data.title_en,
     title_bn: data.title_bn || null,
     description_en: data.description_en || null,
@@ -82,18 +92,18 @@ export async function submitArtwork(payload: {
 
   const artworkId = inserted.id
 
-  // Handle exhibition registration if exhibitionId was provided
-  if (data.exhibitionId) {
+  // Handle exhibition registration if targetExhibitionId was found
+  if (targetExhibitionId) {
     const { data: existingReg } = await supabase
       .from('exhibition_participants')
       .select('id')
-      .eq('exhibition_id', data.exhibitionId)
+      .eq('exhibition_id', targetExhibitionId)
       .eq('artist_id', user.id)
       .maybeSingle()
 
     if (!existingReg) {
       await supabase.from('exhibition_participants').insert([{
-        exhibition_id: data.exhibitionId,
+        exhibition_id: targetExhibitionId,
         artist_id: user.id,
         status: 'pending',
       }])
@@ -101,7 +111,7 @@ export async function submitArtwork(payload: {
   }
 
   // Audit log
-  await logAudit('create_catalog', 'artwork', artworkId, {
+  await logAudit('submit_artwork', 'artwork', artworkId, {
     action: 'submit',
     title: data.title_en,
   })
@@ -114,7 +124,7 @@ export async function submitArtwork(payload: {
     `আপনার শিল্পকর্ম "${data.title_bn || data.title_en}" সফলভাবে জমা দেওয়া হয়েছে এবং পর্যালোচনার অপেক্ষায় রয়েছে।`,
     {
       subject: 'Rongdhonu: Artwork Submission Received',
-      html: `<p>Hello,</p><p>We have received your artwork <strong>${data.title_en}</strong>. Our committee will review it shortly.</p>`,
+      html: `<p>Hello,</p><p>We have received your artwork <strong>${data.title_en}</strong>. Our admins will review it shortly.</p>`,
       category: 'notify_artwork_updates',
     }
   )

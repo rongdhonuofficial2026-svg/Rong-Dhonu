@@ -2,7 +2,7 @@ import type { DashboardKPIs } from '@/types/dashboard'
 import { MetricTile } from './MetricTile'
 import {
   Users, Image as ImageIcon, AlertCircle, CheckCircle,
-  Paintbrush, Shield, BookOpen, ImagePlus, Bell,
+  Paintbrush, BookOpen, ImagePlus, Bell,
 } from 'lucide-react'
 
 interface KPIGridProps {
@@ -60,13 +60,7 @@ export function KPIGrid({ kpis }: KPIGridProps) {
           subtitle={`${kpis.activeExhibitions} active`}
           href="/admin/exhibitions"
         />
-        <MetricTile
-          title="Committee Members"
-          value={kpis.totalCommitteeMembers}
-          icon={Shield}
-          colorTheme="indigo"
-          href="/admin/committee"
-        />
+
         <MetricTile
           title="Published Catalogs"
           value={kpis.publishedCatalogs}
