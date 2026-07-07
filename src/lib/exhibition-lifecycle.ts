@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server';
-import { revalidatePath } from 'next/cache';
 
 /**
  * Evaluates the status of an exhibition based on its configured dates and the current time.
@@ -65,10 +64,6 @@ export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
         }
       }
 
-      // Revalidate relevant paths since the status changed automatically
-      revalidatePath('/', 'layout');
-      revalidatePath('/[locale]/(public)/exhibitions', 'page');
-      revalidatePath('/[locale]/(admin)/admin/exhibitions', 'page');
       return data;
     }
   }
