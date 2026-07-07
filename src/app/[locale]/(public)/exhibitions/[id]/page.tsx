@@ -11,7 +11,7 @@ import { CatalogDownloadButton } from "@/components/public/catalogs/CatalogDownl
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
   const supabase = await createClient()
-  const { data: exhibition } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn, hero_image_url').eq('id', id).single()
+  const { data: exhibition } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn, hero_image_url').eq('id', id).maybeSingle()
   
   if (!exhibition) return {}
 
@@ -43,9 +43,9 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
     `)
     .eq('id', id)
     .eq('artworks.status', 'approved')
-    .single()
+    .maybeSingle()
 
-  if (error || !exhibition) return notFound()
+  if (error || !exhibition || exhibition.is_deleted) return notFound()
 
   // Fetch the published catalog for this exhibition
   const { data: catalog } = await supabase

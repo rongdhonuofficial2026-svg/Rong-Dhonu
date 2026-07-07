@@ -39,7 +39,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: exhibitions } = await supabase
     .from('exhibitions')
     .select('id, updated_at')
-    .eq('status', 'published')
+    .in('status', ['upcoming', 'ongoing', 'archived'])
+    .neq('is_deleted', true)
 
   const exhibitionEntries: MetadataRoute.Sitemap = (exhibitions || []).flatMap(
     (ex) =>

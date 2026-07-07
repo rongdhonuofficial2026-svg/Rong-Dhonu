@@ -18,6 +18,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
     .from('exhibitions')
     .select('*')
     .in('status', ['upcoming', 'ongoing', 'archived'])
+    .neq('is_deleted', true)
     .order('exhibition_start', { ascending: false })
 
   if (error) {

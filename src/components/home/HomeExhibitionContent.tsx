@@ -65,9 +65,10 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
     )
   }
 
-  const title = locale === 'bn' ? (currentExhibition.title_bn || currentExhibition.title_en) : currentExhibition.title_en
+  const title = locale === 'bn' ? (currentExhibition.theme_bn || currentExhibition.theme_en) : currentExhibition.theme_en
   const venue = locale === 'bn' ? (currentExhibition.venue_bn || currentExhibition.venue_en) : currentExhibition.venue_en
-  const startDate = new Date(currentExhibition.start_date)
+  const startDateStr = currentExhibition.exhibition_start || new Date().toISOString()
+  const startDate = new Date(startDateStr)
   const formattedDate = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-US', {
     month: 'long', day: 'numeric', year: 'numeric'
   }).format(startDate)
@@ -184,7 +185,7 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         {/* Year watermark */}
         <div className="absolute top-8 right-8 md:top-14 md:right-14 z-10 pointer-events-none">
           <p className="font-serif text-[8rem] md:text-[12rem] font-bold text-white/[0.04] leading-none select-none">
-            {currentExhibition.start_date ? new Date(currentExhibition.start_date).getFullYear() : 2026}
+            {currentExhibition.exhibition_start ? new Date(currentExhibition.exhibition_start).getFullYear() : 2026}
           </p>
         </div>
       </motion.div>

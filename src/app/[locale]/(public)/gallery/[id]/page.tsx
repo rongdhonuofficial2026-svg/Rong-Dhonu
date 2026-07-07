@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
   const supabase = await createClient()
-  const { data: album } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn').eq('id', id).single()
+  const { data: album } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn').eq('id', id).maybeSingle()
   
   if (!album) return { title: 'Album Not Found' }
 
@@ -27,9 +27,9 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
     .from('exhibitions')
     .select('*')
     .eq('id', id)
-    .single()
+    .maybeSingle()
 
-  if (albumError || !album || album.status !== 'published') {
+  if (albumError || !album || album.status !== 'published' || album.is_deleted) {
     notFound()
   }
 

@@ -1,20 +1,49 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link } from "@/lib/i18n/routing"
-import { Plus, Edit, Calendar, MapPin, Eye, ArrowRight, Paintbrush } from "lucide-react"
+import { Plus, Edit, Calendar, MapPin, Eye, ArrowRight, Paintbrush, Search } from "lucide-react"
 import { ExhibitionActions } from "@/components/admin/ExhibitionActions"
 import { LuxuryCard } from "@/components/admin/ui/LuxuryCard"
 import { PremiumButton } from "@/components/admin/ui/PremiumButton"
 import { GlassPanel } from "@/components/admin/ui/GlassPanel"
 import Image from "next/image"
 
-export default async function ExhibitionsManagementPage({ params }: { params: Promise<{ locale: string }> }) {
+import { ExhibitionsFilterBar } from "@/components/admin/exhibitions/ExhibitionsFilterBar"
+
+export default async function ExhibitionsManagementPage({ 
+  params,
+  searchParams
+}: { 
+  params: Promise<{ locale: string }>,
+  searchParams: Promise<{ q?: string, status?: string, sort?: string }>
+}) {
   const { locale } = await params
+  const { q, status, sort } = await searchParams
   const supabase = await createClient()
 
-  const { data: exhibitions, error } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .order('exhibition_start', { ascending: false })
+  let query = supabase.from('exhibitions').select('*')
+
+  if (status === 'trash') {
+    query = query.eq('is_deleted', true)
+  } else {
+    query = query.neq('is_deleted', true)
+    if (status && status !== 'all') {
+      query = query.eq('status', status)
+    }
+  }
+
+  if (q) {
+    query = query.or(`theme_en.ilike.%${q}%,theme_bn.ilike.%${q}%,venue_en.ilike.%${q}%`)
+  }
+
+  if (sort === 'oldest') {
+    query = query.order('exhibition_start', { ascending: true })
+  } else if (sort === 'newest_created') {
+    query = query.order('created_at', { ascending: false })
+  } else {
+    query = query.order('exhibition_start', { ascending: false })
+  }
+
+  const { data: exhibitions, error } = await query
 
   if (error) {
     return <div className="p-8 text-destructive">Error loading exhibitions: {error.message}</div>
@@ -63,7 +92,7 @@ export default async function ExhibitionsManagementPage({ params }: { params: Pr
 
       {/* Timeline Layout */}
       <section className="space-y-8">
-        <div className="flex items-center justify-between border-b border-border/40 pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border/40 pb-4 gap-4">
           <h2 className="font-serif text-2xl tracking-tight">Exhibition Roster</h2>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500"/> Active</span>
@@ -71,18 +100,32 @@ export default async function ExhibitionsManagementPage({ params }: { params: Pr
           </div>
         </div>
 
+        <ExhibitionsFilterBar />
+
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           {!exhibitions || exhibitions.length === 0 ? (
-            <div className="col-span-full p-20 text-center">
+            <div className="col-span-full p-10 md:p-20 text-center">
               <GlassPanel intensity="light" className="inline-flex flex-col items-center justify-center p-12 max-w-lg mx-auto">
                 <div className="w-20 h-20 rounded-full border border-white/10 glass flex items-center justify-center mb-6">
-                  <Paintbrush className="w-10 h-10 text-muted-foreground/50" />
+                  {q || (status && status !== 'all') ? (
+                    <Search className="w-10 h-10 text-muted-foreground/50" />
+                  ) : (
+                    <Paintbrush className="w-10 h-10 text-muted-foreground/50" />
+                  )}
                 </div>
-                <h3 className="font-serif text-2xl mb-2">Awaiting Curation</h3>
-                <p className="text-muted-foreground mb-8">The exhibition halls are currently empty. Schedule your first showcase.</p>
-                <PremiumButton asChild variant="primary">
-                  <Link href="/admin/exhibitions/new">Create Exhibition</Link>
-                </PremiumButton>
+                <h3 className="font-serif text-2xl mb-2">
+                  {q || (status && status !== 'all') ? 'No matches found' : 'Awaiting Curation'}
+                </h3>
+                <p className="text-muted-foreground mb-8">
+                  {q || (status && status !== 'all') 
+                    ? 'Adjust your filters or search query to find what you are looking for.' 
+                    : 'The exhibition halls are currently empty. Schedule your first showcase.'}
+                </p>
+                {!(q || (status && status !== 'all')) && (
+                  <PremiumButton asChild variant="primary">
+                    <Link href="/admin/exhibitions/new">Create Exhibition</Link>
+                  </PremiumButton>
+                )}
               </GlassPanel>
             </div>
           ) : (
@@ -141,7 +184,7 @@ export default async function ExhibitionsManagementPage({ params }: { params: Pr
                         <Link href={`/exhibitions/${ex.id}`} target="_blank">Preview</Link>
                       </PremiumButton>
                       <div className="pl-2 border-l border-border/40">
-                        <ExhibitionActions id={ex.id} locale={locale} />
+                        <ExhibitionActions exhibition={ex} locale={locale} />
                       </div>
                     </div>
                   </div>

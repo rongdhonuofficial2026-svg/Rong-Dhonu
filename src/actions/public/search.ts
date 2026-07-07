@@ -38,8 +38,9 @@ export async function globalSearch(query: string, locale: string = 'en'): Promis
     // Search exhibitions
     supabase
       .from('exhibitions')
-      .select('id, title_en, title_bn, year, hero_image_url')
-      .or(`title_en.ilike.${q},title_bn.ilike.${q},description_en.ilike.${q}`)
+      .select('id, theme_en, theme_bn, year, hero_image_url')
+      .neq('is_deleted', true)
+      .or(`theme_en.ilike.${q},theme_bn.ilike.${q},description_en.ilike.${q}`)
       .limit(3)
   ])
 
@@ -78,7 +79,7 @@ export async function globalSearch(query: string, locale: string = 'en'): Promis
       results.push({
         id: item.id as string,
         type: 'exhibition',
-        title: locale === 'bn' && item.title_bn ? item.title_bn as string : item.title_en as string,
+        title: locale === 'bn' && item.theme_bn ? item.theme_bn as string : item.theme_en as string,
         subtitle: `Exhibition ${item.year}`,
         image_url: item.hero_image_url as string,
         href: `/${locale}/exhibitions/${item.id}`

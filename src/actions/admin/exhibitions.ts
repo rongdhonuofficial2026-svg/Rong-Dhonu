@@ -138,6 +138,13 @@ export async function updateExhibitionFeatureStatus(id: string, is_featured: boo
   const { data, error } = await supabase.from('exhibitions').update({ is_featured }).eq('id', id).select().single()
   if (error) return { error: error.message }
 
+  await supabase.from('audit_logs').insert([{
+    actor_id: user!.id,
+    action: is_featured ? 'FEATURE_EXHIBITION' : 'UNFEATURE_EXHIBITION',
+    entity_type: 'exhibition',
+    entity_id: id
+  }])
+
   revalidateExhibitionCaches(id)
   return { success: true, data }
 }
@@ -156,6 +163,13 @@ export async function duplicateExhibition(id: string) {
   copyPayload.theme_en = `${copyPayload.theme_en} (Copy)`
   copyPayload.status = 'draft' // Duplicates should always be drafts
   copyPayload.is_featured = false // Never copy feature status
+  copyPayload.is_deleted = false
+  // Reset analytics counts
+  copyPayload.views_count = 0
+  copyPayload.registration_count = 0
+  copyPayload.approved_artists_count = 0
+  copyPayload.gallery_views_count = 0
+  copyPayload.catalog_downloads_count = 0
 
   const { data, error } = await supabase.from('exhibitions').insert([copyPayload]).select().single()
   if (error) return { error: error.message }
@@ -184,6 +198,60 @@ export async function archiveExhibition(id: string) {
   await supabase.from('audit_logs').insert([{
     actor_id: user!.id,
     action: 'ARCHIVE_EXHIBITION',
+    entity_type: 'exhibition',
+    entity_id: id
+  }])
+
+  revalidateExhibitionCaches(id)
+  return { success: true }
+}
+
+export async function restoreExhibition(id: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const role = await requireAdmin(supabase, user)
+  if (role === 'curator') return { error: 'Curators cannot restore exhibitions' }
+
+  const { error } = await supabase.from('exhibitions').update({ status: 'draft', is_deleted: false, is_featured: false }).eq('id', id)
+  if (error) return { error: error.message }
+
+  await supabase.from('audit_logs').insert([{
+    actor_id: user!.id,
+    action: 'RESTORE_EXHIBITION',
+    entity_type: 'exhibition',
+    entity_id: id
+  }])
+
+  revalidateExhibitionCaches(id)
+  return { success: true }
+}
+
+export async function softDeleteExhibition(id: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const role = await requireAdmin(supabase, user)
+  if (role === 'curator') return { error: 'Curators cannot delete exhibitions' }
+
+  // Dependency Check
+  const [artworksRes, participantsRes, galleriesRes, catalogsRes] = await Promise.all([
+    supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+    supabase.from('exhibition_participants').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+    supabase.from('gallery_albums').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+    supabase.from('catalogs').select('id', { count: 'exact', head: true }).eq('exhibition_id', id)
+  ])
+
+  const depsCount = (artworksRes.count || 0) + (participantsRes.count || 0) + (galleriesRes.count || 0) + (catalogsRes.count || 0)
+  
+  if (depsCount > 0) {
+    return { error: `Cannot delete exhibition because it has ${depsCount} dependencies (artworks, galleries, etc.). Please archive it instead.` }
+  }
+
+  const { error } = await supabase.from('exhibitions').update({ is_deleted: true, is_featured: false }).eq('id', id)
+  if (error) return { error: error.message }
+
+  await supabase.from('audit_logs').insert([{
+    actor_id: user!.id,
+    action: 'SOFT_DELETE_EXHIBITION',
     entity_type: 'exhibition',
     entity_id: id
   }])

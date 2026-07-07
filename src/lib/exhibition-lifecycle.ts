@@ -88,7 +88,9 @@ export async function getFeaturedExhibition() {
     .from('exhibitions')
     .select('*')
     .eq('is_featured', true)
-    .single();
+    .neq('is_deleted', true)
+    .limit(1)
+    .maybeSingle();
 
   if (!featured) {
     // Fallback: Find the most recent ongoing exhibition
@@ -96,9 +98,11 @@ export async function getFeaturedExhibition() {
       .from('exhibitions')
       .select('*')
       .eq('status', 'ongoing')
+      .neq('is_deleted', true)
       .order('exhibition_start', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
     
     featured = ongoing;
   }
@@ -109,9 +113,11 @@ export async function getFeaturedExhibition() {
       .from('exhibitions')
       .select('*')
       .eq('status', 'upcoming')
+      .neq('is_deleted', true)
       .order('exhibition_start', { ascending: true })
+      .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
     
     featured = upcoming;
   }

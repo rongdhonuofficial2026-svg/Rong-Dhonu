@@ -29,6 +29,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
       )
     `)
     .in('status', ['ongoing', 'archived'])
+    .neq('is_deleted', true)
     .order('year', { ascending: false })
     .order('exhibition_start', { ascending: false })
 
