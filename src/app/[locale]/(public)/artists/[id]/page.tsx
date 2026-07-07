@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     .from('profiles')
     .select('first_name_en, last_name_en, full_name_bn, bio_en, bio_bn, avatar_url')
     .eq('id', id)
-    .single()
+    .maybeSingle()
   
   if (!profile) return {}
 
@@ -43,7 +43,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
       exhibition_participants(role, exhibitions(id, year, title_en, title_bn))
     `)
     .eq('id', id)
-    .single()
+    .maybeSingle()
 
   if (error || !profile) return notFound()
 

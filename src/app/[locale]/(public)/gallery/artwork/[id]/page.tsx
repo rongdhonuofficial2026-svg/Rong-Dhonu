@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     .from('artworks')
     .select('title_en, title_bn, description_en, description_bn, main_image_url, profiles(first_name_en, last_name_en)')
     .eq('id', id)
-    .single()
+    .maybeSingle()
   
   if (!artwork) return {}
 
@@ -48,7 +48,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
     `)
     .eq('id', id)
     .eq('status', 'approved')
-    .single()
+    .maybeSingle()
 
   if (error || !artwork) return notFound()
 

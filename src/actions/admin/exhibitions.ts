@@ -39,7 +39,13 @@ export async function createExhibition(payload: any) {
     venue_bn: payload.venue_bn,
     status: 'draft', // Always force new exhibitions to draft
     hero_image_url: payload.hero_image_url,
-    is_featured: payload.is_featured || false
+    is_featured: false,
+    is_deleted: false,
+    views_count: 0,
+    registration_count: 0,
+    approved_artists_count: 0,
+    gallery_views_count: 0,
+    catalog_downloads_count: 0
   }]).select().single()
 
   if (error) return { error: error.message }

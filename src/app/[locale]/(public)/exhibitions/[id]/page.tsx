@@ -38,14 +38,22 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
     .select(`
       *,
       events(*),
-      committee_members(*, profiles(first_name_en, last_name_en, avatar_url)),
-      artworks!inner(id, title_en, title_bn, main_image_url, profiles(first_name_en, last_name_en))
+      committee_members(*, profiles(first_name_en, last_name_en, avatar_url))
     `)
     .eq('id', id)
-    .eq('artworks.status', 'approved')
     .maybeSingle()
 
   if (error || !exhibition || exhibition.is_deleted) return notFound()
+
+  // Safely fetch ONLY approved artworks without forcing an inner join on the parent exhibition
+  const { data: artworks } = await supabase
+    .from('artworks')
+    .select('id, title_en, title_bn, main_image_url, profiles(first_name_en, last_name_en)')
+    .eq('exhibition_id', id)
+    .eq('status', 'approved')
+    
+  // Attach artworks for the render pipeline
+  exhibition.artworks = artworks || []
 
   // Fetch the published catalog for this exhibition
   const { data: catalog } = await supabase

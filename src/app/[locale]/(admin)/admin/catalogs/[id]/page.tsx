@@ -11,7 +11,7 @@ export default async function EditCatalogPage({ params }: { params: Promise<{ id
     .from('catalogs')
     .select('*, exhibitions(theme_en, theme_bn, year)')
     .eq('id', id)
-    .single()
+    .maybeSingle()
 
   if (error || !catalog) {
     notFound()

@@ -12,14 +12,14 @@ export default async function CMSManagementPage({ params }: { params: Promise<{ 
     .select('*')
     .eq('page', 'homepage')
     .eq('section', 'hero')
-    .single()
+    .maybeSingle()
 
   const { data: cmsAbout } = await supabase
     .from('cms_content')
     .select('*')
     .eq('page', 'homepage')
     .eq('section', 'about')
-    .single()
+    .maybeSingle()
 
   // Fallback structure if database is empty
   const defaultContent = {

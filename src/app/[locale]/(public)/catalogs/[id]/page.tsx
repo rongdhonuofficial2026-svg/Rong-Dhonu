@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .select('*, exhibitions(theme_en, hero_image_url)')
     .eq('id', id)
     .eq('status', 'published')
-    .single()
+    .maybeSingle()
 
   if (!catalog) {
     return { title: 'Catalog Not Found' }
@@ -51,7 +51,7 @@ export default async function CatalogDetailPage({ params }: Props) {
     .select('*, exhibitions(*)')
     .eq('id', id)
     .eq('status', 'published') // CRITICAL: Only allow published catalogs
-    .single()
+    .maybeSingle()
 
   if (error || !catalog) {
     notFound()

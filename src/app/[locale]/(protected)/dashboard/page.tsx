@@ -16,7 +16,7 @@ export default async function DashboardOverview({ params }: { params: Promise<{ 
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   // Fetch Artworks Stats
   const { data: artworks } = await supabase
@@ -38,7 +38,7 @@ export default async function DashboardOverview({ params }: { params: Promise<{ 
     .in('status', ['active', 'upcoming'])
     .order('start_date', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   const name = locale === 'bn' ? (profile?.full_name_bn || profile?.full_name_en) : profile?.full_name_en
 

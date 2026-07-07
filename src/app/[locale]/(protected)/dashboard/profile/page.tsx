@@ -12,7 +12,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   return (
     <div className="space-y-8 max-w-4xl">
