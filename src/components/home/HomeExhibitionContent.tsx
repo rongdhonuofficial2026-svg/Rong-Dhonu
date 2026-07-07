@@ -162,11 +162,10 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
               )}
             </div>
 
-            {/* Status badge */}
             <div className="flex items-center gap-3 mb-8">
               <span className="w-2 h-2 rounded-full bg-[#50C878] animate-pulse" />
               <span className="text-[10px] tracking-[0.4em] uppercase text-[#50C878] font-bold">
-                {currentExhibition.status === 'active' 
+                {currentExhibition.status === 'ongoing' 
                   ? (locale === 'bn' ? 'বর্তমানে চলছে' : 'Now Open')
                   : (locale === 'bn' ? 'আসছে শীঘ্রই' : 'Opening Soon')}
               </span>

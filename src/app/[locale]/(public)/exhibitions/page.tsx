@@ -17,15 +17,29 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
   const { data: exhibitions, error } = await supabase
     .from('exhibitions')
     .select('*')
-    .in('status', ['active', 'upcoming', 'completed', 'archived'])
-    .order('year', { ascending: false })
+    .in('status', ['upcoming', 'ongoing', 'archived'])
+    .order('exhibition_start', { ascending: false })
 
   if (error) {
     return <div className="p-8 text-center text-destructive flex items-center justify-center min-h-screen">Failed to load exhibitions.</div>
   }
 
-  const active = exhibitions?.filter(e => e.status === 'active' || e.status === 'upcoming') || []
-  const past = exhibitions?.filter(e => e.status === 'completed' || e.status === 'archived') || []
+  const active = exhibitions?.filter(e => e.status === 'upcoming' || e.status === 'ongoing') || []
+  const past = exhibitions?.filter(e => e.status === 'archived') || []
+
+  // Group past by year
+  const pastByYear = past.reduce((acc, ex) => {
+    const year = ex.exhibition_start ? new Date(ex.exhibition_start).getFullYear() : 'Unknown'
+    if (!acc[year]) acc[year] = []
+    acc[year].push(ex)
+    return acc
+  }, {} as Record<string, typeof past>)
+
+  const sortedYears = Object.keys(pastByYear).sort((a, b) => {
+    if (a === 'Unknown') return 1
+    if (b === 'Unknown') return -1
+    return Number(b) - Number(a)
+  })
 
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">
@@ -68,7 +82,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
           <section className="space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-foreground/10 pb-8">
               <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground tracking-tight">
-                {locale === 'bn' ? 'চলমান ও আসন্ন' : 'Current & Upcoming'}
+                {locale === 'bn' ? 'চলমান ও আসন্ন' : 'Upcoming & Ongoing'}
               </h2>
               <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
                 {active.length} {locale === 'bn' ? 'টি প্রদর্শনী' : 'Exhibitions'}
@@ -92,7 +106,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
           </section>
         )}
 
-        {past.length > 0 && (
+        {sortedYears.length > 0 && (
           <section className="space-y-16 pt-12">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-foreground/10 pb-8">
               <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground tracking-tight">
@@ -103,21 +117,40 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
               </span>
             </div>
             
-            <div className="grid grid-cols-1 gap-24">
-              {past.map(ex => (
-                <ExhibitionCard 
-                  key={ex.id}
-                  id={ex.id}
-                  title={locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en}
-                  status={ex.status}
-                  startDate={ex.exhibition_start ? new Date(ex.exhibition_start) : null}
-                  endDate={ex.exhibition_end ? new Date(ex.exhibition_end) : null}
-                  venue={locale === 'bn' && ex.venue_bn ? ex.venue_bn : ex.venue_en}
-                  coverImageUrl={ex.hero_image_url}
-                />
+            <div className="space-y-32">
+              {sortedYears.map(year => (
+                <div key={year} className="space-y-12">
+                  <div className="flex items-center gap-6">
+                    <h3 className="font-serif text-3xl text-muted-foreground">{year}</h3>
+                    <div className="h-[1px] flex-1 bg-border" />
+                  </div>
+                  <div className="grid grid-cols-1 gap-24">
+                    {pastByYear[year].map((ex: any) => (
+                      <ExhibitionCard 
+                        key={ex.id}
+                        id={ex.id}
+                        title={locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en}
+                        status={ex.status}
+                        startDate={ex.exhibition_start ? new Date(ex.exhibition_start) : null}
+                        endDate={ex.exhibition_end ? new Date(ex.exhibition_end) : null}
+                        venue={locale === 'bn' && ex.venue_bn ? ex.venue_bn : ex.venue_en}
+                        coverImageUrl={ex.hero_image_url}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </section>
+        )}
+
+        {active.length === 0 && past.length === 0 && (
+          <div className="text-center py-32 space-y-6">
+            <h2 className="font-serif text-3xl text-muted-foreground">No exhibitions available yet.</h2>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Our curators are currently preparing our upcoming events. Please check back later.
+            </p>
+          </div>
         )}
       </div>
     </main>

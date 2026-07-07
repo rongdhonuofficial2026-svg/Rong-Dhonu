@@ -2,66 +2,33 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
-import { createExhibition, updateExhibition } from "@/actions/admin/exhibitions"
+import { createExhibition } from "@/actions/admin/exhibitions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
-import { Loader2, Upload, X } from "lucide-react"
-import Image from "next/image"
+import { Loader2 } from "lucide-react"
 
-export function ExhibitionForm({ initialData = null, locale }: { initialData?: any, locale: string }) {
+export function ExhibitionForm({ locale }: { locale: string }) {
   const router = useRouter()
-  const supabase = createClient()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
-  const [uploadProgress, setUploadProgress] = React.useState(0)
 
   const [formData, setFormData] = React.useState({
-    theme_en: initialData?.theme_en || "",
-    theme_bn: initialData?.theme_bn || "",
-    description_en: initialData?.description_en || "",
-    description_bn: initialData?.description_bn || "",
-    exhibition_start: initialData?.exhibition_start ? initialData.exhibition_start.split('T')[0] : "",
-    exhibition_end: initialData?.exhibition_end ? initialData.exhibition_end.split('T')[0] : "",
-    registration_start: initialData?.registration_start ? initialData.registration_start.split('T')[0] : "",
-    submission_end: initialData?.submission_end ? initialData.submission_end.split('T')[0] : "",
-    venue_en: initialData?.venue_en || "",
-    venue_bn: initialData?.venue_bn || "",
-    status: initialData?.status || "draft",
-    hero_image_url: initialData?.hero_image_url || "",
-    image_file: null as File | null
+    theme_en: "",
+    theme_bn: "",
+    description_en: "",
+    description_bn: "",
+    exhibition_start: "",
+    exhibition_end: "",
+    registration_start: "",
+    submission_end: "",
+    venue_en: "",
+    venue_bn: "",
   })
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-  }
-
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      updateField('image_file', file)
-      updateField('hero_image_url', URL.createObjectURL(file))
-    }
-  }
-
-  const uploadImageToSupabase = async (file: File): Promise<string> => {
-    setUploadProgress(10)
-    const fileExt = file.name.split('.').pop()
-    const fileName = `exhibition-${Date.now()}.${fileExt}`
-    const filePath = `exhibitions/${fileName}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('gallery')
-      .upload(filePath, file, { upsert: false })
-      
-    if (uploadError) throw uploadError
-
-    setUploadProgress(100)
-    const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(filePath)
-    return publicUrl
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,31 +36,20 @@ export function ExhibitionForm({ initialData = null, locale }: { initialData?: a
     try {
       setIsSubmitting(true)
       
-      let finalImageUrl = formData.hero_image_url
-      if (formData.image_file) {
-        finalImageUrl = await uploadImageToSupabase(formData.image_file)
-      }
-
-      const payload = { ...formData, hero_image_url: finalImageUrl }
-      let res
-
-      if (initialData?.id) {
-        res = await updateExhibition(initialData.id, payload)
-      } else {
-        res = await createExhibition(payload)
-      }
+      const payload = { ...formData, status: 'draft', hero_image_url: null, is_featured: false }
+      const res = await createExhibition(payload)
 
       if (res.error) throw new Error(res.error)
 
-      toast.success(initialData ? "Exhibition Updated" : "Exhibition Created")
-      router.push(`/${locale}/admin/exhibitions`)
+      toast.success("Exhibition Created", { description: "Welcome to the exhibition dashboard." })
+      // Redirect directly to the dashboard
+      router.push(`/${locale}/admin/exhibitions/${res.data.id}`)
       
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err)
       toast.error("Error", { description: errorMessage })
     } finally {
       setIsSubmitting(false)
-      setUploadProgress(0)
     }
   }
 
@@ -104,29 +60,20 @@ export function ExhibitionForm({ initialData = null, locale }: { initialData?: a
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">Theme (English) *</label>
-              <Input value={formData.theme_en} onChange={(e) => updateField('theme_en', e.target.value)} required />
+              <Input value={formData.theme_en} onChange={(e) => updateField('theme_en', e.target.value)} required placeholder="e.g. Annual Summer Showcase 2026" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Theme (Bengali)</label>
-              <Input value={formData.theme_bn} onChange={(e) => updateField('theme_bn', e.target.value)} />
+              <Input value={formData.theme_bn} onChange={(e) => updateField('theme_bn', e.target.value)} placeholder="ঐচ্ছিক" />
             </div>
             
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-medium">Description (English)</label>
-              <Textarea rows={3} value={formData.description_en} onChange={(e) => updateField('description_en', e.target.value)} />
+              <Textarea rows={3} value={formData.description_en} onChange={(e) => updateField('description_en', e.target.value)} placeholder="Curatorial statement..." />
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-medium">Description (Bengali)</label>
               <Textarea rows={3} value={formData.description_bn} onChange={(e) => updateField('description_bn', e.target.value)} />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Registration Start Date</label>
-              <Input type="date" value={formData.registration_start} onChange={(e) => updateField('registration_start', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Registration End Date (Submission End)</label>
-              <Input type="date" value={formData.submission_end} onChange={(e) => updateField('submission_end', e.target.value)} />
             </div>
 
             <div className="space-y-2">
@@ -140,68 +87,12 @@ export function ExhibitionForm({ initialData = null, locale }: { initialData?: a
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Venue (English)</label>
-              <Input value={formData.venue_en} onChange={(e) => updateField('venue_en', e.target.value)} />
+              <Input value={formData.venue_en} onChange={(e) => updateField('venue_en', e.target.value)} placeholder="e.g. Silva Tirtha Art Gallery" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Venue (Bengali)</label>
               <Input value={formData.venue_bn} onChange={(e) => updateField('venue_bn', e.target.value)} />
             </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium">Status</label>
-              <Select value={formData.status} onValueChange={(v) => updateField('status', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="upcoming">Upcoming</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-6">
-          <label className="text-sm font-medium block mb-4">Hero Banner Image</label>
-          <div className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center min-h-[300px] bg-muted/10 relative">
-            {formData.hero_image_url ? (
-              <div className="relative w-full h-[250px]">
-                <Image src={formData.hero_image_url} alt="Preview" fill className="object-cover rounded-lg" />
-                <Button 
-                  type="button"
-                  variant="destructive" 
-                  size="icon" 
-                  className="absolute top-2 right-2 rounded-full"
-                  onClick={() => {
-                    updateField('hero_image_url', '')
-                    updateField('image_file', null)
-                  }}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            ) : (
-              <label className="flex flex-col items-center cursor-pointer">
-                <Upload className="w-12 h-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium">Click to upload Hero Banner</p>
-                <p className="text-sm text-muted-foreground mt-2">JPG, PNG, WebP recommended</p>
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
-              </label>
-            )}
-            
-            {isSubmitting && uploadProgress > 0 && (
-              <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center p-8 z-10 backdrop-blur-sm">
-                <Loader2 className="w-8 h-8 animate-spin text-accent mb-4" />
-                <p className="font-medium">Uploading image to secure storage...</p>
-                <div className="w-full max-w-xs h-2 bg-muted mt-4 rounded-full overflow-hidden">
-                  <div className="h-full bg-accent transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
-                </div>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -210,8 +101,9 @@ export function ExhibitionForm({ initialData = null, locale }: { initialData?: a
         <Button variant="outline" type="button" onClick={() => router.back()} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
-          {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : (initialData ? "Save Changes" : "Create Exhibition")}
+        <Button type="submit" disabled={isSubmitting} className="min-w-[150px]">
+          {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+          {isSubmitting ? "Initializing..." : "Create Exhibition"}
         </Button>
       </div>
     </form>

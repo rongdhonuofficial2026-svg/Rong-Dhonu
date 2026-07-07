@@ -128,7 +128,15 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                 <h3 className="font-bold text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">
                   {locale === 'bn' ? 'অফিসিয়াল ক্যাটালগ' : 'Official Catalog'}
                 </h3>
-                {catalog ? (
+                {exhibition.status === 'upcoming' || exhibition.status === 'draft' ? (
+                  <div className="text-center py-6 border border-dashed border-border/50 bg-background/50">
+                    <p className="text-sm italic text-muted-foreground">
+                      {locale === 'bn' 
+                        ? 'প্রদর্শনী শুরু হওয়ার পর ক্যাটালগ উপলব্ধ হবে।' 
+                        : 'Catalog will be available once the exhibition opens.'}
+                    </p>
+                  </div>
+                ) : catalog ? (
                   <div className="flex flex-col gap-3">
                     <p className="text-sm text-foreground/80 leading-relaxed mb-2">
                       {locale === 'bn' 
@@ -161,7 +169,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
         </section>
 
         {/* Featured Artworks Preview */}
-        {exhibition.artworks && exhibition.artworks.length > 0 && (
+        {exhibition.status !== 'upcoming' && exhibition.status !== 'draft' && exhibition.artworks && exhibition.artworks.length > 0 && (
           <section className="space-y-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-border/50 pb-6">
               <h2 className="font-serif text-4xl font-bold">{locale === 'bn' ? 'নির্বাচিত শিল্পকর্ম' : 'Exhibition Highlights'}</h2>

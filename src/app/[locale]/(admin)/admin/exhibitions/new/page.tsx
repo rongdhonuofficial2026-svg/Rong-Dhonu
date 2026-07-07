@@ -16,7 +16,7 @@ export default async function NewExhibitionPage({ params }: { params: Promise<{ 
         </Button>
         <div>
           <h1 className="font-serif text-3xl font-bold">Create New Exhibition</h1>
-          <p className="text-muted-foreground">Setup dates, venues, and status for the new event.</p>
+          <p className="text-muted-foreground">Setup basic information to initialize the exhibition dashboard.</p>
         </div>
       </div>
 

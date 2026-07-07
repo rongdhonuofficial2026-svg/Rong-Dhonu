@@ -1,14 +1,25 @@
 import { createClient } from "@/lib/supabase/server"
-import { ExhibitionForm } from "@/components/admin/ExhibitionForm"
-import { GalleryUploader } from "@/components/admin/gallery/GalleryUploader"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/lib/i18n/routing"
 import { Button } from "@/components/ui/button"
 
-export default async function EditExhibitionPage({ params }: { params: Promise<{ locale: string, id: string }> }) {
-  const { locale, id } = await params
+import { LifecycleProgressBar } from "@/components/admin/exhibitions/dashboard/LifecycleProgressBar"
+import { ExhibitionCompletionChecklist } from "@/components/admin/exhibitions/dashboard/ExhibitionCompletionChecklist"
+import { StatusControlCard } from "@/components/admin/exhibitions/dashboard/StatusControlCard"
+import { BasicInfoCard } from "@/components/admin/exhibitions/dashboard/BasicInfoCard"
+import { HeroBannerCard } from "@/components/admin/exhibitions/dashboard/HeroBannerCard"
+import { HomepagePromotionCard } from "@/components/admin/exhibitions/dashboard/HomepagePromotionCard"
+import { GalleryAlbumCard } from "@/components/admin/exhibitions/dashboard/GalleryAlbumCard"
+import { CatalogManagementCard } from "@/components/admin/exhibitions/dashboard/CatalogManagementCard"
+import { ExhibitionAnalyticsCard } from "@/components/admin/exhibitions/dashboard/ExhibitionAnalyticsCard"
+import { ArtistParticipationCard } from "@/components/admin/exhibitions/dashboard/ArtistParticipationCard"
+import { ArtworkSubmissionsCard } from "@/components/admin/exhibitions/dashboard/ArtworkSubmissionsCard"
+
+export default async function ExhibitionDashboardPage({ params }: { params: Promise<{ locale: string, id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
 
+  // Fetch exhibition
   const { data: exhibition, error } = await supabase
     .from('exhibitions')
     .select('*')
@@ -19,6 +30,19 @@ export default async function EditExhibitionPage({ params }: { params: Promise<{
     return <div className="p-8 text-destructive">Exhibition not found.</div>
   }
 
+  // Fetch related counts and catalog
+  const [galleryRes, catalogRes, artistsRes, artworksRes] = await Promise.all([
+    supabase.from('gallery').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+    supabase.from('catalogs').select('*').eq('exhibition_id', id).maybeSingle(),
+    supabase.from('exhibition_artists').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+    supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
+  ])
+
+  const galleryCount = galleryRes.count || 0
+  const catalog = catalogRes.data || null
+  const artistsCount = artistsRes?.count || 0
+  const artworksCount = artworksRes?.count || 0
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-24">
       <div className="flex items-center gap-4">
@@ -28,22 +52,35 @@ export default async function EditExhibitionPage({ params }: { params: Promise<{
           </Link>
         </Button>
         <div>
-          <h1 className="font-serif text-3xl font-bold">Edit Exhibition</h1>
-          <p className="text-muted-foreground">Updating: {exhibition.theme_en}</p>
+          <h1 className="font-serif text-3xl font-bold">Exhibition Dashboard</h1>
+          <p className="text-muted-foreground">{exhibition.theme_en}</p>
         </div>
       </div>
 
-      <ExhibitionForm locale={locale} initialData={exhibition} />
+      <LifecycleProgressBar currentStatus={exhibition.status} />
 
-      <div className="mt-16 pt-12 border-t border-border/40">
-        <div className="mb-8">
-          <h2 className="font-serif text-2xl font-semibold text-foreground mb-2">Exhibition Album Media</h2>
-          <p className="text-muted-foreground">
-            Upload photos and videos that belong to this exhibition. 
-            All uploaded media will be displayed as a single memory album in the public gallery.
-          </p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          <StatusControlCard exhibition={exhibition} />
+          <BasicInfoCard exhibition={exhibition} />
+          <HeroBannerCard exhibition={exhibition} />
+          <GalleryAlbumCard exhibition={exhibition} />
+          <CatalogManagementCard exhibition={exhibition} catalog={catalog} />
         </div>
-        <GalleryUploader exhibitionId={exhibition.id} />
+        
+        <div className="space-y-8">
+          <ExhibitionCompletionChecklist 
+            exhibition={exhibition} 
+            artworksCount={artworksCount} 
+            artistsCount={artistsCount} 
+            galleryCount={galleryCount} 
+            hasCatalog={!!catalog} 
+          />
+          <HomepagePromotionCard exhibition={exhibition} />
+          <ArtistParticipationCard exhibition={exhibition} count={artistsCount} />
+          <ArtworkSubmissionsCard exhibition={exhibition} count={artworksCount} />
+          <ExhibitionAnalyticsCard exhibition={exhibition} />
+        </div>
       </div>
     </div>
   )
