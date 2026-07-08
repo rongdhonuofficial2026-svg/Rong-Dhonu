@@ -23,10 +23,18 @@ type ActionType =
   | 'bulk_move_media'
   | 'bulk_change_category'
   | 'bulk_feature_media'
+  | 'update_profile_by_admin'
+  | 'change_user_role'
+  | 'suspend_user'
+  | 'reactivate_user'
+  | 'approve_user'
+  | 'delete_user_by_admin'
+  | 'send_notification_by_admin'
+  | 'delete_artwork_by_admin'
 
 export async function logAudit(
   action: ActionType,
-  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media' | 'gallery_album',
+  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media' | 'gallery_album' | 'profiles' | 'notifications',
   entityId: string,
   details?: Record<string, any>
 ) {

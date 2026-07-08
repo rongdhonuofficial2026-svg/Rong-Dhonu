@@ -1069,6 +1069,8 @@ export type Database = {
           full_name_en: string | null
           id: string
           instagram_url: string | null
+          is_verified: boolean | null
+          last_login: string | null
           notify_artwork_updates: boolean | null
           notify_deadline_reminders: boolean | null
           notify_email: boolean | null
@@ -1079,6 +1081,7 @@ export type Database = {
           slug: string | null
           social_links: Json | null
           statistics: Json | null
+          status: string | null
           updated_at: string | null
           website_url: string | null
         }
@@ -1093,6 +1096,8 @@ export type Database = {
           full_name_en?: string | null
           id: string
           instagram_url?: string | null
+          is_verified?: boolean | null
+          last_login?: string | null
           notify_artwork_updates?: boolean | null
           notify_deadline_reminders?: boolean | null
           notify_email?: boolean | null
@@ -1103,6 +1108,7 @@ export type Database = {
           slug?: string | null
           social_links?: Json | null
           statistics?: Json | null
+          status?: string | null
           updated_at?: string | null
           website_url?: string | null
         }
@@ -1117,6 +1123,8 @@ export type Database = {
           full_name_en?: string | null
           id?: string
           instagram_url?: string | null
+          is_verified?: boolean | null
+          last_login?: string | null
           notify_artwork_updates?: boolean | null
           notify_deadline_reminders?: boolean | null
           notify_email?: boolean | null
@@ -1127,6 +1135,7 @@ export type Database = {
           slug?: string | null
           social_links?: Json | null
           statistics?: Json | null
+          status?: string | null
           updated_at?: string | null
           website_url?: string | null
         }
