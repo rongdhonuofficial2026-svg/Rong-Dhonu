@@ -49,18 +49,19 @@ export function Navbar({ menuItems, locale = 'en', settingsData }: { menuItems?:
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-700 ease-[0.16,1,0.3,1]",
-        isTransparent 
-          ? "bg-transparent border-transparent py-8" 
-          : "glass py-4 shadow-sm"
+        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ease-[0.19,1,0.22,1] border-b",
+        isScrolled 
+          ? "bg-[#0B0908]/90 border-white/[0.08] backdrop-blur-[16px] py-4.5 shadow-xl shadow-black/25" 
+          : "bg-transparent border-transparent py-6.5"
       )}
     >
-      <div className="container mx-auto flex items-center justify-between px-4 md:px-8">
+      <div className="max-w-[1320px] mx-auto flex items-center justify-between px-6 md:px-12">
         
         {/* Logo */}
         <div className="flex items-center gap-2 relative z-10">
           <Link href="/" className="flex items-center space-x-2 group">
             {settingsData?.logo_url && settingsData.logo_url !== '/images/logo.png' && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img 
                 src={settingsData.logo_url} 
                 alt={settingsData.site_name || 'Logo'} 
@@ -70,17 +71,14 @@ export function Navbar({ menuItems, locale = 'en', settingsData }: { menuItems?:
                 }}
               />
             )}
-            <span className={cn(
-              "font-serif text-2xl md:text-3xl font-bold tracking-tight transition-colors duration-500",
-              isTransparent ? "text-white group-hover:text-white/80" : "text-accent group-hover:text-accent/80"
-            )}>
+            <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-[#F4EEDF] group-hover:text-[#F4C662] transition-colors duration-500">
               {settingsData?.site_name || 'Rongdhono'}
             </span>
           </Link>
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-8 relative z-10">
+        <nav className="hidden lg:flex items-center gap-9 relative z-10">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -88,23 +86,19 @@ export function Navbar({ menuItems, locale = 'en', settingsData }: { menuItems?:
                 key={item.href}
                 href={item.href} 
                 className={cn(
-                  "relative text-sm uppercase tracking-[0.1em] font-medium transition-colors duration-300",
-                  isTransparent 
-                    ? "text-white/90 hover:text-white" 
-                    : "text-foreground/70 hover:text-foreground",
-                  isActive && (isTransparent ? "text-white" : "text-accent")
+                  "relative text-[13px] font-semibold uppercase tracking-wider transition-colors duration-300",
+                  isActive 
+                    ? "text-[#F4C662]" 
+                    : "text-[#F4EEDF]/72 hover:text-[#F4EEDF]"
                 )}
               >
                 {item.name}
                 {isActive && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className={cn(
-                      "absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full",
-                      isTransparent ? "bg-white" : "bg-accent"
-                    )}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    className="absolute -bottom-2.5 left-0 right-0 h-[1.5px] bg-[#F4C662]"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
                     transition={{ duration: 0.3 }}
                   />
                 )}
@@ -119,43 +113,26 @@ export function Navbar({ menuItems, locale = 'en', settingsData }: { menuItems?:
             <SearchOverlay />
           </div>
           
-          <div className={cn(
-            "transition-opacity duration-300",
-            isTransparent ? "opacity-90 hover:opacity-100" : ""
-          )}>
+          <div className="opacity-90 hover:opacity-100 transition-opacity">
             <LanguageSwitcher />
           </div>
           
-          <div className="hidden md:flex items-center gap-3">
-            <Button 
-              asChild 
-              variant="ghost" 
-              className={cn(
-                "uppercase tracking-wider text-xs font-semibold transition-colors rounded-none",
-                isTransparent 
-                  ? "text-white hover:bg-white/10 hover:text-white" 
-                  : "text-foreground hover:bg-muted"
-              )}
+          <div className="hidden md:flex items-center gap-4">
+            <Link 
+              href="/login"
+              className="text-[13px] font-semibold text-[#F4EEDF]/72 hover:text-[#F4EEDF] uppercase tracking-wider transition-colors px-3 py-1.5"
             >
-              <Link href="/login">{t('login')}</Link>
-            </Button>
-            <Button 
-              asChild 
-              className={cn(
-                "uppercase tracking-wider text-xs font-semibold rounded-none px-6 transition-transform hover:scale-[1.02]",
-                isTransparent
-                  ? "bg-white text-black hover:bg-white/90"
-                  : "bg-accent text-accent-foreground hover:bg-accent/90"
-              )}
+              {t('login')}
+            </Link>
+            <Link 
+              href="/register"
+              className="btn btn-sm btn-gold font-semibold text-[12px] uppercase tracking-widest px-5 py-2.5 rounded-full active:scale-[0.97]"
             >
-              <Link href="/register">{t('register')}</Link>
-            </Button>
+              {t('register')}
+            </Link>
           </div>
 
-          <div className={cn(
-            "lg:hidden",
-            isTransparent ? "text-white" : "text-foreground"
-          )}>
+          <div className="lg:hidden text-[#F4EEDF]">
             <MobileNavigation />
           </div>
         </div>
