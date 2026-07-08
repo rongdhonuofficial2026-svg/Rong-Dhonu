@@ -391,7 +391,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
           <div className="album-card reveal in">
             <div className="album-media artwork">
               <img 
-                src="https://images.unsplash.com/photo-1476714969650-9c7ebc23b384?q=80&w=1200&auto=format&fit=crop" 
+                src="/images/catalog_archive_promo.jpg" 
                 alt="Printed exhibition catalogues" 
                 loading="lazy"
               />
