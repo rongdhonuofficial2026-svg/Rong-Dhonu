@@ -40,6 +40,11 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
     return Array.from(new Set(years)).sort((a, b) => b - a)
   }, [albums])
 
+  // Featured Collection is dynamically populated from the first 8 albums
+  const featuredAlbums = useMemo(() => {
+    return albums.slice(0, 8)
+  }, [albums])
+
   const filteredAlbums = useMemo(() => {
     let result = [...albums]
 
@@ -87,13 +92,13 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
     if (!dateStr) return ''
     const date = new Date(dateStr)
     return new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-US', {
-      month: 'long',
+      month: 'short',
       year: 'numeric'
     }).format(date)
   }
 
   return (
-    <div style={{ background: 'var(--color-void)', paddingBottom: '150px' }}>
+    <div style={{ background: 'var(--color-void)' }}>
       {/* ============ TOOLBAR ============ */}
       <section className="toolbar-wrap" style={{ paddingBottom: '56px' }}>
         <div className="toolbar reveal in">
@@ -194,28 +199,27 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
         </button>
       </div>
 
-      {/* ============ GALLERY GRID ============ */}
-      {filteredAlbums.length === 0 ? (
-        <div className="py-32 text-center" style={{ background: 'var(--color-void)' }}>
-          <div className="w-20 h-20 rounded-none border border-white/10 flex items-center justify-center mb-6 mx-auto bg-white/5">
-            <ImageIcon className="w-10 h-10 text-[#F4EEDF]/20" />
-          </div>
-          <h3 className="font-serif text-2xl text-[#F4EEDF] mb-2 font-bold">
-            {locale === 'bn' ? 'কোনো অ্যালবাম পাওয়া যায়নি' : 'No albums found'}
-          </h3>
+      {/* ============ FEATURED COLLECTION (masonry) ============ */}
+      <section className="artists" style={{ paddingTop: 0, paddingBottom: '80px', background: 'var(--color-void)' }}>
+        <div className="section-head reveal in">
+          <h2>{locale === 'bn' ? 'ফিচার্ড কালেকশন' : 'Featured Collection'}</h2>
+          <p>
+            {locale === 'bn' 
+              ? 'আর্কাইভ থেকে সম্পাদকের পছন্দ — মুহূর্তগুলো যা রঙধনুর চেতনাকে সর্বোত্তমভাবে ফুটিয়ে তোলে।' 
+              : "Editor's picks from across the archive — the moments that best capture Rongdhono's spirit."}
+          </p>
         </div>
-      ) : (
+        
         <div className="masonry">
-          {filteredAlbums.map((album, index) => {
+          {featuredAlbums.map((album, index) => {
             const title = locale === 'bn' ? album.theme_bn : album.theme_en
             const dateDisplay = formatDate(album.exhibition_start)
-            const totalMedia = album.photoCount + album.videoCount
-
-            // Sequence of ratios to match dynamic grid alignment of gallery.html
-            const ratioStyles = ['3/4', '4/3', '1/1', '4/5']
+            
+            // Sequence of aspect ratios to match dynamic grid alignment of gallery.html
+            const ratioStyles = ['3/4', '4/3', '1/1', '4/5', '3/4', '4/3', '3/4', '4/3']
             const styleRatio = ratioStyles[index % ratioStyles.length]
 
-            let categoryTag = locale === 'bn' ? 'গ্যালারি' : 'Gallery'
+            let categoryTag = locale === 'bn' ? 'আর্কাইভ' : 'Archive'
             if (album.album_type === 'exhibition') {
               categoryTag = locale === 'bn' ? 'প্রদর্শনী' : 'Exhibition'
             } else if (album.category_slug) {
@@ -230,7 +234,7 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
 
             return (
               <Link 
-                key={album.id} 
+                key={`featured-${album.id}`}
                 href={`/gallery/${album.slug || album.id}`} 
                 className="masonry-tile artwork reveal in group block"
                 style={{ aspectRatio: styleRatio }}
@@ -256,13 +260,91 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
                 <div className="wall-label">
                   <span className="no">{categoryTag}</span>
                   <b>{title}</b>
-                  <span>{totalMedia} {locale === 'bn' ? 'টি ছবি/ভিডিও' : 'Media'} · {dateDisplay || album.year}</span>
+                  <span>{dateDisplay || album.year}</span>
                 </div>
               </Link>
             )
           })}
         </div>
-      )}
+      </section>
+
+      {/* ============ ALL ALBUMS ============ */}
+      <section className="collection" style={{ paddingBottom: '120px' }}>
+        <div className="section-head reveal in">
+          <h2>{locale === 'bn' ? 'সকল অ্যালবাম' : 'All Albums'}</h2>
+          <p>
+            {locale === 'bn' 
+              ? 'প্রতিটি সংগ্রহ, সম্পূর্ণরূপে অন্বেষণ করার জন্য প্রস্তুত।' 
+              : 'Every collection, organized and ready to explore in full.'}
+          </p>
+        </div>
+        
+        {filteredAlbums.length === 0 ? (
+          <div className="py-32 text-center">
+            <div className="w-20 h-20 rounded-none border border-white/10 flex items-center justify-center mb-6 mx-auto bg-white/5">
+              <ImageIcon className="w-10 h-10 text-[#F4EEDF]/20" />
+            </div>
+            <h3 className="font-serif text-2xl text-[#F4EEDF] mb-2 font-bold">
+              {locale === 'bn' ? 'কোনো অ্যালবাম পাওয়া যায়নি' : 'No albums found'}
+            </h3>
+          </div>
+        ) : (
+          <div className="album-grid">
+            {filteredAlbums.map((album) => {
+              const title = locale === 'bn' ? album.theme_bn : album.theme_en
+              const description = locale === 'bn' ? album.description_bn : album.description_en
+              const dateDisplay = formatDate(album.exhibition_start)
+              const totalMedia = album.photoCount + album.videoCount
+
+              return (
+                <div key={`album-${album.id}`} className="album-card reveal in">
+                  <div className="album-media artwork">
+                    {album.hero_image_url ? (
+                      <img 
+                        src={album.hero_image_url} 
+                        alt={title} 
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[#1E1A16]">
+                        <ImageIcon className="w-12 h-12 text-[#5C5347]/20" />
+                      </div>
+                    )}
+                    <div className="scrim"></div>
+                    <div className="frame-edge"></div>
+                    <span className="album-count">
+                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                        <circle cx="8" cy="9" r="1.4" fill="currentColor"/>
+                        <path d="M4 15l4-4 3 3 5-6 2 3" stroke="currentColor" strokeWidth="1.4"/>
+                      </svg> 
+                      {' '}{totalMedia}
+                    </span>
+                    <span className="album-date">
+                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                        <path d="M3 8h14M7 2v3M13 2v3" stroke="currentColor" stroke-width="1.5"/>
+                      </svg> 
+                      {' '}{dateDisplay || album.year}
+                    </span>
+                  </div>
+                  
+                  <div className="album-body">
+                    <h3>{title}</h3>
+                    {description && <p>{description}</p>}
+                    <Link href={`/gallery/${album.slug || album.id}`} className="album-link">
+                      {locale === 'bn' ? 'গ্যালারি দেখুন' : 'View Gallery'}{' '}
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </section>
     </div>
   )
 }
