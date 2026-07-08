@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { getTranslations } from 'next-intl/server'
-import Image from 'next/image'
 import { Link } from '@/lib/i18n/routing'
 import { getCmsContent } from "@/lib/cms/content"
 import { CatalogDownloadButton } from '@/components/public/catalogs/CatalogDownloadButton'
@@ -104,12 +103,10 @@ export default async function PublicCatalogsPage({
     <div className="catalogs-page-wrapper">
       {/* ============ PAGE HERO ============ */}
       <header className="page-hero artwork">
-        <Image 
+        <img 
           src="/images/catalogs/hero.jpg" 
           alt="Rows of archived books and publications" 
-          fill
-          priority
-          className="object-cover"
+          loading="eager"
         />
         <div className="scrim"></div>
         <div className="frame-edge"></div>
@@ -181,12 +178,10 @@ export default async function PublicCatalogsPage({
             <section className="artists" style={{ paddingTop: 0 }}>
               <div className="featured-catalog reveal in">
                 <div className="featured-catalog-media artwork">
-                  <Image 
+                  <img 
                     src={featuredCatalog.cover_image_url || '/images/catalogs/featured.png'} 
                     alt={locale === 'bn' && featuredCatalog.title_bn ? featuredCatalog.title_bn : featuredCatalog.title_en}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    loading="lazy"
                   />
                   <div className="scrim"></div>
                   <div className="frame-edge"></div>
@@ -258,13 +253,11 @@ export default async function PublicCatalogsPage({
                 </p>
               </div>
               <div className="about-visual reveal in">
-                <div className="mission-img-main artwork">
-                  <Image 
+                <div className="about-img-main artwork">
+                  <img 
                     src="/images/placeholders/hero.webp" 
                     alt="Stack of printed exhibition catalogues" 
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    loading="lazy"
                   />
                   <div className="scrim soft"></div>
                   <div className="frame-edge"></div>
@@ -288,12 +281,10 @@ export default async function PublicCatalogsPage({
                 return (
                   <div key={cat.id} className="catalog-card reveal in">
                     <div className="catalog-cover artwork">
-                      <Image 
+                      <img 
                         src={cat.cover_image_url || ex.hero_image_url || '/images/catalogs/featured.png'} 
                         alt={title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        loading="lazy"
                       />
                       <div className="scrim"></div>
                       <div className="frame-edge"></div>
@@ -356,12 +347,10 @@ export default async function PublicCatalogsPage({
               {/* Coming soon placeholder card */}
               <div className="catalog-card reveal in" style={{ opacity: 0.72 }}>
                 <div className="catalog-cover artwork">
-                  <Image 
+                  <img 
                     src="/images/catalogs/coming_soon.jpg" 
                     alt="Next Season's Catalog"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    loading="lazy"
                   />
                   <div className="scrim"></div>
                   <div className="frame-edge"></div>
