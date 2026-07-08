@@ -113,7 +113,7 @@ export default async function PublicCatalogsPage({
         <div className="page-hero-inner">
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'ডিজিটাল আর্কাইভ' : 'Digital Archive'}</div>
-            <h1>{locale === 'bn' ? 'প্রদর্শনী ক্যাটালগ আর্কাইভ' : 'Exhibition'} <em style={{ fontStyle: 'italic', color: 'var(--color-gold-bright)', fontWeight: 400 }}>{locale === 'bn' ? '' : 'Catalog Archive'}</em></h1>
+            <h1>{locale === 'bn' ? 'প্রদর্শনী ক্যাটালগ আর্কাইভ' : <>Exhibition <em>Catalog<br />Archive</em></>}</h1>
             <p className="page-hero-sub">
               {locale === 'bn' 
                 ? 'রংধনুর প্রতিটি অফিসিয়াল প্রদর্শনী ক্যাটালগ ব্রাউজ করুন। সুন্দরভাবে কিউরেট করা ডিজিটাল প্রকাশনাগুলোর মাধ্যমে প্রতিটি প্রদর্শনী অন্বেষণ করুন।'
@@ -123,7 +123,7 @@ export default async function PublicCatalogsPage({
           <div className="page-hero-meta reveal in">
             <div><b>{totalPublications}</b><span>{locale === 'bn' ? 'প্রকাশনা' : 'Publications'}</span></div>
             <div><b>{totalSizeMB} MB</b><span>{locale === 'bn' ? 'আর্কাইভ সাইজ' : 'Archive Size'}</span></div>
-            <div><b>{locale === 'bn' ? 'ইংরেজি/বাংলা' : 'EN/BN'}</b><span>{locale === 'bn' ? 'ভাষা' : 'Language'}</span></div>
+            <div><b>{locale === 'bn' ? 'ইংরেজি' : 'EN'}</b><span>{locale === 'bn' ? 'ভাষা' : 'Language'}</span></div>
           </div>
         </div>
       </header>

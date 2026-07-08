@@ -1052,6 +1052,13 @@
 .page-hero-inner .eyebrow {
   justify-content: center;
 }
+.page-hero-inner .eyebrow::after {
+  content: "";
+  width: 26px;
+  height: 1px;
+  background: var(--color-gold-bright);
+  display: inline-block;
+}
 .page-hero h1 {
   font-size: clamp(46px, 6.4vw, 96px);
   line-height: .98;
