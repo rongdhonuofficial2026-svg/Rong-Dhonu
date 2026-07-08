@@ -75,7 +75,7 @@ export function AboutContent({ content, locale }: AboutContentProps) {
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
       {/* ============ PAGE HERO ============ */}
-      <header className="page-hero artwork" id="pageHeroArt" ref={heroArtRef}>
+      <header className="page-hero about-page-hero artwork" id="pageHeroArt" ref={heroArtRef}>
         <img 
           src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?q=80&w=2400&auto=format&fit=crop" 
           alt="Deep abstract painting texture" 
