@@ -153,21 +153,21 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
   const dateDisplay = formatDate(album.created_at)
 
   return (
-    <main className="min-h-screen pb-32 bg-[#F5F5F0]">
+    <div className="gallery-page-wrapper">
       {/* Decorative Textures */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
       {/* Album Hero */}
-      <section className="relative pt-32 pb-16 px-6 overflow-hidden border-b border-foreground/10 bg-[#1A1A1A]">
+      <section className="relative pt-32 pb-16 px-6 overflow-hidden border-b border-white/[0.08] bg-[#0A0A0A]">
         {heroImage && (
           <div className="absolute inset-0 z-0">
-            <img src={heroImage} alt={title} className="w-full h-full object-cover opacity-30" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/80 to-transparent" />
+            <img src={heroImage} alt={title} className="w-full h-full object-cover opacity-20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0B0908] via-[#0B0908]/85 to-transparent" />
           </div>
         )}
         
         <div className="container relative z-10 mx-auto max-w-7xl pt-10">
-          <Button variant="outline" size="sm" asChild className="mb-12 bg-white/10 text-white border-white/20 hover:bg-white hover:text-black transition-colors rounded-full">
+          <Button variant="outline" size="sm" asChild className="mb-12 bg-white/5 text-[#F4EEDF] border-white/10 hover:bg-[#F4EEDF] hover:text-black transition-colors rounded-full">
             <Link href="/gallery">
               <ArrowLeft className="w-4 h-4 mr-2" />
               {locale === 'bn' ? 'সকল অ্যালবামে ফিরে যান' : 'Back to Albums'}
@@ -175,22 +175,22 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
           </Button>
           
           <div className="max-w-4xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent text-black text-xs font-bold uppercase tracking-widest rounded-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4C662] text-black text-[10px] font-bold uppercase tracking-widest rounded-sm">
               <ImageIcon className="w-3.5 h-3.5" />
               {locale === 'bn' ? 'অ্যালবাম' : 'Album'}
             </div>
             
-            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1] drop-shadow-xl">
+            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-[#F4EEDF] leading-[1.1] drop-shadow-xl">
               {title}
             </h1>
             
-            <div className="flex items-center gap-2 text-white/70 font-medium">
-              <Calendar className="w-4 h-4 text-accent" />
+            <div className="flex items-center gap-2 text-[#F4EEDF]/70 font-medium">
+              <Calendar className="w-4 h-4 text-[#F4C662]" />
               <span>{dateDisplay || album.year}</span>
             </div>
 
             {description && (
-              <p className="text-xl text-white/80 font-light max-w-2xl leading-relaxed mt-6">
+              <p className="text-xl text-[#F4EEDF]/80 font-light max-w-2xl leading-relaxed mt-6">
                 {description}
               </p>
             )}
@@ -199,7 +199,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
       </section>
 
       <div className="container mx-auto px-6 max-w-[1600px] pt-16 relative z-20">
-        <Suspense fallback={<div className="flex justify-center p-32"><Loader2 className="w-10 h-10 animate-spin text-accent" strokeWidth={1} /></div>}>
+        <Suspense fallback={<div className="flex justify-center p-32"><Loader2 className="w-10 h-10 animate-spin text-[#F4C662]" strokeWidth={1} /></div>}>
           <AlbumMediaGrid 
             initialMedia={initialMedia || []} 
             locale={locale} 
@@ -207,6 +207,6 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
           />
         </Suspense>
       </div>
-    </main>
+    </div>
   )
 }
