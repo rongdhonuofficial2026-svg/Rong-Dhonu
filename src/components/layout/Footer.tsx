@@ -1,9 +1,6 @@
-import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/i18n/routing';
 
 export default function Footer({ footerData, locale = 'en', settingsData }: { footerData?: any, locale?: string, settingsData?: any }) {
-  const t = useTranslations('Navigation');
-
   return (
     <footer className="site-footer">
       <div className="footer-grid">
@@ -31,7 +28,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
             </a>
             <a href="#" aria-label="X">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4l16 16M20 4L4 20" stroke="#F4EEDF" strokeWidth="1.6" strokeLinecap="round"/>
+                <path d="M4 4l16 16M20 4L4 20" stroke="#F4EEDF" strokeWidth="1.6" stroke-linecap="round"/>
               </svg>
             </a>
           </div>
@@ -40,33 +37,36 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
         <div className="footer-col">
           <h4>{locale === 'bn' ? 'অন্বেষণ' : 'Explore'}</h4>
           <ul>
-            <li><Link href="/about">{locale === 'bn' ? 'আমাদের সম্পর্কে' : 'About Rongdhono'}</Link></li>
+            <li><Link href="/about">{locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhono'}</Link></li>
             <li><Link href="/exhibitions">{locale === 'bn' ? 'বার্ষিক প্রদর্শনী' : 'Annual Exhibitions'}</Link></li>
-            <li><Link href="/artists">{locale === 'bn' ? 'শিল্পীগণ' : 'Artists'}</Link></li>
-            <li><Link href="/gallery">{locale === 'bn' ? 'গ্যালারি' : 'Gallery'}</Link></li>
+            <li><Link href="/artists">{locale === 'bn' ? 'শিল্পী ডিরেক্টরি' : 'Artists Directory'}</Link></li>
+            <li><Link href="/gallery">{locale === 'bn' ? 'কিউরেটেড কালেকশন' : 'Curated Collection'}</Link></li>
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4>{locale === 'bn' ? 'আইনি' : 'Legal'}</h4>
+          <h4>{locale === 'bn' ? 'অফিস' : 'Office'}</h4>
           <ul>
-            <li><Link href="/privacy">{locale === 'bn' ? 'গোপনীয়তা নীতি' : 'Privacy Policy'}</Link></li>
-            <li><Link href="/terms">{locale === 'bn' ? 'পরিষেবার শর্তাবলী' : 'Terms of Service'}</Link></li>
-            <li><Link href="/cookie-policy">{locale === 'bn' ? 'কুকি নীতি' : 'Cookie Policy'}</Link></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>{locale === 'bn' ? '১২ আর্ট কলেজ রোড' : '12 Art College Road'}</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>{locale === 'bn' ? 'গোরাবাজার, বহরমপুর' : 'Gorabazar, Berhampore'}</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>{locale === 'bn' ? 'পশ্চিমবঙ্গ ৭৪২১০১' : 'West Bengal 742101'}</a></li>
+            <li><a href="mailto:info@rongdhono.art">info@rongdhono.art</a></li>
           </ul>
         </div>
 
         <div className="footer-col footer-newsletter">
           <h4>{locale === 'bn' ? 'অনুপ্রাণিত থাকুন' : 'Stay Inspired'}</h4>
-          <p style={{ fontSize: '13px', color: 'var(--color-parchment-faint)', marginBottom: '14px', lineHeight: '1.6' }}>
+          <p>
             {locale === 'bn'
               ? 'নতুন প্রদর্শনী এবং স্টুডিওর গল্পগুলোর নিয়মিত আপডেট পেতে সাবস্ক্রাইব করুন।'
               : 'Get occasional notes on new exhibitions and studio stories.'}
           </p>
-          <input type="email" placeholder={locale === 'bn' ? 'আপনার ইমেইল' : 'you@email.com'} required style={{ width: '100%', padding: '13px 16px', borderRadius: '10px', border: '1px solid var(--color-hairline)', background: 'var(--color-ink-800)', color: 'var(--color-parchment)', fontSize: '14px', marginBottom: '10px' }} />
-          <button type="button" className="btn btn-gold btn-sm magnetic" style={{ width: '100%' }}>
-            {locale === 'bn' ? 'সাবস্ক্রাইব করুন' : 'Subscribe'}
-          </button>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <input type="email" placeholder="you@email.com" required />
+            <button type="submit" className="btn btn-gold btn-sm magnetic" style={{ width: '100%' }}>
+              {locale === 'bn' ? 'সাবস্ক্রাইব করুন' : 'Subscribe'}
+            </button>
+          </form>
         </div>
       </div>
 

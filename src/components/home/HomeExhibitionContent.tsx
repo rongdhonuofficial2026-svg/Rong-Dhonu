@@ -83,6 +83,7 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         loading="lazy" 
       />
       <div className="scrim"></div>
+      <div className="frame-edge"></div>
       
       {/* Watermark year */}
       <div className="spotlight-bgtext">{yearSuffix}</div>
@@ -136,7 +137,7 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
               : (locale === 'bn' ? 'আসছে শীঘ্রই' : 'Opening Soon')}
           </span>
 
-          <Link href={`/exhibitions/${currentExhibition.id}`} className="btn btn-ink btn-sm magnetic md:ml-auto">
+          <Link href={`/exhibitions/${currentExhibition.id}`} className="btn btn-ink btn-sm magnetic" style={{ marginLeft: 'auto' }}>
             {locale === 'bn' ? 'প্রদর্শনীতে প্রবেশ করুন →' : 'Enter Exhibition →'}
           </Link>
         </div>

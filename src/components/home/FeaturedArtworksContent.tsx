@@ -39,7 +39,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
         <p>{subtitle}</p>
       </div>
 
-      <div className="bento-grid">
+      <div className="bento">
         {displayData.slice(0, 6).map((artwork: any, index: number) => {
           const artworkTitle = locale === 'bn' ? (artwork.title_bn || artwork.title_en) : artwork.title_en
           const medium = locale === 'bn' ? (artwork.medium_bn || artwork.medium_en) : artwork.medium_en
@@ -65,8 +65,8 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
               />
               <div className="scrim"></div>
               <div className="frame-edge"></div>
-              <div className="artwork-info">
-                <span className="artwork-no">{artworkNo}</span>
+              <div className="wall-label">
+                <span className="no">{artworkNo}</span>
                 <b>{artworkTitle}</b>
                 <span>{artistName} — {medium}, {year}</span>
               </div>

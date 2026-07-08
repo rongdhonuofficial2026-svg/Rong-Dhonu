@@ -87,10 +87,11 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
   return (
     <header ref={ref} className="hero">
       {/* Background artwork */}
-      <motion.div
-        style={{ y, scale, opacity }}
+      <div
         className="hero-art artwork"
         ref={heroArtRef}
+        id="hero-art"
+        style={{ transform: 'translate(0px, 0px) scale(1.05)', transition: 'transform 0.1s ease-out' }}
       >
         <img 
           src={heroImage}
@@ -99,18 +100,13 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
         />
         <div className="scrim soft"></div>
         <div className="frame-edge"></div>
-      </motion.div>
+      </div>
 
       {/* Brush SVG lines overlay */}
       <svg className="hero-brush" viewBox="0 0 1600 900" preserveAspectRatio="none">
         <path d="M120,780 C420,300 900,260 1500,520" stroke="rgba(244,238,223,.4)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
         <path d="M-40,200 C300,120 620,340 1000,120" stroke="rgba(244,198,98,.3)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
       </svg>
-
-      {/* Floating particles */}
-      <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
-        {particles.map((p, i) => <Particle key={i} {...p} />)}
-      </div>
 
       {/* Hero content wrapper */}
       <div className="hero-content">

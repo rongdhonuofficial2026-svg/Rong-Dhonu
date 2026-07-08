@@ -53,7 +53,13 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
           <div className="eyebrow on-paper">
             {locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhono'}
           </div>
-          <h2>{mission}</h2>
+          <h2>
+            {typeof mission === 'string' ? (
+              <span dangerouslySetInnerHTML={{ __html: mission }} />
+            ) : (
+              mission
+            )}
+          </h2>
           <p className="about-vision">{vision}</p>
           
           <div className="about-stats">
