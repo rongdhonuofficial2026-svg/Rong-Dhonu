@@ -3,10 +3,10 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/lib/i18n/routing';
 import '@/styles/globals.css';
-import { Inter, Playfair_Display, Noto_Sans_Bengali, Noto_Serif_Bengali } from 'next/font/google';
+import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-serif' });
+const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-serif' });
 const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn' });
 const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn' });
 
@@ -29,7 +29,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
  
   return (
-    <html lang={locale} className={`${inter.variable} ${playfair.variable} ${notoSansBn.variable} ${notoSerifBn.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable}`}>
       <body className="min-h-screen flex flex-col font-sans text-charcoal bg-cream">
         <NextIntlClientProvider messages={messages}>
           {/* Accessibility: skip navigation for keyboard/screen reader users */}
