@@ -71,121 +71,76 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
     month: 'long', day: 'numeric', year: 'numeric'
   }).format(startDate)
 
+  const yearSuffix = currentExhibition.year ? String(currentExhibition.year).slice(-2) : '26'
+  const spotlightImage = currentExhibition.hero_image_url || "/images/home/spotlight_bg.jpg"
+
   return (
-    <section ref={ref} className="relative bg-[#0B0908] overflow-hidden">
-      {/* Ambient color glows */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse at 10% 30%, rgba(244,198,98,0.06) 0%, transparent 55%),
-            radial-gradient(ellipse at 90% 70%, rgba(244,198,98,0.04) 0%, transparent 55%)
-          `
-        }}
+    <section ref={ref} className="spotlight artwork" id="exhibition">
+      {/* Background artwork */}
+      <img 
+        src={spotlightImage} 
+        alt={title} 
+        loading="lazy" 
       />
-
-      {/* === Section header === */}
-      <div className="relative z-10 pt-28 md:pt-40 pb-16 px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
-        >
-          <p className="text-[10px] tracking-[0.6em] uppercase text-[#F4C662] font-bold flex items-center justify-center gap-5 mb-6">
-            <span className="w-16 h-[1px] bg-[#F4C662]/30" />
-            {locale === 'bn' ? 'বিশেষ প্রদর্শনী' : 'Featured Exhibition'}
-            <span className="w-16 h-[1px] bg-[#F4C662]/30" />
-          </p>
-          <h2 className="font-serif text-[3rem] md:text-[5rem] lg:text-[6.5rem] text-[#F4EEDF] leading-[1.04] font-bold max-w-5xl mx-auto"
-            style={{ textShadow: '0 4px 40px rgba(0,0,0,0.5)' }}>
-            {title}
-          </h2>
-        </motion.div>
-      </div>
-
-      {/* === Full-bleed cinematic image === */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 1.4, ease: [0.19, 1, 0.22, 1] }}
-        className="relative mx-4 md:mx-12 overflow-hidden group border border-white/[0.08]"
-        style={{ height: 'clamp(420px, 80vh, 900px)' }}
-      >
-        {/* Parallax image */}
-        <motion.div style={{ y: imgY }} className="absolute inset-0 h-[115%] -top-[7.5%]">
-          <PremiumImage
-            src={currentExhibition.hero_image_url}
-            fallbackSrc="/images/placeholders/exhibition.webp"
-            alt={title}
-            fill
-            className="object-cover"
-          />
-        </motion.div>
-
-        {/* Museum lighting overlays */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              linear-gradient(to bottom, rgba(11,9,8,0.2) 0%, transparent 40%, transparent 50%, rgba(11,9,8,0.9) 100%),
-              linear-gradient(to right, rgba(11,9,8,0.6) 0%, transparent 45%),
-              radial-gradient(ellipse at 70% 40%, rgba(244,198,98,0.08) 0%, transparent 50%)
-            `
-          }}
-        />
-
-        {/* Floating information panel — glassmorphism */}
-        <motion.div
-          initial={{ opacity: 0, x: -40, y: 20 }}
-          whileInView={{ opacity: 1, x: 0, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.4, ease: [0.19, 1, 0.22, 1] }}
-          className="absolute bottom-8 left-4 md:bottom-14 md:left-10 max-w-lg z-10"
-        >
-          <div className="bg-[#151210]/80 backdrop-blur-xl border border-white/[0.08] border-l-4 border-l-[#F4C662] p-8 md:p-10 shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center gap-4 text-[#F4EEDF]/80">
-                <Calendar className="w-5 h-5 text-[#F4C662] flex-shrink-0" />
-                <span className="font-serif text-lg font-light tracking-wide">{formattedDate}</span>
-              </div>
-              {venue && (
-                <div className="flex items-center gap-4 text-[#F4EEDF]/80">
-                  <MapPin className="w-5 h-5 text-[#F4C662] flex-shrink-0" />
-                  <span className="font-serif text-lg font-light tracking-wide">{venue}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 mb-8">
-              <span className="w-2 h-2 rounded-full bg-[#33CB9C] animate-pulse" />
-              <span className="text-[10px] tracking-[0.4em] uppercase text-[#33CB9C] font-bold">
-                {currentExhibition.status === 'ongoing' 
-                  ? (locale === 'bn' ? 'বর্তমানে চলছে' : 'Now Open')
-                  : (locale === 'bn' ? 'আসছে শীঘ্রই' : 'Opening Soon')}
-              </span>
-            </div>
-
-            <Link
-              href={`/exhibitions/${currentExhibition.id}`}
-              className="btn btn-sm btn-gold font-bold text-[12px] uppercase tracking-widest rounded-full px-7 active:scale-[0.97]"
-            >
-              {locale === 'bn' ? 'প্রদর্শনীতে প্রবেশ করুন' : 'Enter Exhibition'}
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* Year watermark */}
-        <div className="absolute top-8 right-8 md:top-14 md:right-14 z-10 pointer-events-none">
-          <p className="font-serif text-[8rem] md:text-[12rem] font-bold text-white/[0.03] leading-none select-none">
-            {currentExhibition.exhibition_start ? new Date(currentExhibition.exhibition_start).getFullYear() : 2026}
-          </p>
+      <div className="scrim"></div>
+      
+      {/* Watermark year */}
+      <div className="spotlight-bgtext">{yearSuffix}</div>
+      
+      <div className="spotlight-inner">
+        <div className="eyebrow reveal in">
+          {locale === 'bn' ? 'বিশেষ প্রদর্শনী' : 'Featured Exhibition'}
         </div>
-      </motion.div>
+        
+        <h2 className="reveal in">
+          {title} <em>— {locale === 'bn' ? 'রঙের উৎসব' : 'A Festival of Colour'}</em>
+        </h2>
+        
+        <p className="spotlight-sub reveal in">
+          {locale === 'bn' 
+            ? "একটি যুগান্তকারী শিল্প প্রদর্শনী যা বারোটি স্টুডিও, ষাটটি নতুন কাজ এবং বাংলার সবচেয়ে বিশিষ্ট শিল্পীদের একত্রিত করে।" 
+            : "A season-defining showcase bringing together fourteen studios, sixty new works, and a decade of Bengal's most distinctive visual voices."}
+        </p>
+        
+        <div className="spotlight-card reveal in">
+          {/* Detail: Date */}
+          <div className="spotlight-detail">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M3 8h14M7 2v3M13 2v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <div>
+              <b>{formattedDate}</b>
+              <span>{locale === 'bn' ? 'উদ্বোধনী রাত, সন্ধ্যা ৬টা থেকে' : 'Opening Night, 6 PM onward'}</span>
+            </div>
+          </div>
 
-      {/* Bottom seamless transition to cream (artists section) */}
-      <div className="h-32 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, #0B0908, #EFE6D2)' }}
-      />
+          {/* Detail: Venue */}
+          {venue && (
+            <div className="spotlight-detail">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 18s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z" stroke="currentColor" strokeWidth="1.5"/>
+                <circle cx="10" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/>
+              </svg>
+              <div>
+                <b>{venue}</b>
+                <span>{locale === 'bn' ? 'বর্ধমান, পশ্চিমবঙ্গ' : 'Bardhaman, West Bengal'}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Status Tag */}
+          <span className="spotlight-tag">
+            {currentExhibition.status === 'ongoing' 
+              ? (locale === 'bn' ? 'বর্তমানে চলছে' : 'Now Open')
+              : (locale === 'bn' ? 'আসছে শীঘ্রই' : 'Opening Soon')}
+          </span>
+
+          <Link href={`/exhibitions/${currentExhibition.id}`} className="btn btn-ink btn-sm magnetic md:ml-auto">
+            {locale === 'bn' ? 'প্রদর্শনীতে প্রবেশ করুন →' : 'Enter Exhibition →'}
+          </Link>
+        </div>
+      </div>
     </section>
   )
 }

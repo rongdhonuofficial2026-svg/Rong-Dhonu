@@ -7,6 +7,7 @@ import { HomeNewsletter } from "@/components/home/HomeExtras"
 import { HomeSponsors, HomeTestimonials } from "@/components/home/HomeSponsors"
 import { generateDynamicMetadata, generateOrganizationSchema } from "@/lib/seo"
 import { createClient } from "@/lib/supabase/server"
+import "@/../css/home.css"
 
 export async function generateMetadata({
   params,
@@ -49,13 +50,24 @@ export default async function HomePage({
   const { getFeaturedExhibition, syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle');
   const exhibition = await getFeaturedExhibition();
 
+  // Query dynamic counts for stats section
+  const [exhibitionsCountRes, artistsCountRes, artworksCountRes] = await Promise.all([
+    supabase.from('exhibitions').select('id', { count: 'exact', head: true }),
+    supabase.from('profiles').select('id', { count: 'exact', head: true }).in('role', ['member', 'committee']),
+    supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('status', 'approved')
+  ])
+
+  const totalExhibitions = exhibitionsCountRes.count || 14
+  const totalArtists = artistsCountRes.count || 340
+  const totalArtworks = artworksCountRes.count || 1200
+  const stats = { totalExhibitions, totalArtists, totalArtworks }
+
   // If no exhibition at all, handle gracefully.
   let artworks: any[] = []
   let artists: any[] = []
-  let stats = null
 
   if (exhibition) {
-    const [artworksRes, artistsRes, countsRes] = await Promise.all([
+    const [artworksRes, artistsRes] = await Promise.all([
       // Artworks with full artist profile (avatar + name)
       supabase.from('artworks')
         .select(`
@@ -71,9 +83,7 @@ export default async function HomePage({
         .select('profiles(id, full_name_en, full_name_bn, avatar_url, bio_en, slug)')
         .eq('status', 'approved')
         .eq('exhibition_id', exhibition.id)
-        .limit(6),
-        
-      supabase.rpc('get_homepage_stats').maybeSingle() // Optional
+        .limit(6)
     ])
 
     artworks = artworksRes.data || []
@@ -82,8 +92,6 @@ export default async function HomePage({
     if (artistsRes.data) {
       artists = artistsRes.data.map(p => p.profiles).filter(Boolean)
     }
-    
-    stats = countsRes.data || null
   }
 
   return (
@@ -93,8 +101,8 @@ export default async function HomePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="w-full">
-        <HomeHero locale={locale} exhibition={exhibition} />
-        <HomeAbout locale={locale} />
+        <HomeHero locale={locale} exhibition={exhibition} stats={stats} />
+        <HomeAbout locale={locale} stats={stats} />
         <HomeExhibition locale={locale} exhibition={exhibition} />
         <HomeFeaturedArtists locale={locale} artists={artists} />
         <HomeFeaturedArtworks locale={locale} artworks={artworks} />
