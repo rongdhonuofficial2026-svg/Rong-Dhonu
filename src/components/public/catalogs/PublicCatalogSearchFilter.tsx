@@ -42,27 +42,27 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 mb-12">
+    <div className="flex flex-col gap-4 mb-12 bg-[#F4EEDF] border border-[#DCCFAE] p-4 rounded-none">
       {/* Search bar */}
       <div className="relative">
-        <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isPending ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
+        <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isPending ? 'text-[#B4233A] animate-pulse' : 'text-[#B4233A]'}`} />
         <Input 
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search catalogs by title or exhibition name..." 
-          className="pl-11 h-12 bg-card border-border focus-visible:ring-primary rounded-xl text-foreground shadow-sm"
+          className="pl-11 h-12 bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] focus-visible:ring-0 focus-visible:border-[#B4233A] rounded-none text-[#1E1A16] placeholder:text-[#5C5347]/50"
         />
       </div>
 
       {/* Filter row */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-4">
         {/* Year */}
         <Select 
           value={searchParams.get('year') || 'all'} 
           onValueChange={v => handleFilterChange('year', v)}
         >
-          <SelectTrigger className="w-auto min-w-[130px] h-10 rounded-xl bg-card border-border shadow-sm text-sm">
-            <Filter className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+          <SelectTrigger className="w-auto min-w-[130px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
+            <Filter className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
           <SelectContent>
@@ -78,8 +78,8 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
           value={searchParams.get('language') || 'all'} 
           onValueChange={v => handleFilterChange('language', v)}
         >
-          <SelectTrigger className="w-auto min-w-[140px] h-10 rounded-xl bg-card border-border shadow-sm text-sm">
-            <Globe className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+          <SelectTrigger className="w-auto min-w-[140px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
+            <Globe className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
             <SelectValue placeholder="All Languages" />
           </SelectTrigger>
           <SelectContent>
@@ -95,8 +95,8 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
           value={searchParams.get('category') || 'all'} 
           onValueChange={v => handleFilterChange('category', v)}
         >
-          <SelectTrigger className="w-auto min-w-[150px] h-10 rounded-xl bg-card border-border shadow-sm text-sm">
-            <Tag className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+          <SelectTrigger className="w-auto min-w-[150px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
+            <Tag className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -114,8 +114,8 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
           value={searchParams.get('sort') || 'newest'} 
           onValueChange={v => handleFilterChange('sort', v)}
         >
-          <SelectTrigger className="w-auto min-w-[165px] h-10 rounded-xl bg-card border-border shadow-sm text-sm">
-            <ArrowUpDown className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+          <SelectTrigger className="w-auto min-w-[165px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
+            <ArrowUpDown className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
             <SelectValue placeholder="Sort By" />
           </SelectTrigger>
           <SelectContent>
