@@ -100,24 +100,24 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
     : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes.');
 
   return (
-    <main className="min-h-screen pb-32 bg-[#F5F5F0]">
+    <main className="min-h-screen pb-32 bg-[#EFE6D2]">
       {/* Decorative Textures */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
       {/* Minimal Editorial Hero */}
-      <section className="relative pt-40 pb-20 px-6 overflow-hidden border-b border-foreground/10">
-        <div className="absolute inset-0 z-0 bg-[#F5F5F0]" />
+      <section className="relative pt-40 pb-20 px-6 overflow-hidden border-b border-[#DCCFAE]">
+        <div className="absolute inset-0 z-0 bg-[#EFE6D2]" />
         
         {/* Subtle decorative blob */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[100px] mix-blend-multiply translate-x-1/3 -translate-y-1/4 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#F4C662]/5 rounded-full blur-[100px] mix-blend-multiply translate-x-1/3 -translate-y-1/4 pointer-events-none" />
         
         <div className="container relative z-10 mx-auto max-w-7xl">
           <div className="max-w-4xl space-y-8 text-center mx-auto">
-            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
+            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-[#1E1A16] leading-[1.1]">
               {heroTitle}
             </h1>
-            <div className="w-16 h-[1px] bg-foreground/20 mx-auto" />
-            <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl mx-auto leading-relaxed">
+            <div className="w-16 h-[1.5px] bg-[#DCCFAE] mx-auto" />
+            <p className="text-xl md:text-2xl text-[#5C5347] font-light max-w-2xl mx-auto leading-relaxed">
               {heroSubtitle}
             </p>
           </div>
@@ -125,7 +125,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
       </section>
 
       <div className="container mx-auto px-6 max-w-[1600px] pt-12 relative z-20">
-        <Suspense fallback={<div className="flex justify-center p-32"><Loader2 className="w-10 h-10 animate-spin text-accent" strokeWidth={1} /></div>}>
+        <Suspense fallback={<div className="flex justify-center p-32"><Loader2 className="w-10 h-10 animate-spin text-[#B4233A]" strokeWidth={1} /></div>}>
           <AlbumGrid 
             albums={albums} 
             locale={locale} 

@@ -86,18 +86,18 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
   return (
     <div className="space-y-12">
       {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/50 backdrop-blur-md p-4 rounded-2xl border border-foreground/10">
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-[#F4EEDF] p-4 rounded-none border border-[#DCCFAE]">
         <div className="w-full md:w-1/3">
           <Input
             placeholder={locale === 'bn' ? 'অ্যালবাম খুঁজুন...' : 'Search albums...'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-white/50 border-foreground/10 focus-visible:ring-accent"
+            className="bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-[#1E1A16] placeholder:text-[#5C5347]/50 focus-visible:ring-0 focus-visible:border-[#B4233A] rounded-none h-10 px-0"
           />
         </div>
         <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
           <Select value={filterYear} onValueChange={setFilterYear}>
-            <SelectTrigger className="w-full sm:w-[160px] bg-white/50 border-foreground/10">
+            <SelectTrigger className="w-full sm:w-[160px] bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] rounded-none text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
               <SelectValue placeholder={locale === 'bn' ? 'বছর' : 'Year'} />
             </SelectTrigger>
             <SelectContent>
@@ -109,7 +109,7 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
           </Select>
           
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-[160px] bg-white/50 border-foreground/10">
+            <SelectTrigger className="w-full sm:w-[160px] bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] rounded-none text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
               <SelectValue placeholder={locale === 'bn' ? 'সাজান' : 'Sort by'} />
             </SelectTrigger>
             <SelectContent>
@@ -123,10 +123,10 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
       {/* Grid */}
       {filteredAlbums.length === 0 ? (
         <div className="py-32 text-center">
-          <div className="w-20 h-20 rounded-full border border-foreground/10 flex items-center justify-center mb-6 mx-auto bg-white">
-            <ImageIcon className="w-10 h-10 text-foreground/30" />
+          <div className="w-20 h-20 rounded-none border border-[#DCCFAE] flex items-center justify-center mb-6 mx-auto bg-[#F4EEDF]">
+            <ImageIcon className="w-10 h-10 text-[#5C5347]/30" />
           </div>
-          <h3 className="font-serif text-2xl text-foreground mb-2">
+          <h3 className="font-serif text-2xl text-[#1E1A16] mb-2 font-bold">
             {locale === 'bn' ? 'কোনো অ্যালবাম পাওয়া যায়নি' : 'No albums found'}
           </h3>
         </div>
@@ -140,31 +140,36 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
 
             return (
               <Link key={album.id} href={`/gallery/${album.slug || album.id}`} className="group block">
-                <LuxuryCard padding="none" className="overflow-hidden h-full flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
-                  <div className="relative aspect-[4/3] bg-muted/20 overflow-hidden">
+                <div className="relative bg-[#F4EEDF] border border-[#DCCFAE] overflow-hidden h-full flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-500 ease-[0.19,1,0.22,1]"
+                  style={{ boxShadow: '0 10px 40px -10px rgba(30,26,22,0.06)' }}
+                >
+                  {/* Crimson top edge on hover */}
+                  <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-[#B4233A] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-10" />
+
+                  <div className="relative aspect-[4/3] bg-[#DCCFAE]/20 overflow-hidden border-b border-[#DCCFAE]">
                     {album.hero_image_url ? (
                       <Image 
                         src={album.hero_image_url} 
                         alt={title} 
                         fill 
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <ImageIcon className="w-12 h-12 text-muted-foreground/30" />
+                        <ImageIcon className="w-12 h-12 text-[#5C5347]/20" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#151210]/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                     
-                    <div className="absolute top-4 right-4 flex gap-2">
+                    <div className="absolute top-4 right-4 flex gap-2 z-10">
                       {album.photoCount > 0 && (
-                        <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-white/90 text-xs font-medium border border-white/10">
+                        <div className="flex items-center gap-1.5 bg-[#1E1A16]/80 backdrop-blur-md px-2.5 py-1 text-white/90 text-[10px] font-bold uppercase tracking-wider border border-white/10">
                           <ImageIcon className="w-3.5 h-3.5" />
                           <span>{album.photoCount}</span>
                         </div>
                       )}
                       {album.videoCount > 0 && (
-                        <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-white/90 text-xs font-medium border border-white/10">
+                        <div className="flex items-center gap-1.5 bg-[#1E1A16]/80 backdrop-blur-md px-2.5 py-1 text-white/90 text-[10px] font-bold uppercase tracking-wider border border-white/10">
                           <Video className="w-3.5 h-3.5" />
                           <span>{album.videoCount}</span>
                         </div>
@@ -172,28 +177,28 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
                     </div>
                   </div>
 
-                  <div className="p-6 flex-1 flex flex-col bg-white">
-                    <div className="flex items-center gap-2 text-muted-foreground text-xs font-medium mb-3 uppercase tracking-wider">
-                      <Calendar className="w-3.5 h-3.5 text-accent" />
+                  <div className="p-6 flex-1 flex flex-col bg-[#F4EEDF]">
+                    <div className="flex items-center gap-2 text-[#B4233A] text-[10px] font-bold uppercase tracking-widest mb-3">
+                      <Calendar className="w-3.5 h-3.5" />
                       {dateDisplay || album.year}
                     </div>
                     
-                    <h3 className="font-serif text-2xl font-semibold text-foreground mb-3 line-clamp-2 group-hover:text-accent transition-colors">
+                    <h3 className="font-serif text-2xl font-bold text-[#1E1A16] mb-3 line-clamp-2 group-hover:text-[#B4233A] transition-colors leading-tight">
                       {title}
                     </h3>
                     
                     {description && (
-                      <p className="text-muted-foreground line-clamp-2 text-sm mb-6 flex-1">
+                      <p className="text-[#5C5347] line-clamp-2 text-sm mb-6 flex-1 leading-relaxed">
                         {description}
                       </p>
                     )}
 
-                    <div className="mt-auto pt-4 border-t border-foreground/5 flex items-center justify-between text-sm font-medium text-foreground">
+                    <div className="mt-auto pt-4 border-t border-[#DCCFAE] flex items-center justify-between text-xs font-bold uppercase tracking-widest text-[#1E1A16] group-hover:text-[#B4233A] transition-colors">
                       <span>{locale === 'bn' ? 'গ্যালারি দেখুন' : 'View Gallery'}</span>
-                      <ArrowRight className="w-4 h-4 text-accent transform group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-4 h-4 text-[#B4233A] transform group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
-                </LuxuryCard>
+                </div>
               </Link>
             )
           })}
