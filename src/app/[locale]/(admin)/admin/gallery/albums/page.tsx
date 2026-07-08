@@ -41,7 +41,7 @@ export default async function GalleryAlbumsPage({ params }: { params: Promise<{ 
     .from('gallery_albums')
     .select(`
       *,
-      gallery_media (
+      gallery_media:gallery_media!gallery_media_gallery_album_id_fkey (
         id,
         media_type,
         url,

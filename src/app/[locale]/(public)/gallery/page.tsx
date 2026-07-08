@@ -22,7 +22,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
     .from('gallery_albums')
     .select(`
       *,
-      gallery_media (
+      gallery_media:gallery_media!gallery_media_gallery_album_id_fkey (
         id,
         media_type,
         status,
