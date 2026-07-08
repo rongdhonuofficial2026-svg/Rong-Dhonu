@@ -1,27 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/i18n/routing';
-import { MapPin, Mail, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 export default function Footer({ footerData, locale = 'en', settingsData }: { footerData?: any, locale?: string, settingsData?: any }) {
   const t = useTranslations('Navigation');
-
-  let parsedQuickLinks: any[] = []
-  try {
-    const rawVal = footerData?.quick_links
-    if (rawVal) {
-      parsedQuickLinks = typeof rawVal === 'string' ? JSON.parse(rawVal) : rawVal
-    }
-  } catch (e) {}
-
-  let parsedLegalLinks: any[] = []
-  try {
-    const rawVal = footerData?.legal_links
-    if (rawVal) {
-      parsedLegalLinks = typeof rawVal === 'string' ? JSON.parse(rawVal) : rawVal
-    }
-  } catch (e) {}
 
   return (
     <footer className="site-footer">
@@ -32,7 +13,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
           </Link>
           <p>
             {locale === 'bn'
-              ? 'প্রদর্শনী, ক্যাটালগ এবং শিল্পী ও গুণগ্রাহীদের জন্য একটি সমৃদ্ধ নেটওয়ার্কের মাধ্যমে সমসাময়িক শিল্পের বিকাশ এবং সাংস্কৃতিক ঐতিহ্য সংরক্ষণ করা।'
+              ? 'প্রদর্শনী, ক্যাটালগ এবং শিল্পী ও গুণগ্রাহীদের জন্য একটি সমৃদ্ধ নেটওয়ার্কের মাধ্যমে সমসাময়িক শিল্পের বিকাশ এবং সংরক্ষণ করা।'
               : (footerData?.brand_description || 'Cultivating contemporary art and preserving cultural heritage through exhibitions, catalogues, and a thriving network for artists and appreciators alike.')}
           </p>
           <div className="footer-social">
@@ -82,12 +63,10 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
               ? 'নতুন প্রদর্শনী এবং স্টুডিওর গল্পগুলোর নিয়মিত আপডেট পেতে সাবস্ক্রাইব করুন।'
               : 'Get occasional notes on new exhibitions and studio stories.'}
           </p>
-          <form>
-            <input type="email" placeholder={locale === 'bn' ? 'আপনার ইমেইল' : 'you@email.com'} required />
-            <button type="button" className="btn btn-gold btn-sm magnetic w-full">
-              {locale === 'bn' ? 'সাবস্ক্রাইব করুন' : 'Subscribe'}
-            </button>
-          </form>
+          <input type="email" placeholder={locale === 'bn' ? 'আপনার ইমেইল' : 'you@email.com'} required style={{ width: '100%', padding: '13px 16px', borderRadius: '10px', border: '1px solid var(--color-hairline)', background: 'var(--color-ink-800)', color: 'var(--color-parchment)', fontSize: '14px', marginBottom: '10px' }} />
+          <button type="button" className="btn btn-gold btn-sm magnetic" style={{ width: '100%' }}>
+            {locale === 'bn' ? 'সাবস্ক্রাইব করুন' : 'Subscribe'}
+          </button>
         </div>
       </div>
 

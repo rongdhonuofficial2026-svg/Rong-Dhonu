@@ -1260,25 +1260,30 @@
 
 /* ================= CATALOG CARDS ================= */
 .collection {
-  padding-bottom: 140px;
   background: var(--color-void);
+  padding: 150px var(--edge);
 }
 .section-head {
   max-width: var(--container);
-  margin: 0 auto 56px;
-  padding: 0 var(--edge);
+  margin: 0 auto 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  flex-wrap: wrap;
 }
 .section-head h2 {
-  font-size: clamp(30px, 3vw, 42px);
+  font-size: clamp(32px, 3.6vw, 50px);
+  letter-spacing: -.01em;
   color: var(--color-parchment);
-  margin-bottom: 12px;
   font-family: var(--font-display);
   font-weight: 600;
 }
 .section-head p {
-  color: var(--color-parchment-dim);
-  font-size: 15.5px;
-  max-width: 480px;
+  color: var(--color-parchment-faint);
+  max-width: 380px;
+  font-size: 15px;
+  line-height: 1.65;
 }
 .catalog-grid {
   max-width: var(--container);
@@ -1286,7 +1291,6 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
-  padding: 0 var(--edge);
 }
 .catalog-card {
   background: var(--color-ink-800);

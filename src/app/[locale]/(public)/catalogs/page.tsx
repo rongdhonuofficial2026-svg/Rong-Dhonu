@@ -273,7 +273,7 @@ export default async function PublicCatalogsPage({
               <p>{locale === 'bn' ? 'বছর, ভাষা এবং বিভাগ অনুসারে আমাদের প্রকাশিত প্রতিটি ক্যাটালগ ব্রাউজ করুন।' : 'Every catalog we have published, browsable by year, language, and category.'}</p>
             </div>
             <div className="catalog-grid">
-              {otherCatalogs.map((cat) => {
+              {filteredCatalogs.map((cat) => {
                 const ex = cat.exhibitions as any
                 const exhibitionTitle = locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en
                 const title = locale === 'bn' && cat.title_bn ? cat.title_bn : cat.title_en
