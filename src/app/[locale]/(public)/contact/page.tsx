@@ -31,7 +31,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       {/* ============ CONTACT HERO ============ */}
       <header className="contact-hero artwork">
         <img 
-          src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?q=80&w=2400&auto=format&fit=crop" 
+          src="/images/contact/hero.jpg" 
           alt="Guests conversing warmly during a gallery reception" 
           loading="eager"
         />
@@ -131,7 +131,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             <div className="visit-preview reveal">
               <Link href="/gallery" className="visit-preview-tile artwork">
                 <img 
-                  src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=900&auto=format&fit=crop" 
+                  src="/images/contact/visit_gallery.jpg" 
                   alt="Curator installing artwork before opening" 
                   loading="lazy"
                 />
@@ -146,7 +146,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               </Link>
               <Link href="/exhibitions" className="visit-preview-tile artwork">
                 <img 
-                  src="https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=900&auto=format&fit=crop" 
+                  src="/images/contact/visit_exhibitions.png" 
                   alt="Ribbon cutting ceremony at the gallery entrance" 
                   loading="lazy"
                 />
