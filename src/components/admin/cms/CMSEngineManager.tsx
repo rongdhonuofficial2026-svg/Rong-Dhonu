@@ -8,7 +8,8 @@ import {
   ArrowUp, ArrowDown, EyeOff, Check, AlertCircle, RefreshCw, 
   Calendar, RotateCcw, Monitor, Tablet, Phone, Plus, Trash2, Globe,
   Image as ImageIcon, Folder, Tag, Search, Filter, ShieldAlert, BarChart3,
-  Layers, Settings, Share2, AlertTriangle, FileCheck, CheckCircle
+  Layers, Settings, Share2, AlertTriangle, FileCheck, CheckCircle,
+  ArrowUpDown, Upload
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -790,15 +791,17 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
               
               <div className="bg-[#171717] border border-white/[0.08] rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.35)] p-8 space-y-6">
                 
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 items-center">
-                  {/* Folder buttons */}
-                  <div className="flex gap-2">
+                {/* Responsive Media Toolbar */}
+                <div className="flex flex-col xl:flex-row gap-4 items-center justify-between w-full">
+                  
+                  {/* Left: Breadcrumb / Folder Selector */}
+                  <div className="flex gap-2 w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0 shrink-0 custom-scrollbar">
                     <button 
                       onClick={() => setMediaFolder('/')}
                       className={cn(
-                        "h-10 px-4 text-xs font-semibold rounded-[12px] flex items-center gap-1.5 transition-colors border",
+                        "h-12 px-5 text-xs font-semibold rounded-[14px] flex items-center gap-2 transition-all border shrink-0",
                         mediaFolder === '/' 
-                          ? 'bg-[#C9A227] text-black border-transparent' 
+                          ? 'bg-[#C9A227] text-black border-transparent shadow-[0_0_15px_rgba(201,162,39,0.3)]' 
                           : 'bg-[#222222] border-white/[0.08] text-white hover:border-[#C9A227]'
                       )}
                     >
@@ -807,36 +810,49 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                     <button 
                       onClick={() => setMediaFolder('/exhibitions')}
                       className={cn(
-                        "h-10 px-4 text-xs font-semibold rounded-[12px] flex items-center gap-1.5 transition-colors border",
+                        "h-12 px-5 text-xs font-semibold rounded-[14px] flex items-center gap-2 transition-all border shrink-0",
                         mediaFolder === '/exhibitions' 
-                          ? 'bg-[#C9A227] text-black border-transparent' 
+                          ? 'bg-[#C9A227] text-black border-transparent shadow-[0_0_15px_rgba(201,162,39,0.3)]' 
                           : 'bg-[#222222] border-white/[0.08] text-white hover:border-[#C9A227]'
                       )}
                     >
-                      <Folder className="w-4 h-4" /> <span>/Exh</span>
+                      <Folder className="w-4 h-4" /> <span>/Exhibitions</span>
                     </button>
                     <button 
                       onClick={() => setMediaFolder('/gallery')}
                       className={cn(
-                        "h-10 px-4 text-xs font-semibold rounded-[12px] flex items-center gap-1.5 transition-colors border",
+                        "h-12 px-5 text-xs font-semibold rounded-[14px] flex items-center gap-2 transition-all border shrink-0",
                         mediaFolder === '/gallery' 
-                          ? 'bg-[#C9A227] text-black border-transparent' 
+                          ? 'bg-[#C9A227] text-black border-transparent shadow-[0_0_15px_rgba(201,162,39,0.3)]' 
                           : 'bg-[#222222] border-white/[0.08] text-white hover:border-[#C9A227]'
                       )}
                     >
-                      <Folder className="w-4 h-4" /> <span>/Gal</span>
+                      <Folder className="w-4 h-4" /> <span>/Gallery</span>
                     </button>
                   </div>
                   
-                  {/* Search query input */}
-                  <div className="relative sm:col-span-3">
-                    <Search className="absolute left-4 top-3.5 w-5 h-5 text-white/52" />
+                  {/* Center: Search Field */}
+                  <div className="relative flex-grow w-full xl:max-w-2xl">
+                    <Search className="absolute left-4 top-3.5 w-5 h-5 text-white/50" />
                     <input 
-                      placeholder="Search files..." 
+                      placeholder="Search assets..." 
                       value={mediaSearch} 
                       onChange={(e) => setMediaSearch(e.target.value)}
-                      className="w-full pl-11 bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] h-12 text-sm"
+                      className="w-full pl-12 pr-4 bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] h-12 text-sm transition-all duration-200 placeholder:text-white/40 shadow-inner"
                     />
+                  </div>
+
+                  {/* Right: Actions */}
+                  <div className="flex gap-3 w-full xl:w-auto shrink-0 justify-start xl:justify-end">
+                    <button className="h-12 px-5 text-xs font-semibold rounded-[14px] flex items-center gap-2 transition-all border bg-[#222222] border-white/[0.08] text-white hover:border-white/20 hover:bg-white/[0.02] shrink-0 hidden sm:flex">
+                      <Filter className="w-4 h-4" /> <span>Filter</span>
+                    </button>
+                    <button className="h-12 px-5 text-xs font-semibold rounded-[14px] flex items-center gap-2 transition-all border bg-[#222222] border-white/[0.08] text-white hover:border-white/20 hover:bg-white/[0.02] shrink-0 hidden sm:flex">
+                      <ArrowUpDown className="w-4 h-4" /> <span>Sort</span>
+                    </button>
+                    <button className="h-12 px-6 text-xs font-semibold rounded-[14px] flex items-center gap-2 transition-all border bg-[#C9A227] border-transparent text-black hover:bg-[#b08d22] shadow-[0_4px_14px_rgba(201,162,39,0.3)] shrink-0 sm:ml-auto xl:ml-0">
+                      <Upload className="w-4 h-4" /> <span>Upload</span>
+                    </button>
                   </div>
                 </div>
 
