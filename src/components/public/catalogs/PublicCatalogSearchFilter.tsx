@@ -42,33 +42,40 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 mb-12 bg-[#F4EEDF] border border-[#DCCFAE] p-4 rounded-none">
-      {/* Search bar */}
-      <div className="relative">
-        <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isPending ? 'text-[#B4233A] animate-pulse' : 'text-[#B4233A]'}`} />
-        <Input 
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search catalogs by title or exhibition name..." 
-          className="pl-11 h-12 bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] focus-visible:ring-0 focus-visible:border-[#B4233A] rounded-none text-[#1E1A16] placeholder:text-[#5C5347]/50"
-        />
-      </div>
+    <section className="toolbar-wrap">
+      <div className="toolbar reveal in">
+        {/* Search bar */}
+        <div className="toolbar-search">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+            <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+            <path d="M18 18l-4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+          <input 
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search catalogs by title or exhibition name…" 
+          />
+        </div>
+        
+        <div className="toolbar-divider"></div>
 
-      {/* Filter row */}
-      <div className="flex flex-wrap gap-4">
+        {/* Filter row */}
         {/* Year */}
         <Select 
           value={searchParams.get('year') || 'all'} 
           onValueChange={v => handleFilterChange('year', v)}
         >
-          <SelectTrigger className="w-auto min-w-[130px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
-            <Filter className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
+          <SelectTrigger className="filter-pill border-none focus:ring-0 focus:outline-none cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Years</SelectItem>
+          <SelectContent className="bg-[#0B0908] border-white/[0.08] text-[#F4EEDF]">
+            <SelectItem value="all" className="focus:bg-white/10 focus:text-white cursor-pointer">All Years</SelectItem>
             {years.map(y => (
-              <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+              <SelectItem key={y} value={y.toString()} className="focus:bg-white/10 focus:text-white cursor-pointer">{y}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -78,15 +85,18 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
           value={searchParams.get('language') || 'all'} 
           onValueChange={v => handleFilterChange('language', v)}
         >
-          <SelectTrigger className="w-auto min-w-[140px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
-            <Globe className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
+          <SelectTrigger className="filter-pill border-none focus:ring-0 focus:outline-none cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.4" />
+              <path d="M2.5 10h15M10 2.5c2.2 2.2 2.2 12.8 0 15M10 2.5c-2.2 2.2-2.2 12.8 0 15" stroke="currentColor" strokeWidth="1.2" />
+            </svg>
             <SelectValue placeholder="All Languages" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Languages</SelectItem>
-            <SelectItem value="bilingual">Bilingual</SelectItem>
-            <SelectItem value="en">English</SelectItem>
-            <SelectItem value="bn">Bengali</SelectItem>
+          <SelectContent className="bg-[#0B0908] border-white/[0.08] text-[#F4EEDF]">
+            <SelectItem value="all" className="focus:bg-white/10 focus:text-white cursor-pointer">All Languages</SelectItem>
+            <SelectItem value="bilingual" className="focus:bg-white/10 focus:text-white cursor-pointer">Bilingual</SelectItem>
+            <SelectItem value="en" className="focus:bg-white/10 focus:text-white cursor-pointer">English</SelectItem>
+            <SelectItem value="bn" className="focus:bg-white/10 focus:text-white cursor-pointer">Bengali</SelectItem>
           </SelectContent>
         </Select>
 
@@ -95,17 +105,20 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
           value={searchParams.get('category') || 'all'} 
           onValueChange={v => handleFilterChange('category', v)}
         >
-          <SelectTrigger className="w-auto min-w-[150px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
-            <Tag className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
+          <SelectTrigger className="filter-pill border-none focus:ring-0 focus:outline-none cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+              <path d="M3 10l6-6h6v6l-6 6-6-6z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+              <circle cx="12.5" cy="7.5" r="1" fill="currentColor" />
+            </svg>
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="exhibition">Exhibition</SelectItem>
-            <SelectItem value="retrospective">Retrospective</SelectItem>
-            <SelectItem value="solo">Solo Exhibition</SelectItem>
-            <SelectItem value="group">Group Exhibition</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+          <SelectContent className="bg-[#0B0908] border-white/[0.08] text-[#F4EEDF]">
+            <SelectItem value="all" className="focus:bg-white/10 focus:text-white cursor-pointer">All Categories</SelectItem>
+            <SelectItem value="exhibition" className="focus:bg-white/10 focus:text-white cursor-pointer">Exhibition</SelectItem>
+            <SelectItem value="retrospective" className="focus:bg-white/10 focus:text-white cursor-pointer">Retrospective</SelectItem>
+            <SelectItem value="solo" className="focus:bg-white/10 focus:text-white cursor-pointer">Solo Exhibition</SelectItem>
+            <SelectItem value="group" className="focus:bg-white/10 focus:text-white cursor-pointer">Group Exhibition</SelectItem>
+            <SelectItem value="other" className="focus:bg-white/10 focus:text-white cursor-pointer">Other</SelectItem>
           </SelectContent>
         </Select>
 
@@ -114,17 +127,19 @@ export function PublicCatalogSearchFilter({ years }: { years: number[] }) {
           value={searchParams.get('sort') || 'newest'} 
           onValueChange={v => handleFilterChange('sort', v)}
         >
-          <SelectTrigger className="w-auto min-w-[165px] h-10 rounded-none bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-sm text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
-            <ArrowUpDown className="w-3.5 h-3.5 mr-2 text-[#B4233A]" />
+          <SelectTrigger className="filter-pill border-none focus:ring-0 focus:outline-none cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+              <path d="M4 15l4-4 3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             <SelectValue placeholder="Sort By" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Newest First</SelectItem>
-            <SelectItem value="oldest">Oldest First</SelectItem>
-            <SelectItem value="downloads">Most Downloaded</SelectItem>
+          <SelectContent className="bg-[#0B0908] border-white/[0.08] text-[#F4EEDF]">
+            <SelectItem value="newest" className="focus:bg-white/10 focus:text-white cursor-pointer">Newest First</SelectItem>
+            <SelectItem value="oldest" className="focus:bg-white/10 focus:text-white cursor-pointer">Oldest First</SelectItem>
+            <SelectItem value="downloads" className="focus:bg-white/10 focus:text-white cursor-pointer">Most Downloaded</SelectItem>
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </section>
   )
 }
