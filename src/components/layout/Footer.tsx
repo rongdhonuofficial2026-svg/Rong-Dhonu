@@ -47,9 +47,9 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
         <div className="footer-col">
           <h4>{locale === 'bn' ? 'অফিস' : 'Office'}</h4>
           <ul>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>{locale === 'bn' ? '১২ আর্ট কলেজ রোড' : '12 Art College Road'}</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>{locale === 'bn' ? 'গোরাবাজার, বহরমপুর' : 'Gorabazar, Berhampore'}</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>{locale === 'bn' ? 'পশ্চিমবঙ্গ ৭৪২১০১' : 'West Bengal 742101'}</a></li>
+            <li><span>{locale === 'bn' ? '১২ আর্ট কলেজ রোড' : '12 Art College Road'}</span></li>
+            <li><span>{locale === 'bn' ? 'গোরাবাজার, বহরমপুর' : 'Gorabazar, Berhampore'}</span></li>
+            <li><span>{locale === 'bn' ? 'পশ্চিমবঙ্গ ৭৪২১০১' : 'West Bengal 742101'}</span></li>
             <li><a href="mailto:info@rongdhono.art">info@rongdhono.art</a></li>
           </ul>
         </div>
@@ -61,7 +61,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
               ? 'নতুন প্রদর্শনী এবং স্টুডিওর গল্পগুলোর নিয়মিত আপডেট পেতে সাবস্ক্রাইব করুন।'
               : 'Get occasional notes on new exhibitions and studio stories.'}
           </p>
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form>
             <input type="email" placeholder="you@email.com" required />
             <button type="submit" className="btn btn-gold btn-sm magnetic" style={{ width: '100%' }}>
               {locale === 'bn' ? 'সাবস্ক্রাইব করুন' : 'Subscribe'}
