@@ -63,13 +63,13 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
   const heroImage = heroData?.imageUrl || '/images/placeholders/exhibition.webp';
 
   return (
-    <main className="min-h-screen pb-32 bg-[#F5F5F0]">
+    <main className="min-h-screen pb-32 bg-[#EFE6D2]">
       
       {/* Decorative Textures */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
       {/* Cinematic Hero Section */}
-      <section className="relative w-full h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-black text-center">
+      <section className="relative w-full h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-[#0B0908] text-center">
         <div className="absolute inset-0 z-0 w-full h-full">
           <PremiumImage 
             src={heroImage}
@@ -82,13 +82,13 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
         </div>
         
         {/* Deep gradient for text readability */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#F5F5F0] via-black/40 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#EFE6D2] via-black/40 to-transparent" />
         
         <div className="relative z-20 px-6 max-w-4xl mx-auto space-y-6 mt-20">
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium tracking-tight drop-shadow-2xl">
             {heroTitle}
           </h1>
-          <div className="w-16 h-[1px] bg-white/50 mx-auto" />
+          <div className="w-16 h-[1.5px] bg-[#F4C662]/50 mx-auto" />
           <p className="text-lg md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto drop-shadow-md">
             {heroSubtitle}
           </p>
@@ -99,11 +99,11 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
         
         {active.length > 0 && (
           <section className="space-y-16">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-foreground/10 pb-8">
-              <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground tracking-tight">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#DCCFAE] pb-8">
+              <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#1E1A16] tracking-tight">
                 {locale === 'bn' ? 'চলমান ও আসন্ন' : 'Upcoming & Ongoing'}
               </h2>
-              <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#B4233A]">
                 {active.length} {locale === 'bn' ? 'টি প্রদর্শনী' : 'Exhibitions'}
               </span>
             </div>
@@ -127,11 +127,11 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
 
         {sortedYears.length > 0 && (
           <section className="space-y-16 pt-12">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-foreground/10 pb-8">
-              <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground tracking-tight">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#DCCFAE] pb-8">
+              <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#1E1A16] tracking-tight">
                 {locale === 'bn' ? 'অতীতের প্রদর্শনী' : 'Past Exhibitions'}
               </h2>
-              <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#B4233A]">
                 {past.length} {locale === 'bn' ? 'টি প্রদর্শনী' : 'Exhibitions'}
               </span>
             </div>
@@ -140,8 +140,8 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
               {sortedYears.map(year => (
                 <div key={year} className="space-y-12">
                   <div className="flex items-center gap-6">
-                    <h3 className="font-serif text-3xl text-muted-foreground">{year}</h3>
-                    <div className="h-[1px] flex-1 bg-border" />
+                    <h3 className="font-serif text-3xl font-bold text-[#1E1A16]">{year}</h3>
+                    <div className="h-[1px] flex-1 bg-[#DCCFAE]" />
                   </div>
                   <div className="grid grid-cols-1 gap-24">
                     {pastByYear[year].map((ex: any) => (
@@ -165,8 +165,8 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
 
         {active.length === 0 && past.length === 0 && (
           <div className="text-center py-32 space-y-6">
-            <h2 className="font-serif text-3xl text-muted-foreground">No exhibitions available yet.</h2>
-            <p className="text-muted-foreground max-w-md mx-auto">
+            <h2 className="font-serif text-3xl text-[#5C5347]/80">No exhibitions available yet.</h2>
+            <p className="text-[#5C5347] max-w-md mx-auto">
               Our curators are currently preparing our upcoming events. Please check back later.
             </p>
           </div>
