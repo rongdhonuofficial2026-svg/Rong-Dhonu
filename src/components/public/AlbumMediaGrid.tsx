@@ -37,11 +37,10 @@ export function AlbumMediaGrid({ initialMedia, locale, albumId }: { initialMedia
 
     const query = supabase
       .from('gallery_media')
-      .select('*, exhibitions(theme_en, theme_bn, year)')
+      .select('*, exhibitions:gallery_media_exhibition_id_fkey(theme_en, theme_bn, year)')
       .eq('status', 'published')
       .eq('gallery_album_id', albumId)
       .order('is_featured', { ascending: false })
-      .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
       .range(from, to)
 

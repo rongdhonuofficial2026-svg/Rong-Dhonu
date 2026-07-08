@@ -11,15 +11,21 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, id } = await params
   const supabase = await createClient()
   
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
-  let query = supabase.from('gallery_albums').select('*')
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+  let album: any = null
+
   if (isUuid) {
-    query = query.eq('id', id)
+    const { data } = await supabase.from('gallery_albums').select('*').eq('id', id).maybeSingle()
+    album = data
+    if (!album) {
+      const { data: bySlug } = await supabase.from('gallery_albums').select('*').eq('slug', id).maybeSingle()
+      album = bySlug
+    }
   } else {
-    query = query.eq('slug', id)
+    const { data } = await supabase.from('gallery_albums').select('*').eq('slug', id).maybeSingle()
+    album = data
   }
 
-  const { data: album } = await query.maybeSingle()
   if (!album) return { title: 'Album Not Found' }
 
   const title = album.seo_title || (locale === 'bn' ? (album.title_bn || album.title_en) : album.title_en)
@@ -65,15 +71,42 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
   const { locale, id } = await params
   const supabase = await createClient()
 
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
-  let query = supabase.from('gallery_albums').select('*')
-  if (isUuid) {
-    query = query.eq('id', id)
-  } else {
-    query = query.eq('slug', id)
-  }
+  // Resolve album by id or slug. Exhibition album slugs are UUID strings,
+  // so we must try both id AND slug when the input looks like a UUID.
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
 
-  const { data: album, error: albumError } = await query.maybeSingle()
+  let album: any = null
+  let albumError: any = null
+
+  if (isUuid) {
+    // Try by id first
+    const { data, error } = await supabase
+      .from('gallery_albums')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle()
+    albumError = error
+    album = data
+
+    // If not found by id, try by slug (exhibition albums use exhibition UUID as slug)
+    if (!album && !error) {
+      const { data: bySlug, error: slugError } = await supabase
+        .from('gallery_albums')
+        .select('*')
+        .eq('slug', id)
+        .maybeSingle()
+      albumError = slugError
+      album = bySlug
+    }
+  } else {
+    const { data, error } = await supabase
+      .from('gallery_albums')
+      .select('*')
+      .eq('slug', id)
+      .maybeSingle()
+    albumError = error
+    album = data
+  }
 
   if (albumError || !album || album.status !== 'published') {
     notFound()
@@ -81,11 +114,10 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
 
   const { data: mediaData } = await supabase
     .from('gallery_media')
-    .select('*, exhibitions(theme_en, theme_bn, year)')
+    .select('*, exhibitions:gallery_media_exhibition_id_fkey(theme_en, theme_bn, year)')
     .eq('gallery_album_id', album.id)
     .eq('status', 'published')
     .order('is_featured', { ascending: false })
-    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false })
     .limit(20)
       

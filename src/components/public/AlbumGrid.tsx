@@ -138,8 +138,6 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
             const dateDisplay = formatDate(album.exhibition_start)
             const totalMedia = album.photoCount + album.videoCount
 
-            if (totalMedia === 0) return null // Hide empty albums
-
             return (
               <Link key={album.id} href={`/gallery/${album.slug || album.id}`} className="group block">
                 <LuxuryCard padding="none" className="overflow-hidden h-full flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300">

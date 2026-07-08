@@ -68,7 +68,8 @@ async function getOrCreateAlbum(
 
     const title_en = exhibition?.theme_en || `Exhibition ${exhibition?.year || ''}`
     const title_bn = exhibition?.theme_bn || null
-    const slug = exhibitionId // slug is the exhibition id
+    // Use title-based slug so detail routes resolve cleanly (not the UUID)
+    const slug = await generateUniqueSlug(supabase, title_en)
 
     const { data: created, error } = await supabase
       .from('gallery_albums')
