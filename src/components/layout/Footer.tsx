@@ -82,9 +82,9 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
               ? 'নতুন প্রদর্শনী এবং স্টুডিওর গল্পগুলোর নিয়মিত আপডেট পেতে সাবস্ক্রাইব করুন।'
               : 'Get occasional notes on new exhibitions and studio stories.'}
           </p>
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form>
             <input type="email" placeholder={locale === 'bn' ? 'আপনার ইমেইল' : 'you@email.com'} required />
-            <button type="submit" className="btn btn-gold btn-sm magnetic w-full">
+            <button type="button" className="btn btn-gold btn-sm magnetic w-full">
               {locale === 'bn' ? 'সাবস্ক্রাইব করুন' : 'Subscribe'}
             </button>
           </form>
