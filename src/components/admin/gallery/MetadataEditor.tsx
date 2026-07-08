@@ -35,7 +35,17 @@ export function MetadataEditor({ media, open, onOpenChange, onSaved, categories,
   // Initialize form when item changes
   useEffect(() => {
     if (media) {
-      setFormData(media)
+      setFormData({
+        ...media,
+        title_en: media.title_en ?? '',
+        title_bn: media.title_bn ?? '',
+        description_en: media.description_en ?? '',
+        description_bn: media.description_bn ?? '',
+        alt_text: media.alt_text ?? '',
+        photographer: media.photographer ?? '',
+        videographer: media.videographer ?? '',
+        copyright: media.copyright ?? '',
+      })
       setExhibitionAssociation(media.exhibition_id ? "associate" : "independent")
     }
   }, [media])
@@ -78,254 +88,274 @@ export function MetadataEditor({ media, open, onOpenChange, onSaved, categories,
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl bg-zinc-950 border border-border/40 shadow-2xl p-6 rounded-2xl max-h-[90vh] overflow-y-auto z-50 text-foreground focus:outline-none">
+      <DialogContent className="max-w-5xl bg-white border border-neutral-200 shadow-2xl p-8 rounded-2xl max-h-[90vh] overflow-y-auto z-50 text-neutral-900 focus:outline-none">
         <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">Edit Media Metadata</DialogTitle>
-          <DialogDescription className="text-muted-foreground">Update the details, accessibility tags, exhibition link, and visibility for this asset.</DialogDescription>
+          <DialogTitle className="text-2xl font-bold text-neutral-900">Edit Media Metadata</DialogTitle>
+          <DialogDescription className="text-sm text-neutral-500 mt-1">
+            Update the details, accessibility tags, exhibition link, and visibility for this asset.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
           
           {/* Left Column - Core Data */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             
             {/* Title (English) */}
-            <div className="space-y-1.5">
-              <Label htmlFor="edit_title_en" className="text-sm font-medium">Title — English <span className="text-destructive">*</span></Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit_title_en" className="text-sm font-semibold text-neutral-700">Title — English <span className="text-red-500">*</span></Label>
               <Input 
                 id="edit_title_en"
                 value={formData.title_en || formData.caption_en || ''} 
                 onChange={e => setFormData(p => ({ ...p, title_en: e.target.value, caption_en: e.target.value }))}
                 placeholder="Media Title (English)"
-                className="h-10 bg-background/50 border-border/50 focus-visible:ring-accent"
+                className="h-11 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
               />
             </div>
 
             {/* Title (Bengali) */}
-            <div className="space-y-1.5">
-              <Label htmlFor="edit_title_bn" className="text-sm font-medium">শিরোনাম — বাংলা</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit_title_bn" className="text-sm font-semibold text-neutral-700">শিরোনাম — বাংলা</Label>
               <Input 
                 id="edit_title_bn"
                 value={formData.title_bn || formData.caption_bn || ''} 
                 onChange={e => setFormData(p => ({ ...p, title_bn: e.target.value, caption_bn: e.target.value }))}
                 placeholder="মিডিয়া শিরোনাম (বাংলা)"
-                className="h-10 bg-background/50 border-border/50 focus-visible:ring-accent"
+                className="h-11 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
                 dir="auto"
               />
             </div>
 
             {/* Description (English) */}
-            <div className="space-y-1.5">
-              <Label htmlFor="edit_desc_en" className="text-sm font-medium">Description — English</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit_desc_en" className="text-sm font-semibold text-neutral-700">Description — English</Label>
               <Textarea 
                 id="edit_desc_en"
                 value={formData.description_en || ''} 
                 onChange={e => setFormData(p => ({ ...p, description_en: e.target.value }))}
                 placeholder="Full description (English)..."
-                className="resize-none h-24 bg-background/50 border-border/50 focus-visible:ring-accent"
+                className="resize-none h-28 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
               />
             </div>
 
             {/* Description (Bengali) */}
-            <div className="space-y-1.5">
-              <Label htmlFor="edit_desc_bn" className="text-sm font-medium">বর্ণনা — বাংলা</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit_desc_bn" className="text-sm font-semibold text-neutral-700">বর্ণনা — বাংলা</Label>
               <Textarea 
                 id="edit_desc_bn"
                 value={formData.description_bn || ''} 
                 onChange={e => setFormData(p => ({ ...p, description_bn: e.target.value }))}
                 placeholder="মিডিয়া সম্পর্কিত বিবরণ (বাংলা)..."
-                className="resize-none h-20 bg-background/50 border-border/50 focus-visible:ring-accent"
+                className="resize-none h-28 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
                 dir="auto"
               />
             </div>
 
             {/* Alt Text */}
-            <div className="space-y-1.5">
-              <Label htmlFor="edit_alt_text" className="text-sm font-medium">Alt Text (Accessibility)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit_alt_text" className="text-sm font-semibold text-neutral-700">Alt Text (Accessibility)</Label>
               <Input 
                 id="edit_alt_text"
                 value={formData.alt_text || ''} 
                 onChange={e => setFormData(p => ({ ...p, alt_text: e.target.value }))}
                 placeholder="Describe image for screen readers"
-                className="h-10 bg-background/50 border-border/50 focus-visible:ring-accent"
+                className="h-11 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
               />
             </div>
           </div>
 
           {/* Right Column - Organization & Credits */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             
             {/* Category selection */}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Category</Label>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-neutral-700">Category</Label>
               <Select 
-                value={formData.category} 
+                value={formData.category || undefined} 
                 onValueChange={(val: GalleryCategory) => setFormData(p => ({ ...p, category: val }))}
               >
-                <SelectTrigger className="h-10 bg-background/50 border-border/50">
+                <SelectTrigger className="h-11 bg-white border-neutral-200 text-neutral-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="z-[9999] bg-zinc-950 border border-border/60 text-foreground">
+                <SelectContent className="z-[10000] bg-white border border-neutral-200 text-neutral-900 rounded-lg shadow-xl">
                   {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.slug}>{cat.name_en} ({cat.name_bn})</SelectItem>
+                    <SelectItem key={cat.id} value={cat.slug} className="focus:bg-neutral-100 hover:bg-neutral-100 cursor-pointer">{cat.name_en} ({cat.name_bn})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             {/* Exhibition Association */}
-            <div className="space-y-2 border border-border/40 p-3.5 rounded-xl bg-muted/5">
-              <Label className="text-xs font-mono uppercase tracking-wider text-accent">Exhibition Link</Label>
+            <div className="space-y-3 p-4 rounded-xl border border-neutral-200 bg-neutral-50/50">
+              <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Exhibition Link</Label>
               <RadioGroup
                 value={exhibitionAssociation}
                 onValueChange={val => {
                   setExhibitionAssociation(val as any)
-                  if (val === "independent") setFormData(p => ({ ...p, exhibition_id: "none" }))
+                  if (val === "independent") setFormData(p => ({ ...p, exhibition_id: null as any }))
                 }}
-                className="flex gap-4 mt-1.5 mb-3"
+                className="flex gap-6 mt-2"
               >
-                <div className="flex items-center gap-1.5">
-                  <RadioGroupItem value="associate" id="edit_r_associate" />
-                  <Label htmlFor="edit_r_associate" className="text-xs cursor-pointer">Exhibition</Label>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <RadioGroupItem value="independent" id="edit_r_independent" />
-                  <Label htmlFor="edit_r_independent" className="text-xs cursor-pointer">Independent</Label>
-                </div>
+                <Label htmlFor="edit_r_associate" className="flex items-center gap-2 cursor-pointer">
+                  <RadioGroupItem value="associate" id="edit_r_associate" className="border-neutral-300 text-blue-600 focus-visible:ring-blue-500" />
+                  <span className="text-sm font-medium text-neutral-800">Associate with Exhibition</span>
+                </Label>
+                <Label htmlFor="edit_r_independent" className="flex items-center gap-2 cursor-pointer">
+                  <RadioGroupItem value="independent" id="edit_r_independent" className="border-neutral-300 text-blue-600 focus-visible:ring-blue-500" />
+                  <span className="text-sm font-medium text-neutral-800">Independent Media</span>
+                </Label>
               </RadioGroup>
 
               {exhibitionAssociation === "associate" && (
-                <Select 
-                  value={formData.exhibition_id || 'none'} 
-                  onValueChange={val => setFormData(p => ({ ...p, exhibition_id: val }))}
-                >
-                  <SelectTrigger className="h-10 bg-background/50 border-border/50">
-                    <SelectValue placeholder="Select exhibition..." />
-                  </SelectTrigger>
-                  <SelectContent className="z-[9999] bg-zinc-950 border border-border/60 text-foreground max-h-[250px]">
-                    <SelectItem value="none" disabled>Select exhibition...</SelectItem>
-                    {ongoingEx.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-emerald-400 font-mono text-[9px] uppercase tracking-wider">Ongoing</SelectLabel>
-                        {ongoingEx.map(e => (
-                          <SelectItem key={e.id} value={e.id}>{e.year} · {e.theme_en}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                    {upcomingEx.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-blue-400 font-mono text-[9px] uppercase tracking-wider">Upcoming</SelectLabel>
-                        {upcomingEx.map(e => (
-                          <SelectItem key={e.id} value={e.id}>{e.year} · {e.theme_en}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                    {archivedEx.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-muted-foreground font-mono text-[9px] uppercase tracking-wider">Archived</SelectLabel>
-                        {archivedEx.map(e => (
-                          <SelectItem key={e.id} value={e.id}>{e.year} · {e.theme_en}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                    {draftEx.length > 0 && (
-                      <SelectGroup>
-                        <SelectLabel className="text-amber-500 font-mono text-[9px] uppercase tracking-wider">Draft</SelectLabel>
-                        {draftEx.map(e => (
-                          <SelectItem key={e.id} value={e.id}>{e.year} · {e.theme_en} (Draft)</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )}
-                  </SelectContent>
-                </Select>
+                <div className="mt-4 pt-3 border-t border-neutral-200">
+                  <Label className="text-sm font-semibold text-neutral-700 mb-2 block">Select Exhibition</Label>
+                  <Select 
+                    value={formData.exhibition_id || 'none'} 
+                    onValueChange={val => setFormData(p => ({ ...p, exhibition_id: val }))}
+                  >
+                    <SelectTrigger className="h-11 bg-white border-neutral-200 text-neutral-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      <SelectValue placeholder="Select exhibition..." />
+                    </SelectTrigger>
+                    <SelectContent className="z-[10000] bg-white border border-neutral-200 text-neutral-900 shadow-xl rounded-lg max-h-[300px]">
+                      <SelectItem value="none" disabled className="text-neutral-400">Select exhibition...</SelectItem>
+                      {ongoingEx.length > 0 && (
+                        <SelectGroup>
+                          <SelectLabel className="text-emerald-600 font-bold text-xs uppercase tracking-wider">Ongoing</SelectLabel>
+                          {ongoingEx.map(e => (
+                            <SelectItem key={e.id} value={e.id} className="focus:bg-neutral-100 cursor-pointer">{e.year} · {e.theme_en}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      )}
+                      {upcomingEx.length > 0 && (
+                        <SelectGroup>
+                          <SelectLabel className="text-blue-600 font-bold text-xs uppercase tracking-wider mt-2">Upcoming</SelectLabel>
+                          {upcomingEx.map(e => (
+                            <SelectItem key={e.id} value={e.id} className="focus:bg-neutral-100 cursor-pointer">{e.year} · {e.theme_en}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      )}
+                      {archivedEx.length > 0 && (
+                        <SelectGroup>
+                          <SelectLabel className="text-neutral-500 font-bold text-xs uppercase tracking-wider mt-2">Archived</SelectLabel>
+                          {archivedEx.map(e => (
+                            <SelectItem key={e.id} value={e.id} className="focus:bg-neutral-100 cursor-pointer">{e.year} · {e.theme_en}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      )}
+                      {draftEx.length > 0 && (
+                        <SelectGroup>
+                          <SelectLabel className="text-amber-600 font-bold text-xs uppercase tracking-wider mt-2">Draft</SelectLabel>
+                          {draftEx.map(e => (
+                            <SelectItem key={e.id} value={e.id} className="focus:bg-neutral-100 cursor-pointer">{e.year} · {e.theme_en} (Draft)</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
               )}
             </div>
 
             {/* Visibility Settings */}
-            <div className="space-y-2 border border-border/40 p-3.5 rounded-xl bg-muted/5">
-              <Label className="text-xs font-mono uppercase tracking-wider text-accent">Visibility</Label>
+            <div className="space-y-3 p-4 rounded-xl border border-neutral-200 bg-neutral-50/50">
+              <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Visibility</Label>
               <RadioGroup
                 value={formData.visibility || 'public'}
                 onValueChange={(val: 'public' | 'hidden') => setFormData(p => ({ ...p, visibility: val }))}
-                className="grid grid-cols-2 gap-3 mt-1.5"
+                className="grid grid-cols-2 gap-4 mt-2"
               >
-                <div className={`flex items-center gap-2 p-2 rounded-lg border border-border/40 hover:bg-muted/10 transition-colors cursor-pointer ${formData.visibility === 'public' ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`} onClick={() => setFormData(p => ({ ...p, visibility: 'public' }))}>
-                  <RadioGroupItem value="public" id="edit_v_public" />
-                  <Label htmlFor="edit_v_public" className="text-xs flex items-center gap-1 cursor-pointer">
-                    <Eye className="w-3.5 h-3.5 text-emerald-400" /> Public
-                  </Label>
-                </div>
-                <div className={`flex items-center gap-2 p-2 rounded-lg border border-border/40 hover:bg-muted/10 transition-colors cursor-pointer ${formData.visibility === 'hidden' ? 'bg-rose-500/5 border-rose-500/30' : ''}`} onClick={() => setFormData(p => ({ ...p, visibility: 'hidden' }))}>
-                  <RadioGroupItem value="hidden" id="edit_v_hidden" />
-                  <Label htmlFor="edit_v_hidden" className="text-xs flex items-center gap-1 cursor-pointer">
-                    <EyeOff className="w-3.5 h-3.5 text-rose-400" /> Hidden
-                  </Label>
-                </div>
+                <Label 
+                  htmlFor="edit_v_public"
+                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                    formData.visibility === 'public' || !formData.visibility
+                      ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-500'
+                      : 'bg-white border-neutral-200 hover:bg-neutral-50'
+                  }`}
+                >
+                  <RadioGroupItem value="public" id="edit_v_public" className="border-neutral-300 text-blue-600 focus-visible:ring-blue-500" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                    <Eye className="w-4 h-4 text-neutral-500" /> Public
+                  </div>
+                </Label>
+                <Label 
+                  htmlFor="edit_v_hidden"
+                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                    formData.visibility === 'hidden'
+                      ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-500'
+                      : 'bg-white border-neutral-200 hover:bg-neutral-50'
+                  }`}
+                >
+                  <RadioGroupItem value="hidden" id="edit_v_hidden" className="border-neutral-300 text-blue-600 focus-visible:ring-blue-500" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                    <EyeOff className="w-4 h-4 text-neutral-500" /> Hidden
+                  </div>
+                </Label>
               </RadioGroup>
             </div>
 
             {/* Credits (Photographer, Videographer, Copyright) */}
-            <div className="grid grid-cols-2 gap-3.5">
-              <div className="space-y-1.5">
-                <Label htmlFor="edit_photographer" className="text-xs font-medium text-muted-foreground">Photographer</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit_photographer" className="text-sm font-semibold text-neutral-700">Photographer</Label>
                 <div className="relative">
-                  <User className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                   <Input 
                     id="edit_photographer"
                     value={formData.photographer || ''} 
                     onChange={e => setFormData(p => ({ ...p, photographer: e.target.value }))}
                     placeholder="Name"
-                    className="h-9 pl-8 bg-background/50 border-border/50 text-xs focus-visible:ring-accent"
+                    className="h-11 pl-9 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="edit_videographer" className="text-xs font-medium text-muted-foreground">Videographer</Label>
+              <div className="space-y-2">
+                <Label htmlFor="edit_videographer" className="text-sm font-semibold text-neutral-700">Videographer</Label>
                 <div className="relative">
-                  <User className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                   <Input 
                     id="edit_videographer"
                     value={formData.videographer || ''} 
                     onChange={e => setFormData(p => ({ ...p, videographer: e.target.value }))}
                     placeholder="Name"
-                    className="h-9 pl-8 bg-background/50 border-border/50 text-xs focus-visible:ring-accent"
+                    className="h-11 pl-9 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
                   />
                 </div>
               </div>
-              <div className="space-y-1.5 col-span-2">
-                <Label htmlFor="edit_copyright" className="text-xs font-medium text-muted-foreground">Copyright License</Label>
+              <div className="space-y-2 col-span-2">
+                <Label htmlFor="edit_copyright" className="text-sm font-semibold text-neutral-700">Copyright License</Label>
                 <Input 
                   id="edit_copyright"
                   value={formData.copyright || ''} 
                   onChange={e => setFormData(p => ({ ...p, copyright: e.target.value }))}
                   placeholder="e.g. © 2026 Rongdhono"
-                  className="h-9 bg-background/50 border-border/50 text-xs focus-visible:ring-accent"
+                  className="h-11 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
                 />
               </div>
             </div>
 
             {/* Display Order */}
-            <div className="space-y-1.5">
-              <Label htmlFor="edit_sort_order" className="text-sm font-medium">Display Sort Order</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit_sort_order" className="text-sm font-semibold text-neutral-700">Display Sort Order</Label>
               <Input 
                 id="edit_sort_order"
                 type="number"
                 value={formData.sort_order || 0} 
                 onChange={e => setFormData(p => ({ ...p, sort_order: parseInt(e.target.value) || 0 }))}
-                className="h-10 bg-background/50 border-border/50 focus-visible:ring-accent"
+                className="h-11 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
               />
             </div>
 
             {/* Featured Switch */}
-            <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/40 bg-muted/10">
-              <div className="space-y-0.5">
-                <Label className="text-sm font-semibold flex items-center gap-1.5">
-                  <Star className={`w-4 h-4 ${formData.is_featured ? 'text-amber-400 fill-amber-400/30' : 'text-muted-foreground'}`} />
+            <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-200 bg-white shadow-sm">
+              <div className="space-y-1">
+                <Label htmlFor="edit_featured" className="text-sm font-bold text-neutral-900 flex items-center gap-2 cursor-pointer">
+                  <Star className={`w-4 h-4 ${formData.is_featured ? 'text-amber-500 fill-amber-500' : 'text-neutral-400'}`} />
                   Featured Media
                 </Label>
-                <p className="text-[10px] text-muted-foreground">Highlight and pin this asset to the gallery homepage.</p>
+                <p className="text-xs text-neutral-500">Highlight and pin this asset to the gallery homepage.</p>
               </div>
               <Switch 
+                id="edit_featured"
                 checked={formData.is_featured || false} 
                 onCheckedChange={val => setFormData(p => ({ ...p, is_featured: val }))}
               />
@@ -334,11 +364,11 @@ export function MetadataEditor({ media, open, onOpenChange, onSaved, categories,
           </div>
         </div>
 
-        <DialogFooter className="mt-6 border-t border-border/40 pt-4 flex gap-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isSaving} className="hover:bg-white/10 text-muted-foreground hover:text-white rounded-xl">
+        <DialogFooter className="mt-2 border-t border-neutral-200 pt-6 flex gap-3 sm:justify-end">
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving} className="rounded-xl border-neutral-300 text-neutral-700 hover:bg-neutral-100 font-medium px-6 h-11">
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSaving || !formData.title_en?.trim()} className="bg-accent text-black hover:bg-accent/90 rounded-xl px-5 font-semibold">
+          <Button onClick={handleSave} disabled={isSaving || !formData.title_en?.trim()} className="bg-blue-600 text-white hover:bg-blue-700 rounded-xl px-6 h-11 font-semibold shadow-sm transition-all focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Save Changes
           </Button>
