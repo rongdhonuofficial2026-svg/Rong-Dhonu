@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export function Navbar() {
+export function Navbar({ menuItems, locale = 'en' }: { menuItems?: any[], locale?: string }) {
   const t = useTranslations('Navigation')
   const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
@@ -28,14 +28,19 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const navItems = [
-    { name: t('home'), href: '/' },
-    { name: t('about'), href: '/about' },
-    { name: t('exhibitions'), href: '/exhibitions' },
-    { name: t('gallery'), href: '/gallery' },
-    { name: t('catalogs'), href: '/catalogs' },
-    { name: t('contact'), href: '/contact' },
-  ]
+  const navItems = menuItems && menuItems.length > 0
+    ? menuItems.map((item: any) => ({ 
+        name: locale === 'bn' ? (item.label_bn || item.label_en) : item.label_en, 
+        href: item.href 
+      }))
+    : [
+        { name: t('home'), href: '/' },
+        { name: t('about'), href: '/about' },
+        { name: t('exhibitions'), href: '/exhibitions' },
+        { name: t('gallery'), href: '/gallery' },
+        { name: t('catalogs'), href: '/catalogs' },
+        { name: t('contact'), href: '/contact' },
+      ]
 
   // If on home page and not scrolled, the navbar is transparent with light text (assuming dark hero).
   // Otherwise, it's solid/glass with dark text.

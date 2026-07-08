@@ -65,7 +65,7 @@ export interface DashboardData {
 
   upcomingEvents: Pick<EventRow, 'id' | 'title_en' | 'date_time' | 'description_en' | 'speaker_en'>[]
   recentNotifications: Pick<NotificationRow, 'id' | 'type' | 'message_en' | 'read_status' | 'created_at'>[]
-  cmsSections: Pick<CmsContentRow, 'page' | 'section' | 'updated_at'>[]
+  cmsSections: { page: string; section: string; updated_at: string | null }[]
   catalogStatusBreakdown: { published: number; draft: number; archived: number }
   galleryBreakdown: { images: number; videos: number; lastUpload: string | null }
 }

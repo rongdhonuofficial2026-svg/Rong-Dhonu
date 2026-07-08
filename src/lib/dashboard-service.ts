@@ -170,7 +170,9 @@ export async function fetchDashboardData(
       .order('created_at', { ascending: false }),
 
     // CMS sections
-    supabase.from('cms_content').select('page, section, updated_at'),
+    supabase
+      .from('cms_sections')
+      .select('section_key, updated_at, cms_pages(slug)'),
   ])
 
   // ─── Unwrap counts ─────────────────────────────────────────────────────────
@@ -198,7 +200,12 @@ export async function fetchDashboardData(
   const recentNotifications = safeData(r_notifications as any, [])
   const catalogRaw        = safeData(r_catalogStats as any, []) as { status: string; total_downloads: number | null }[]
   const galleryRaw        = safeData(r_galleryStats as any, []) as { media_type: 'image' | 'video'; created_at: string }[]
-  const cmsSections       = safeData(r_cmsSections as any, [])
+  const rawCmsSections    = safeData(r_cmsSections as any, [])
+  const cmsSections       = rawCmsSections.map((s: any) => ({
+    page: s.cms_pages?.slug || '',
+    section: s.section_key || '',
+    updated_at: s.updated_at || null
+  }))
   const currentUser       = safeData(r_currentUser as any, {
     id: userId,
     full_name_en: 'Administrator',

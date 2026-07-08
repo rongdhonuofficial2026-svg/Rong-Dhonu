@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import { Link } from '@/lib/i18n/routing'
+import { getCmsContent } from "@/lib/cms/content"
 import { BookOpen, Calendar, Globe, ArrowDownToLine, Eye, FileText, Search } from 'lucide-react'
 import { CatalogDownloadButton } from '@/components/public/catalogs/CatalogDownloadButton'
 import { PublicCatalogSearchFilter } from '@/components/public/catalogs/PublicCatalogSearchFilter'
@@ -90,14 +91,21 @@ export default async function PublicCatalogsPage({
   const isSearchEmpty = filteredCatalogs.length === 0 && (q || language || category || (year && year !== 'all'))
   const isTotallyEmpty = filteredCatalogs.length === 0 && !q && !language && !category && (!year || year === 'all')
 
+  // Fetch CMS hero configurations
+  const heroData = await getCmsContent('catalogs', 'hero', locale);
+
+  const heroTitle = heroData?.title || 'Exhibition Catalog Archive';
+  const heroSubtitle = heroData?.subtitle || 'Browse every official Rongdhono exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.';
+  const heroImage = heroData?.imageUrl || '/images/catalogs_hero.png';
+
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/images/catalogs_hero.png" 
-            alt="Catalogs Hero" 
+            src={heroImage} 
+            alt={heroTitle} 
             fill 
             className="object-cover object-center opacity-40 dark:opacity-20"
             priority
@@ -111,10 +119,10 @@ export default async function PublicCatalogsPage({
             <span className="text-xs font-semibold tracking-widest uppercase">Digital Archive</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold font-serif mb-6 leading-tight">
-            Exhibition Catalog Archive
+            {heroTitle}
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-            Browse every official Rongdhono exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.
+            {heroSubtitle}
           </p>
         </div>
       </section>

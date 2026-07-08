@@ -1,56 +1,90 @@
- 
- 
- 
- 
 import { createClient } from '@/lib/supabase/server'
 import { fallbackCMSContent } from './fallbacks'
 
 /**
  * Fetches CMS content for a specific page and section.
- * Falls back to local demo content if the database is empty or the row is missing.
+ * Falls back to local default content if the database is empty or the row is missing.
  */
 export async function getCmsContent(page: string, section: string, locale: string) {
-  const supabase = await createClient()
-  
-  // Try to fetch from DB
-  const { data, error } = await supabase
-    .from('cms_content')
-    .select('content_en, content_bn')
-    .eq('page', page)
-    .eq('section', section)
-    .single()
-
-  // If error (e.g. no rows) or data is empty, use fallback
-  if (error || !data) {
-    const fallbackSection = fallbackCMSContent[page]?.[section]
+  try {
+    const supabase = await createClient()
     
-    if (!fallbackSection) {
-      console.warn(`[CMS] Missing fallback for ${page}/${section}`)
-      return {}
+    // Try to fetch from DB using the new normalized schema
+    const { data: contentRows, error } = await supabase
+      .from('cms_content')
+      .select(`
+        field_key,
+        field_type,
+        value_en,
+        value_bn,
+        metadata,
+        cms_sections!inner(
+          section_key,
+          enabled,
+          cms_pages!inner(
+            slug,
+            status
+          )
+        )
+      `)
+      .eq('cms_sections.cms_pages.slug', page)
+      .eq('cms_sections.section_key', section)
+
+    // Handle database error or empty results
+    if (error || !contentRows || contentRows.length === 0) {
+      const fallbackSection = fallbackCMSContent[page]?.[section]
+      if (!fallbackSection) {
+        console.warn(`[CMS] Missing fallback for ${page}/${section}`)
+        return {}
+      }
+      return extractLocalizedContent(fallbackSection, locale)
     }
-    
-    return extractLocalizedContent(fallbackSection, locale)
-  }
 
-  // Determine which column to use based on locale
-  const content = locale === 'bn' && data.content_bn 
-    ? data.content_bn 
-    : data.content_en
+    // Check section visibility toggle
+    const sectionData = contentRows[0]?.cms_sections as any
+    const isEnabled = sectionData?.enabled !== false
+    if (!isEnabled) {
+      return { enabled: false }
+    }
 
-  // If the DB jsonb is somehow empty, fallback to the local object
-  if (!content || Object.keys(content).length === 0) {
+    // Process and construct content object
+    const contentObj: Record<string, any> = { enabled: true }
+    for (const row of contentRows) {
+      const value = locale === 'bn' ? (row.value_bn || row.value_en) : row.value_en
+      
+      if (row.field_type === 'json') {
+        try {
+          contentObj[row.field_key] = JSON.parse(value || '[]')
+        } catch {
+          contentObj[row.field_key] = []
+        }
+      } else {
+        contentObj[row.field_key] = value || ''
+      }
+
+      // If it's a button, map sub-fields (url, variant, open_in_new_tab)
+      if (row.field_type === 'button') {
+        const btnMeta = row.metadata as Record<string, any> || {}
+        contentObj[`${row.field_key}_url`] = btnMeta.url || '#'
+        contentObj[`${row.field_key}_variant`] = btnMeta.variant || 'primary'
+        contentObj[`${row.field_key}_open_in_new_tab`] = btnMeta.open_in_new_tab || false
+        contentObj[`${row.field_key}_disabled`] = btnMeta.disabled || false
+      }
+    }
+
+    return contentObj
+  } catch (err) {
+    console.error(`[CMS Exception] Failed to load ${page}/${section}:`, err)
     const fallbackSection = fallbackCMSContent[page]?.[section] || {}
     return extractLocalizedContent(fallbackSection, locale)
   }
-
-  return content as Record<string, any>
 }
 
 /**
  * Helper to extract locale-specific strings from a fallback object containing both _en and _bn keys.
  */
 function extractLocalizedContent(content: Record<string, any>, locale: string) {
-  const localized: Record<string, any> = {}
+  const localized: Record<string, any> = { enabled: true }
   
   for (const key in content) {
     if (key.endsWith('_en') || key.endsWith('_bn')) {

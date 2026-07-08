@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { ExhibitionCard } from "@/components/museum/exhibition-card"
 import { PremiumImage } from "@/components/ui/PremiumImage"
+import { getCmsContent } from "@/lib/cms/content"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -42,6 +43,15 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
     return Number(b) - Number(a)
   })
 
+  // Fetch CMS hero configurations
+  const heroData = await getCmsContent('exhibitions', 'hero', locale);
+
+  const heroTitle = heroData?.title || (locale === 'bn' ? 'প্রদর্শনী আর্কাইভ' : 'Exhibitions');
+  const heroSubtitle = heroData?.subtitle || (locale === 'bn' 
+    ? 'আমাদের বর্তমান এবং অতীতের সমস্ত প্রদর্শনীর একটি আর্কাইভ।' 
+    : 'Explore the legacy of our annual fine arts exhibitions, showcasing generations of artistic brilliance.');
+  const heroImage = heroData?.imageUrl || '/images/placeholders/exhibition.webp';
+
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">
       
@@ -49,12 +59,12 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
       {/* Cinematic Hero Section */}
-      <section className="relative w-full h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative w-full h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-black text-center">
         <div className="absolute inset-0 z-0 w-full h-full">
           <PremiumImage 
-            src="/images/placeholders/exhibition.webp"
+            src={heroImage}
             fallbackSrc="/images/placeholders/exhibition.webp"
-            alt="Exhibitions Archive"
+            alt={heroTitle}
             fill
             priority
             className="object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000"
@@ -64,15 +74,13 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
         {/* Deep gradient for text readability */}
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#F5F5F0] via-black/40 to-transparent" />
         
-        <div className="relative z-20 text-center px-6 max-w-4xl mx-auto space-y-6 mt-20">
+        <div className="relative z-20 px-6 max-w-4xl mx-auto space-y-6 mt-20">
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium tracking-tight drop-shadow-2xl">
-            {locale === 'bn' ? 'প্রদর্শনী আর্কাইভ' : 'Exhibitions'}
+            {heroTitle}
           </h1>
           <div className="w-16 h-[1px] bg-white/50 mx-auto" />
           <p className="text-lg md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto drop-shadow-md">
-            {locale === 'bn' 
-              ? 'আমাদের বর্তমান এবং অতীতের সমস্ত প্রদর্শনীর একটি আর্কাইভ।' 
-              : 'Explore the legacy of our annual fine arts exhibitions, showcasing generations of artistic brilliance.'}
+            {heroSubtitle}
           </p>
         </div>
       </section>

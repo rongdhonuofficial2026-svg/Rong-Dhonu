@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { AlbumGrid } from "@/components/public/AlbumGrid"
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
+import { getCmsContent } from "@/lib/cms/content"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -80,6 +81,14 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
     }
   })
 
+  // Fetch CMS hero configurations
+  const heroData = await getCmsContent('gallery', 'hero', locale);
+
+  const heroTitle = heroData?.title || (locale === 'bn' ? 'প্রদর্শনী অ্যালবাম' : 'Exhibition Albums');
+  const heroSubtitle = heroData?.subtitle || (locale === 'bn' 
+    ? 'আমাদের প্রদর্শনী ও ইভেন্টের স্মৃতিগুলো অন্বেষণ করুন।' 
+    : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes.');
+
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">
       {/* Decorative Textures */}
@@ -95,13 +104,11 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
         <div className="container relative z-10 mx-auto max-w-7xl">
           <div className="max-w-4xl space-y-8 text-center mx-auto">
             <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
-              {locale === 'bn' ? 'প্রদর্শনী অ্যালবাম' : 'Exhibition Albums'}
+              {heroTitle}
             </h1>
             <div className="w-16 h-[1px] bg-foreground/20 mx-auto" />
             <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl mx-auto leading-relaxed">
-              {locale === 'bn' 
-                ? 'আমাদের প্রদর্শনী ও ইভেন্টের স্মৃতিগুলো অন্বেষণ করুন।' 
-                : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes.'}
+              {heroSubtitle}
             </p>
           </div>
         </div>
