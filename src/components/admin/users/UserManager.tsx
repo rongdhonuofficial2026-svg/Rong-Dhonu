@@ -303,30 +303,30 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
   return (
     <div className="space-y-12 pb-20">
       {/* Immersive Hero Section */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[300px] flex flex-col justify-end p-8 md:p-12 museum-shadow">
+      <section className="relative rounded-3xl overflow-hidden min-h-[320px] flex flex-col justify-end p-8 md:p-12 border border-white/[0.06] bg-[#0c0c0e]">
         <div className="absolute inset-0 z-0">
           <Image 
             src="/images/users_hero.png" 
             alt="Users and Artists" 
             fill 
-            className="object-cover object-center image-reveal scale-105"
+            className="object-cover object-center image-reveal scale-100 opacity-90 transition-transform duration-[1500ms]"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/70 to-transparent" />
         </div>
         
         <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
-          <div className="max-w-3xl text-white">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border-white/20 mb-6">
-              <UsersIcon className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-medium tracking-widest uppercase">Network & Personnel</span>
+          <div className="max-w-2xl text-white">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] mb-5">
+              <UsersIcon className="w-3.5 h-3.5 text-accent" />
+              <span className="text-[9px] font-bold tracking-widest uppercase text-white/90">Network & Personnel</span>
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-elegant">
+            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight text-white">
               User <span className="text-gradient-gold">Directory</span>
             </h1>
-            <p className="text-white/80 text-lg font-light">
-              Oversee the creative network. Manage access, review submissions, and moderate credentials for artists, committee members, and system administrators.
+            <p className="text-white/70 text-base md:text-lg font-light leading-relaxed">
+              Oversee the creative network. Manage credentials, evaluate catalog roles, and moderate artist permissions across the Rongdhono administrative layer.
             </p>
           </div>
         </div>
@@ -334,26 +334,26 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
 
       {/* Directory Section */}
       <section className="space-y-8">
-        <GlassPanel intensity="medium" className="p-6 rounded-2xl flex flex-col xl:flex-row justify-between gap-6 items-center">
+        <GlassPanel intensity="light" className="p-5 rounded-2xl flex flex-col xl:flex-row justify-between gap-5 items-center border border-white/[0.06] bg-[#0e0e10]/80">
           <div className="relative w-full xl:flex-1 max-w-lg">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
             <Input 
               placeholder="Search directory by name, email, or username..." 
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-11 bg-black/25 border-white/10 focus-visible:ring-accent rounded-xl h-12 text-foreground placeholder:text-muted-foreground/70"
+              className="pl-11 bg-white/[0.02] border-white/[0.08] focus-visible:ring-accent rounded-xl h-11 text-foreground placeholder:text-muted-foreground/50 transition-all font-light text-sm"
             />
           </div>
           
-          <div className="flex flex-wrap gap-4 w-full xl:w-auto items-center">
+          <div className="flex flex-wrap gap-4 w-full xl:w-auto items-center justify-end">
             {/* Role filter */}
-            <div className="flex flex-col gap-1 w-full sm:w-[150px]">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Access Role</span>
+            <div className="flex flex-col gap-1 w-full sm:w-[140px]">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/55">Access Role</span>
               <Select value={role} onValueChange={(val) => { setRole(val); setPage(1); }}>
-                <SelectTrigger className="bg-black/25 border-white/10 h-10">
+                <SelectTrigger className="bg-white/[0.02] border-white/[0.08] h-10 text-xs">
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                <SelectContent className="bg-zinc-950 border-white/[0.08] text-white">
                   <SelectItem value="all">All Roles</SelectItem>
                   <SelectItem value="owner">Owner</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
@@ -364,13 +364,13 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
             </div>
 
             {/* Status filter */}
-            <div className="flex flex-col gap-1 w-full sm:w-[150px]">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Status</span>
+            <div className="flex flex-col gap-1 w-full sm:w-[140px]">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/55">Status</span>
               <Select value={status} onValueChange={(val) => { setStatus(val); setPage(1); }}>
-                <SelectTrigger className="bg-black/25 border-white/10 h-10">
+                <SelectTrigger className="bg-white/[0.02] border-white/[0.08] h-10 text-xs">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                <SelectContent className="bg-zinc-950 border-white/[0.08] text-white">
                   <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="suspended">Suspended</SelectItem>
@@ -380,13 +380,13 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
             </div>
 
             {/* Sorting */}
-            <div className="flex flex-col gap-1 w-full sm:w-[180px]">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Sorting</span>
+            <div className="flex flex-col gap-1 w-full sm:w-[170px]">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/55">Sorting</span>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bg-black/25 border-white/10 h-10">
+                <SelectTrigger className="bg-white/[0.02] border-white/[0.08] h-10 text-xs">
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                <SelectContent className="bg-zinc-950 border-white/[0.08] text-white">
                   <SelectItem value="newest">Newest Members</SelectItem>
                   <SelectItem value="oldest">Oldest Members</SelectItem>
                   <SelectItem value="name">Alphabetical</SelectItem>
@@ -399,20 +399,22 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
         </GlassPanel>
 
         {/* Directory Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
           {isLoading && (
-            <div className="absolute inset-0 bg-black/10 backdrop-blur-[2px] z-20 rounded-2xl flex items-center justify-center">
-              <RefreshCw className="w-8 h-8 animate-spin text-accent" />
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px] z-20 rounded-3xl flex items-center justify-center">
+              <RefreshCw className="w-7 h-7 animate-spin text-accent" />
             </div>
           )}
 
           {!users || users.length === 0 ? (
-            <div className="col-span-full py-20 text-center">
-              <div className="w-20 h-20 rounded-full border border-white/10 glass flex items-center justify-center mb-6 mx-auto">
-                <UsersIcon className="w-10 h-10 text-muted-foreground/50" />
+            <div className="col-span-full py-24 text-center bg-white/[0.01] border border-dashed border-white/[0.08] rounded-3xl">
+              <div className="w-16 h-16 rounded-full border border-white/[0.08] bg-white/[0.02] flex items-center justify-center mb-5 mx-auto">
+                <UsersIcon className="w-8 h-8 text-muted-foreground/40" />
               </div>
-              <h3 className="font-serif text-2xl mb-2 text-white">No members found</h3>
-              <p className="text-muted-foreground">Adjust filters or search parameters to refine directory lookup.</p>
+              <h3 className="font-serif text-xl mb-1.5 text-white">No members matched</h3>
+              <p className="text-xs text-muted-foreground/60 font-light max-w-sm mx-auto leading-relaxed">
+                Adjust role filters, search queries, or membership status to locate specific database entries.
+              </p>
             </div>
           ) : (
             users.map((user: any) => {
@@ -422,85 +424,95 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
               const isPending = user.status === 'pending'
 
               return (
-                <LuxuryCard key={user.id} padding="none" className="overflow-hidden group bg-[#111] hover:border-accent/40 transition-all duration-300">
-                  <div className="p-6 relative z-10">
-                    
-                    {/* Status & Role Badges */}
-                    <div className="absolute top-6 right-6 flex flex-col items-end gap-2">
-                      <span className={`px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md text-white ${
-                        user.role === 'admin' || user.role === 'owner' 
-                          ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300' 
-                          : user.role === 'committee' 
-                            ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' 
-                            : 'bg-white/5 border-white/10 text-white/70'
-                      }`}>
-                        {user.role}
-                      </span>
-                      
-                      {isSuspended && (
-                        <span className="px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-md border bg-red-500/20 border-red-500/40 text-red-300 flex items-center gap-1">
-                          <Ban className="w-2.5 h-2.5" /> Suspended
-                        </span>
-                      )}
-                      
-                      {isPending && (
-                        <span className="px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-md border bg-amber-500/20 border-amber-500/40 text-amber-300 flex items-center gap-1">
-                          <AlertTriangle className="w-2.5 h-2.5" /> Pending
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      {/* Avatar */}
-                      <div className="relative w-16 h-16 rounded-full overflow-hidden shrink-0 border border-white/15 bg-black/60 group-hover:border-accent/60 transition-colors duration-500">
+                <LuxuryCard 
+                  key={user.id} 
+                  padding="none" 
+                  className="relative overflow-hidden group bg-[#0e0e10]/95 hover:bg-[#121214]/90 border border-white/[0.06] hover:border-accent/40 transition-all duration-500 rounded-2xl flex flex-col justify-between h-full shadow-lg"
+                >
+                  <div className="p-6 flex flex-col flex-1">
+                    {/* Top line Profile Summary */}
+                    <div className="flex items-start justify-between gap-4">
+                      {/* Circular Avatar */}
+                      <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0 border border-white/[0.1] bg-black/60 group-hover:border-accent/50 transition-colors duration-500">
                         {user.avatar_url ? (
                           <Image src={user.avatar_url} alt="Avatar" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center font-bold text-muted-foreground/60 font-serif text-xl bg-gradient-to-br from-black to-white/5">
+                          <div className="w-full h-full flex items-center justify-center font-bold text-muted-foreground/60 font-serif text-lg bg-gradient-to-br from-[#1b1b1e] to-black">
                             {user.full_name_en?.charAt(0) || 'U'}
                           </div>
                         )}
                       </div>
-                      
-                      {/* User Info */}
-                      <div className="flex-1 min-w-0 pt-1">
-                        <h3 className="font-serif font-bold text-lg text-white truncate flex items-center gap-2 group-hover:text-gradient-gold transition-all duration-500">
-                          {user.full_name_en || 'Unnamed User'}
-                          {(user.role === 'admin' || user.role === 'owner') && <Shield className="w-3.5 h-3.5 text-indigo-400" />}
-                        </h3>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80 mt-1 truncate">
-                          <Mail className="w-3.5 h-3.5 shrink-0 text-white/40" />
-                          <span className="truncate">{user.email}</span>
-                        </div>
-                        {user.is_verified && (
-                          <div className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 bg-accent/15 text-accent text-[9px] font-bold uppercase tracking-wider rounded">
-                            <Check className="w-2.5 h-2.5" /> Verified Artist
-                          </div>
+
+                      {/* Status & Role Pill Badges */}
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <span className={cn(
+                          "px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest rounded-full border backdrop-blur-md",
+                          user.role === 'admin' || user.role === 'owner' 
+                            ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300' 
+                            : user.role === 'committee' 
+                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' 
+                              : 'bg-white/5 border-white/10 text-white/70'
+                        )}>
+                          {user.role}
+                        </span>
+                        
+                        {isSuspended && (
+                          <span className="px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded border bg-red-500/10 border-red-500/30 text-red-300 flex items-center gap-1">
+                            <span className="w-1 h-1 rounded-full bg-red-400 animate-pulse" /> Suspended
+                          </span>
+                        )}
+                        
+                        {isPending && (
+                          <span className="px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded border bg-amber-500/10 border-amber-500/30 text-amber-300 flex items-center gap-1">
+                            <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" /> Pending
+                          </span>
                         )}
                       </div>
                     </div>
 
-                    {/* Stats */}
-                    <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-3 gap-2 text-center">
-                      <div className="flex flex-col">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-0.5 flex items-center gap-1 justify-center"><ImageIcon className="w-2.5 h-2.5"/> Artworks</span>
-                        <span className="font-medium text-white">{artworksCount}</span>
+                    {/* Name, Email, Meta */}
+                    <div className="mt-4 space-y-1">
+                      <h3 className="font-serif font-bold text-lg text-white group-hover:text-shadow-elegant transition-all duration-500 flex items-center gap-2 truncate">
+                        {user.full_name_en || 'Unnamed User'}
+                        {user.is_verified && <CheckCircle className="w-4 h-4 text-accent shrink-0" />}
+                      </h3>
+                      
+                      <p className="text-xs text-muted-foreground/60 font-light truncate max-w-full">
+                        {user.email}
+                      </p>
+
+                      <div className="text-[10px] text-muted-foreground/45 font-light pt-1 flex items-center gap-1.5">
+                        <span>ID: {user.slug || user.id.slice(0, 8)}</span>
+                        <span>•</span>
+                        <span>Joined {user.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'N/A'}</span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-0.5 flex items-center gap-1 justify-center"><Calendar className="w-2.5 h-2.5"/> Exhibitions</span>
-                        <span className="font-medium text-white">{exhibitionsCount}</span>
+                    </div>
+
+                    {/* Quick Stats Blocks */}
+                    <div className="mt-6 pt-5 border-t border-white/[0.04] grid grid-cols-3 gap-4">
+                      <div className="text-left">
+                        <span className="block text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/40 mb-1">Artworks</span>
+                        <span className="text-base font-serif font-semibold text-white/90">{artworksCount}</span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-0.5 flex items-center gap-1 justify-center"><Activity className="w-2.5 h-2.5"/> Uploads</span>
-                        <span className="font-medium text-white">{user.galleryCount ?? 0}</span>
+                      <div className="text-left">
+                        <span className="block text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/40 mb-1">Exhibitions</span>
+                        <span className="text-base font-serif font-semibold text-white/90">{exhibitionsCount}</span>
+                      </div>
+                      <div className="text-left">
+                        <span className="block text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/40 mb-1">Uploads</span>
+                        <span className="text-base font-serif font-semibold text-white/90">{user.galleryCount ?? 0}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Action Footer */}
-                  <div className="bg-black/30 border-t border-white/5 p-4 flex gap-2">
-                    <PremiumButton variant="glass" className="flex-1 h-9 text-xs" onClick={() => openUserDrawer(user)}>
-                      Manage Profile
+                  {/* Refined primary trigger button */}
+                  <div className="px-6 pb-6 pt-2">
+                    <PremiumButton 
+                      variant="glass" 
+                      className="w-full h-10 text-xs font-semibold tracking-wider uppercase bg-white/[0.01] border-white/[0.08] hover:bg-white/[0.05] hover:border-accent/40 rounded-xl transition-all duration-300"
+                      onClick={() => openUserDrawer(user)}
+                    >
+                      Open Profile
                     </PremiumButton>
                   </div>
                 </LuxuryCard>
@@ -516,16 +528,18 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
               variant="glass" 
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
+              className="h-10 text-xs tracking-wider uppercase border-white/[0.06] hover:bg-white/[0.02]"
             >
               Previous
             </PremiumButton>
-            <span className="text-sm text-muted-foreground font-light">
+            <span className="text-xs text-muted-foreground/70 font-light tracking-widest uppercase">
               Page <span className="text-white font-medium">{page}</span> of {totalPages}
             </span>
             <PremiumButton 
               variant="glass" 
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
+              className="h-10 text-xs tracking-wider uppercase border-white/[0.06] hover:bg-white/[0.02]"
             >
               Next
             </PremiumButton>
@@ -539,35 +553,49 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
           {selectedUser && (
             <div className="flex flex-col h-full">
               
-              {/* Profile Cover / Header section */}
-              <div className="relative h-[200px] bg-gradient-to-br from-indigo-950 via-zinc-900 to-black p-8 flex flex-col justify-end border-b border-white/5">
-                <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-                  <PremiumButton variant="glass" className="h-9 px-3 text-xs bg-black/60" onClick={() => exportMemberData(selectedUser)}>
-                    <Download className="w-3.5 h-3.5 mr-1" /> Export Data
+              {/* Premium Profile Cover/Header */}
+              <div className="relative overflow-hidden bg-gradient-to-b from-[#16161a] to-zinc-950 px-8 pt-12 pb-8 border-b border-white/[0.06]">
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent/5 rounded-full filter blur-[80px] pointer-events-none" />
+                <div className="absolute top-4 right-4 flex items-center gap-2.5 z-10">
+                  <PremiumButton variant="glass" className="h-9 px-3 text-xs bg-black/60 border-white/[0.08]" onClick={() => exportMemberData(selectedUser)}>
+                    <Download className="w-3.5 h-3.5 mr-1.5" /> Export Profile
                   </PremiumButton>
-                  <Button variant="ghost" size="icon" className="text-white/60 hover:text-white rounded-full bg-black/50" onClick={() => setIsDrawerOpen(false)}>
-                    <X className="w-5 h-5" />
+                  <Button variant="ghost" size="icon" className="text-white/60 hover:text-white rounded-full bg-black/40 border border-white/[0.06] w-9 h-9 flex items-center justify-center transition-colors" onClick={() => setIsDrawerOpen(false)}>
+                    <X className="w-4 h-4" />
                   </Button>
                 </div>
 
-                <div className="flex gap-6 items-end relative z-10">
-                  <div className="relative w-20 h-20 rounded-full border-2 border-white/20 bg-zinc-950 overflow-hidden shadow-2xl shrink-0">
+                <div className="flex flex-col sm:flex-row gap-6 sm:items-center relative z-10">
+                  <div className="relative w-24 h-24 rounded-full border border-white/[0.15] bg-zinc-900 overflow-hidden shadow-2xl shrink-0">
                     {selectedUser.avatar_url ? (
                       <Image src={selectedUser.avatar_url} alt="Avatar" fill className="object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center font-bold text-muted-foreground/60 font-serif text-3xl">
+                      <div className="w-full h-full flex items-center justify-center font-bold text-muted-foreground/60 font-serif text-4xl bg-gradient-to-br from-[#1b1b1e] to-black">
                         {selectedUser.full_name_en?.charAt(0) || 'U'}
                       </div>
                     )}
                   </div>
-                  <div>
-                    <h2 className="font-serif font-bold text-3xl tracking-tight text-white mb-1.5 flex items-center gap-2">
-                      {selectedUser.full_name_en}
-                      {selectedUser.is_verified && <CheckCircle className="w-5 h-5 text-accent" />}
-                    </h2>
-                    <p className="text-white/70 text-sm font-light tracking-wide flex items-center gap-1.5">
+                  <div className="space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <h2 className="font-serif font-bold text-3xl tracking-tight text-white">
+                        {selectedUser.full_name_en}
+                      </h2>
+                      {selectedUser.is_verified && (
+                        <Badge className="bg-accent/10 border-accent/30 text-accent font-semibold tracking-wider text-[9px] uppercase px-2 py-0.5 rounded-full">
+                          Verified Artist
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <p className="text-white/60 text-xs font-light tracking-wide flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5 text-white/40" /> {selectedUser.email}
                     </p>
+                    
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground/60 font-light">
+                      <span>Joined {selectedUser.created_at ? new Date(selectedUser.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</span>
+                      <span>•</span>
+                      <span>Access Role: <strong className="text-white font-medium capitalize">{selectedUser.role}</strong></span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -575,174 +603,185 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
               {/* Sidebar Settings & Basic Information */}
               <div className="grid grid-cols-1 lg:grid-cols-12 flex-1">
                 
-                {/* Info Sidebar panel */}
-                <div className="lg:col-span-4 bg-black/25 border-r border-white/5 p-6 space-y-6">
+                {/* Minimal Info Sidebar panel */}
+                <div className="lg:col-span-4 bg-black/[0.15] border-r border-white/[0.06] p-6 space-y-6">
                   <div>
-                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Member Metadata</h4>
+                    <h4 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-3">Member Status</h4>
                     <div className="space-y-3 text-xs font-light text-muted-foreground">
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span>Status</span>
+                      <div className="flex justify-between border-b border-white/[0.04] pb-2">
+                        <span>Account Status</span>
                         <span className={cn(
-                          "font-bold uppercase tracking-wider",
+                          "font-bold uppercase tracking-wider text-[10px]",
                           selectedUser.status === 'suspended' ? 'text-red-400' : selectedUser.status === 'pending' ? 'text-amber-400' : 'text-emerald-400'
                         )}>{selectedUser.status}</span>
                       </div>
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span>Role</span>
-                        <span className="font-bold text-white capitalize">{selectedUser.role}</span>
+                      <div className="flex justify-between border-b border-white/[0.04] pb-2">
+                        <span>Verification</span>
+                        <span className="font-medium text-white">{selectedUser.is_verified ? 'Verified Artist' : 'Not Verified'}</span>
                       </div>
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span>Joined</span>
-                        <span className="text-white">{selectedUser.created_at ? new Date(selectedUser.created_at).toLocaleDateString() : 'N/A'}</span>
+                      <div className="flex justify-between border-b border-white/[0.04] pb-2">
+                        <span>System Role</span>
+                        <span className="font-semibold text-white capitalize">{selectedUser.role}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-3">Login Activity</h4>
+                    <div className="space-y-3 text-xs font-light text-muted-foreground">
+                      <div className="flex justify-between border-b border-white/[0.04] pb-2">
+                        <span>Last Login</span>
+                        <span className="text-white/80">{selectedUser.last_login ? new Date(selectedUser.last_login).toLocaleDateString() : 'Never'}</span>
                       </div>
                       <div className="flex justify-between pb-2">
-                        <span>Last Login</span>
-                        <span className="text-white">{selectedUser.last_login ? new Date(selectedUser.last_login).toLocaleDateString() : 'Never'}</span>
+                        <span>Total Sessions</span>
+                        <span className="text-white/80">{dashboardData?.stats?.loginCount ?? 0}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Administrative Fast Actions */}
-                  <div className="space-y-4 pt-6 border-t border-white/5">
-                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">Admin Actions</h4>
-                    
-                    {/* Role changer */}
-                    <div className="space-y-1">
-                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground">Modify Role Access</span>
-                      <Select 
-                        value={selectedUser.role} 
-                        onValueChange={(val) => handleRoleChange(selectedUser.id, val)}
-                      >
-                        <SelectTrigger className="bg-zinc-900 border-white/10 h-9 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-950 border-white/10 text-white">
-                          <SelectItem value="owner">Owner</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="committee">Committee</SelectItem>
-                          <SelectItem value="member">Member</SelectItem>
-                        </SelectContent>
-                      </Select>
+                  {/* Profile completeness metadata */}
+                  {selectedUser.bio_en && (
+                    <div className="pt-2">
+                      <h4 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">Profile Integrity</h4>
+                      <div className="w-full bg-white/[0.04] h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-accent h-full rounded-full" style={{ width: '85%' }} />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground/60 mt-1 block">85% complete</span>
                     </div>
-
-                    {/* Quick status updates */}
-                    <div className="flex flex-col gap-2 pt-2">
-                      {selectedUser.status === 'pending' && (
-                        <PremiumButton variant="primary" className="w-full h-9 text-xs" onClick={() => handleApprove(selectedUser.id)}>
-                          Approve Account
-                        </PremiumButton>
-                      )}
-                      
-                      {selectedUser.status === 'suspended' ? (
-                        <PremiumButton variant="glass" className="w-full h-9 text-xs border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10" onClick={() => handleReactivate(selectedUser.id)}>
-                          Reactivate Account
-                        </PremiumButton>
-                      ) : (
-                        <PremiumButton variant="glass" className="w-full h-9 text-xs border-red-500/20 text-red-400 hover:bg-red-500/10" onClick={() => handleSuspend(selectedUser.id)}>
-                          Suspend Account
-                        </PremiumButton>
-                      )}
-
-                      <PremiumButton variant="glass" className="w-full h-9 text-xs border-white/15 text-white/80 hover:bg-white/5" onClick={() => handleDeleteUser(selectedUser.id)}>
-                        Delete Profile
-                      </PremiumButton>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Main Tabs Area */}
                 <div className="lg:col-span-8 p-6">
                   {drawerLoading ? (
                     <div className="flex flex-col items-center justify-center h-[350px] gap-3">
-                      <RefreshCw className="w-8 h-8 animate-spin text-accent" />
-                      <span className="text-xs text-muted-foreground">Retrieving member statistics...</span>
+                      <RefreshCw className="w-7 h-7 animate-spin text-accent" />
+                      <span className="text-xs text-muted-foreground/65 font-light">Retrieving member statistics...</span>
                     </div>
                   ) : (
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-                      <TabsList className="bg-black/35 border border-white/5 w-full justify-start overflow-x-auto flex scrollbar-hide">
-                        <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-                        <TabsTrigger value="artworks" className="text-xs">Artworks</TabsTrigger>
-                        <TabsTrigger value="gallery" className="text-xs">Gallery</TabsTrigger>
-                        <TabsTrigger value="exhibitions" className="text-xs">Exhibitions</TabsTrigger>
-                        <TabsTrigger value="communications" className="text-xs">Messaging</TabsTrigger>
-                        <TabsTrigger value="logs" className="text-xs">Logs</TabsTrigger>
+                      <TabsList className="bg-black/35 border border-white/[0.06] p-1 w-full justify-start overflow-x-auto flex scrollbar-hide rounded-xl">
+                        <TabsTrigger value="overview" className="text-xs rounded-lg py-1.5 px-3">Overview</TabsTrigger>
+                        <TabsTrigger value="artworks" className="text-xs rounded-lg py-1.5 px-3">Artworks</TabsTrigger>
+                        <TabsTrigger value="gallery" className="text-xs rounded-lg py-1.5 px-3">Gallery</TabsTrigger>
+                        <TabsTrigger value="exhibitions" className="text-xs rounded-lg py-1.5 px-3">Exhibitions</TabsTrigger>
+                        <TabsTrigger value="permissions" className="text-xs rounded-lg py-1.5 px-3">Permissions</TabsTrigger>
+                        <TabsTrigger value="communications" className="text-xs rounded-lg py-1.5 px-3">Messaging</TabsTrigger>
+                        <TabsTrigger value="logs" className="text-xs rounded-lg py-1.5 px-3">Logs</TabsTrigger>
                       </TabsList>
 
                       {/* Overview Panel */}
-                      <TabsContent value="overview" className="space-y-6">
+                      <TabsContent value="overview" className="space-y-6 outline-none">
                         {dashboardData && (
-                          <>
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                              <div className="bg-[#111] p-4 rounded-xl border border-white/5">
-                                <span className="block text-[9px] uppercase tracking-wider text-muted-foreground/60">Submitted Art</span>
-                                <span className="text-2xl font-serif font-bold text-white mt-1 block">{dashboardData.stats.artworksSubmitted}</span>
+                          <div className="space-y-8">
+                            {/* Premium Metric Cards */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                              <div className="bg-white/[0.02] border border-white/[0.06] p-5 rounded-2xl">
+                                <span className="block text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-1.5">Artworks</span>
+                                <span className="text-3xl font-serif font-bold text-white leading-none">{dashboardData.stats.artworksSubmitted}</span>
+                                <span className="text-[10px] text-emerald-400 mt-1.5 block font-light">{dashboardData.stats.artworksApproved} approved</span>
                               </div>
-                              <div className="bg-[#111] p-4 rounded-xl border border-white/5">
-                                <span className="block text-[9px] uppercase tracking-wider text-muted-foreground/60">Approved Art</span>
-                                <span className="text-2xl font-serif font-bold text-emerald-400 mt-1 block">{dashboardData.stats.artworksApproved}</span>
+                              <div className="bg-white/[0.02] border border-white/[0.06] p-5 rounded-2xl">
+                                <span className="block text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-1.5">Exhibitions</span>
+                                <span className="text-3xl font-serif font-bold text-accent leading-none">{dashboardData.stats.exhibitionsParticipated}</span>
+                                <span className="text-[10px] text-muted-foreground/60 mt-1.5 block font-light">Active records</span>
                               </div>
-                              <div className="bg-[#111] p-4 rounded-xl border border-white/5">
-                                <span className="block text-[9px] uppercase tracking-wider text-muted-foreground/60">Pending Review</span>
-                                <span className="text-2xl font-serif font-bold text-amber-400 mt-1 block">{dashboardData.stats.artworksPending}</span>
+                              <div className="bg-white/[0.02] border border-white/[0.06] p-5 rounded-2xl">
+                                <span className="block text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-1.5">Uploads</span>
+                                <span className="text-3xl font-serif font-bold text-white leading-none">{dashboardData.stats.galleryUploads}</span>
+                                <span className="text-[10px] text-muted-foreground/60 mt-1.5 block font-light">Gallery media</span>
                               </div>
-                              <div className="bg-[#111] p-4 rounded-xl border border-white/5">
-                                <span className="block text-[9px] uppercase tracking-wider text-muted-foreground/60">Gallery Uploads</span>
-                                <span className="text-2xl font-serif font-bold text-white mt-1 block">{dashboardData.stats.galleryUploads}</span>
-                              </div>
-                              <div className="bg-[#111] p-4 rounded-xl border border-white/5">
-                                <span className="block text-[9px] uppercase tracking-wider text-muted-foreground/60">Exhibitions Joined</span>
-                                <span className="text-2xl font-serif font-bold text-accent mt-1 block">{dashboardData.stats.exhibitionsParticipated}</span>
-                              </div>
-                              <div className="bg-[#111] p-4 rounded-xl border border-white/5">
-                                <span className="block text-[9px] uppercase tracking-wider text-muted-foreground/60">Catalogs Pubbed</span>
-                                <span className="text-2xl font-serif font-bold text-white mt-1 block">{dashboardData.stats.catalogContributions}</span>
+                              <div className="bg-white/[0.02] border border-white/[0.06] p-5 rounded-2xl">
+                                <span className="block text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-1.5">Downloads</span>
+                                <span className="text-3xl font-serif font-bold text-white leading-none">{dashboardData.stats.totalDownloads}</span>
+                                <span className="text-[10px] text-muted-foreground/60 mt-1.5 block font-light">Catalog gets</span>
                               </div>
                             </div>
 
-                            {/* Bio / Details info */}
-                            <div className="space-y-4">
-                              <h4 className="font-serif font-bold text-lg text-white border-b border-white/5 pb-2">Biography & Links</h4>
-                              
+                            {/* Biography / Description */}
+                            <div className="space-y-3 bg-white/[0.02] border border-white/[0.04] p-6 rounded-2xl">
+                              <h4 className="font-serif font-bold text-lg text-white flex items-center gap-2">
+                                <FileText className="w-4.5 h-4.5 text-accent" /> Professional Statement
+                              </h4>
                               {selectedUser.bio_en ? (
-                                <p className="text-sm font-light text-muted-foreground leading-relaxed">{selectedUser.bio_en}</p>
+                                <p className="text-sm font-light text-muted-foreground/80 leading-relaxed font-sans">{selectedUser.bio_en}</p>
                               ) : (
-                                <p className="text-sm italic font-light text-muted-foreground/50">No biography details provided by member.</p>
+                                <p className="text-sm italic font-light text-muted-foreground/45">No biography details provided by member.</p>
                               )}
 
-                              <div className="grid grid-cols-2 gap-4 text-xs font-light text-muted-foreground pt-2">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-light text-muted-foreground/75 pt-4 border-t border-white/[0.04] mt-4">
                                 {selectedUser.phone && (
-                                  <div className="flex items-center gap-2">
-                                    <Phone className="w-4 h-4 text-accent" />
+                                  <div className="flex items-center gap-2.5">
+                                    <Phone className="w-4 h-4 text-muted-foreground/40" />
                                     <span>{selectedUser.phone}</span>
                                   </div>
                                 )}
                                 {selectedUser.website_url && (
-                                  <div className="flex items-center gap-2">
-                                    <Globe className="w-4 h-4 text-accent" />
-                                    <a href={selectedUser.website_url} target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline flex items-center gap-0.5">
-                                      Website <ExternalLink className="w-2.5 h-2.5" />
+                                  <div className="flex items-center gap-2.5">
+                                    <Globe className="w-4 h-4 text-muted-foreground/40" />
+                                    <a href={selectedUser.website_url} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-white hover:underline flex items-center gap-1 transition-colors">
+                                      {selectedUser.website_url.replace(/https?:\/\//, '')} <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  </div>
+                                )}
+                                {selectedUser.instagram_url && (
+                                  <div className="flex items-center gap-2.5">
+                                    <ExternalLink className="w-4 h-4 text-muted-foreground/40" />
+                                    <a href={selectedUser.instagram_url} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-white hover:underline flex items-center gap-1 transition-colors">
+                                      Instagram profile <ExternalLink className="w-3 h-3" />
                                     </a>
                                   </div>
                                 )}
                               </div>
                             </div>
-                          </>
+
+                            {/* Recent Activity Timeline Preview */}
+                            <div className="space-y-4">
+                              <h4 className="font-serif font-bold text-lg text-white flex items-center gap-2">
+                                <Activity className="w-4.5 h-4.5 text-accent" /> Recent Timeline
+                              </h4>
+                              {dashboardData.auditLogs.length === 0 ? (
+                                <div className="p-8 text-center bg-white/[0.01] border border-dashed border-white/[0.08] rounded-2xl text-xs text-muted-foreground/50 font-light">
+                                  No administrative logs found.
+                                </div>
+                              ) : (
+                                <div className="relative border-l border-white/[0.08] pl-5 ml-2.5 space-y-5 py-2">
+                                  {dashboardData.auditLogs.slice(0, 3).map((log: any) => (
+                                    <div key={log.id} className="relative group">
+                                      <div className="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-zinc-950 border border-accent flex items-center justify-center">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                                      </div>
+                                      <div className="flex justify-between items-start gap-4">
+                                        <div>
+                                          <p className="text-xs font-semibold text-white/90 uppercase tracking-wider">{log.action.replace(/_/g, ' ')}</p>
+                                          <p className="text-[11px] text-muted-foreground/60 mt-0.5 font-light">Entity: {log.entity_type} ({log.entity_id.slice(0, 8)})</p>
+                                        </div>
+                                        <span className="text-[10px] text-muted-foreground/40 font-light">{new Date(log.created_at).toLocaleDateString()}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         )}
                       </TabsContent>
 
                       {/* Artworks List Tab */}
-                      <TabsContent value="artworks" className="space-y-4">
+                      <TabsContent value="artworks" className="space-y-4 outline-none">
                         {dashboardData?.artworks && dashboardData.artworks.length === 0 ? (
-                          <div className="py-12 text-center text-muted-foreground font-light text-sm">
-                            No artworks submitted by this artist.
+                          <div className="py-12 text-center bg-white/[0.01] border border-dashed border-white/[0.08] rounded-2xl">
+                            <ImageIcon className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                            <h5 className="text-sm font-semibold text-white mb-1">No Artworks Submitted</h5>
+                            <p className="text-xs text-muted-foreground/60 font-light">This member has not submitted any artwork to current exhibitions yet.</p>
                           </div>
                         ) : (
                           <div className="space-y-4">
                             {dashboardData?.artworks.map((artwork: any) => (
-                              <div key={artwork.id} className="flex gap-4 p-4 bg-[#111] rounded-xl border border-white/5 justify-between items-center">
+                              <div key={artwork.id} className="flex gap-4 p-4 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl border border-white/[0.06] justify-between items-center">
                                 <div className="flex gap-4 items-center">
-                                  <div className="relative w-16 h-12 rounded bg-zinc-950 overflow-hidden shrink-0 border border-white/5">
+                                  <div className="relative w-16 h-16 rounded-xl bg-zinc-950 overflow-hidden shrink-0 border border-white/[0.08]">
                                     {artwork.main_image_url ? (
                                       <Image src={artwork.main_image_url} alt="artwork" fill className="object-cover" />
                                     ) : (
@@ -751,35 +790,57 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                                   </div>
                                   <div>
                                     <h4 className="font-serif font-bold text-white text-sm">{artwork.title_en}</h4>
-                                    <div className="flex gap-2 items-center mt-1">
-                                      <span className="text-[10px] text-muted-foreground">{artwork.category || 'Artwork'} • {artwork.medium_en}</span>
-                                    </div>
+                                    <p className="text-[10px] text-muted-foreground/60 mt-1 font-light">
+                                      {artwork.category || 'Artwork'} • {artwork.medium_en}
+                                    </p>
+                                    <p className="text-[9px] text-muted-foreground/40 font-light mt-0.5">
+                                      Submitted {artwork.created_at ? new Date(artwork.created_at).toLocaleDateString() : 'N/A'}
+                                    </p>
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
-                                  <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded border ${
+                                <div className="flex items-center gap-4">
+                                  <span className={cn(
+                                    "px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded border",
                                     artwork.status === 'approved' 
-                                      ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400' 
+                                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
                                       : artwork.status === 'rejected' 
-                                        ? 'bg-red-500/10 border-red-500/25 text-red-400' 
-                                        : 'bg-amber-500/10 border-amber-500/25 text-amber-400'
-                                  }`}>
+                                        ? 'bg-red-500/10 border-red-500/20 text-red-400' 
+                                        : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                  )}>
                                     {artwork.status}
                                   </span>
 
                                   <div className="flex gap-1.5">
                                     {artwork.status === 'pending' && (
                                       <>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-emerald-400 hover:text-white hover:bg-emerald-500/20" onClick={() => handleArtworkModeration(artwork.id, 'approved')}>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="icon" 
+                                          className="h-8 w-8 text-emerald-400 hover:text-white hover:bg-emerald-500/20 rounded-full border border-white/[0.06] transition-colors" 
+                                          onClick={() => handleArtworkModeration(artwork.id, 'approved')}
+                                          aria-label="Approve Artwork"
+                                        >
                                           <Check className="w-4 h-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-white hover:bg-red-500/20" onClick={() => handleArtworkModeration(artwork.id, 'rejected')}>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="icon" 
+                                          className="h-8 w-8 text-red-400 hover:text-white hover:bg-red-500/20 rounded-full border border-white/[0.06] transition-colors" 
+                                          onClick={() => handleArtworkModeration(artwork.id, 'rejected')}
+                                          aria-label="Reject Artwork"
+                                        >
                                           <X className="w-4 h-4" />
                                         </Button>
                                       </>
                                     )}
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/50 hover:text-white hover:bg-white/10" onClick={() => handleArtworkDeletion(artwork.id)}>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon" 
+                                      className="h-8 w-8 text-white/50 hover:text-white hover:bg-red-950/20 rounded-full border border-white/[0.06] transition-colors" 
+                                      onClick={() => handleArtworkDeletion(artwork.id)}
+                                      aria-label="Delete Artwork"
+                                    >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
                                   </div>
@@ -791,18 +852,20 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                       </TabsContent>
 
                       {/* Gallery Media Tab */}
-                      <TabsContent value="gallery" className="space-y-4">
+                      <TabsContent value="gallery" className="space-y-4 outline-none">
                         {dashboardData?.gallery && dashboardData.gallery.length === 0 ? (
-                          <div className="py-12 text-center text-muted-foreground font-light text-sm">
-                            No gallery media uploaded by this member.
+                          <div className="py-12 text-center bg-white/[0.01] border border-dashed border-white/[0.08] rounded-2xl">
+                            <ImageIcon className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                            <h5 className="text-sm font-semibold text-white mb-1">No Gallery Uploads</h5>
+                            <p className="text-xs text-muted-foreground/60 font-light">This member has not uploaded any gallery content yet.</p>
                           </div>
                         ) : (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {dashboardData?.gallery.map((media: any) => (
-                              <div key={media.id} className="bg-[#111] p-3 rounded-xl border border-white/5 relative overflow-hidden group">
-                                <div className="relative aspect-[16/10] bg-zinc-950 rounded-lg overflow-hidden border border-white/5 mb-3">
+                              <div key={media.id} className="bg-white/[0.02] border border-white/[0.06] p-4 rounded-2xl relative overflow-hidden group hover:bg-white/[0.04] transition-all duration-300">
+                                <div className="relative aspect-[16/10] bg-zinc-950 rounded-xl overflow-hidden border border-white/[0.06] mb-3">
                                   {media.media_type === 'image' ? (
-                                    <Image src={media.url} alt="gallery" fill className="object-cover" />
+                                    <Image src={media.url} alt="gallery" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
                                   ) : (
                                     <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
                                       <PlayCircle className="w-12 h-12 text-white/50" />
@@ -810,9 +873,9 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                                   )}
                                 </div>
                                 <h5 className="font-serif font-bold text-sm text-white truncate">{media.title_en || 'Untitled Media'}</h5>
-                                <div className="flex justify-between items-center mt-2 text-[10px] text-muted-foreground">
+                                <div className="flex justify-between items-center mt-2 text-[10px] text-muted-foreground/60 font-light">
                                   <span>Album: {media.gallery_albums?.title_en || 'Archive'}</span>
-                                  <span className="uppercase font-bold text-accent">{media.media_type}</span>
+                                  <span className="uppercase font-bold tracking-wider text-accent">{media.media_type}</span>
                                 </div>
                               </div>
                             ))}
@@ -821,10 +884,12 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                       </TabsContent>
 
                       {/* Exhibitions History Tab */}
-                      <TabsContent value="exhibitions" className="space-y-4">
+                      <TabsContent value="exhibitions" className="space-y-4 outline-none">
                         {dashboardData?.exhibitions && dashboardData.exhibitions.length === 0 ? (
-                          <div className="py-12 text-center text-muted-foreground font-light text-sm">
-                            No exhibition participations recorded for this member.
+                          <div className="py-12 text-center bg-white/[0.01] border border-dashed border-white/[0.08] rounded-2xl">
+                            <Award className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                            <h5 className="text-sm font-semibold text-white mb-1">No Exhibitions Recorded</h5>
+                            <p className="text-xs text-muted-foreground/60 font-light">This member has not participated in any exhibitions yet.</p>
                           </div>
                         ) : (
                           <div className="space-y-4">
@@ -832,20 +897,23 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                               const exh = part.exhibitions
                               if (!exh) return null
                               return (
-                                <div key={part.id} className="flex justify-between items-center p-4 bg-[#111] rounded-xl border border-white/5">
+                                <div key={part.id} className="flex justify-between items-center p-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl hover:bg-white/[0.04] transition-all duration-300">
                                   <div>
                                     <h4 className="font-serif font-bold text-white text-sm">
                                       {locale === 'bn' && exh.theme_bn ? exh.theme_bn : exh.theme_en}
                                     </h4>
-                                    <span className="text-[10px] text-muted-foreground mt-0.5 block">Year: {exh.year} • Registered Role: {part.role || 'Artist'}</span>
+                                    <span className="text-[10px] text-muted-foreground/60 mt-1 block font-light">
+                                      Year: {exh.year} • Registered Role: {part.role || 'Artist'}
+                                    </span>
                                   </div>
-                                  <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded border ${
+                                  <span className={cn(
+                                    "px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded border",
                                     part.status === 'approved' 
                                       ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400' 
                                       : part.status === 'rejected' 
                                         ? 'bg-red-500/10 border-red-500/25 text-red-400' 
                                         : 'bg-amber-500/10 border-amber-500/25 text-amber-400'
-                                  }`}>
+                                  )}>
                                     {part.status}
                                   </span>
                                 </div>
@@ -855,8 +923,79 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                         )}
                       </TabsContent>
 
+                      {/* Permissions & Danger zone Settings tab */}
+                      <TabsContent value="permissions" className="space-y-6 outline-none">
+                        <div className="space-y-6">
+                          <div className="bg-white/[0.02] border border-white/[0.06] p-6 rounded-2xl space-y-4">
+                            <h4 className="font-serif font-bold text-lg text-white">Access Credentials</h4>
+                            
+                            <div className="space-y-2 max-w-sm">
+                              <label className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-semibold block">System Access Role</label>
+                              <Select 
+                                value={selectedUser.role} 
+                                onValueChange={(val) => handleRoleChange(selectedUser.id, val)}
+                              >
+                                <SelectTrigger className="bg-zinc-900 border-white/10 h-10 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                                  <SelectItem value="owner">Owner</SelectItem>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                  <SelectItem value="committee">Committee</SelectItem>
+                                  <SelectItem value="member">Member</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="bg-white/[0.02] border border-white/[0.06] p-6 rounded-2xl space-y-4">
+                            <h4 className="font-serif font-bold text-lg text-white">Account Status Controls</h4>
+                            <p className="text-xs text-muted-foreground/60 font-light leading-relaxed">
+                              Temporarily suspend membership actions, block platform sign-ins, or manually approve user registrations.
+                            </p>
+                            
+                            <div className="flex flex-wrap gap-3 pt-2">
+                              {selectedUser.status === 'pending' && (
+                                <PremiumButton variant="primary" className="h-10 px-4 text-xs font-semibold uppercase tracking-wider" onClick={() => handleApprove(selectedUser.id)}>
+                                  Approve Membership
+                                </PremiumButton>
+                              )}
+                              
+                              {selectedUser.status === 'suspended' ? (
+                                <PremiumButton variant="glass" className="h-10 px-4 text-xs font-semibold uppercase tracking-wider border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10" onClick={() => handleReactivate(selectedUser.id)}>
+                                  Reactivate Member
+                                </PremiumButton>
+                              ) : (
+                                <PremiumButton variant="glass" className="h-10 px-4 text-xs font-semibold uppercase tracking-wider border-red-500/20 text-red-400 hover:bg-red-500/10" onClick={() => handleSuspend(selectedUser.id)}>
+                                  Suspend Member
+                                </PremiumButton>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="bg-red-500/[0.02] border border-red-500/[0.15] p-6 rounded-2xl space-y-4">
+                            <h4 className="font-serif font-bold text-lg text-red-400 flex items-center gap-2">
+                              <ShieldAlert className="w-5 h-5 shrink-0" /> Extreme Danger Zone
+                            </h4>
+                            <p className="text-xs text-muted-foreground/60 font-light leading-relaxed">
+                              Permanently remove this member profile and all their linked artworks, comments, catalogs, and logs. This action is irreversible and permanent.
+                            </p>
+                            
+                            <div className="pt-2">
+                              <Button 
+                                variant="destructive" 
+                                className="h-10 px-4 text-xs font-semibold uppercase tracking-wider bg-red-600/80 hover:bg-red-600 text-white rounded-xl transition-all"
+                                onClick={() => handleDeleteUser(selectedUser.id)}
+                              >
+                                Delete Account Permanently
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </TabsContent>
+
                       {/* Communications / Messaging Tab */}
-                      <TabsContent value="communications" className="space-y-6">
+                      <TabsContent value="communications" className="space-y-6 outline-none">
                         <div className="space-y-4">
                           <h4 className="font-serif font-bold text-lg text-white border-b border-white/5 pb-2">Send Admin Message</h4>
                           
@@ -877,7 +1016,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                             </div>
 
                             <div className="space-y-1">
-                              <span className="text-xs font-light text-muted-foreground">Bilingual English Message</span>
+                              <span className="text-xs font-light text-muted-foreground">Message Body</span>
                               <textarea
                                 value={notifMessage}
                                 onChange={(e) => setNotifMessage(e.target.value)}
@@ -921,7 +1060,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                       </TabsContent>
 
                       {/* User Logs Tab */}
-                      <TabsContent value="logs" className="space-y-4">
+                      <TabsContent value="logs" className="space-y-4 outline-none">
                         {dashboardData?.auditLogs && dashboardData.auditLogs.length === 0 ? (
                           <div className="py-12 text-center text-muted-foreground font-light text-sm">
                             No log events found.
