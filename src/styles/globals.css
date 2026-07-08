@@ -120,6 +120,15 @@
     --input: 40 15% 85%;
     --ring: 43 45% 60%;
     --radius: 0.75rem;
+
+    --container: 1320px;
+    --edge: 6vw;
+    --ease: cubic-bezier(.19,1,.22,1);
+    --font-display: var(--font-serif);
+    --font-body: var(--font-sans);
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 26px;
   }
   .dark {
     /* Premium Museum Aesthetic: Dark Mode (Matte Black) */
@@ -142,6 +151,15 @@
     --border: 0 0% 16%;
     --input: 0 0% 16%;
     --ring: 43 45% 60%;
+
+    --container: 1320px;
+    --edge: 6vw;
+    --ease: cubic-bezier(.19,1,.22,1);
+    --font-display: var(--font-serif);
+    --font-body: var(--font-sans);
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 26px;
   }
 }
 
