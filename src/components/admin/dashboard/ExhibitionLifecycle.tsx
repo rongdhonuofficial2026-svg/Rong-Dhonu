@@ -63,24 +63,36 @@ export function ExhibitionLifecycle({ activeExhibition }: ExhibitionLifecyclePro
               <div key={stage.id} className="relative flex items-start gap-4 pl-0">
                 {/* Step indicator */}
                 <div className={cn(
-                  'relative z-10 shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300',
-                  isCompleted && 'bg-accent border-accent text-black',
-                  isCurrent   && 'bg-accent/20 border-accent text-accent ring-4 ring-accent/20 animate-pulse',
-                  isFuture    && 'bg-background border-border text-muted-foreground'
+                  'relative z-10 shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 shadow-md',
+                  isCompleted && 'bg-emerald-500/10 border-emerald-500 text-emerald-400',
+                  isCurrent   && 'bg-[#C9A227]/20 border-[#C9A227] text-[#C9A227] ring-4 ring-[#C9A227]/20 font-bold scale-105',
+                  isFuture    && 'bg-[#222222] border-white/10 text-white/30'
                 )}>
-                  {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : isFuture && !isCurrent ? <Lock className="w-3 h-3" /> : stage.id}
+                  {isCompleted ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  ) : isFuture && !isCurrent ? (
+                    <Lock className="w-3.5 h-3.5 text-white/20" />
+                  ) : (
+                    stage.id
+                  )}
                 </div>
 
                 {/* Content */}
                 <div className={cn(
-                  'flex-1 pb-3 min-w-0',
-                  isFuture && 'opacity-40'
+                  'flex-1 pb-3.5 min-w-0 transition-opacity duration-300',
+                  isFuture && 'opacity-35',
+                  isCurrent && 'opacity-100',
+                  isCompleted && 'opacity-75'
                 )}>
-                  <p className={cn('text-sm font-semibold leading-none', isCurrent && 'text-accent')}>{stage.label}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{stage.sublabel}</p>
+                  <p className={cn('text-sm font-semibold leading-none', 
+                    isCurrent ? 'text-[#C9A227] font-bold' : isCompleted ? 'text-white/90' : 'text-white/60'
+                  )}>
+                    {stage.label}
+                  </p>
+                  <p className="text-[11px] text-white/50 mt-1">{stage.sublabel}</p>
                   {isCurrent && (
-                    <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-accent/20 text-accent border border-accent/30">
-                      Current Stage
+                    <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest bg-[#C9A227]/20 text-[#C9A227] border border-[#C9A227]/30">
+                      Active Stage
                     </span>
                   )}
                 </div>

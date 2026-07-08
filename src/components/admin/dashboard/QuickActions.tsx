@@ -29,7 +29,7 @@ export function QuickActions() {
   return (
     <div className="bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-6 h-full shadow-xl shadow-black/25 hover:border-white/[0.15] transition-all duration-300">
       <h2 className="font-serif text-xl font-semibold tracking-tight text-white mb-6">Quick Actions</h2>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
         {ACTIONS.map((action) => {
           const Icon = action.icon
           return (
@@ -38,14 +38,17 @@ export function QuickActions() {
               onClick={() => router.push(action.href)}
               aria-label={action.label}
               className={cn(
-                'group flex flex-col items-center gap-2 p-3 rounded-xl border border-transparent transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 dark:hover:border-white/10',
+                'group flex flex-col items-center justify-center gap-2.5 p-3.5 rounded-xl border border-white/[0.04] transition-all duration-300',
+                'hover:-translate-y-1 hover:border-white/[0.12] hover:shadow-lg hover:shadow-black/30',
+                'focus:outline-none focus:ring-2 focus:ring-[#C9A227]/40 focus:border-[#C9A227]',
+                'active:scale-[0.95]',
                 action.bg
               )}
             >
-              <div className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110', action.bg.split(' ')[0])}>
-                <Icon className={cn('w-4 h-4', action.color)} />
+              <div className={cn('w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 shadow-inner bg-white/5 border border-white/[0.06] group-hover:border-white/[0.12]')}>
+                <Icon className={cn('w-4.5 h-4.5 transition-colors', action.color)} />
               </div>
-              <span className="text-[10px] font-medium text-center text-muted-foreground leading-tight tracking-wide">{action.label}</span>
+              <span className="text-[10px] font-semibold text-center text-white/70 group-hover:text-white leading-tight tracking-wide transition-colors">{action.label}</span>
             </button>
           )
         })}

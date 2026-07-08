@@ -80,32 +80,34 @@ export function ActivityTimeline({ audits }: ActivityTimelineProps) {
             const style = getActionStyle(log.action)
             const Icon  = style.icon
             const actorName = log.profiles?.full_name_en || 'System'
-            const initial   = actorName.charAt(0).toUpperCase()
 
             return (
-              <div key={log.id} className={cn('relative flex gap-4 py-3', i < visible.length - 1 && 'border-b border-border/20 dark:border-white/5')}>
+              <div 
+                key={log.id} 
+                className={cn(
+                  'relative flex gap-4 py-4 px-3 -mx-3 rounded-xl transition-all duration-200 hover:bg-white/[0.02]',
+                  i < visible.length - 1 && 'border-b border-white/[0.04]'
+                )}
+              >
                 {/* Timeline dot */}
-                <div className={cn('relative z-10 shrink-0 w-8 h-8 rounded-full flex items-center justify-center border border-white/20 dark:border-white/10', style.bg)}>
+                <div className={cn('relative z-10 shrink-0 w-8 h-8 rounded-full flex items-center justify-center border border-white/[0.08] shadow-sm', style.bg)}>
                   <Icon className={cn('w-3.5 h-3.5', style.color)} />
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0 pt-0.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-foreground">{actorName}</span>
-                      <span className="text-sm text-muted-foreground"> · </span>
-                      <span className="text-sm text-muted-foreground">{formatAction(log.action)}</span>
-                      {log.entity_type && (
-                        <span className="text-xs ml-1.5 px-1.5 py-0.5 rounded bg-muted/30 text-muted-foreground font-mono">
-                          {log.entity_type}
-                        </span>
-                      )}
-                    </div>
-                    <time className="shrink-0 text-xs font-mono text-muted-foreground/60">
-                      {getRelativeTime(log.created_at || new Date().toISOString())}
-                    </time>
+                {/* Content with requested hierarchy */}
+                <div className="flex-1 min-w-0 pt-0.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="min-w-0 flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold text-white tracking-wide">{actorName}</span>
+                    <span className="text-xs text-white/60">{formatAction(log.action)}</span>
+                    {log.entity_type && (
+                      <span className="text-[9px] px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/5 text-white/50 font-mono uppercase tracking-wider">
+                        {log.entity_type}
+                      </span>
+                    )}
                   </div>
+                  <time className="shrink-0 text-[10px] font-mono text-white/40">
+                    {getRelativeTime(log.created_at || new Date().toISOString())}
+                  </time>
                 </div>
               </div>
             )

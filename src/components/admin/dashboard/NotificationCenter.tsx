@@ -45,9 +45,14 @@ export function NotificationCenter({ notifications }: NotificationCenterProps) {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-10 text-center">
-          <Bell className="w-8 h-8 text-muted-foreground/30 mb-3" />
-          <p className="text-sm text-muted-foreground">No notifications.</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center bg-black/10 rounded-xl border border-white/[0.04] p-6">
+          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+            <CheckCircle className="w-6 h-6 text-emerald-400" />
+          </div>
+          <p className="text-sm font-semibold text-white">System is healthy</p>
+          <p className="text-xs text-white/50 mt-1.5 max-w-[240px] mx-auto leading-relaxed">
+            All notifications are processed and everything is running smoothly.
+          </p>
         </div>
       ) : (
         <div className="space-y-2">

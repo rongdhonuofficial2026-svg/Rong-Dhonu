@@ -9,14 +9,14 @@ interface UserOverviewPanelProps {
 function RoleBar({ label, count, total, color }: { label: string; count: number; total: number; color: string }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{label}</span>
-        <span className="text-xs font-semibold text-foreground">{count}</span>
+        <span className="text-xs font-medium text-white/60">{label}</span>
+        <span className="text-xs font-bold text-white font-mono">{count}</span>
       </div>
-      <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
+      <div className="h-2.5 bg-white/5 border border-white/[0.04] rounded-full overflow-hidden shadow-inner">
         <div
-          className={`h-full rounded-full transition-all duration-700 ${color}`}
+          className={`h-full rounded-full transition-all duration-1000 ease-out ${color}`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -54,14 +54,14 @@ export function UserOverviewPanel({ kpis }: UserOverviewPanelProps) {
           label="Artists (Members)"
           count={kpis.totalArtists}
           total={totalUsers}
-          color="bg-emerald-500"
+          color="bg-gradient-to-r from-emerald-500 to-teal-400"
         />
 
         <RoleBar
           label="Administrators"
           count={kpis.totalAdmins}
           total={totalUsers}
-          color="bg-accent"
+          color="bg-gradient-to-r from-[#C9A227] to-[#e0b83b]"
         />
       </div>
 

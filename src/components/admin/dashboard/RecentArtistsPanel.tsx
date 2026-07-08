@@ -23,18 +23,18 @@ export function RecentArtistsPanel({ artists }: RecentArtistsPanelProps) {
           <p className="text-sm text-muted-foreground">No artists registered yet.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {artists.map((artist) => {
             const initial = (artist.full_name_en ?? 'A').charAt(0).toUpperCase()
             const joinDate = new Date(artist.created_at || new Date().toISOString()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             return (
-              <div key={artist.id} className="flex items-center gap-3 group">
+              <div key={artist.id} className="flex items-center gap-3.5 py-3 px-3 -mx-3 rounded-xl transition-all duration-300 hover:bg-white/[0.02] group">
                 {/* Avatar */}
-                <div className="shrink-0 relative w-10 h-10 rounded-full overflow-hidden border border-white/20 dark:border-white/10 bg-muted/20">
+                <div className="shrink-0 relative w-10 h-10 rounded-full overflow-hidden border border-white/[0.1] bg-white/5 group-hover:border-[#C9A227]/40 transition-colors duration-300">
                   {artist.avatar_url ? (
                     <Image src={artist.avatar_url} alt={artist.full_name_en ?? 'Artist'} fill sizes="40px" className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-serif font-bold text-muted-foreground text-sm bg-gradient-to-br from-accent/10 to-transparent">
+                    <div className="w-full h-full flex items-center justify-center font-serif font-bold text-white/50 text-sm bg-gradient-to-br from-[#C9A227]/10 to-transparent">
                       {initial}
                     </div>
                   )}
@@ -42,16 +42,18 @@ export function RecentArtistsPanel({ artists }: RecentArtistsPanelProps) {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate group-hover:text-accent transition-colors">
+                  <p className="text-sm font-bold text-white group-hover:text-[#C9A227] transition-colors truncate">
                     {artist.full_name_en || 'Unnamed Artist'}
                   </p>
-                  {artist.bio_en && (
-                    <p className="text-xs text-muted-foreground truncate">{artist.bio_en}</p>
-                  )}
+                  <p className="text-[11px] text-white/55 truncate mt-0.5">
+                    {artist.bio_en || 'Member Artist'}
+                  </p>
                 </div>
 
                 {/* Join date */}
-                <p className="shrink-0 text-xs font-mono text-muted-foreground/60">{joinDate}</p>
+                <div className="shrink-0 text-right">
+                  <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">{joinDate}</span>
+                </div>
               </div>
             )
           })}
