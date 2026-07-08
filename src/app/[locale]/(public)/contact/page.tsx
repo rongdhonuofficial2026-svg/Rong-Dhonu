@@ -60,7 +60,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 <div className="info-icon">
                   <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                     <path d="M10 18s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z" stroke="currentColor" strokeWidth="1.5"/>
-                    <circle cx="10" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="10" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/>
                   </svg>
                 </div>
                 <div>
@@ -72,8 +72,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               <div className="info-row">
                 <div className="info-icon">
                   <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                    <rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                    <path d="M3 5.5l7 5.5 7-5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M3 5.5l7 5.5 7-5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
                 </div>
                 <div>
@@ -84,7 +84,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               <div className="info-row">
                 <div className="info-icon">
                   <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                    <path d="M4 3h3l2 5-2 1a10 10 0 005 5l1-2 5 2v3a2 2 0 01-2 2 15 15 0 01-14-14 2 2 0 012-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M4 3h3l2 5-2 1a10 10 0 005 5l1-2 5 2v3a2 2 0 01-2 2 15 15 0 01-14-14 2 2 0 012-2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
                   </svg>
                 </div>
                 <div>
@@ -97,8 +97,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 <div className="hours-head">
                   <span>{locale === 'bn' ? "গ্যালারি খোলা থাকার সময়" : "Gallery Hours"}</span>
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                    <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/>
-                    <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M10 6v4l3 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                   </svg>
                 </div>
                 <div className="hours-row">
@@ -140,7 +140,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 <div className="visit-preview-tile-label">
                   {locale === 'bn' ? "গ্যালারি অন্বেষণ করুন" : "Explore the Gallery"}{" "}
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
               </Link>
@@ -155,7 +155,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 <div className="visit-preview-tile-label">
                   {locale === 'bn' ? "প্রদর্শনী দেখুন" : "See Exhibitions"}{" "}
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
               </Link>
@@ -179,7 +179,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               <span className="inquiry-type">{locale === 'bn' ? "আহরণ" : "Acquisition"}</span>
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form>
               <div className="field-row">
                 <div className="field">
                   <label>{locale === 'bn' ? "সম্পূর্ণ নাম" : "Full Name"}</label>
