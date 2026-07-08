@@ -4,7 +4,7 @@ import { MapPin, Mail, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export default function Footer({ footerData, locale = 'en' }: { footerData?: any, locale?: string }) {
+export default function Footer({ footerData, locale = 'en', settingsData }: { footerData?: any, locale?: string, settingsData?: any }) {
   const t = useTranslations('Navigation');
 
   let parsedQuickLinks: any[] = []
@@ -38,7 +38,7 @@ export default function Footer({ footerData, locale = 'en' }: { footerData?: any
           {/* Brand & Address */}
           <div className="lg:col-span-4 flex flex-col space-y-8">
             <div>
-              <h3 className="font-serif text-4xl font-bold tracking-tight text-[#FDFBF7] mb-2">Rongdhono</h3>
+              <h3 className="font-serif text-4xl font-bold tracking-tight text-[#FDFBF7] mb-2">{settingsData?.site_name || 'Rongdhono'}</h3>
               <p className="text-white/50 text-sm uppercase tracking-widest font-medium">Artists' Collective</p>
             </div>
             <p className="text-white/60 font-light leading-relaxed max-w-sm">
@@ -125,7 +125,7 @@ export default function Footer({ footerData, locale = 'en' }: { footerData?: any
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/40 font-light tracking-wide">
-            &copy; {new Date().getFullYear()} Rongdhono Artists' Collective. All rights reserved.
+            &copy; {new Date().getFullYear()} {settingsData?.copyright_text || "Rongdhono Artists' Collective. All rights reserved."}
           </p>
           
           <div className="flex gap-6">

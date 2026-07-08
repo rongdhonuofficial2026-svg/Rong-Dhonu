@@ -10,6 +10,8 @@ interface SEOMetadataProps {
   url: string
   imageUrl?: string
   locale?: string
+  siteName?: string
+  faviconUrl?: string
 }
 
 export function generateDynamicMetadata({
@@ -17,14 +19,22 @@ export function generateDynamicMetadata({
   description,
   url,
   imageUrl = 'https://images.unsplash.com/photo-1518998053401-878c735c908c?auto=format&fit=crop&q=80&w=1200',
-  locale = 'en'
+  locale = 'en',
+  siteName,
+  faviconUrl
 }: SEOMetadataProps): Metadata {
+  const brandName = siteName || 'Rongdhono'
+  const suffix = siteName ? siteName : "Rongdhono Artists' Collective"
   return {
     title: {
-      default: `${title} | Rongdhono Artists' Collective`,
-      template: `%s | Rongdhono`
+      default: `${title} | ${suffix}`,
+      template: `%s | ${brandName}`
     },
     description,
+    icons: {
+      icon: faviconUrl || '/favicon.ico',
+      shortcut: faviconUrl || '/favicon.ico',
+    },
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://rong-dhonu.vercel.app'),
     alternates: {
       canonical: url,
@@ -37,7 +47,7 @@ export function generateDynamicMetadata({
       title,
       description,
       url,
-      siteName: 'Rongdhono Artists\' Collective',
+      siteName: suffix,
       images: [
         {
           url: imageUrl,

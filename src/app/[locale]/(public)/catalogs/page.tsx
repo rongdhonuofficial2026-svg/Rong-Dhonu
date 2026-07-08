@@ -9,20 +9,24 @@ import { PublicCatalogSearchFilter } from '@/components/public/catalogs/PublicCa
 import { Metadata } from 'next'
 import { batchSyncExhibitions } from '@/lib/exhibition-lifecycle'
 
+import { generateDynamicMetadata } from "@/lib/seo"
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'Navigation' })
-  
-  return {
-    title: `${t('catalogs')} | Rongdhono Art Gallery`,
-    description: 'Browse every official Rongdhono exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.',
-    openGraph: {
-      title: `${t('catalogs')} | Rongdhono Art Gallery`,
-      description: 'Explore the official exhibition catalog archive of Rongdhono.',
-      type: 'website',
-      images: ['/images/catalogs_hero.png']
-    }
-  }
+  const settingsData = await getCmsContent('global', 'settings', locale)
+  const siteName = settingsData?.site_name || 'Rongdhono'
+  const faviconUrl = settingsData?.favicon_url
+
+  return generateDynamicMetadata({
+    title: t('catalogs'),
+    description: 'Browse every official exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.',
+    url: '/catalogs',
+    imageUrl: '/images/catalogs_hero.png',
+    locale,
+    siteName,
+    faviconUrl,
+  })
 }
 
 export default async function PublicCatalogsPage({ 

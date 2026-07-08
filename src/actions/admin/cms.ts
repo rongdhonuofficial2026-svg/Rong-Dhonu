@@ -246,15 +246,8 @@ export async function publishCMSPage(pageSlug: string, changeSummary?: string) {
 
     await logAudit('publish_catalog' as any, 'catalog', page.id, { action: 'CMS_PUBLISH', version: nextVer, slug: pageSlug })
 
-    // 6. Revalidate public cache paths
-    revalidatePath('/')
-    revalidatePath('/en')
-    revalidatePath('/bn')
-    revalidatePath(`/about`)
-    revalidatePath(`/contact`)
-    revalidatePath(`/gallery`)
-    revalidatePath(`/exhibitions`)
-    revalidatePath(`/catalogs`)
+    // 6. Revalidate public cache paths layout tree
+    revalidatePath('/', 'layout')
 
     return { success: true, version: nextVer }
   } catch (err: any) {

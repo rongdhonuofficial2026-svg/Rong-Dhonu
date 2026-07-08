@@ -14,6 +14,7 @@ export default async function PublicLayout({
   // Fetch CMS settings
   const navData = await getCmsContent('global', 'navigation', locale);
   const footerData = await getCmsContent('global', 'footer', locale);
+  const settingsData = await getCmsContent('global', 'settings', locale);
 
   const menuItems = navData?.menu_items 
     ? (typeof navData.menu_items === 'string' ? JSON.parse(navData.menu_items) : navData.menu_items)
@@ -21,11 +22,11 @@ export default async function PublicLayout({
 
   return (
     <>
-      <Navbar menuItems={menuItems} locale={locale} />
+      <Navbar menuItems={menuItems} locale={locale} settingsData={settingsData} />
       <div className="flex-grow flex flex-col">
         {children}
       </div>
-      <Footer footerData={footerData} locale={locale} />
+      <Footer footerData={footerData} locale={locale} settingsData={settingsData} />
     </>
   );
 }

@@ -5,11 +5,16 @@ import { AboutContent } from "./AboutContent"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const content = await getCmsContent('homepage', 'about', locale)
+  const settingsData = await getCmsContent('global', 'settings', locale)
+  const siteName = settingsData?.site_name || 'Rongdhono'
+  const faviconUrl = settingsData?.favicon_url
   return generateDynamicMetadata({
     title: content.title || "About Us",
-    description: content.mission || "Learn more about the Rongdhono artists' collective.",
+    description: content.mission || "Learn more about the artists' collective.",
     url: '/about',
-    locale
+    locale,
+    siteName,
+    faviconUrl
   })
 }
 

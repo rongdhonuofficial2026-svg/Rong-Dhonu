@@ -3,12 +3,22 @@ import { ExhibitionCard } from "@/components/museum/exhibition-card"
 import { PremiumImage } from "@/components/ui/PremiumImage"
 import { getCmsContent } from "@/lib/cms/content"
 
+import { generateDynamicMetadata } from "@/lib/seo"
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  return {
-    title: locale === 'bn' ? 'প্রদর্শনী সমূহ | রঙধনু' : 'Exhibitions | Rongdhono',
-    description: locale === 'bn' ? 'রঙধনু বার্ষিক চারুকলা প্রদর্শনীর আর্কাইভ।' : 'Archive of Rongdhono Annual Fine Arts Exhibitions.'
-  }
+  const settingsData = await getCmsContent('global', 'settings', locale)
+  const siteName = settingsData?.site_name || 'Rongdhono'
+  const faviconUrl = settingsData?.favicon_url
+
+  return generateDynamicMetadata({
+    title: locale === 'bn' ? 'প্রদর্শনী সমূহ' : 'Exhibitions',
+    description: locale === 'bn' ? 'রঙধনু বার্ষিক চারুকলা প্রদর্শনীর আর্কাইভ।' : 'Archive of Rongdhono Annual Fine Arts Exhibitions.',
+    url: '/exhibitions',
+    locale,
+    siteName,
+    faviconUrl,
+  })
 }
 
 export default async function ExhibitionsArchivePage({ params }: { params: Promise<{ locale: string }> }) {

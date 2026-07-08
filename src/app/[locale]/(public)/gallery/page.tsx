@@ -4,12 +4,22 @@ import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { getCmsContent } from "@/lib/cms/content"
 
+import { generateDynamicMetadata } from "@/lib/seo"
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  return {
-    title: locale === 'bn' ? 'অ্যালবাম | রঙধনু' : 'Albums | Rongdhono',
+  const settingsData = await getCmsContent('global', 'settings', locale)
+  const siteName = settingsData?.site_name || 'Rongdhono'
+  const faviconUrl = settingsData?.favicon_url
+
+  return generateDynamicMetadata({
+    title: locale === 'bn' ? 'অ্যালবাম' : 'Albums',
     description: locale === 'bn' ? 'রঙধনু প্রদর্শনী ও ইভেন্টের মেমরি অ্যালবাম।' : 'Explore curated memory albums from Rongdhono exhibitions and events.',
-  }
+    url: '/gallery',
+    locale,
+    siteName,
+    faviconUrl,
+  })
 }
 
 export default async function AlbumsPage({ params, searchParams }: { params: Promise<{ locale: string }>, searchParams: Promise<any> }) {

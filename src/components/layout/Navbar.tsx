@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export function Navbar({ menuItems, locale = 'en' }: { menuItems?: any[], locale?: string }) {
+export function Navbar({ menuItems, locale = 'en', settingsData }: { menuItems?: any[], locale?: string, settingsData?: any }) {
   const t = useTranslations('Navigation')
   const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
@@ -60,11 +60,21 @@ export function Navbar({ menuItems, locale = 'en' }: { menuItems?: any[], locale
         {/* Logo */}
         <div className="flex items-center gap-2 relative z-10">
           <Link href="/" className="flex items-center space-x-2 group">
+            {settingsData?.logo_url && settingsData.logo_url !== '/images/logo.png' && (
+              <img 
+                src={settingsData.logo_url} 
+                alt={settingsData.site_name || 'Logo'} 
+                className="h-8 w-auto object-contain mr-2"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            )}
             <span className={cn(
               "font-serif text-2xl md:text-3xl font-bold tracking-tight transition-colors duration-500",
               isTransparent ? "text-white group-hover:text-white/80" : "text-accent group-hover:text-accent/80"
             )}>
-              Rongdhono
+              {settingsData?.site_name || 'Rongdhono'}
             </span>
           </Link>
         </div>

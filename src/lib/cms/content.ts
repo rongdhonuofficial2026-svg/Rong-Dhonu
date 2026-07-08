@@ -1,5 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { fallbackCMSContent } from './fallbacks'
+
+const supabase = createSupabaseClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 /**
  * Fetches CMS content for a specific page and section.
@@ -7,7 +12,6 @@ import { fallbackCMSContent } from './fallbacks'
  */
 export async function getCmsContent(page: string, section: string, locale: string) {
   try {
-    const supabase = await createClient()
     
     // Try to fetch from DB using the new normalized schema
     const { data: contentRows, error } = await supabase

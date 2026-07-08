@@ -14,14 +14,24 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
+  const { getCmsContent } = await import('@/lib/cms/content')
+  const settingsData = await getCmsContent('global', 'settings', locale)
+  
+  const siteName = settingsData?.site_name || 'Rongdhono'
+  const faviconUrl = settingsData?.favicon_url
+  const siteDescription = settingsData?.site_description || (
+    locale === 'bn'
+      ? "রংধনু শিল্পী সংঘের অফিসিয়াল ওয়েবসাইট এবং ডিজিটাল মিউজিয়াম।"
+      : "The official website and digital museum of the Rongdhono artists' collective."
+  )
+
   return generateDynamicMetadata({
     title: locale === 'bn' ? "হোম" : "Home",
-    description:
-      locale === 'bn'
-        ? "রংধনু শিল্পী সংঘের অফিসিয়াল ওয়েবসাইট এবং ডিজিটাল মিউজিয়াম।"
-        : "The official website and digital museum of the Rongdhono artists' collective.",
+    description: siteDescription,
     url: '/',
     locale,
+    siteName,
+    faviconUrl,
   })
 }
 

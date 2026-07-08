@@ -9,11 +9,16 @@ import { PremiumImage } from "@/components/ui/PremiumImage"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const content = await getCmsContent('contact', 'hero', locale)
+  const settingsData = await getCmsContent('global', 'settings', locale)
+  const siteName = settingsData?.site_name || 'Rongdhono'
+  const faviconUrl = settingsData?.favicon_url
   return generateDynamicMetadata({
     title: content.title || "Contact Us",
-    description: content.subtitle || "Get in touch with the Rongdhono artists' collective.",
+    description: content.subtitle || "Get in touch with the artists' collective.",
     url: '/contact',
-    locale
+    locale,
+    siteName,
+    faviconUrl
   })
 }
 
