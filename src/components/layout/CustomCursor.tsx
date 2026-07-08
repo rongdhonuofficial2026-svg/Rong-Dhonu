@@ -25,16 +25,48 @@ export function CustomCursor() {
       setIsHovered(false)
     }
 
+    const handleMagneticMove = (e: MouseEvent) => {
+      const el = e.currentTarget as HTMLElement
+      const r = el.getBoundingClientRect()
+      const x = (e.clientX - r.left - r.width / 2) * 0.25
+      const y = (e.clientY - r.top - r.height / 2) * 0.25
+      el.style.transform = `translate3d(${x}px, ${y}px, 0)`
+    }
+
+    const handleMagneticLeave = (e: MouseEvent) => {
+      const el = e.currentTarget as HTMLElement
+      el.style.transform = 'translate3d(0, 0, 0)'
+    }
+
     window.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseleave', handleMouseLeaveWindow)
 
-    // Select all links and buttons for hover growth
+    // Reveal-on-scroll Intersection Observer
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in')
+          io.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.12 })
+
+    // Select all links and/or elements for hover growth & magnetic effects
     const addListeners = () => {
       const interactives = document.querySelectorAll('a, button, [role="button"], .magnetic')
       interactives.forEach((el) => {
         el.addEventListener('mouseenter', handleMouseEnter)
         el.addEventListener('mouseleave', handleMouseLeave)
       })
+
+      const magnetics = document.querySelectorAll('.magnetic')
+      magnetics.forEach((el) => {
+        el.addEventListener('mousemove', handleMagneticMove as any)
+        el.addEventListener('mouseleave', handleMagneticLeave as any)
+      })
+
+      const reveals = document.querySelectorAll('.reveal')
+      reveals.forEach((el) => io.observe(el))
     }
 
     addListeners()
@@ -52,6 +84,12 @@ export function CustomCursor() {
       interactives.forEach((el) => {
         el.removeEventListener('mouseenter', handleMouseEnter)
         el.removeEventListener('mouseleave', handleMouseLeave)
+      })
+
+      const magnetics = document.querySelectorAll('.magnetic')
+      magnetics.forEach((el) => {
+        el.removeEventListener('mousemove', handleMagneticMove as any)
+        el.removeEventListener('mouseleave', handleMagneticLeave as any)
       })
     }
   }, [isVisible])

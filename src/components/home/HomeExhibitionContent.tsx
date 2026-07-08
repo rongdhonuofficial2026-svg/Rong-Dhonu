@@ -88,21 +88,21 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
       <div className="spotlight-bgtext">{yearSuffix}</div>
       
       <div className="spotlight-inner">
-        <div className="eyebrow reveal in">
+        <div className="eyebrow reveal">
           {locale === 'bn' ? 'বিশেষ প্রদর্শনী' : 'Featured Exhibition'}
         </div>
         
-        <h2 className="reveal in">
+        <h2 className="reveal">
           {title} <em>— {locale === 'bn' ? 'রঙের উৎসব' : 'A Festival of Colour'}</em>
         </h2>
         
-        <p className="spotlight-sub reveal in">
+        <p className="spotlight-sub reveal">
           {locale === 'bn' 
             ? "একটি যুগান্তকারী শিল্প প্রদর্শনী যা বারোটি স্টুডিও, ষাটটি নতুন কাজ এবং বাংলার সবচেয়ে বিশিষ্ট শিল্পীদের একত্রিত করে।" 
             : "A season-defining showcase bringing together fourteen studios, sixty new works, and a decade of Bengal's most distinctive visual voices."}
         </p>
         
-        <div className="spotlight-card reveal in">
+        <div className="spotlight-card reveal">
           {/* Detail: Date */}
           <div className="spotlight-detail">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

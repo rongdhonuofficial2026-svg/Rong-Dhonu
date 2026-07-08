@@ -30,7 +30,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
     <section className="about" id="about" ref={containerRef}>
       <div className="about-grid">
         {/* Left Visual Panel */}
-        <div className="about-visual reveal in">
+        <div className="about-visual reveal">
           <div className="about-img-main artwork">
             <img 
               src={aboutImage} 
@@ -49,7 +49,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
         </div>
 
         {/* Right Copy Panel */}
-        <div className="about-copy reveal in">
+        <div className="about-copy reveal">
           <div className="eyebrow on-paper">
             {locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhono'}
           </div>

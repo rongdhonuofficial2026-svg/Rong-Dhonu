@@ -10,7 +10,7 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
 
   return (
     <section className="artists" id="artists">
-      <div className="section-head reveal in">
+      <div className="section-head reveal">
         <h2>{title}</h2>
         <p>
           {locale === 'bn'
@@ -39,7 +39,7 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
               <Link
                 key={artist.id}
                 href={`/artists/${artist.id}`}
-                className="artist-card artwork reveal in block"
+                className="artist-card artwork reveal block"
               >
                 <img
                   src={artist.avatar_url || "/images/placeholders/artist.webp"}
@@ -59,7 +59,7 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
         </div>
       )}
 
-      <div className="artists-cta reveal in">
+      <div className="artists-cta reveal">
         <Link href="/artists" className="btn btn-line magnetic">
           {locale === 'bn' ? 'সম্পূর্ণ ডিরেক্টরি দেখুন →' : 'View Full Directory →'}
         </Link>

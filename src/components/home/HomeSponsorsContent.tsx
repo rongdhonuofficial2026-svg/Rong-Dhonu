@@ -32,7 +32,7 @@ export function HomeTestimonialsContent({ locale, content }: { locale: string, c
 
   return (
     <section className="testimonials" id="testimonials">
-      <div className="section-head reveal in">
+      <div className="section-head reveal">
         <h2>{title}</h2>
         <p>{subtitle}</p>
       </div>
@@ -43,7 +43,7 @@ export function HomeTestimonialsContent({ locale, content }: { locale: string, c
           const role = locale === 'bn' ? (item.role_bn || item.role_en) : item.role_en
 
           return (
-            <div key={i} className="testimonial-card reveal in">
+            <div key={i} className="testimonial-card reveal">
               <p className="quote">"{quote}"</p>
               <div className="author">
                 <b>{item.author}</b>

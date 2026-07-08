@@ -2,6 +2,20 @@
    RONGDHONO HOME PAGE REDESIGN MODULE
    ========================================================================== */
 
+/* Override fonts to prevent layout font leak */
+.hero, .about, .spotlight, .artists, .collection, .testimonials, .newsletter {
+  font-family: var(--font-body), 'Inter', -apple-system, sans-serif !important;
+}
+.hero h1, .hero h2, .hero h3, .hero h4,
+.about h1, .about h2, .about h3, .about h4,
+.spotlight h1, .spotlight h2, .spotlight h3, .spotlight h4,
+.artists h1, .artists h2, .artists h3, .artists h4,
+.collection h1, .collection h2, .collection h3, .collection h4,
+.testimonials h1, .testimonials h2, .testimonials h3, .testimonials h4,
+.newsletter h1, .newsletter h2, .newsletter h3, .newsletter h4 {
+  font-family: var(--font-display), 'Fraunces', Georgia, serif !important;
+}
+
 /* ---------- eyebrow / labels ---------- */
 .eyebrow {
   font-size: 11.5px;

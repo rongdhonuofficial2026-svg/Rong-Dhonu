@@ -114,7 +114,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
 
       {/* Hero content wrapper */}
       <div className="hero-content">
-        <div className="reveal in">
+        <div className="reveal">
           <div className="hero-status">
             <span className="dot"></span> 
             {locale === 'bn' ? '১৪তম বার্ষিক প্রদর্শনী — বর্তমানে উন্মুক্ত' : '14th Annual Exhibition — Now Open'}
@@ -122,7 +122,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
           <h1 dangerouslySetInnerHTML={{ __html: title }} />
         </div>
 
-        <div className="hero-bottom reveal in">
+        <div className="hero-bottom reveal">
           <p className="hero-sub">{subtitle}</p>
           <div className="hero-ctas">
             <Link href="#collection" className="btn btn-gold magnetic">

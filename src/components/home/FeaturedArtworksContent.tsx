@@ -19,7 +19,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
   if (displayData.length === 0) {
     return (
       <section className="collection" id="collection">
-        <div className="section-head reveal in">
+        <div className="section-head reveal">
           <h2>{title}</h2>
           <p>{subtitle}</p>
         </div>
@@ -34,7 +34,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
 
   return (
     <section className="collection" id="collection">
-      <div className="section-head reveal in">
+      <div className="section-head reveal">
         <h2>{title}</h2>
         <p>{subtitle}</p>
       </div>
@@ -56,7 +56,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
             <Link
               key={artwork.id}
               href={`/gallery/artwork/${artwork.id}`}
-              className="bento-tile artwork reveal in block"
+              className="bento-tile artwork reveal block"
             >
               <img
                 src={imgUrl}
@@ -75,7 +75,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
         })}
       </div>
 
-      <div className="collection-cta reveal in">
+      <div className="collection-cta reveal">
         <Link href="/gallery" className="btn btn-line magnetic">
           {locale === 'bn' ? 'সম্পূর্ণ গ্যালারি দেখুন →' : 'Explore Full Collection →'}
         </Link>

@@ -12,7 +12,7 @@ export function HomeNewsletterContent({ locale, content }: { locale: string, con
 
   return (
     <section className="newsletter" id="newsletter">
-      <div className="newsletter-inner reveal in">
+      <div className="newsletter-inner reveal">
         <div className="eyebrow">
           {locale === 'bn' ? 'নিউজলেটার' : 'Newsletter'}
         </div>
