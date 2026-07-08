@@ -3,17 +3,19 @@
 import * as React from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Loader2, X, PlayCircle, Star, Calendar } from "lucide-react"
+import { Loader2, X, PlayCircle, Star, Calendar, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PremiumImage } from "@/components/ui/PremiumImage"
 import { cn } from "@/lib/utils"
 
-export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initialMedia: any[], locale: string, exhibitionId: string }) {
+export function AlbumMediaGrid({ initialMedia, locale, albumId }: { initialMedia: any[], locale: string, albumId: string }) {
   const [media, setMedia] = React.useState(initialMedia)
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasMore, setHasMore] = React.useState(initialMedia.length === 20)
   const [page, setPage] = React.useState(1)
-  const [selectedItem, setSelectedItem] = React.useState<Record<string, any> | null>(null)
+  
+  // Lightbox selection by index for seamless keyboard and arrow navigation
+  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
   
   const supabase = createClient()
 
@@ -24,6 +26,7 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
     setMedia(initialMedia)
     setPage(1)
     setHasMore(initialMedia.length === 20)
+    setSelectedIndex(null)
   }, [initialMedia])
 
   const loadMore = React.useCallback(async () => {
@@ -36,16 +39,11 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
       .from('gallery_media')
       .select('*, exhibitions(theme_en, theme_bn, year)')
       .eq('status', 'published')
+      .eq('gallery_album_id', albumId)
       .order('is_featured', { ascending: false })
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
       .range(from, to)
-
-    if (exhibitionId === 'archive') {
-      query.is('exhibition_id', null)
-    } else {
-      query.eq('exhibition_id', exhibitionId)
-    }
 
     const { data } = await query
 
@@ -57,7 +55,7 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
       setHasMore(false)
     }
     setIsLoading(false)
-  }, [page, exhibitionId, supabase])
+  }, [page, albumId, supabase])
 
   React.useEffect(() => {
     const currentTarget = observerTarget.current
@@ -78,6 +76,33 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
       if (currentTarget) observer.unobserve(currentTarget)
     }
   }, [hasMore, isLoading, loadMore])
+
+  const selectedItem = selectedIndex !== null ? media[selectedIndex] : null
+
+  const handleNext = React.useCallback(() => {
+    if (selectedIndex !== null && selectedIndex < media.length - 1) {
+      setSelectedIndex(selectedIndex + 1)
+    }
+  }, [selectedIndex, media.length])
+
+  const handlePrev = React.useCallback(() => {
+    if (selectedIndex !== null && selectedIndex > 0) {
+      setSelectedIndex(selectedIndex - 1)
+    }
+  }, [selectedIndex])
+
+  // Keyboard navigation for Lightbox
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return
+      if (e.key === 'ArrowRight') handleNext()
+      if (e.key === 'ArrowLeft') handlePrev()
+      if (e.key === 'Escape') setSelectedIndex(null)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedIndex, handleNext, handlePrev])
 
   const HEIGHT_PATTERN = [
     "h-[300px]", "h-[450px]", "h-[400px]", "h-[500px]", "h-[350px]"
@@ -102,13 +127,12 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
               const heightClass = item.is_featured ? "h-[600px] sm:col-span-2" : HEIGHT_PATTERN[index % HEIGHT_PATTERN.length]
               
               const title = locale === 'bn' && item.title_bn ? item.title_bn : (item.title_en || 'Untitled')
-              const caption = locale === 'bn' && item.caption_bn ? item.caption_bn : item.caption_en
 
               return (
                 <div 
                   key={item.id} 
                   className={cn("relative break-inside-avoid group cursor-pointer overflow-hidden bg-[#1A1A1A] shadow-lg rounded-sm", heightClass)}
-                  onClick={() => setSelectedItem(item)}
+                  onClick={() => setSelectedIndex(index)}
                 >
                   {item.media_type === 'image' ? (
                     <PremiumImage 
@@ -120,7 +144,7 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
                     />
                   ) : (
                     <div className="absolute inset-0">
-                      <video src={item.url} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[2s] ease-out" />
+                      <video src={item.url} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[2s] ease-out" muted playsInline loop />
                       <div className="absolute inset-0 flex items-center justify-center">
                          <PlayCircle className="w-16 h-16 text-white/50 group-hover:text-accent transition-colors duration-300 drop-shadow-xl" strokeWidth={1.5} />
                       </div>
@@ -164,29 +188,60 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
       </div>
 
       {/* Immersive Lightbox Dialog */}
-      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+      <Dialog open={selectedIndex !== null} onOpenChange={(open) => !open && setSelectedIndex(null)}>
         <DialogContent className="max-w-[100vw] max-h-[100vh] w-screen h-screen p-0 border-0 bg-black/95 backdrop-blur-2xl flex flex-col md:flex-row shadow-2xl rounded-none">
-          {selectedItem && (
+          {selectedIndex !== null && selectedItem && (
             <>
-              <div className="relative flex-1 bg-transparent flex items-center justify-center p-4 md:p-12 overflow-hidden">
+              {/* Media Viewport Container */}
+              <div className="relative flex-1 bg-transparent flex items-center justify-center p-4 md:p-12 overflow-hidden group">
+                
+                {/* Arrow Navigation Left */}
+                {selectedIndex > 0 && (
+                  <button 
+                    onClick={handlePrev}
+                    className="absolute left-6 z-50 p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/70 hover:text-white transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                  >
+                    <ChevronLeft className="w-8 h-8" />
+                  </button>
+                )}
+
+                {/* Main Asset Display */}
                 {selectedItem.media_type === 'image' ? (
                   <PremiumImage 
                     src={selectedItem.url} 
                     fallbackSrc="/images/placeholders/artwork-1.webp"
                     alt={selectedItem.alt_text || selectedItem.title_en || 'Gallery Image'} 
                     fill
-                    className="object-contain drop-shadow-2xl" 
+                    className="object-contain drop-shadow-2xl image-reveal" 
                   />
                 ) : (
-                  <video src={selectedItem.url} controls autoPlay className="w-full h-full object-contain drop-shadow-2xl outline-none" />
+                  <video 
+                    key={selectedItem.id}
+                    src={selectedItem.url} 
+                    controls 
+                    autoPlay 
+                    className="w-full h-full object-contain drop-shadow-2xl outline-none" 
+                  />
+                )}
+
+                {/* Arrow Navigation Right */}
+                {selectedIndex < media.length - 1 && (
+                  <button 
+                    onClick={handleNext}
+                    className="absolute right-6 z-50 p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/70 hover:text-white transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                  >
+                    <ChevronRight className="w-8 h-8" />
+                  </button>
                 )}
               </div>
+
+              {/* Sidebar metadata details panel */}
               <div className="w-full md:w-[400px] lg:w-[450px] bg-[#0A0A0A] border-l border-white/10 p-8 md:p-12 flex flex-col text-white shrink-0 overflow-y-auto">
                 <div className="flex justify-between items-start mb-12">
                   <h3 className="font-serif text-3xl md:text-4xl font-bold leading-tight drop-cap text-white">
                     {locale === 'bn' && selectedItem.title_bn ? selectedItem.title_bn : (selectedItem.title_en || 'Untitled')}
                   </h3>
-                  <Button variant="ghost" size="icon" className="text-white/50 hover:text-white hover:bg-white/10 rounded-full ml-4 shrink-0" onClick={() => setSelectedItem(null)}>
+                  <Button variant="ghost" size="icon" className="text-white/50 hover:text-white hover:bg-white/10 rounded-full ml-4 shrink-0" onClick={() => setSelectedIndex(null)}>
                     <X className="w-6 h-6" />
                   </Button>
                 </div>
@@ -219,6 +274,11 @@ export function AlbumMediaGrid({ initialMedia, locale, exhibitionId }: { initial
                   )}
                 </div>
               </div>
+
+              {/* Preload Next Image Assets cleanly (avoiding browser blocking) */}
+              {selectedIndex < media.length - 1 && media[selectedIndex + 1].media_type === 'image' && (
+                <img src={media[selectedIndex + 1].url} className="hidden" alt="preload-next" />
+              )}
             </>
           )}
         </DialogContent>

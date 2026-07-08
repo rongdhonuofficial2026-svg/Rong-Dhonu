@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { createClient as createStaticClient } from "@supabase/supabase-js"
 import { notFound } from "next/navigation"
 import { AlbumMediaGrid } from "@/components/public/AlbumMediaGrid"
 import { Suspense } from "react"
@@ -9,80 +10,103 @@ import { Button } from "@/components/ui/button"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
   const supabase = await createClient()
-  const { data: album } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn').eq('id', id).maybeSingle()
   
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
+  let query = supabase.from('gallery_albums').select('*')
+  if (isUuid) {
+    query = query.eq('id', id)
+  } else {
+    query = query.eq('slug', id)
+  }
+
+  const { data: album } = await query.maybeSingle()
   if (!album) return { title: 'Album Not Found' }
 
+  const title = album.seo_title || (locale === 'bn' ? (album.title_bn || album.title_en) : album.title_en)
+  const description = album.seo_description || (locale === 'bn' ? album.description_bn : album.description_en)
+  const ogImage = album.og_image_url || null
+
   return {
-    title: locale === 'bn' ? `${album.theme_bn} | রঙধনু` : `${album.theme_en} | Rongdhono`,
-    description: locale === 'bn' ? album.description_bn : album.description_en,
+    title: locale === 'bn' ? `${title} | রঙধনু` : `${title} | Rongdhono`,
+    description,
+    openGraph: ogImage ? {
+      images: [{ url: ogImage }]
+    } : undefined
   }
+}
+
+export async function generateStaticParams() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!supabaseUrl || !supabaseAnonKey) return []
+
+  const supabase = createStaticClient(supabaseUrl, supabaseAnonKey)
+  const { data: albums } = await supabase
+    .from('gallery_albums')
+    .select('id, slug')
+    .eq('status', 'published')
+
+  if (!albums) return []
+
+  const params: { locale: string; id: string }[] = []
+  const locales = ['en', 'bn']
+
+  for (const locale of locales) {
+    for (const album of albums) {
+      params.push({ locale, id: album.id })
+      params.push({ locale, id: album.slug })
+    }
+  }
+
+  return params
 }
 
 export default async function AlbumPage({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
   const supabase = await createClient()
 
-  let album: any = null
-  let initialMedia: any[] = []
-
-  if (id === 'archive') {
-    // Construct virtual album for general/independent uploads
-    album = {
-      id: 'archive',
-      theme_en: 'Rongdhono Archive',
-      theme_bn: 'রঙধনু আর্কাইভ',
-      description_en: 'A collection of general memory albums, ceremonies, behind-the-scenes look and VIP guests.',
-      description_bn: 'রঙধনু কার্যক্রম, সাধারণ স্মারক অ্যালবাম, অনুষ্ঠান ও পর্দার আড়ালের দৃশ্যাবলী।',
-      exhibition_start: null,
-      year: new Date().getFullYear(),
-      status: 'published',
-      is_deleted: false,
-      hero_image_url: null
-    }
-
-    const { data: mediaData } = await supabase
-      .from('gallery_media')
-      .select('*, exhibitions(theme_en, theme_bn, year)')
-      .is('exhibition_id', null)
-      .eq('status', 'published')
-      .order('is_featured', { ascending: false })
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: false })
-      .limit(20)
-    
-    initialMedia = mediaData || []
-    
-    // Set hero banner of virtual album to the first media item
-    if (initialMedia.length > 0) {
-      album.hero_image_url = initialMedia[0].url
-    }
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
+  let query = supabase.from('gallery_albums').select('*')
+  if (isUuid) {
+    query = query.eq('id', id)
   } else {
-    const { data: albumData, error: albumError } = await supabase
-      .from('exhibitions')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle()
-
-    if (albumError || !albumData || albumData.status !== 'published' || albumData.is_deleted) {
-      notFound()
-    }
-    album = albumData
-
-    const { data: mediaData } = await supabase
-      .from('gallery_media')
-      .select('*, exhibitions(theme_en, theme_bn, year)')
-      .eq('exhibition_id', id)
-      .eq('status', 'published')
-      .order('is_featured', { ascending: false })
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: false })
-      .limit(20)
-      
-    initialMedia = mediaData || []
+    query = query.eq('slug', id)
   }
 
-  const title = locale === 'bn' ? album.theme_bn : album.theme_en
+  const { data: album, error: albumError } = await query.maybeSingle()
+
+  if (albumError || !album || album.status !== 'published') {
+    notFound()
+  }
+
+  const { data: mediaData } = await supabase
+    .from('gallery_media')
+    .select('*, exhibitions(theme_en, theme_bn, year)')
+    .eq('gallery_album_id', album.id)
+    .eq('status', 'published')
+    .order('is_featured', { ascending: false })
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(20)
+      
+  const initialMedia = mediaData || []
+
+  // Resolve cover image for hero banner following priority hierarchy
+  let heroImage = '/images/album_placeholder.png'
+  if (album.cover_media_id) {
+    const explicitCover = initialMedia.find(m => m.id === album.cover_media_id)
+    if (explicitCover) heroImage = explicitCover.url
+  }
+  if (heroImage === '/images/album_placeholder.png' && initialMedia.length > 0) {
+    const featured = initialMedia.find(m => m.is_featured === true || m.featured === true)
+    if (featured) heroImage = featured.url
+    else {
+      const firstImg = initialMedia.find(m => m.media_type === 'image')
+      if (firstImg) heroImage = firstImg.url
+    }
+  }
+
+  const title = locale === 'bn' ? (album.title_bn || album.title_en) : album.title_en
   const description = locale === 'bn' ? album.description_bn : album.description_en
   
   const formatDate = (dateStr: string | null) => {
@@ -94,7 +118,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
     }).format(date)
   }
 
-  const dateDisplay = formatDate(album.exhibition_start)
+  const dateDisplay = formatDate(album.created_at)
 
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">
@@ -103,9 +127,9 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
 
       {/* Album Hero */}
       <section className="relative pt-32 pb-16 px-6 overflow-hidden border-b border-foreground/10 bg-[#1A1A1A]">
-        {album.hero_image_url && (
+        {heroImage && (
           <div className="absolute inset-0 z-0">
-            <img src={album.hero_image_url} alt={title} className="w-full h-full object-cover opacity-30" />
+            <img src={heroImage} alt={title} className="w-full h-full object-cover opacity-30" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/80 to-transparent" />
           </div>
         )}
@@ -147,7 +171,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
           <AlbumMediaGrid 
             initialMedia={initialMedia || []} 
             locale={locale} 
-            exhibitionId={id} 
+            albumId={album.id} 
           />
         </Suspense>
       </div>

@@ -27,6 +27,7 @@ interface CustomGalleryUploaderProps {
   locale: string
   categories: CategoryRow[]
   exhibitions: ExhibitionRow[]
+  independentAlbums: { id: string; title: string; title_en: string; title_bn: string | null; category_slug: string | null }[]
 }
 
 interface FormData {
@@ -41,6 +42,8 @@ interface FormData {
   category: string
   exhibition_association: "associate" | "independent"
   exhibition_id: string
+  gallery_album_id: string
+  new_album_title: string
   visibility: "public" | "hidden"
   is_featured: boolean
 }
@@ -76,7 +79,7 @@ function Field({
   )
 }
 
-export function CustomGalleryUploader({ locale, categories, exhibitions }: CustomGalleryUploaderProps) {
+export function CustomGalleryUploader({ locale, categories, exhibitions, independentAlbums }: CustomGalleryUploaderProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [mediaFile, setMediaFile] = React.useState<File | null>(null)
@@ -98,6 +101,8 @@ export function CustomGalleryUploader({ locale, categories, exhibitions }: Custo
     category: categories[0]?.slug || "",
     exhibition_association: "independent",
     exhibition_id: "none",
+    gallery_album_id: "none",
+    new_album_title: "",
     visibility: "public",
     is_featured: false
   })
@@ -105,6 +110,11 @@ export function CustomGalleryUploader({ locale, categories, exhibitions }: Custo
   const updateField = (field: keyof FormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
+
+  React.useEffect(() => {
+    updateField("gallery_album_id", "none")
+    updateField("new_album_title", "")
+  }, [formData.category])
 
   const handleMediaFile = (file: File) => {
     const isImg = file.type.startsWith("image/")
@@ -200,6 +210,11 @@ export function CustomGalleryUploader({ locale, categories, exhibitions }: Custo
       return
     }
 
+    if (formData.exhibition_association === "independent" && formData.gallery_album_id === "none" && !formData.new_album_title.trim()) {
+      toast.error("Album selection required", { description: "Please select an independent album or enter a new album title." })
+      return
+    }
+
     try {
       setIsSubmitting(true)
       const payload = new FormData()
@@ -215,11 +230,14 @@ export function CustomGalleryUploader({ locale, categories, exhibitions }: Custo
       payload.append("category", formData.category)
       payload.append("visibility", formData.visibility)
       payload.append("is_featured", String(formData.is_featured))
+      payload.append("exhibition_association", formData.exhibition_association)
 
       if (formData.exhibition_association === "associate") {
         payload.append("exhibition_id", formData.exhibition_id)
       } else {
         payload.append("exhibition_id", "none")
+        payload.append("gallery_album_id", formData.gallery_album_id)
+        payload.append("new_album_title", formData.new_album_title)
       }
 
       const res = await createGalleryMedia(payload)
@@ -463,6 +481,46 @@ export function CustomGalleryUploader({ locale, categories, exhibitions }: Custo
                         </SelectContent>
                       </Select>
                     </Field>
+                  </div>
+                )}
+
+                {formData.exhibition_association === "independent" && (
+                  <div className="p-4 rounded-xl border border-purple-500/20 bg-purple-500/5 max-w-xl space-y-4 animate-in fade-in-50 duration-200">
+                    <Field label="Choose Independent Album" required hint="Select an existing independent album or create a new one.">
+                      <Select
+                        value={formData.gallery_album_id}
+                        onValueChange={val => {
+                          updateField("gallery_album_id", val)
+                          if (val !== "new") updateField("new_album_title", "")
+                        }}
+                      >
+                        <SelectTrigger className="h-11">
+                          <SelectValue placeholder="Select album..." />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                          <SelectItem value="none" disabled>Select album...</SelectItem>
+                          <SelectItem value="new" className="font-bold text-accent">+ Create New Independent Album</SelectItem>
+                          {independentAlbums
+                            .filter(a => a.category_slug === formData.category)
+                            .map(a => (
+                              <SelectItem key={a.id} value={a.id}>{a.title}</SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+
+                    {formData.gallery_album_id === "new" && (
+                      <Field label="New Album Title (English)" required hint="Unique title for the new independent album.">
+                        <Input
+                          id="new_album_title"
+                          value={formData.new_album_title}
+                          onChange={e => updateField("new_album_title", e.target.value)}
+                          placeholder="e.g. Workshop 2026"
+                          className="h-11"
+                          required
+                        />
+                      </Field>
+                    )}
                   </div>
                 )}
               </div>

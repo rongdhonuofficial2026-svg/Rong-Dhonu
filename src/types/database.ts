@@ -85,11 +85,13 @@ export type Database = {
       }
       artworks: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           artist_id: string | null
           availability:
             | Database["public"]["Enums"]["availability_status"]
-            | string
             | null
+          availability_status_col: string | null
           category: string | null
           created_at: string | null
           creation_date: string | null
@@ -108,9 +110,14 @@ export type Database = {
           materials_en: string | null
           medium_bn: string | null
           medium_en: string | null
+          moderator_feedback: string | null
           notes: string | null
           orientation: string | null
           price: number | null
+          rejected_at: string | null
+          rejected_by: string | null
+          resubmission_count: number | null
+          revision_notes: string | null
           status: Database["public"]["Enums"]["artwork_status"] | null
           theme: string | null
           title_bn: string | null
@@ -120,11 +127,13 @@ export type Database = {
           year: number | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           artist_id?: string | null
           availability?:
             | Database["public"]["Enums"]["availability_status"]
-            | string
             | null
+          availability_status_col?: string | null
           category?: string | null
           created_at?: string | null
           creation_date?: string | null
@@ -143,9 +152,14 @@ export type Database = {
           materials_en?: string | null
           medium_bn?: string | null
           medium_en?: string | null
+          moderator_feedback?: string | null
           notes?: string | null
           orientation?: string | null
           price?: number | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          resubmission_count?: number | null
+          revision_notes?: string | null
           status?: Database["public"]["Enums"]["artwork_status"] | null
           theme?: string | null
           title_bn?: string | null
@@ -155,11 +169,13 @@ export type Database = {
           year?: number | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           artist_id?: string | null
           availability?:
             | Database["public"]["Enums"]["availability_status"]
-            | string
             | null
+          availability_status_col?: string | null
           category?: string | null
           created_at?: string | null
           creation_date?: string | null
@@ -178,9 +194,14 @@ export type Database = {
           materials_en?: string | null
           medium_bn?: string | null
           medium_en?: string | null
+          moderator_feedback?: string | null
           notes?: string | null
           orientation?: string | null
           price?: number | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          resubmission_count?: number | null
+          revision_notes?: string | null
           status?: Database["public"]["Enums"]["artwork_status"] | null
           theme?: string | null
           title_bn?: string | null
@@ -190,6 +211,13 @@ export type Database = {
           year?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "artworks_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "artworks_artist_id_fkey"
             columns: ["artist_id"]
@@ -202,6 +230,13 @@ export type Database = {
             columns: ["exhibition_id"]
             isOneToOne: false
             referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artworks_rejected_by_fkey"
+            columns: ["rejected_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -244,66 +279,120 @@ export type Database = {
           },
         ]
       }
+      catalog_download_logs: {
+        Row: {
+          catalog_id: string
+          country: string | null
+          downloaded_at: string | null
+          id: string
+          ip_address: string | null
+          user_id: string | null
+        }
+        Insert: {
+          catalog_id: string
+          country?: string | null
+          downloaded_at?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          catalog_id?: string
+          country?: string | null
+          downloaded_at?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_download_logs_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "catalogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_download_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       catalogs: {
         Row: {
-          change_notes: string | null
+          archived_at: string | null
+          category: string | null
           cover_image_url: string | null
           created_at: string | null
           description_bn: string | null
           description_en: string | null
-          exhibition_id: string | null
+          exhibition_id: string
+          file_size: number | null
           id: string
-          language: string
+          language: string | null
           last_download_at: string | null
+          page_count: number | null
           pdf_url: string
-          status: string
+          published_at: string | null
+          published_by: string | null
+          status: string | null
           title_bn: string | null
           title_en: string
           total_downloads: number | null
-          uploaded_at: string | null
-          uploaded_by: string | null
-          version: string
-          year: number
+          updated_at: string | null
+          version: string | null
+          visibility: string | null
         }
         Insert: {
-          change_notes?: string | null
+          archived_at?: string | null
+          category?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           description_bn?: string | null
           description_en?: string | null
-          exhibition_id?: string | null
+          exhibition_id: string
+          file_size?: number | null
           id?: string
-          language?: string
+          language?: string | null
           last_download_at?: string | null
+          page_count?: number | null
           pdf_url: string
-          status?: string
+          published_at?: string | null
+          published_by?: string | null
+          status?: string | null
           title_bn?: string | null
           title_en: string
           total_downloads?: number | null
-          uploaded_at?: string | null
-          uploaded_by?: string | null
-          version?: string
-          year: number
+          updated_at?: string | null
+          version?: string | null
+          visibility?: string | null
         }
         Update: {
-          change_notes?: string | null
+          archived_at?: string | null
+          category?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           description_bn?: string | null
           description_en?: string | null
-          exhibition_id?: string | null
+          exhibition_id?: string
+          file_size?: number | null
           id?: string
-          language?: string
+          language?: string | null
           last_download_at?: string | null
+          page_count?: number | null
           pdf_url?: string
-          status?: string
+          published_at?: string | null
+          published_by?: string | null
+          status?: string | null
           title_bn?: string | null
           title_en?: string
           total_downloads?: number | null
-          uploaded_at?: string | null
-          uploaded_by?: string | null
-          version?: string
-          year?: number
+          updated_at?: string | null
+          version?: string | null
+          visibility?: string | null
         }
         Relationships: [
           {
@@ -314,8 +403,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "catalogs_uploaded_by_fkey"
-            columns: ["uploaded_by"]
+            foreignKeyName: "catalogs_published_by_fkey"
+            columns: ["published_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -491,13 +580,21 @@ export type Database = {
       }
       exhibitions: {
         Row: {
+          approved_artists_count: number | null
+          catalog_downloads_count: number | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description_bn: string | null
           description_en: string | null
           exhibition_end: string | null
           exhibition_start: string | null
+          gallery_views_count: number | null
           hero_image_url: string | null
           id: string
+          is_deleted: boolean | null
+          is_featured: boolean | null
+          registration_count: number | null
           registration_start: string | null
           status: Database["public"]["Enums"]["exhibition_status"] | null
           submission_end: string | null
@@ -506,16 +603,25 @@ export type Database = {
           updated_at: string | null
           venue_bn: string | null
           venue_en: string | null
+          views_count: number | null
           year: number
         }
         Insert: {
+          approved_artists_count?: number | null
+          catalog_downloads_count?: number | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description_bn?: string | null
           description_en?: string | null
           exhibition_end?: string | null
           exhibition_start?: string | null
+          gallery_views_count?: number | null
           hero_image_url?: string | null
           id?: string
+          is_deleted?: boolean | null
+          is_featured?: boolean | null
+          registration_count?: number | null
           registration_start?: string | null
           status?: Database["public"]["Enums"]["exhibition_status"] | null
           submission_end?: string | null
@@ -524,16 +630,25 @@ export type Database = {
           updated_at?: string | null
           venue_bn?: string | null
           venue_en?: string | null
+          views_count?: number | null
           year: number
         }
         Update: {
+          approved_artists_count?: number | null
+          catalog_downloads_count?: number | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description_bn?: string | null
           description_en?: string | null
           exhibition_end?: string | null
           exhibition_start?: string | null
+          gallery_views_count?: number | null
           hero_image_url?: string | null
           id?: string
+          is_deleted?: boolean | null
+          is_featured?: boolean | null
+          registration_count?: number | null
           registration_start?: string | null
           status?: Database["public"]["Enums"]["exhibition_status"] | null
           submission_end?: string | null
@@ -542,9 +657,103 @@ export type Database = {
           updated_at?: string | null
           venue_bn?: string | null
           venue_en?: string | null
+          views_count?: number | null
           year?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "exhibitions_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_albums: {
+        Row: {
+          album_type: string
+          category_slug: string | null
+          cover_media_id: string | null
+          created_at: string | null
+          description_bn: string | null
+          description_en: string | null
+          exhibition_id: string | null
+          id: string
+          is_featured: boolean | null
+          og_image_url: string | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          status: string | null
+          title: string
+          title_bn: string | null
+          title_en: string
+          updated_at: string | null
+        }
+        Insert: {
+          album_type: string
+          category_slug?: string | null
+          cover_media_id?: string | null
+          created_at?: string | null
+          description_bn?: string | null
+          description_en?: string | null
+          exhibition_id?: string | null
+          id?: string
+          is_featured?: boolean | null
+          og_image_url?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          status?: string | null
+          title: string
+          title_bn?: string | null
+          title_en: string
+          updated_at?: string | null
+        }
+        Update: {
+          album_type?: string
+          category_slug?: string | null
+          cover_media_id?: string | null
+          created_at?: string | null
+          description_bn?: string | null
+          description_en?: string | null
+          exhibition_id?: string | null
+          id?: string
+          is_featured?: boolean | null
+          og_image_url?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          status?: string | null
+          title?: string
+          title_bn?: string | null
+          title_en?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_gallery_albums_cover_media"
+            columns: ["cover_media_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_albums_category_slug_fkey"
+            columns: ["category_slug"]
+            isOneToOne: false
+            referencedRelation: "gallery_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "gallery_albums_exhibition_id_fkey"
+            columns: ["exhibition_id"]
+            isOneToOne: true
+            referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gallery_categories: {
         Row: {
@@ -624,16 +833,22 @@ export type Database = {
       gallery_media: {
         Row: {
           alt_text: string | null
+          caption: string | null
           caption_bn: string | null
           caption_en: string | null
           category: string
           collection_id: string | null
+          copyright: string | null
           created_at: string | null
+          created_by: string | null
+          deleted_at: string | null
           description_bn: string | null
           description_en: string | null
-          deleted_at: string | null
           duration: number | null
           exhibition_id: string | null
+          featured: boolean | null
+          file_url: string | null
+          gallery_album_id: string
           height: number | null
           id: string
           is_featured: boolean | null
@@ -641,37 +856,41 @@ export type Database = {
           mime_type: string | null
           original_file_name: string | null
           photographer: string | null
+          public_url: string | null
           size_bytes: number | null
           sort_order: number | null
           status: string | null
+          storage_path: string | null
           tags: Json | null
+          thumbnail: string | null
           thumbnail_url: string | null
           title_bn: string | null
           title_en: string | null
           updated_at: string | null
           uploaded_by: string | null
           url: string
-          width: number | null
           videographer: string | null
-          copyright: string | null
           visibility: string | null
-          featured: boolean | null
-          public_url: string | null
-          storage_path: string | null
-          created_by: string | null
+          width: number | null
         }
         Insert: {
           alt_text?: string | null
+          caption?: string | null
           caption_bn?: string | null
           caption_en?: string | null
           category: string
           collection_id?: string | null
+          copyright?: string | null
           created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
           description_bn?: string | null
           description_en?: string | null
-          deleted_at?: string | null
           duration?: number | null
           exhibition_id?: string | null
+          featured?: boolean | null
+          file_url?: string | null
+          gallery_album_id: string
           height?: number | null
           id?: string
           is_featured?: boolean | null
@@ -679,37 +898,41 @@ export type Database = {
           mime_type?: string | null
           original_file_name?: string | null
           photographer?: string | null
+          public_url?: string | null
           size_bytes?: number | null
           sort_order?: number | null
           status?: string | null
+          storage_path?: string | null
           tags?: Json | null
+          thumbnail?: string | null
           thumbnail_url?: string | null
           title_bn?: string | null
           title_en?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
           url: string
-          width?: number | null
           videographer?: string | null
-          copyright?: string | null
           visibility?: string | null
-          featured?: boolean | null
-          public_url?: string | null
-          storage_path?: string | null
-          created_by?: string | null
+          width?: number | null
         }
         Update: {
           alt_text?: string | null
+          caption?: string | null
           caption_bn?: string | null
           caption_en?: string | null
           category?: string
           collection_id?: string | null
+          copyright?: string | null
           created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
           description_bn?: string | null
           description_en?: string | null
-          deleted_at?: string | null
           duration?: number | null
           exhibition_id?: string | null
+          featured?: boolean | null
+          file_url?: string | null
+          gallery_album_id?: string
           height?: number | null
           id?: string
           is_featured?: boolean | null
@@ -717,24 +940,22 @@ export type Database = {
           mime_type?: string | null
           original_file_name?: string | null
           photographer?: string | null
+          public_url?: string | null
           size_bytes?: number | null
           sort_order?: number | null
           status?: string | null
+          storage_path?: string | null
           tags?: Json | null
+          thumbnail?: string | null
           thumbnail_url?: string | null
           title_bn?: string | null
           title_en?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
           url?: string
-          width?: number | null
           videographer?: string | null
-          copyright?: string | null
           visibility?: string | null
-          featured?: boolean | null
-          public_url?: string | null
-          storage_path?: string | null
-          created_by?: string | null
+          width?: number | null
         }
         Relationships: [
           {
@@ -745,10 +966,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "gallery_media_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "gallery_media_exhibition_id_fkey"
             columns: ["exhibition_id"]
             isOneToOne: false
             referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_media_gallery_album_id_fkey"
+            columns: ["gallery_album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
             referencedColumns: ["id"]
           },
           {
@@ -902,26 +1137,50 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      increment_catalog_downloads: {
-        Args: { catalog_id: string }
-        Returns: undefined
-      }
+      increment_catalog_downloads:
+        | { Args: { catalog_id: string }; Returns: undefined }
+        | {
+            Args: {
+              catalog_id: string
+              p_country?: string
+              p_ip?: string
+              p_user_id?: string
+            }
+            Returns: undefined
+          }
       is_admin: { Args: never; Returns: boolean }
       is_committee: { Args: never; Returns: boolean }
+      moderate_artwork_transaction: {
+        Args: {
+          p_admin_id: string
+          p_artwork_id: string
+          p_reason?: string
+          p_status: Database["public"]["Enums"]["artwork_status"]
+        }
+        Returns: Json
+      }
+      publish_catalog_transaction: {
+        Args: { p_admin_id: string; p_catalog_id: string }
+        Returns: undefined
+      }
+      resubmit_artwork: {
+        Args: { p_artist_id: string; p_artwork_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       artwork_status: "pending" | "approved" | "rejected" | "changes_requested"
       availability_status: "available" | "sold" | "not_for_sale"
       exhibition_status:
         | "draft"
-        | "upcoming"
-        | "ongoing"
         | "registration_open"
         | "submission_open"
         | "submission_closed"
         | "reviewing"
         | "published"
         | "archived"
+        | "upcoming"
+        | "ongoing"
       media_type: "image" | "video"
       notification_type:
         | "registration_approved"
@@ -933,7 +1192,7 @@ export type Database = {
         | "new_exhibition"
         | "changes_requested"
       participant_status: "pending" | "approved" | "rejected"
-      user_role: "admin" | "member" | "owner"
+      user_role: "admin" | "member" | "committee" | "owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1074,6 +1333,8 @@ export const Constants = {
         "reviewing",
         "published",
         "archived",
+        "upcoming",
+        "ongoing",
       ],
       media_type: ["image", "video"],
       notification_type: [
@@ -1087,7 +1348,7 @@ export const Constants = {
         "changes_requested",
       ],
       participant_status: ["pending", "approved", "rejected"],
-      user_role: ["admin", "member", "owner"],
+      user_role: ["admin", "member", "committee", "owner"],
     },
   },
 } as const

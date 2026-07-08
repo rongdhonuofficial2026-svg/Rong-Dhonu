@@ -17,10 +17,16 @@ type ActionType =
   | 'delete_media'
   | 'bulk_update_media'
   | 'bulk_delete_media'
+  | 'create_album'
+  | 'update_album'
+  | 'delete_album'
+  | 'bulk_move_media'
+  | 'bulk_change_category'
+  | 'bulk_feature_media'
 
 export async function logAudit(
   action: ActionType,
-  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media',
+  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media' | 'gallery_album',
   entityId: string,
   details?: Record<string, any>
 ) {

@@ -6,8 +6,13 @@ export type GalleryMediaUpdate = Database['public']['Tables']['gallery_media']['
 
 export type GalleryMediaStatus = 'published' | 'draft' | 'archived'
 
+export type GalleryAlbumRow = Database['public']['Tables']['gallery_albums']['Row']
+export type GalleryAlbumInsert = Database['public']['Tables']['gallery_albums']['Insert']
+export type GalleryAlbumUpdate = Database['public']['Tables']['gallery_albums']['Update']
+
 export interface GalleryMediaWithExhibition extends GalleryMediaRow {
   exhibitions: { theme_en: string; theme_bn: string | null; year: number } | null
+  gallery_albums?: GalleryAlbumRow | null
 }
 
 export type GalleryCategory = string

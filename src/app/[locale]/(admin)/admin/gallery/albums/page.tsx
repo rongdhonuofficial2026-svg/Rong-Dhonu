@@ -1,15 +1,16 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
-import { ArrowLeft, ImageIcon } from "lucide-react"
+import Image from "next/image"
+import { FolderHeart, ArrowLeft } from "lucide-react"
 import { Link } from "@/lib/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { CustomGalleryUploader } from "@/components/admin/gallery/CustomGalleryUploader"
+import { AlbumManager } from "@/components/admin/gallery/AlbumManager"
 
 export const metadata = {
-  title: "Upload Gallery Media — Rongdhono Admin",
+  title: "Gallery Albums — Rongdhono Admin",
 }
 
-export default async function NewGalleryMediaPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function GalleryAlbumsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const supabase = await createClient()
 
@@ -29,30 +30,34 @@ export default async function NewGalleryMediaPage({ params }: { params: Promise<
     notFound()
   }
 
-  // 2. Fetch categories
+  // 2. Fetch categories for independent album creations
   const { data: categories } = await supabase
     .from('gallery_categories')
-    .select('*')
+    .select('id, slug, name_en')
     .order('sort_order', { ascending: true })
 
-  // 3. Fetch exhibitions
-  const { data: exhibitions } = await supabase
-    .from('exhibitions')
-    .select('id, theme_en, theme_bn, year, status')
-    .neq('is_deleted', true)
-    .order('year', { ascending: false })
-    .order('exhibition_start', { ascending: false })
-
-  // 4. Fetch independent albums
-  const { data: independentAlbums } = await supabase
+  // 3. Fetch albums with nested gallery_media for dynamic client-side stats
+  const { data: albums, error: albErr } = await supabase
     .from('gallery_albums')
-    .select('id, title, title_en, title_bn, category_slug')
-    .eq('album_type', 'independent')
+    .select(`
+      *,
+      gallery_media (
+        id,
+        media_type,
+        url,
+        size_bytes,
+        created_at
+      )
+    `)
     .order('created_at', { ascending: false })
 
+  if (albErr) {
+    return <div className="p-8 text-destructive">Error loading gallery albums: {albErr.message}</div>
+  }
+
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-24">
-      {/* Breadcrumb & Header */}
+    <div className="space-y-8 pb-24">
+      {/* Breadcrumbs & Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" asChild className="mt-1 shrink-0">
           <Link href="/admin/gallery">
@@ -63,14 +68,14 @@ export default async function NewGalleryMediaPage({ params }: { params: Promise<
           <div className="flex items-center gap-2 mb-2 text-xs font-mono uppercase tracking-widest text-muted-foreground">
             <Link href="/admin/gallery" className="hover:text-accent transition-colors">Gallery</Link>
             <span>&gt;</span>
-            <span className="text-accent">Upload Media</span>
+            <span className="text-accent">Albums Management</span>
           </div>
           <h1 className="font-serif text-3xl md:text-4xl font-bold leading-tight flex items-center gap-3">
-            <ImageIcon className="w-6 h-6 text-accent shrink-0" />
-            Upload Gallery Media
+            <FolderHeart className="w-6 h-6 text-accent shrink-0" />
+            Albums Management
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-relaxed">
-            Upload photographs or videos directly into the Rongdhono media archive. Associate them with an exhibition or store them independently for future use.
+            Create, edit, and organize media collections. Set cover overrides, manage visibility, configure SEO attributes, and track usage statistics.
           </p>
         </div>
       </div>
@@ -78,12 +83,10 @@ export default async function NewGalleryMediaPage({ params }: { params: Promise<
       {/* Divider */}
       <div className="h-px bg-gradient-to-r from-accent/30 via-border/60 to-transparent" />
 
-      {/* Upload Form Component */}
-      <CustomGalleryUploader 
-        locale={locale} 
+      {/* Album Manager component */}
+      <AlbumManager 
+        initialAlbums={(albums || []) as any} 
         categories={categories || []} 
-        exhibitions={exhibitions || []} 
-        independentAlbums={independentAlbums || []}
       />
     </div>
   )

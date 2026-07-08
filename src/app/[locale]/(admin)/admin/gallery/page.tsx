@@ -31,8 +31,13 @@ export default async function GalleryManagementPage({ params }: { params: Promis
     .neq('is_deleted', true)
     .order('year', { ascending: false })
 
-  if (mediaErr || catErr || exErr) {
-    return <div className="p-8 text-destructive">Error loading gallery: {mediaErr?.message || catErr?.message || exErr?.message}</div>
+  const { data: albums, error: albErr } = await supabase
+    .from('gallery_albums')
+    .select('*')
+    .order('title', { ascending: true })
+
+  if (mediaErr || catErr || exErr || albErr) {
+    return <div className="p-8 text-destructive">Error loading gallery: {mediaErr?.message || catErr?.message || exErr?.message || albErr?.message}</div>
   }
 
   return (
@@ -71,6 +76,7 @@ export default async function GalleryManagementPage({ params }: { params: Promis
         initialMedia={media || []} 
         categories={categories || []} 
         exhibitions={exhibitions || []} 
+        albums={albums || []}
       />
 
     </div>

@@ -17,60 +17,68 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
 
   const supabase = await createClient()
 
-  // Fetch published exhibitions (Albums) and their media to calculate counts
-  const { data: exhibitions, error } = await supabase
-    .from('exhibitions')
+  // Fetch published albums along with their media to compute counts and cover images
+  const { data: dbAlbums, error: albumErr } = await supabase
+    .from('gallery_albums')
     .select(`
       *,
       gallery_media (
         id,
         media_type,
-        status
+        status,
+        url,
+        is_featured,
+        featured
       )
     `)
-    .in('status', ['ongoing', 'archived'])
-    .neq('is_deleted', true)
-    .order('year', { ascending: false })
-    .order('exhibition_start', { ascending: false })
-
-  // Process data for the frontend
-  const albums = (exhibitions || []).map(ex => {
-    const publishedMedia = ex.gallery_media?.filter((m: any) => m.status === 'published') || []
-    return {
-      ...ex,
-      photoCount: publishedMedia.filter((m: any) => m.media_type === 'image').length,
-      videoCount: publishedMedia.filter((m: any) => m.media_type === 'video').length,
-      // We don't need to send the full media array to the client for this view
-      gallery_media: undefined
-    }
-  })
-
-  // Fetch independent media (not linked to any exhibition)
-  const { data: independentMedia } = await supabase
-    .from('gallery_media')
-    .select('id, media_type, status, url')
-    .is('exhibition_id', null)
     .eq('status', 'published')
+    .order('is_featured', { ascending: false })
     .order('created_at', { ascending: false })
 
-  if (independentMedia && independentMedia.length > 0) {
-    const photoCount = independentMedia.filter((m: any) => m.media_type === 'image').length
-    const videoCount = independentMedia.filter((m: any) => m.media_type === 'video').length
+  if (albumErr) {
+    return <div className="p-8 text-destructive">Error loading gallery: {albumErr.message}</div>
+  }
+
+  // Process albums for the frontend grid mapping Cover overrides and fallbacks
+  const albums = (dbAlbums || []).map(album => {
+    const publishedMedia = album.gallery_media?.filter((m: any) => m.status === 'published') || []
+    const photoCount = publishedMedia.filter((m: any) => m.media_type === 'image').length
+    const videoCount = publishedMedia.filter((m: any) => m.media_type === 'video').length
+
+    // Determine cover URL by Priority: cover_media_id -> featured -> first uploaded image
+    let coverUrl: string | null = null
+    if (album.cover_media_id) {
+      const explicitCover = publishedMedia.find((m: any) => m.id === album.cover_media_id)
+      if (explicitCover) coverUrl = explicitCover.url
+    }
     
-    albums.unshift({
-      id: 'archive',
-      theme_en: 'Rongdhono Archive',
-      theme_bn: 'রঙধনু আর্কাইভ',
-      description_en: 'A collection of general memory albums, ceremonies, behind-the-scenes look and VIP guests.',
-      description_bn: 'রঙধনু কার্যক্রম, সাধারণ স্মারক অ্যালবাম, অনুষ্ঠান ও পর্দার আড়ালের দৃশ্যাবলী।',
-      hero_image_url: independentMedia[0]?.url || null,
-      exhibition_start: null,
+    if (!coverUrl) {
+      // Find featured image
+      const featured = publishedMedia.find((m: any) => m.is_featured === true || m.featured === true)
+      if (featured) coverUrl = featured.url
+    }
+    
+    if (!coverUrl) {
+      // Fallback to first uploaded image
+      const firstImg = publishedMedia.find((m: any) => m.media_type === 'image')
+      if (firstImg) coverUrl = firstImg.url
+    }
+
+    return {
+      id: album.id,
+      slug: album.slug,
+      theme_en: album.title_en,
+      theme_bn: album.title_bn || album.title_en,
+      description_en: album.description_en,
+      description_bn: album.description_bn,
+      hero_image_url: coverUrl,
+      exhibition_start: album.created_at,
       exhibition_end: null,
-      year: new Date().getFullYear(),
+      year: album.created_at ? new Date(album.created_at).getFullYear() : new Date().getFullYear(),
       photoCount,
       videoCount
-    })
-  }
+    }
+  })
 
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">

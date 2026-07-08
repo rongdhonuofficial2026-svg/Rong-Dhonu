@@ -10,6 +10,7 @@ import { LuxuryCard } from '@/components/admin/ui/LuxuryCard'
 
 interface Album {
   id: string
+  slug?: string
   theme_en: string
   theme_bn: string
   description_en: string | null
@@ -140,7 +141,7 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
             if (totalMedia === 0) return null // Hide empty albums
 
             return (
-              <Link key={album.id} href={`/gallery/${album.id}`} className="group block">
+              <Link key={album.id} href={`/gallery/${album.slug || album.id}`} className="group block">
                 <LuxuryCard padding="none" className="overflow-hidden h-full flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
                   <div className="relative aspect-[4/3] bg-muted/20 overflow-hidden">
                     {album.hero_image_url ? (
