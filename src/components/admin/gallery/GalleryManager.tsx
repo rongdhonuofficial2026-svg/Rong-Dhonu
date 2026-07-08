@@ -16,9 +16,10 @@ import { Button } from '@/components/ui/button'
 interface GalleryManagerProps {
   initialMedia: GalleryMediaWithExhibition[]
   categories: Database['public']['Tables']['gallery_categories']['Row'][]
+  exhibitions: any[]
 }
 
-export function GalleryManager({ initialMedia, categories }: GalleryManagerProps) {
+export function GalleryManager({ initialMedia, categories, exhibitions }: GalleryManagerProps) {
   const [media, setMedia] = useState<GalleryMediaWithExhibition[]>(initialMedia)
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -196,6 +197,7 @@ export function GalleryManager({ initialMedia, categories }: GalleryManagerProps
         onSelectToggle={handleSelectToggle}
         onSelectAll={() => handleSelectAll()}
         categories={categories}
+        exhibitions={exhibitions}
       />
     </div>
   )

@@ -23,25 +23,64 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
   const { locale, id } = await params
   const supabase = await createClient()
 
-  const { data: album, error: albumError } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle()
+  let album: any = null
+  let initialMedia: any[] = []
 
-  if (albumError || !album || album.status !== 'published' || album.is_deleted) {
-    notFound()
+  if (id === 'archive') {
+    // Construct virtual album for general/independent uploads
+    album = {
+      id: 'archive',
+      theme_en: 'Rongdhono Archive',
+      theme_bn: 'রঙধনু আর্কাইভ',
+      description_en: 'A collection of general memory albums, ceremonies, behind-the-scenes look and VIP guests.',
+      description_bn: 'রঙধনু কার্যক্রম, সাধারণ স্মারক অ্যালবাম, অনুষ্ঠান ও পর্দার আড়ালের দৃশ্যাবলী।',
+      exhibition_start: null,
+      year: new Date().getFullYear(),
+      status: 'published',
+      is_deleted: false,
+      hero_image_url: null
+    }
+
+    const { data: mediaData } = await supabase
+      .from('gallery_media')
+      .select('*, exhibitions(theme_en, theme_bn, year)')
+      .is('exhibition_id', null)
+      .eq('status', 'published')
+      .order('is_featured', { ascending: false })
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false })
+      .limit(20)
+    
+    initialMedia = mediaData || []
+    
+    // Set hero banner of virtual album to the first media item
+    if (initialMedia.length > 0) {
+      album.hero_image_url = initialMedia[0].url
+    }
+  } else {
+    const { data: albumData, error: albumError } = await supabase
+      .from('exhibitions')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (albumError || !albumData || albumData.status !== 'published' || albumData.is_deleted) {
+      notFound()
+    }
+    album = albumData
+
+    const { data: mediaData } = await supabase
+      .from('gallery_media')
+      .select('*, exhibitions(theme_en, theme_bn, year)')
+      .eq('exhibition_id', id)
+      .eq('status', 'published')
+      .order('is_featured', { ascending: false })
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false })
+      .limit(20)
+      
+    initialMedia = mediaData || []
   }
-
-  // Initial media fetch
-  const { data: initialMedia } = await supabase
-    .from('gallery_media')
-    .select('*, exhibitions(theme_en, theme_bn, year)')
-    .eq('exhibition_id', id)
-    .eq('status', 'published')
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false })
-    .limit(20)
 
   const title = locale === 'bn' ? album.theme_bn : album.theme_en
   const description = locale === 'bn' ? album.description_bn : album.description_en

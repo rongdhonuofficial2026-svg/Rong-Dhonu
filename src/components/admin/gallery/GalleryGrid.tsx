@@ -19,9 +19,10 @@ interface GalleryGridProps {
   onSelectToggle: (id: string) => void
   onSelectAll: () => void
   categories: Database['public']['Tables']['gallery_categories']['Row'][]
+  exhibitions: any[]
 }
 
-export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, categories }: GalleryGridProps) {
+export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, categories, exhibitions }: GalleryGridProps) {
   const [editingItem, setEditingItem] = useState<GalleryMediaWithExhibition | null>(null)
 
   const handleDelete = async (id: string, url: string) => {
@@ -213,6 +214,7 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, c
         open={!!editingItem} 
         onOpenChange={(isOpen) => !isOpen && setEditingItem(null)}
         categories={categories}
+        exhibitions={exhibitions}
       />
     </>
   )

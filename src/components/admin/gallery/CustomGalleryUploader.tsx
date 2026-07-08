@@ -400,22 +400,19 @@ export function CustomGalleryUploader({ locale, categories, exhibitions }: Custo
                   }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 >
-                  <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => updateField("exhibition_association", "associate")}>
+                  <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
                     <RadioGroupItem value="associate" id="r_associate" className="mt-1" />
-                    <div className="space-y-1">
-                      <label htmlFor="r_associate" className="font-semibold text-sm cursor-pointer">Associate with Exhibition</label>
-                      <p className="text-xs text-muted-foreground">Map to a specific roster exhibition event.</p>
-                    </div>
+                    <label htmlFor="r_associate" className="space-y-1 cursor-pointer w-full flex flex-col">
+                      <span className="font-semibold text-sm">Associate with Exhibition</span>
+                      <span className="text-xs text-muted-foreground">Map to a specific roster exhibition event.</span>
+                    </label>
                   </div>
-                  <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => {
-                    updateField("exhibition_association", "independent")
-                    updateField("exhibition_id", "none")
-                  }}>
+                  <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
                     <RadioGroupItem value="independent" id="r_independent" className="mt-1" />
-                    <div className="space-y-1">
-                      <label htmlFor="r_independent" className="font-semibold text-sm cursor-pointer">Independent Gallery Media</label>
-                      <p className="text-xs text-muted-foreground">Store independently without linking to an exhibition.</p>
-                    </div>
+                    <label htmlFor="r_independent" className="space-y-1 cursor-pointer w-full flex flex-col">
+                      <span className="font-semibold text-sm">Independent Gallery Media</span>
+                      <span className="text-xs text-muted-foreground">Store independently without linking to an exhibition.</span>
+                    </label>
                   </div>
                 </RadioGroup>
 
@@ -561,23 +558,23 @@ export function CustomGalleryUploader({ locale, categories, exhibitions }: Custo
                     onValueChange={val => updateField("visibility", val)}
                     className="grid grid-cols-1 md:grid-cols-2 gap-4"
                   >
-                    <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => updateField("visibility", "public")}>
+                    <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
                       <RadioGroupItem value="public" id="v_public" className="mt-1" />
-                      <div className="space-y-1">
-                        <label htmlFor="v_public" className="font-semibold text-sm flex items-center gap-1.5 cursor-pointer">
+                      <label htmlFor="v_public" className="space-y-1 cursor-pointer w-full flex flex-col">
+                        <span className="font-semibold text-sm flex items-center gap-1.5">
                           <Eye className="w-3.5 h-3.5 text-emerald-400" /> Public
-                        </label>
-                        <p className="text-xs text-muted-foreground">Instantly index into the public gallery grid archive.</p>
-                      </div>
+                        </span>
+                        <span className="text-xs text-muted-foreground">Instantly index into the public gallery grid archive.</span>
+                      </label>
                     </div>
-                    <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => updateField("visibility", "hidden")}>
+                    <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
                       <RadioGroupItem value="hidden" id="v_hidden" className="mt-1" />
-                      <div className="space-y-1">
-                        <label htmlFor="v_hidden" className="font-semibold text-sm flex items-center gap-1.5 cursor-pointer">
+                      <label htmlFor="v_hidden" className="space-y-1 cursor-pointer w-full flex flex-col">
+                        <span className="font-semibold text-sm flex items-center gap-1.5">
                           <EyeOff className="w-3.5 h-3.5 text-rose-400" /> Hidden / Admin Only
-                        </label>
-                        <p className="text-xs text-muted-foreground">Store safely in the database backend. Access only via admin panels.</p>
-                      </div>
+                        </span>
+                        <span className="text-xs text-muted-foreground">Store safely in the database backend. Access only via admin panels.</span>
+                      </label>
                     </div>
                   </RadioGroup>
                 </div>

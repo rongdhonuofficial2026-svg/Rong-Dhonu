@@ -45,6 +45,33 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
     }
   })
 
+  // Fetch independent media (not linked to any exhibition)
+  const { data: independentMedia } = await supabase
+    .from('gallery_media')
+    .select('id, media_type, status, url')
+    .is('exhibition_id', null)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+
+  if (independentMedia && independentMedia.length > 0) {
+    const photoCount = independentMedia.filter((m: any) => m.media_type === 'image').length
+    const videoCount = independentMedia.filter((m: any) => m.media_type === 'video').length
+    
+    albums.unshift({
+      id: 'archive',
+      theme_en: 'Rongdhono Archive',
+      theme_bn: 'রঙধনু আর্কাইভ',
+      description_en: 'A collection of general memory albums, ceremonies, behind-the-scenes look and VIP guests.',
+      description_bn: 'রঙধনু কার্যক্রম, সাধারণ স্মারক অ্যালবাম, অনুষ্ঠান ও পর্দার আড়ালের দৃশ্যাবলী।',
+      hero_image_url: independentMedia[0]?.url || null,
+      exhibition_start: null,
+      exhibition_end: null,
+      year: new Date().getFullYear(),
+      photoCount,
+      videoCount
+    })
+  }
+
   return (
     <main className="min-h-screen pb-32 bg-[#F5F5F0]">
       {/* Decorative Textures */}

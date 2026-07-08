@@ -652,6 +652,13 @@ export type Database = {
           uploaded_by: string | null
           url: string
           width: number | null
+          videographer: string | null
+          copyright: string | null
+          visibility: string | null
+          featured: boolean | null
+          public_url: string | null
+          storage_path: string | null
+          created_by: string | null
         }
         Insert: {
           alt_text?: string | null
@@ -683,6 +690,13 @@ export type Database = {
           uploaded_by?: string | null
           url: string
           width?: number | null
+          videographer?: string | null
+          copyright?: string | null
+          visibility?: string | null
+          featured?: boolean | null
+          public_url?: string | null
+          storage_path?: string | null
+          created_by?: string | null
         }
         Update: {
           alt_text?: string | null
@@ -714,6 +728,13 @@ export type Database = {
           uploaded_by?: string | null
           url?: string
           width?: number | null
+          videographer?: string | null
+          copyright?: string | null
+          visibility?: string | null
+          featured?: boolean | null
+          public_url?: string | null
+          storage_path?: string | null
+          created_by?: string | null
         }
         Relationships: [
           {

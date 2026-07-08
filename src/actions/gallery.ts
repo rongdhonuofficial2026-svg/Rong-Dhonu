@@ -39,9 +39,30 @@ export async function createGalleryMediaRecord(data: GalleryMediaInsert) {
 export async function updateGalleryMedia(id: string, updates: GalleryMediaUpdate) {
   const supabase = await createClient()
 
+  // 1. Fetch current media to track exhibition changes
+  const { data: existing, error: fetchError } = await supabase
+    .from('gallery_media')
+    .select('exhibition_id, visibility, status')
+    .eq('id', id)
+    .single()
+
+  if (fetchError || !existing) {
+    return { success: false, error: 'Media asset not found' }
+  }
+
+  const finalUpdates: any = { ...updates }
+
+  // 2. Map visibility directly to status
+  if (updates.visibility) {
+    finalUpdates.status = updates.visibility === 'public' ? 'published' : 'draft'
+  } else if (updates.status) {
+    finalUpdates.visibility = (updates.status === 'published') ? 'public' : 'hidden'
+  }
+
+  // 3. Update row in DB
   const { error } = await supabase
     .from('gallery_media')
-    .update(updates)
+    .update(finalUpdates)
     .eq('id', id)
 
   if (error) {
@@ -49,32 +70,56 @@ export async function updateGalleryMedia(id: string, updates: GalleryMediaUpdate
     return { success: false, error: error.message }
   }
 
-  await logAudit('update_media', 'gallery_media', id, updates)
+  await logAudit('update_media', 'gallery_media', id, finalUpdates)
 
+  // 4. Cache Invalidations
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
+  revalidatePath('/gallery/archive')
+
+  if (existing.exhibition_id) {
+    revalidatePath(`/exhibitions/${existing.exhibition_id}`)
+    revalidatePath(`/gallery/${existing.exhibition_id}`)
+  }
+
+  if (finalUpdates.exhibition_id && finalUpdates.exhibition_id !== existing.exhibition_id) {
+    revalidatePath(`/exhibitions/${finalUpdates.exhibition_id}`)
+    revalidatePath(`/gallery/${finalUpdates.exhibition_id}`)
+  }
+
   return { success: true }
 }
 
 export async function deleteGalleryMedia(id: string, storageUrl: string) {
   const supabase = await createClient()
 
-  // Extract path from public URL
-  // Example: https://.../storage/v1/object/public/gallery/path/to/file.jpg
-  try {
-    const urlObj = new URL(storageUrl)
-    const pathParts = urlObj.pathname.split('/gallery/')
-    if (pathParts.length === 2) {
-      const filePath = pathParts[1]
-      // Delete from storage
-      const { error: storageError } = await supabase.storage.from('gallery').remove([filePath])
-      if (storageError) console.error('Storage deletion error:', storageError)
+  // 1. Fetch record first to know its exhibition_id and storage_path
+  const { data: existing } = await supabase
+    .from('gallery_media')
+    .select('exhibition_id, storage_path')
+    .eq('id', id)
+    .single()
+
+  // 2. Extract path and delete from storage
+  let filePath = existing?.storage_path
+  if (!filePath && storageUrl) {
+    try {
+      const urlObj = new URL(storageUrl)
+      const pathParts = urlObj.pathname.split('/gallery/')
+      if (pathParts.length === 2) {
+        filePath = pathParts[1]
+      }
+    } catch (e) {
+      console.error('Failed to parse storage URL', e)
     }
-  } catch (e) {
-    console.error('Failed to parse storage URL', e)
   }
 
-  // Delete from DB
+  if (filePath) {
+    const { error: storageError } = await supabase.storage.from('gallery').remove([filePath])
+    if (storageError) console.error('Storage deletion error:', storageError)
+  }
+
+  // 3. Delete from DB
   const { error } = await supabase.from('gallery_media').delete().eq('id', id)
 
   if (error) {
@@ -84,8 +129,15 @@ export async function deleteGalleryMedia(id: string, storageUrl: string) {
 
   await logAudit('delete_media', 'gallery_media', id, { storageUrl })
 
+  // 4. Robust Cache Invalidation
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
+  revalidatePath('/gallery/archive')
+  if (existing?.exhibition_id) {
+    revalidatePath(`/exhibitions/${existing.exhibition_id}`)
+    revalidatePath(`/gallery/${existing.exhibition_id}`)
+  }
+
   return { success: true }
 }
 
@@ -106,6 +158,7 @@ export async function bulkUpdateGalleryStatus(ids: string[], status: 'draft' | '
 
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
+  revalidatePath('/gallery/archive')
   return { success: true }
 }
 
@@ -144,6 +197,7 @@ export async function bulkDeleteGalleryMedia(items: { id: string, url: string }[
 
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
+  revalidatePath('/gallery/archive')
   return { success: true }
 }
 
@@ -304,7 +358,8 @@ export async function createGalleryMedia(formData: FormData) {
       status: visibility === 'public' ? 'published' : 'draft', // maps public/hidden to published/draft
       original_file_name: file.name,
       mime_type: mime,
-      size_bytes: file.size
+      size_bytes: file.size,
+      storage_path: storagePath
     })
     .select()
     .single()

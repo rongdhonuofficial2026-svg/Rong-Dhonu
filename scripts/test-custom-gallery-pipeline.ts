@@ -159,6 +159,30 @@ async function runTests() {
     createdRecordIds.push(record3.id)
     console.log(`✅ DB record inserted with visibility=hidden. ID: ${record3.id}`)
 
+    // 6.5 Verify column aliases backfill and triggers
+    console.log('\n[6.5] Verifying database column aliases and trigger sync...')
+    const { data: aliasCheck, error: aliasCheckErr } = await supabase
+      .from('gallery_media')
+      .select('id, url, public_url, is_featured, featured, uploaded_by, created_by, visibility')
+      .in('id', createdRecordIds)
+
+    if (aliasCheckErr) throw new Error(`Alias verification query failed: ${aliasCheckErr.message}`)
+    
+    for (const r of aliasCheck) {
+      if (r.url !== r.public_url) {
+        throw new Error(`Alias Mismatch: url "${r.url}" does not match public_url "${r.public_url}" for ID ${r.id}`)
+      }
+      if (!!r.is_featured !== !!r.featured) {
+        throw new Error(`Alias Mismatch: is_featured "${r.is_featured}" does not match featured "${r.featured}" for ID ${r.id}`)
+      }
+      // Note: uploaded_by can be null if not logged in, but we check match
+      if (r.uploaded_by !== r.created_by) {
+        throw new Error(`Alias Mismatch: uploaded_by "${r.uploaded_by}" does not match created_by "${r.created_by}" for ID ${r.id}`)
+      }
+      console.log(`  - Record ${r.id}: url === public_url, is_featured === featured, uploaded_by === created_by (Visibility: ${r.visibility})`)
+    }
+    console.log('✅ Column aliases and sync triggers verified successfully!')
+
     // 7. Verify RLS Policy restrictions on select
     console.log('\n[7] Verifying RLS Policy: fetching anonymously...')
     // Create anonymous client
