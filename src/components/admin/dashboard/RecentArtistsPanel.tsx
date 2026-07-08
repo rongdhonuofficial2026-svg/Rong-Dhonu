@@ -9,9 +9,9 @@ interface RecentArtistsPanelProps {
 
 export function RecentArtistsPanel({ artists }: RecentArtistsPanelProps) {
   return (
-    <div className="bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-2xl p-6 h-full">
+    <div className="bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-6 h-full shadow-xl shadow-black/25 hover:border-white/[0.15] transition-all duration-300">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-serif text-xl font-semibold tracking-tight">New Artists</h2>
+        <h2 className="font-serif text-xl font-semibold tracking-tight text-white">New Artists</h2>
         <Link href="/admin/users" className="text-xs text-accent hover:text-accent/80 font-medium transition-colors">
           View all →
         </Link>

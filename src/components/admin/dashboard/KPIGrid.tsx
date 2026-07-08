@@ -1,26 +1,25 @@
-import type { DashboardKPIs } from '@/types/dashboard'
+import type { DashboardKPIs, DashboardData } from '@/types/dashboard'
 import { MetricTile } from './MetricTile'
 import {
   Users, Image as ImageIcon, AlertCircle, CheckCircle,
-  Paintbrush, BookOpen, ImagePlus, Bell,
+  Paintbrush, BookOpen, ImagePlus, Bell, FileText
 } from 'lucide-react'
 
 interface KPIGridProps {
   kpis: DashboardKPIs
+  cmsSections: DashboardData['cmsSections']
 }
 
-export function KPIGrid({ kpis }: KPIGridProps) {
+export function KPIGrid({ kpis, cmsSections }: KPIGridProps) {
   const approvedText = kpis.approvalRate > 0 ? `${kpis.approvalRate}% approval rate` : undefined
   const artistTrend  = kpis.newArtistsThisMonth > 0 ? `+${kpis.newArtistsThisMonth} this month` : undefined
+  const totalCmsPages = Array.from(new Set(cmsSections.map(s => s.page))).filter(Boolean).length
 
   return (
-    <section aria-labelledby="kpi-heading">
-      <h2 id="kpi-heading" className="font-serif text-2xl font-semibold tracking-tight mb-6">
-        Platform Pulse
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <section aria-labelledby="kpi-heading" className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricTile
-          title="Total Artists"
+          title="Artists"
           value={kpis.totalArtists}
           icon={Users}
           colorTheme="emerald"
@@ -29,14 +28,16 @@ export function KPIGrid({ kpis }: KPIGridProps) {
           href="/admin/users"
         />
         <MetricTile
-          title="Total Artworks"
+          title="Artworks"
           value={kpis.totalArtworks}
           icon={ImageIcon}
           colorTheme="blue"
+          trend={approvedText}
+          trendPositive
           href="/admin/artworks"
         />
         <MetricTile
-          title="Pending Moderation"
+          title="Pending Reviews"
           value={kpis.pendingArtworks}
           icon={AlertCircle}
           colorTheme="amber"
@@ -45,28 +46,21 @@ export function KPIGrid({ kpis }: KPIGridProps) {
           href="/admin/artworks"
         />
         <MetricTile
-          title="Approved Artworks"
-          value={kpis.approvedArtworks}
-          icon={CheckCircle}
-          colorTheme="emerald"
-          trend={approvedText}
-          trendPositive
-        />
-        <MetricTile
-          title="Exhibitions"
-          value={kpis.totalExhibitions}
+          title="Active Exhibition"
+          value={kpis.activeExhibitions}
           icon={Paintbrush}
           colorTheme="purple"
-          subtitle={`${kpis.activeExhibitions} active`}
+          trend={`${kpis.totalExhibitions} total exhibitions`}
+          trendPositive={kpis.activeExhibitions > 0}
           href="/admin/exhibitions"
         />
-
         <MetricTile
           title="Published Catalogs"
           value={kpis.publishedCatalogs}
           icon={BookOpen}
           colorTheme="teal"
-          subtitle={`${kpis.draftCatalogs} in draft`}
+          trend={`${kpis.draftCatalogs} in draft`}
+          trendPositive={kpis.draftCatalogs === 0}
           href="/admin/catalogs"
         />
         <MetricTile
@@ -74,8 +68,18 @@ export function KPIGrid({ kpis }: KPIGridProps) {
           value={kpis.totalGalleryMedia}
           icon={ImagePlus}
           colorTheme="rose"
-          subtitle={`${kpis.totalImages} images · ${kpis.totalVideos} videos`}
+          trend={`${kpis.totalImages} images · ${kpis.totalVideos} videos`}
+          trendPositive
           href="/admin/gallery"
+        />
+        <MetricTile
+          title="CMS Pages"
+          value={totalCmsPages}
+          icon={FileText}
+          colorTheme="indigo"
+          trend={`${cmsSections.length} sections`}
+          trendPositive
+          href="/admin/cms"
         />
         <MetricTile
           title="Unread Alerts"

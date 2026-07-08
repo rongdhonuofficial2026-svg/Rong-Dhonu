@@ -47,11 +47,11 @@ export function ActivityTimeline({ audits }: ActivityTimelineProps) {
   const visible = showAll ? audits : audits.slice(0, 8)
 
   return (
-    <div className="bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-2xl p-6 h-full">
+    <div className="bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-6 h-full shadow-xl shadow-black/25 hover:border-white/[0.15] transition-all duration-300">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-muted-foreground" />
-          <h2 className="font-serif text-xl font-semibold tracking-tight">Recent Activity</h2>
+          <Activity className="w-5 h-5 text-white/55" />
+          <h2 className="font-serif text-xl font-semibold tracking-tight text-white">Recent Activity</h2>
         </div>
         {audits.length > 8 && (
           <button

@@ -1,12 +1,12 @@
-import type { DashboardData } from '@/types/dashboard'
+import type { DashboardData, DashboardKPIs } from '@/types/dashboard'
 import { Link } from '@/lib/i18n/routing'
-import { BookOpen, ImagePlus, FileText, ArrowRight } from 'lucide-react'
+import { BookOpen, ImagePlus, FileText, ArrowRight, Users } from 'lucide-react'
 
 interface PlatformMiniPanelsProps {
   catalogStatusBreakdown: DashboardData['catalogStatusBreakdown']
   galleryBreakdown: DashboardData['galleryBreakdown']
   cmsSections: DashboardData['cmsSections']
-  kpis: { totalCatalogDownloads: number }
+  kpis: DashboardKPIs
 }
 
 function MiniPanel({ title, href, icon: Icon, children }: {
@@ -53,14 +53,21 @@ export function PlatformMiniPanels({ catalogStatusBreakdown, galleryBreakdown, c
   return (
     <section aria-labelledby="platform-overview-heading">
       <h2 id="platform-overview-heading" className="sr-only">Platform Overview</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        {/* Catalogs */}
-        <MiniPanel title="Catalogs" href="/admin/catalogs" icon={BookOpen}>
-          <StatRow label="Published" value={catalogStatusBreakdown.published} />
-          <StatRow label="Drafts" value={catalogStatusBreakdown.draft} />
-          <StatRow label="Archived" value={catalogStatusBreakdown.archived} />
-          <StatRow label="Total Downloads" value={kpis.totalCatalogDownloads.toLocaleString()} />
+        {/* CMS */}
+        <MiniPanel title="CMS Engine" href="/admin/cms" icon={FileText}>
+          <StatRow label="Content Sections" value={cmsSections.length} />
+          <StatRow label="Pages Managed" value={[...new Set(cmsSections.map(s => s.page))].length} />
+          {lastCmsUpdate ? (
+            <StatRow
+              label="Last Updated"
+              value={new Date(lastCmsUpdate.updated_at || 0).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            />
+          ) : (
+             <StatRow label="Last Updated" value="—" />
+          )}
+          <StatRow label="Active Section" value={lastCmsUpdate?.section ?? '—'} />
         </MiniPanel>
 
         {/* Gallery */}
@@ -71,17 +78,20 @@ export function PlatformMiniPanels({ catalogStatusBreakdown, galleryBreakdown, c
           <StatRow label="Total Media" value={galleryBreakdown.images + galleryBreakdown.videos} />
         </MiniPanel>
 
-        {/* CMS */}
-        <MiniPanel title="CMS Engine" href="/admin/cms" icon={FileText}>
-          <StatRow label="Content Sections" value={cmsSections.length} />
-          <StatRow label="Pages Managed" value={[...new Set(cmsSections.map(s => s.page))].length} />
-          {lastCmsUpdate && (
-            <StatRow
-              label="Last Updated"
-              value={new Date(lastCmsUpdate.updated_at || 0).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-            />
-          )}
-          <StatRow label="Section" value={lastCmsUpdate?.section ?? '—'} />
+        {/* Catalogs */}
+        <MiniPanel title="Catalogs" href="/admin/catalogs" icon={BookOpen}>
+          <StatRow label="Published" value={catalogStatusBreakdown.published} />
+          <StatRow label="Drafts" value={catalogStatusBreakdown.draft} />
+          <StatRow label="Archived" value={catalogStatusBreakdown.archived} />
+          <StatRow label="Total Downloads" value={kpis.totalCatalogDownloads.toLocaleString()} />
+        </MiniPanel>
+
+        {/* Users */}
+        <MiniPanel title="Users & Directory" href="/admin/users" icon={Users}>
+          <StatRow label="Artists (Members)" value={kpis.totalArtists} />
+          <StatRow label="Administrators" value={kpis.totalAdmins} />
+          <StatRow label="Pending Applications" value={kpis.pendingParticipants} />
+          <StatRow label="New This Month" value={`+${kpis.newArtistsThisMonth}`} />
         </MiniPanel>
 
       </div>

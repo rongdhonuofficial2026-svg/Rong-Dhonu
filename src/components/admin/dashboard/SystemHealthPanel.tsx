@@ -73,11 +73,11 @@ export function SystemHealthPanel() {
   const allOk = checks.every(c => c.status === 'ok')
 
   return (
-    <div className="bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-2xl p-6">
+    <div className="bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-6 shadow-xl shadow-black/25 hover:border-white/[0.15] transition-all duration-300">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <div className={cn('w-2 h-2 rounded-full', allOk ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400')} />
-          <h2 className="font-serif text-xl font-semibold tracking-tight">System Health</h2>
+          <h2 className="font-serif text-xl font-semibold tracking-tight text-white">System Health</h2>
         </div>
         <div className="flex items-center gap-3">
           {lastChecked && (

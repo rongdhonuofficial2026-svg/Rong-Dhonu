@@ -34,60 +34,84 @@ export default async function AdminDashboardOverview({
   const data = await fetchDashboardData(supabase, user.id)
 
   return (
-    <div className="space-y-8 pb-16" role="main" aria-label="Admin Overview Dashboard">
+    <div className="space-y-[80px] pb-16 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-left" role="main" aria-label="Admin Overview Dashboard">
 
-      {/* 1. Executive summary hero */}
+      {/* SECTION 1: Executive Header */}
       <DashboardHero
         currentUser={data.currentUser}
         activeExhibition={data.activeExhibition}
       />
 
-      {/* 2. Platform KPIs */}
-      <KPIGrid kpis={data.kpis} />
+      {/* SECTION 2: Platform KPI Grid */}
+      <KPIGrid kpis={data.kpis} cmsSections={data.cmsSections} />
 
-      {/* 3. Pending actions + Exhibition lifecycle */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PendingActionsPanel kpis={data.kpis} />
-        <ExhibitionLifecycle activeExhibition={data.activeExhibition} />
-      </section>
-
-      {/* 4. Activity timeline + Quick actions */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ActivityTimeline audits={data.recentAudits} />
-        </div>
-        <div className="space-y-6">
+      {/* SECTION 3: Priority Center */}
+      <section className="space-y-6">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+          Priority Center
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          <PendingActionsPanel kpis={data.kpis} />
+          <ExhibitionLifecycle activeExhibition={data.activeExhibition} />
           <QuickActions />
         </div>
       </section>
 
-      {/* 5. Recent artworks */}
-      <RecentArtworksPanel artworks={data.recentArtworks} />
-
-      {/* 6. Recent artists + Upcoming events */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentArtistsPanel artists={data.recentArtists} />
-        <UpcomingEvents events={data.upcomingEvents} />
+      {/* SECTION 4: Operational Activity */}
+      <section className="space-y-6">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+          Operational Activity
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {/* Left Column: Recent Activity & Notifications (span-7) */}
+          <div className="lg:col-span-7 space-y-6 flex flex-col">
+            <div className="flex-1">
+              <ActivityTimeline audits={data.recentAudits} />
+            </div>
+            <div className="flex-1">
+              <NotificationCenter notifications={data.recentNotifications} />
+            </div>
+          </div>
+          {/* Right Column: Recent Submissions & New Artists (span-5) */}
+          <div className="lg:col-span-5 space-y-6 flex flex-col">
+            <div className="flex-1">
+              <RecentArtworksPanel artworks={data.recentArtworks} />
+            </div>
+            <div className="flex-1">
+              <RecentArtistsPanel artists={data.recentArtists} />
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* 7. Platform mini panels (Catalogs, Gallery, CMS) */}
-      <PlatformMiniPanels
-        catalogStatusBreakdown={data.catalogStatusBreakdown}
-        galleryBreakdown={data.galleryBreakdown}
-        cmsSections={data.cmsSections}
-        kpis={{ totalCatalogDownloads: data.kpis.totalCatalogDownloads }}
-      />
-
-      {/* 8. Notifications */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <NotificationCenter notifications={data.recentNotifications} />
+      {/* SECTION 5: Platform Modules */}
+      <section className="space-y-6">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+          Platform Modules
+        </h2>
+        <PlatformMiniPanels
+          catalogStatusBreakdown={data.catalogStatusBreakdown}
+          galleryBreakdown={data.galleryBreakdown}
+          cmsSections={data.cmsSections}
+          kpis={data.kpis}
+        />
       </section>
 
-      {/* 9. User overview with analytics */}
-      <UserOverviewPanel kpis={data.kpis} />
+      {/* SECTION 6: Analytics Snapshot */}
+      <section className="space-y-6">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+          Analytics Snapshot
+        </h2>
+        <UserOverviewPanel kpis={data.kpis} />
+      </section>
 
-      {/* 10. System health + platform footer */}
-      <SystemHealthPanel />
+      {/* SECTION 7: System Health */}
+      <section className="space-y-6">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+          System Health
+        </h2>
+        <SystemHealthPanel />
+      </section>
 
     </div>
   )

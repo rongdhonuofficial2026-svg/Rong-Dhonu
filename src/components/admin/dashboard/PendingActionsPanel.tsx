@@ -76,12 +76,12 @@ export function PendingActionsPanel({ kpis }: PendingActionsPanelProps) {
   }
 
   return (
-    <div className="bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-2xl p-6 h-full">
+    <div className="bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-6 h-full shadow-xl shadow-black/25 hover:border-white/[0.15] transition-all duration-300">
       <div className="flex items-center gap-2 mb-6">
-        <Clock className="w-5 h-5 text-muted-foreground" />
-        <h2 className="font-serif text-xl font-semibold tracking-tight">Pending Actions</h2>
+        <Clock className="w-5 h-5 text-white/50" />
+        <h2 className="font-serif text-xl font-semibold tracking-tight text-white">Pending Actions</h2>
         {actions.length > 0 && (
-          <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400">
+          <span className="ml-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30">
             {actions.length}
           </span>
         )}

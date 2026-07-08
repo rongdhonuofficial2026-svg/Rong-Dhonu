@@ -39,8 +39,8 @@ export function ExhibitionLifecycle({ activeExhibition }: ExhibitionLifecyclePro
   const currentIdx = getCurrentStageIndex(status)
 
   return (
-    <div className="bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-2xl p-6 h-full">
-      <h2 className="font-serif text-xl font-semibold tracking-tight mb-2">Exhibition Lifecycle</h2>
+    <div className="bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-6 h-full shadow-xl shadow-black/25 hover:border-white/[0.15] transition-all duration-300">
+      <h2 className="font-serif text-xl font-semibold tracking-tight text-white mb-2">Exhibition Lifecycle</h2>
       {activeExhibition ? (
         <p className="text-sm text-muted-foreground mb-6">
           {activeExhibition.theme_en} · {activeExhibition.year}

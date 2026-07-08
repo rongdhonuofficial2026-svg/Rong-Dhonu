@@ -1,6 +1,7 @@
 import type { ExhibitionRow, ProfileRow } from '@/types/dashboard'
 import { ClientSideCountdown } from './ClientSideCountdown'
-import { Palette, User, Wifi } from 'lucide-react'
+import { Palette, User, Wifi, Sparkles } from 'lucide-react'
+import { Link } from '@/lib/i18n/routing'
 
 interface DashboardHeroProps {
   currentUser: Pick<ProfileRow, 'full_name_en' | 'role' | 'avatar_url'>
@@ -30,7 +31,7 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
   const now = new Date()
 
   return (
-    <section className="relative rounded-3xl overflow-hidden min-h-[340px] flex flex-col justify-between p-8 md:p-12 museum-shadow bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1208]">
+    <section className="relative rounded-3xl overflow-hidden min-h-[340px] flex flex-col justify-between p-8 md:p-12 museum-shadow bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1208] border border-white/[0.08]">
       {/* Decorative ambient glow */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-accent/10 blur-3xl" />
@@ -81,6 +82,20 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
             {activeExhibition.exhibition_start && (
               <ClientSideCountdown targetDate={activeExhibition.exhibition_start} />
             )}
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/admin/cms"
+                className="px-6 h-10 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-accent bg-[#C9A227] text-black hover:bg-[#b08d22] transition-all duration-300 shadow-[0_4px_14px_rgba(201,162,39,0.35)]"
+              >
+                Open Content Studio
+              </Link>
+              <Link
+                href="/admin/artworks"
+                className="px-6 h-10 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+              >
+                Review Submissions
+              </Link>
+            </div>
           </>
         ) : (
           <div>
@@ -90,6 +105,14 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
             <p className="text-white/40 text-sm">
               Create a new exhibition to begin the administrative cycle.
             </p>
+            <div className="mt-6">
+              <Link
+                href="/admin/exhibitions/new"
+                className="px-6 h-10 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-[#C9A227] bg-[#C9A227]/10 text-[#C9A227] hover:bg-[#C9A227] hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(200,169,106,0.15)]"
+              >
+                Create Exhibition
+              </Link>
+            </div>
           </div>
         )}
       </div>
