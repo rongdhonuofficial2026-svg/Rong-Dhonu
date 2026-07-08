@@ -1,10 +1,7 @@
 import { getCmsContent } from "@/lib/cms/content"
 import { generateDynamicMetadata } from "@/lib/seo"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react"
-import { PremiumImage } from "@/components/ui/PremiumImage"
+import { Link } from "@/lib/i18n/routing"
+import { ContactScripts } from "@/components/public/contact/ContactScripts"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -28,180 +25,203 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const infoContent = await getCmsContent('contact', 'info', locale)
 
   return (
-    <main className="flex flex-col w-full min-h-screen bg-[#EFE6D2]">
+    <main className="w-full">
+      <ContactScripts />
       
-      {/* Decorative Textures */}
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
-
-      {/* Cinematic Hero */}
-      <section className="relative w-full h-[60vh] min-h-[500px] flex flex-col justify-center overflow-hidden bg-[#0B0908]">
-        <div className="absolute inset-0 z-0">
-          <PremiumImage 
-            src="/images/placeholders/exhibition.webp"
-            fallbackSrc="/images/placeholders/exhibition.webp"
-            alt="Gallery Atmosphere"
-            fill
-            priority
-            className="object-cover opacity-40 sepia-[0.3] mix-blend-luminosity"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#EFE6D2] via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0908]/90 via-black/30 to-transparent" />
+      {/* ============ CONTACT HERO ============ */}
+      <header className="contact-hero artwork">
+        <img 
+          src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?q=80&w=2400&auto=format&fit=crop" 
+          alt="Guests conversing warmly during a gallery reception" 
+          loading="eager"
+        />
+        <div className="scrim"></div>
+        <div className="frame-edge"></div>
+        <div className="contact-inner">
+          <div className="eyebrow reveal">{locale === 'bn' ? "পরিদর্শন ও সংযোগ" : "Visit & Connect"}</div>
+          <h1 className="reveal" dangerouslySetInnerHTML={{
+            __html: heroContent.title || (locale === 'bn' ? "যোগাযোগ <em>করুন</em>" : "Get in <em>Touch</em>")
+          }} />
+          <p className="reveal">
+            {heroContent.subtitle || (locale === 'bn' 
+              ? "আমরা আপনার কথা শুনতে চাই। আমাদের সিলভার থ্রেড আর্ট গ্যালারিতে পরিদর্শন করুন, অথবা নিচে একটি বার্তা পাঠান — আমাদের কিউরেটরিয়াল দল ব্যক্তিগতভাবে প্রতিটি অনুসন্ধানের উত্তর দেয়।" 
+              : "We would love to hear from you. Visit us at the Silver Thread Art Gallery, or send a note below — our curatorial team replies personally to every inquiry.")}
+          </p>
         </div>
-        
-        <div className="relative z-10 container mx-auto px-6 max-w-7xl pt-20">
-          <div className="max-w-2xl space-y-6">
-            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-[#F4EEDF] drop-shadow-xl">
-              {heroContent.title || (locale === 'bn' ? "যোগাযোগ" : "Get in Touch")}
-            </h1>
-            <div className="w-16 h-[2px] bg-[#F4C662]/50" />
-            <p className="text-xl md:text-2xl text-[#F4EEDF]/80 font-light leading-relaxed">
-              {heroContent.subtitle || (locale === 'bn' ? "আমরা আপনার কথা শুনতে চাই" : "We would love to hear from you. Reach out for inquiries, partnerships, or general questions.")}
-            </p>
-          </div>
-        </div>
-      </section>
+      </header>
 
-      <div className="container relative z-20 mx-auto px-6 max-w-7xl -mt-20 pb-32">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
-          
-          {/* Left Column: Contact Info & Map */}
-          <div className="lg:col-span-5 space-y-8">
-            {/* Premium Info Cards */}
-            <div className="bg-[#151210] p-10 md:p-14 text-[#F4EEDF] border border-white/[0.08] shadow-2xl rounded-none space-y-12 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4C662]/5 rounded-full blur-[80px] pointer-events-none" />
-              
-              <div className="relative z-10 space-y-10">
-                <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-[#B4233A] group-hover:border-[#B4233A] transition-colors duration-500 shadow-lg">
-                    <MapPin className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">{locale === 'bn' ? "ঠিকানা" : "Location"}</p>
-                    <p className="font-serif text-2xl font-medium">{infoContent.venue || "The Grand Gallery"}</p>
-                    <p className="text-white/70 font-light mt-2 leading-relaxed max-w-xs">{infoContent.address || "123 Arts District, Dhaka, Bangladesh"}</p>
-                  </div>
+      {/* ============ CONTACT BODY ============ */}
+      <section className="contact-body">
+        <div className="contact-grid">
+
+          <div className="contact-col-left">
+            <div className="info-card reveal">
+              <div className="info-row">
+                <div className="info-icon">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 18s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z" stroke="currentColor" strokeWidth="1.5"/>
+                    <circle cx="10" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
                 </div>
-                
-                <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-[#B4233A] group-hover:border-[#B4233A] transition-colors duration-500 shadow-lg">
-                    <Mail className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">{locale === 'bn' ? "ইমেইল" : "Email"}</p>
-                    <p className="font-serif text-xl font-medium text-white/90">{infoContent.email || "inquiries@rongdhono.art"}</p>
-                  </div>
+                <div>
+                  <div className="info-label">{locale === 'bn' ? "ঠিকানা" : "Location"}</div>
+                  <b>{infoContent.venue || "Silver Thread Art Gallery"}</b>
+                  <span>{infoContent.address || "Opposite Rabindra Bhavan (Southern Auditorium), Berhampore, West Bengal, India"}</span>
                 </div>
-                
-                <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-[#B4233A] group-hover:border-[#B4233A] transition-colors duration-500 shadow-lg">
-                    <Phone className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">{locale === 'bn' ? "ফোন" : "Phone"}</p>
-                    <p className="font-serif text-xl font-medium text-white/90">{infoContent.phone || "+880 1234 567890"}</p>
-                  </div>
+              </div>
+              <div className="info-row">
+                <div className="info-icon">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M3 5.5l7 5.5 7-5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="info-label">{locale === 'bn' ? "ইমেইল" : "Email"}</div>
+                  <b>{infoContent.email || "contact@rongdhono.art"}</b>
+                </div>
+              </div>
+              <div className="info-row">
+                <div className="info-icon">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 3h3l2 5-2 1a10 10 0 005 5l1-2 5 2v3a2 2 0 01-2 2 15 15 0 01-14-14 2 2 0 012-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="info-label">{locale === 'bn' ? "ফোন" : "Phone"}</div>
+                  <b>{infoContent.phone || "+91 98765 43210"}</b>
                 </div>
               </div>
               
-              <div className="pt-10 border-t border-white/10 relative z-10">
-                <div className="flex items-center justify-between text-white/50 text-[10px] font-bold uppercase tracking-[0.2em]">
+              <div className="hours-block">
+                <div className="hours-head">
                   <span>{locale === 'bn' ? "গ্যালারি খোলা থাকার সময়" : "Gallery Hours"}</span>
-                  <Clock className="w-4 h-4 text-[#F4C662]" />
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
                 </div>
-                <p className="font-serif text-lg mt-5 text-white/90">Monday – Saturday: 10:00 AM — 08:00 PM</p>
-                <p className="font-serif text-lg mt-1 text-white/60">Sunday: Closed for Private Curation</p>
+                <div className="hours-row">
+                  <span>{locale === 'bn' ? "সোম – শনি" : "Monday – Saturday"}</span>
+                  <b>{infoContent.hours_weekdays || (locale === 'bn' ? "১০:০০ AM – ৮:০০ PM" : "10:00 AM – 8:00 PM")}</b>
+                </div>
+                <div className="hours-row">
+                  <span>{locale === 'bn' ? "রবিবার" : "Sunday"}</span>
+                  <b>{infoContent.hours_sunday || (locale === 'bn' ? "ব্যক্তিগত কিউরেশনের জন্য বন্ধ" : "Closed for Private Curation")}</b>
+                </div>
               </div>
             </div>
 
-            {/* Embedded Map */}
-            <div className="w-full aspect-video md:aspect-square bg-[#F4EEDF] relative rounded-none overflow-hidden shadow-xl border border-[#DCCFAE] group">
-              <PremiumImage 
+            {/* Embedded Directions Card */}
+            <div className="map-card reveal artwork">
+              <img 
                 src="/images/placeholders/hero.webp" 
-                fallbackSrc="/images/placeholders/hero.webp" 
-                alt="Gallery Map Placeholder" 
-                fill 
-                className="object-cover group-hover:scale-105 transition-transform duration-[3s]" 
+                alt="Rongdhono Gallery Map Location" 
+                loading="lazy" 
               />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
-                <div className="bg-[#FDFBF7] border border-[#DCCFAE] px-6 py-4 shadow-2xl text-center">
-                  <p className="font-serif font-bold text-lg text-[#1E1A16]">Rongdhono Gallery</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#B4233A] mt-1">Get Directions</p>
-                </div>
+              <div className="scrim soft"></div>
+              <div className="frame-edge"></div>
+              <div className="map-pin-label">
+                <b>Rongdhono Gallery</b>
+                <span>{locale === 'bn' ? "দিকনির্দেশ পান" : "Get Directions"}</span>
               </div>
+            </div>
+
+            {/* Explore Cards */}
+            <div className="visit-preview reveal">
+              <Link href="/gallery" className="visit-preview-tile artwork">
+                <img 
+                  src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=900&auto=format&fit=crop" 
+                  alt="Curator installing artwork before opening" 
+                  loading="lazy"
+                />
+                <div className="scrim"></div>
+                <div className="frame-edge"></div>
+                <div className="visit-preview-tile-label">
+                  {locale === 'bn' ? "গ্যালারি অন্বেষণ করুন" : "Explore the Gallery"}{" "}
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </Link>
+              <Link href="/exhibitions" className="visit-preview-tile artwork">
+                <img 
+                  src="https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=900&auto=format&fit=crop" 
+                  alt="Ribbon cutting ceremony at the gallery entrance" 
+                  loading="lazy"
+                />
+                <div className="scrim"></div>
+                <div className="frame-edge"></div>
+                <div className="visit-preview-tile-label">
+                  {locale === 'bn' ? "প্রদর্শনী দেখুন" : "See Exhibitions"}{" "}
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </Link>
             </div>
           </div>
           
           {/* Right Column: Contact Form */}
-          <div className="lg:col-span-7">
-            <div className="w-full bg-[#F4EEDF] p-10 md:p-16 border border-[#DCCFAE] shadow-2xl rounded-none h-full">
-              <div className="space-y-6 mb-12">
-                <h2 className="eyebrow on-paper">
-                  {locale === 'bn' ? "অনুসন্ধান" : "Inquiries & Acquisitions"}
-                </h2>
-                <h3 className="font-serif text-4xl md:text-5xl font-bold text-[#1E1A16]">
-                  {locale === 'bn' ? "আমাদের একটি বার্তা পাঠান" : "Send a Message"}
-                </h3>
-                <p className="text-[#5C5347] font-light text-lg">
-                  For exhibition details, private viewings, or artwork acquisitions, please leave your details below and our curatorial team will assist you.
-                </p>
-              </div>
-              
-              <form className="space-y-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-3 relative group">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
-                      {locale === 'bn' ? "নাম" : "Full Name"}
-                    </label>
-                    <Input 
-                      placeholder={locale === 'bn' ? "আপনার নাম" : "e.g. Jane Doe"} 
-                      className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
-                    />
-                  </div>
-                  
-                  <div className="space-y-3 relative group">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
-                      {locale === 'bn' ? "ইমেইল" : "Email Address"}
-                    </label>
-                    <Input 
-                      type="email" 
-                      placeholder={locale === 'bn' ? "আপনার ইমেইল" : "jane@example.com"} 
-                      className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-3 relative group">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
-                    {locale === 'bn' ? "বিষয়" : "Subject of Inquiry"}
-                  </label>
-                  <Input 
-                    placeholder={locale === 'bn' ? "কীভাবে আমরা সাহায্য করতে পারি?" : "How can we assist you?"} 
-                    className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
-                  />
-                </div>
-                
-                <div className="space-y-3 relative group">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
-                    {locale === 'bn' ? "বার্তা" : "Message"}
-                  </label>
-                  <Textarea 
-                    placeholder={locale === 'bn' ? "আপনার বার্তা লিখুন..." : "Please share the details of your inquiry..."} 
-                    rows={5} 
-                    className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] resize-none transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
-                  />
-                </div>
-                
-                <div className="pt-4">
-                  <Button type="button" className="btn btn-gold font-bold text-[13px] uppercase tracking-widest rounded-full w-full md:w-auto active:scale-[0.97] shadow-xl">
-                    {locale === 'bn' ? "বার্তা পাঠান" : "Submit Inquiry"}
-                    <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-              </form>
+          <div className="form-card reveal">
+            <div className="form-eyebrow">{locale === 'bn' ? "অনুসন্ধান ও অর্জন" : "Inquiries & Acquisitions"}</div>
+            <h2>{locale === 'bn' ? "আমাদের একটি বার্তা পাঠান" : "Send a Message"}</h2>
+            <p>
+              {locale === 'bn' 
+                ? "প্রদর্শনী বিবরণ, ব্যক্তিগত প্রদর্শনী, বা শিল্পকর্ম অর্জনের জন্য, দয়া করে নিচে আপনার বিবরণ দিন এবং আমাদের কিউরেটরিয়াল দল আপনাকে সহায়তা করবে।" 
+                : "For exhibition details, private viewings, or artwork acquisitions, please leave your details below and our curatorial team will assist you."}
+            </p>
+
+            <div className="inquiry-types">
+              <span className="inquiry-type active">{locale === 'bn' ? "সাধারণ অনুসন্ধান" : "General Inquiry"}</span>
+              <span className="inquiry-type">{locale === 'bn' ? "শিল্পী আবেদন" : "Artist Application"}</span>
+              <span className="inquiry-type">{locale === 'bn' ? "গ্যালারি পরিদর্শন" : "Gallery Visit"}</span>
+              <span className="inquiry-type">{locale === 'bn' ? "আহরণ" : "Acquisition"}</span>
             </div>
+
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="field-row">
+                <div className="field">
+                  <label>{locale === 'bn' ? "সম্পূর্ণ নাম" : "Full Name"}</label>
+                  <input 
+                    type="text" 
+                    placeholder={locale === 'bn' ? "যেমন: জেন ডো" : "e.g. Jane Doe"} 
+                    required 
+                  />
+                </div>
+                <div className="field">
+                  <label>{locale === 'bn' ? "ইমেইল ঠিকানা" : "Email Address"}</label>
+                  <input 
+                    type="email" 
+                    placeholder="jane@example.com" 
+                    required 
+                  />
+                </div>
+              </div>
+              <div className="field" style={{ marginBottom: '30px' }}>
+                <label>{locale === 'bn' ? "অনুসন্ধানের বিষয়" : "Subject of Inquiry"}</label>
+                <input 
+                  type="text" 
+                  placeholder={locale === 'bn' ? "আমরা আপনাকে কীভাবে সাহায্য করতে পারি?" : "How can we assist you?"} 
+                />
+              </div>
+              <div className="field" style={{ marginBottom: '8px' }}>
+                <label>{locale === 'bn' ? "বার্তা" : "Message"}</label>
+                <textarea 
+                  rows={4} 
+                  placeholder={locale === 'bn' ? "অনুগ্রহ করে আপনার অনুসন্ধানের বিবরণ শেয়ার করুন..." : "Please share the details of your inquiry…"}
+                ></textarea>
+              </div>
+              <div className="form-submit">
+                <button type="submit" className="btn btn-paper magnetic">
+                  {locale === 'bn' ? "অনুসন্ধান জমা দিন →" : "Submit Inquiry →"}
+                </button>
+              </div>
+            </form>
           </div>
+
         </div>
-      </div>
+      </section>
     </main>
   )
 }
