@@ -592,50 +592,59 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                             </span>
 
                             {/* TEXT & TEXTAREA inputs */}
-                            {(isText || isTextarea || isRichText) && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-1.5">
-                                  <span className="text-[10px] text-white/52 uppercase tracking-wide flex items-center gap-1 font-semibold">
-                                    <Globe className="w-3.5 h-3.5"/> English
-                                  </span>
-                                  {isText ? (
-                                    <input 
-                                      type="text"
-                                      value={field.value_en || ''} 
-                                      onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_en', e.target.value)}
-                                      className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] h-12 px-4 placeholder:text-white/38 text-sm transition-all duration-150"
-                                    />
-                                  ) : (
-                                    <textarea 
-                                      rows={5}
-                                      value={field.value_en || ''} 
-                                      onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_en', e.target.value)}
-                                      className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] p-4 placeholder:text-white/38 text-sm min-h-[140px] transition-all duration-150 resize-none"
-                                    />
+                            {(isText || isTextarea || isRichText) && (() => {
+                              const isFieldBnOnly = field.field_key.endsWith('_bn')
+                              return (
+                                <div className={cn(
+                                  "grid gap-6",
+                                  isFieldBnOnly ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
+                                )}>
+                                  {!isFieldBnOnly && (
+                                    <div className="space-y-1.5 text-left">
+                                      <span className="text-[10px] text-white/52 uppercase tracking-wide flex items-center gap-1 font-semibold">
+                                        <Globe className="w-3.5 h-3.5"/> English
+                                      </span>
+                                      {isText ? (
+                                        <input 
+                                          type="text"
+                                          value={field.value_en || ''} 
+                                          onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_en', e.target.value)}
+                                          className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] h-12 px-4 placeholder:text-white/38 text-sm transition-all duration-150"
+                                        />
+                                      ) : (
+                                        <textarea 
+                                          rows={5}
+                                          value={field.value_en || ''} 
+                                          onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_en', e.target.value)}
+                                          className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] p-4 placeholder:text-white/38 text-sm min-h-[140px] transition-all duration-150 resize-none"
+                                        />
+                                      )}
+                                    </div>
                                   )}
+                                  
+                                  <div className="space-y-1.5 text-left">
+                                    <span className="text-[10px] text-white/52 uppercase tracking-wide flex items-center gap-1 font-semibold">
+                                      <Globe className="w-3.5 h-3.5"/> Bengali
+                                    </span>
+                                    {isText ? (
+                                      <input 
+                                        type="text"
+                                        value={field.value_bn || ''} 
+                                        onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_bn', e.target.value)}
+                                        className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] h-12 px-4 placeholder:text-white/38 text-sm transition-all duration-150"
+                                      />
+                                    ) : (
+                                      <textarea 
+                                        rows={5}
+                                        value={field.value_bn || ''} 
+                                        onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_bn', e.target.value)}
+                                        className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] p-4 placeholder:text-white/38 text-sm min-h-[140px] transition-all duration-150 resize-none"
+                                      />
+                                    )}
+                                  </div>
                                 </div>
-                                <div className="space-y-1.5">
-                                  <span className="text-[10px] text-white/52 uppercase tracking-wide flex items-center gap-1 font-semibold">
-                                    <Globe className="w-3.5 h-3.5"/> Bengali
-                                  </span>
-                                  {isText ? (
-                                    <input 
-                                      type="text"
-                                      value={field.value_bn || ''} 
-                                      onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_bn', e.target.value)}
-                                      className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] h-12 px-4 placeholder:text-white/38 text-sm transition-all duration-150"
-                                    />
-                                  ) : (
-                                    <textarea 
-                                      rows={5}
-                                      value={field.value_bn || ''} 
-                                      onChange={(e) => handleFieldChange(sec.id, field.field_key, 'value_bn', e.target.value)}
-                                      className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] p-4 placeholder:text-white/38 text-sm min-h-[140px] transition-all duration-150 resize-none"
-                                    />
-                                  )}
-                                </div>
-                              </div>
-                            )}
+                              )
+                            })()}
 
                             {/* MEDIA asset picker */}
                             {isMedia && (
