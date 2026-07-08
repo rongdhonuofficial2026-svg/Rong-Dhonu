@@ -28,13 +28,13 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const infoContent = await getCmsContent('contact', 'info', locale)
 
   return (
-    <main className="flex flex-col w-full min-h-screen bg-[#F5F5F0]">
+    <main className="flex flex-col w-full min-h-screen bg-[#EFE6D2]">
       
       {/* Decorative Textures */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
       {/* Cinematic Hero */}
-      <section className="relative w-full h-[60vh] min-h-[500px] flex flex-col justify-center overflow-hidden bg-[#0A0A0A]">
+      <section className="relative w-full h-[60vh] min-h-[500px] flex flex-col justify-center overflow-hidden bg-[#0B0908]">
         <div className="absolute inset-0 z-0">
           <PremiumImage 
             src="/images/placeholders/exhibition.webp"
@@ -42,19 +42,19 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             alt="Gallery Atmosphere"
             fill
             priority
-            className="object-cover opacity-50 sepia-[0.3] mix-blend-luminosity"
+            className="object-cover opacity-40 sepia-[0.3] mix-blend-luminosity"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#F5F5F0] via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#EFE6D2] via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0908]/90 via-black/30 to-transparent" />
         </div>
         
         <div className="relative z-10 container mx-auto px-6 max-w-7xl pt-20">
           <div className="max-w-2xl space-y-6">
-            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-white drop-shadow-xl">
+            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-[#F4EEDF] drop-shadow-xl">
               {heroContent.title || (locale === 'bn' ? "যোগাযোগ" : "Get in Touch")}
             </h1>
-            <div className="w-16 h-[2px] bg-accent/80" />
-            <p className="text-xl md:text-2xl text-white/80 font-light leading-relaxed">
+            <div className="w-16 h-[2px] bg-[#F4C662]/50" />
+            <p className="text-xl md:text-2xl text-[#F4EEDF]/80 font-light leading-relaxed">
               {heroContent.subtitle || (locale === 'bn' ? "আমরা আপনার কথা শুনতে চাই" : "We would love to hear from you. Reach out for inquiries, partnerships, or general questions.")}
             </p>
           </div>
@@ -67,12 +67,12 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           {/* Left Column: Contact Info & Map */}
           <div className="lg:col-span-5 space-y-8">
             {/* Premium Info Cards */}
-            <div className="bg-[#1A1A1A] p-10 md:p-14 text-white shadow-2xl rounded-sm space-y-12 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] pointer-events-none" />
+            <div className="bg-[#151210] p-10 md:p-14 text-[#F4EEDF] border border-white/[0.08] shadow-2xl rounded-none space-y-12 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4C662]/5 rounded-full blur-[80px] pointer-events-none" />
               
               <div className="relative z-10 space-y-10">
                 <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:border-accent transition-colors duration-500 shadow-lg">
+                  <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-[#B4233A] group-hover:border-[#B4233A] transition-colors duration-500 shadow-lg">
                     <MapPin className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -83,7 +83,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 </div>
                 
                 <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:border-accent transition-colors duration-500 shadow-lg">
+                  <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-[#B4233A] group-hover:border-[#B4233A] transition-colors duration-500 shadow-lg">
                     <Mail className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -93,7 +93,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 </div>
                 
                 <div className="flex items-start gap-6 group">
-                  <div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:border-accent transition-colors duration-500 shadow-lg">
+                  <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-[#B4233A] group-hover:border-[#B4233A] transition-colors duration-500 shadow-lg">
                     <Phone className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -106,7 +106,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               <div className="pt-10 border-t border-white/10 relative z-10">
                 <div className="flex items-center justify-between text-white/50 text-[10px] font-bold uppercase tracking-[0.2em]">
                   <span>{locale === 'bn' ? "গ্যালারি খোলা থাকার সময়" : "Gallery Hours"}</span>
-                  <Clock className="w-4 h-4" />
+                  <Clock className="w-4 h-4 text-[#F4C662]" />
                 </div>
                 <p className="font-serif text-lg mt-5 text-white/90">Monday – Saturday: 10:00 AM — 08:00 PM</p>
                 <p className="font-serif text-lg mt-1 text-white/60">Sunday: Closed for Private Curation</p>
@@ -114,7 +114,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             </div>
 
             {/* Embedded Map */}
-            <div className="w-full aspect-video md:aspect-square bg-muted relative rounded-sm overflow-hidden shadow-xl border border-foreground/5 group">
+            <div className="w-full aspect-video md:aspect-square bg-[#F4EEDF] relative rounded-none overflow-hidden shadow-xl border border-[#DCCFAE] group">
               <PremiumImage 
                 src="/images/placeholders/hero.webp" 
                 fallbackSrc="/images/placeholders/hero.webp" 
@@ -123,9 +123,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 className="object-cover group-hover:scale-105 transition-transform duration-[3s]" 
               />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
-                <div className="bg-white/90 backdrop-blur-md px-6 py-4 shadow-2xl text-center">
-                  <p className="font-serif font-bold text-lg">Rongdhono Gallery</p>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1">Get Directions</p>
+                <div className="bg-[#FDFBF7] border border-[#DCCFAE] px-6 py-4 shadow-2xl text-center">
+                  <p className="font-serif font-bold text-lg text-[#1E1A16]">Rongdhono Gallery</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#B4233A] mt-1">Get Directions</p>
                 </div>
               </div>
             </div>
@@ -133,15 +133,15 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           
           {/* Right Column: Contact Form */}
           <div className="lg:col-span-7">
-            <div className="w-full bg-white/60 backdrop-blur-3xl p-10 md:p-16 border border-white shadow-2xl rounded-sm h-full">
+            <div className="w-full bg-[#F4EEDF] p-10 md:p-16 border border-[#DCCFAE] shadow-2xl rounded-none h-full">
               <div className="space-y-6 mb-12">
-                <h2 className="text-[10px] tracking-[0.3em] font-bold uppercase text-muted-foreground">
+                <h2 className="eyebrow on-paper">
                   {locale === 'bn' ? "অনুসন্ধান" : "Inquiries & Acquisitions"}
                 </h2>
-                <h3 className="font-serif text-4xl md:text-5xl font-bold text-foreground">
+                <h3 className="font-serif text-4xl md:text-5xl font-bold text-[#1E1A16]">
                   {locale === 'bn' ? "আমাদের একটি বার্তা পাঠান" : "Send a Message"}
                 </h3>
-                <p className="text-muted-foreground font-light text-lg">
+                <p className="text-[#5C5347] font-light text-lg">
                   For exhibition details, private viewings, or artwork acquisitions, please leave your details below and our curatorial team will assist you.
                 </p>
               </div>
@@ -149,50 +149,50 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               <form className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3 relative group">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60 transition-colors group-focus-within:text-foreground">
+                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
                       {locale === 'bn' ? "নাম" : "Full Name"}
                     </label>
                     <Input 
                       placeholder={locale === 'bn' ? "আপনার নাম" : "e.g. Jane Doe"} 
-                      className="bg-transparent border-0 border-b-2 border-foreground/10 rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-foreground transition-all shadow-none placeholder:text-muted-foreground/40" 
+                      className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
                     />
                   </div>
                   
                   <div className="space-y-3 relative group">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60 transition-colors group-focus-within:text-foreground">
+                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
                       {locale === 'bn' ? "ইমেইল" : "Email Address"}
                     </label>
                     <Input 
                       type="email" 
                       placeholder={locale === 'bn' ? "আপনার ইমেইল" : "jane@example.com"} 
-                      className="bg-transparent border-0 border-b-2 border-foreground/10 rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-foreground transition-all shadow-none placeholder:text-muted-foreground/40" 
+                      className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-3 relative group">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60 transition-colors group-focus-within:text-foreground">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
                     {locale === 'bn' ? "বিষয়" : "Subject of Inquiry"}
                   </label>
                   <Input 
                     placeholder={locale === 'bn' ? "কীভাবে আমরা সাহায্য করতে পারি?" : "How can we assist you?"} 
-                    className="bg-transparent border-0 border-b-2 border-foreground/10 rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-foreground transition-all shadow-none placeholder:text-muted-foreground/40" 
+                    className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 h-12 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
                   />
                 </div>
                 
                 <div className="space-y-3 relative group">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60 transition-colors group-focus-within:text-foreground">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E1A16]/60 transition-colors group-focus-within:text-[#B4233A]">
                     {locale === 'bn' ? "বার্তা" : "Message"}
                   </label>
                   <Textarea 
                     placeholder={locale === 'bn' ? "আপনার বার্তা লিখুন..." : "Please share the details of your inquiry..."} 
                     rows={5} 
-                    className="bg-transparent border-0 border-b-2 border-foreground/10 rounded-none px-0 text-lg focus-visible:ring-0 focus-visible:border-foreground resize-none transition-all shadow-none placeholder:text-muted-foreground/40" 
+                    className="bg-transparent border-0 border-b-2 border-[#DCCFAE] rounded-none px-0 text-lg focus-visible:ring-0 focus-visible:border-[#B4233A] resize-none transition-all shadow-none placeholder:text-[#5C5347]/30 text-[#1E1A16]" 
                   />
                 </div>
                 
                 <div className="pt-4">
-                  <Button type="button" className="w-full md:w-auto px-12 h-16 rounded-full bg-foreground text-background hover:bg-foreground/90 uppercase tracking-[0.2em] text-[10px] font-bold group shadow-xl hover:shadow-2xl transition-all duration-300">
+                  <Button type="button" className="btn btn-gold font-bold text-[13px] uppercase tracking-widest rounded-full w-full md:w-auto active:scale-[0.97] shadow-xl">
                     {locale === 'bn' ? "বার্তা পাঠান" : "Submit Inquiry"}
                     <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
                   </Button>
