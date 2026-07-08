@@ -1,12 +1,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import Image from 'next/image'
-import { Link, useRouter, usePathname } from '@/lib/i18n/routing'
-import { Image as ImageIcon, Video, Calendar, ArrowRight } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { LuxuryCard } from '@/components/admin/ui/LuxuryCard'
+import { Link } from '@/lib/i18n/routing'
+import { ImageIcon } from 'lucide-react'
+import { SelectContent, SelectItem } from '@/components/ui/select'
+import * as SelectPrimitive from '@radix-ui/react-select'
 
 interface Album {
   id: string
@@ -21,6 +19,8 @@ interface Album {
   year: number
   photoCount: number
   videoCount: number
+  album_type?: string
+  category_slug?: string
 }
 
 interface AlbumGridProps {
@@ -30,12 +30,10 @@ interface AlbumGridProps {
 }
 
 export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-
   const [search, setSearch] = useState(searchParams.search || '')
   const [filterYear, setFilterYear] = useState(searchParams.year || 'all')
   const [sortBy, setSortBy] = useState(searchParams.sort || 'newest')
+  const [selectedCategory, setSelectedCategory] = useState('all')
 
   const uniqueYears = useMemo(() => {
     const years = albums.map(a => a.year).filter(Boolean)
@@ -57,6 +55,17 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
       result = result.filter(a => a.year.toString() === filterYear)
     }
 
+    // Category Tabs Filter logic matching HTML categories
+    if (selectedCategory === 'exhibition') {
+      result = result.filter(a => a.album_type === 'exhibition')
+    } else if (selectedCategory === 'ceremony') {
+      result = result.filter(a => a.category_slug === 'opening_ceremony' || a.category_slug === 'award_ceremony')
+    } else if (selectedCategory === 'behind_the_scenes') {
+      result = result.filter(a => a.category_slug === 'behind_the_scenes')
+    } else if (selectedCategory === 'vip') {
+      result = result.filter(a => a.category_slug === 'vip' || a.category_slug === 'visitors')
+    }
+
     if (sortBy === 'newest') {
       result = result.sort((a, b) => {
         const dateA = a.exhibition_start ? new Date(a.exhibition_start).getTime() : 0
@@ -72,132 +81,182 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
     }
 
     return result
-  }, [albums, search, filterYear, sortBy])
+  }, [albums, search, filterYear, sortBy, selectedCategory])
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return ''
     const date = new Date(dateStr)
     return new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-US', {
-      month: 'short',
+      month: 'long',
       year: 'numeric'
     }).format(date)
   }
 
   return (
-    <div className="space-y-12">
-      {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-[#F4EEDF] p-4 rounded-none border border-[#DCCFAE]">
-        <div className="w-full md:w-1/3">
-          <Input
-            placeholder={locale === 'bn' ? 'অ্যালবাম খুঁজুন...' : 'Search albums...'}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] text-[#1E1A16] placeholder:text-[#5C5347]/50 focus-visible:ring-0 focus-visible:border-[#B4233A] rounded-none h-10 px-0"
-          />
-        </div>
-        <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
-          <Select value={filterYear} onValueChange={setFilterYear}>
-            <SelectTrigger className="w-full sm:w-[160px] bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] rounded-none text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
-              <SelectValue placeholder={locale === 'bn' ? 'বছর' : 'Year'} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{locale === 'bn' ? 'সকল বছর' : 'All Years'}</SelectItem>
+    <div style={{ background: 'var(--color-void)', paddingBottom: '150px' }}>
+      {/* ============ TOOLBAR ============ */}
+      <section className="toolbar-wrap" style={{ paddingBottom: '56px' }}>
+        <div className="toolbar reveal in">
+          {/* Search bar */}
+          <div className="toolbar-search">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M18 18l-4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+            <input 
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={locale === 'bn' ? 'থিম, ইভেন্ট বা আর্টওয়ার্ক দ্বারা খুঁজুন...' : 'Search gallery by theme, event, or artwork…'}
+              style={{
+                border: 'none',
+                background: 'none',
+                outline: 'none',
+                boxShadow: 'none',
+                padding: '10px 0',
+              }}
+            />
+          </div>
+          
+          <div className="toolbar-divider"></div>
+
+          {/* Year Filter */}
+          <SelectPrimitive.Root value={filterYear} onValueChange={setFilterYear}>
+            <SelectPrimitive.Trigger className="filter-pill border-none focus:ring-0 focus:outline-none cursor-pointer">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              <SelectPrimitive.Value placeholder="All Years" />
+            </SelectPrimitive.Trigger>
+            <SelectContent className="bg-[#0B0908] border-white/[0.08] text-[#F4EEDF]">
+              <SelectItem value="all" className="focus:bg-white/10 focus:text-white cursor-pointer">
+                {locale === 'bn' ? 'সকল বছর' : 'All Years'}
+              </SelectItem>
               {uniqueYears.map(year => (
-                <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                <SelectItem key={year} value={year.toString()} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                  {year}
+                </SelectItem>
               ))}
             </SelectContent>
-          </Select>
-          
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-[160px] bg-transparent border-t-0 border-x-0 border-b border-[#DCCFAE] rounded-none text-[#1E1A16] focus:ring-0 focus:border-[#B4233A]">
-              <SelectValue placeholder={locale === 'bn' ? 'সাজান' : 'Sort by'} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">{locale === 'bn' ? 'নতুন থেকে পুরনো' : 'Newest First'}</SelectItem>
-              <SelectItem value="oldest">{locale === 'bn' ? 'পুরনো থেকে নতুন' : 'Oldest First'}</SelectItem>
+          </SelectPrimitive.Root>
+
+          {/* Sort Filter */}
+          <SelectPrimitive.Root value={sortBy} onValueChange={setSortBy}>
+            <SelectPrimitive.Trigger className="filter-pill border-none focus:ring-0 focus:outline-none cursor-pointer">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                <path d="M4 15l4-4 3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <SelectPrimitive.Value placeholder="Sort By" />
+            </SelectPrimitive.Trigger>
+            <SelectContent className="bg-[#0B0908] border-white/[0.08] text-[#F4EEDF]">
+              <SelectItem value="newest" className="focus:bg-white/10 focus:text-white cursor-pointer">
+                {locale === 'bn' ? 'নতুন থেকে পুরনো' : 'Newest First'}
+              </SelectItem>
+              <SelectItem value="oldest" className="focus:bg-white/10 focus:text-white cursor-pointer">
+                {locale === 'bn' ? 'পুরনো থেকে নতুন' : 'Oldest First'}
+              </SelectItem>
             </SelectContent>
-          </Select>
+          </SelectPrimitive.Root>
         </div>
+      </section>
+
+      {/* ============ CATEGORIES TAB TABS ============ */}
+      <div className="cat-tabs reveal in">
+        <button 
+          onClick={() => setSelectedCategory('all')} 
+          className={`cat-tab ${selectedCategory === 'all' ? 'active' : ''}`}
+        >
+          {locale === 'bn' ? 'সকল অ্যালবাম' : 'All Albums'}
+        </button>
+        <button 
+          onClick={() => setSelectedCategory('exhibition')} 
+          className={`cat-tab ${selectedCategory === 'exhibition' ? 'active' : ''}`}
+        >
+          {locale === 'bn' ? 'প্রদর্শনী' : 'Exhibitions'}
+        </button>
+        <button 
+          onClick={() => setSelectedCategory('ceremony')} 
+          className={`cat-tab ${selectedCategory === 'ceremony' ? 'active' : ''}`}
+        >
+          {locale === 'bn' ? 'অনুষ্ঠান' : 'Ceremonies'}
+        </button>
+        <button 
+          onClick={() => setSelectedCategory('behind_the_scenes')} 
+          className={`cat-tab ${selectedCategory === 'behind_the_scenes' ? 'active' : ''}`}
+        >
+          {locale === 'bn' ? 'পর্দার অন্তরালে' : 'Behind the Scenes'}
+        </button>
+        <button 
+          onClick={() => setSelectedCategory('vip')} 
+          className={`cat-tab ${selectedCategory === 'vip' ? 'active' : ''}`}
+        >
+          {locale === 'bn' ? 'ভিআইপি ও অতিথি' : 'VIP & Guests'}
+        </button>
       </div>
 
-      {/* Grid */}
+      {/* ============ GALLERY GRID ============ */}
       {filteredAlbums.length === 0 ? (
-        <div className="py-32 text-center">
-          <div className="w-20 h-20 rounded-none border border-[#DCCFAE] flex items-center justify-center mb-6 mx-auto bg-[#F4EEDF]">
-            <ImageIcon className="w-10 h-10 text-[#5C5347]/30" />
+        <div className="py-32 text-center" style={{ background: 'var(--color-void)' }}>
+          <div className="w-20 h-20 rounded-none border border-white/10 flex items-center justify-center mb-6 mx-auto bg-white/5">
+            <ImageIcon className="w-10 h-10 text-[#F4EEDF]/20" />
           </div>
-          <h3 className="font-serif text-2xl text-[#1E1A16] mb-2 font-bold">
+          <h3 className="font-serif text-2xl text-[#F4EEDF] mb-2 font-bold">
             {locale === 'bn' ? 'কোনো অ্যালবাম পাওয়া যায়নি' : 'No albums found'}
           </h3>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredAlbums.map(album => {
+        <div className="masonry">
+          {filteredAlbums.map((album, index) => {
             const title = locale === 'bn' ? album.theme_bn : album.theme_en
-            const description = locale === 'bn' ? album.description_bn : album.description_en
             const dateDisplay = formatDate(album.exhibition_start)
             const totalMedia = album.photoCount + album.videoCount
 
+            // Sequence of ratios to match dynamic grid alignment of gallery.html
+            const ratioStyles = ['3/4', '4/3', '1/1', '4/5']
+            const styleRatio = ratioStyles[index % ratioStyles.length]
+
+            let categoryTag = locale === 'bn' ? 'গ্যালারি' : 'Gallery'
+            if (album.album_type === 'exhibition') {
+              categoryTag = locale === 'bn' ? 'প্রদর্শনী' : 'Exhibition'
+            } else if (album.category_slug) {
+              if (album.category_slug === 'opening_ceremony' || album.category_slug === 'award_ceremony') {
+                categoryTag = locale === 'bn' ? 'অনুষ্ঠান' : 'Ceremony'
+              } else if (album.category_slug === 'behind_the_scenes') {
+                categoryTag = locale === 'bn' ? 'পর্দার আড়ালে' : 'Behind the Scenes'
+              } else if (album.category_slug === 'vip') {
+                categoryTag = locale === 'bn' ? 'ভিআইপি অতিথি' : 'VIP Guests'
+              }
+            }
+
             return (
-              <Link key={album.id} href={`/gallery/${album.slug || album.id}`} className="group block">
-                <div className="relative bg-[#F4EEDF] border border-[#DCCFAE] overflow-hidden h-full flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-500 ease-[0.19,1,0.22,1]"
-                  style={{ boxShadow: '0 10px 40px -10px rgba(30,26,22,0.06)' }}
-                >
-                  {/* Crimson top edge on hover */}
-                  <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-[#B4233A] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left z-10" />
-
-                  <div className="relative aspect-[4/3] bg-[#DCCFAE]/20 overflow-hidden border-b border-[#DCCFAE]">
-                    {album.hero_image_url ? (
-                      <Image 
-                        src={album.hero_image_url} 
-                        alt={title} 
-                        fill 
-                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <ImageIcon className="w-12 h-12 text-[#5C5347]/20" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#151210]/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                    
-                    <div className="absolute top-4 right-4 flex gap-2 z-10">
-                      {album.photoCount > 0 && (
-                        <div className="flex items-center gap-1.5 bg-[#1E1A16]/80 backdrop-blur-md px-2.5 py-1 text-white/90 text-[10px] font-bold uppercase tracking-wider border border-white/10">
-                          <ImageIcon className="w-3.5 h-3.5" />
-                          <span>{album.photoCount}</span>
-                        </div>
-                      )}
-                      {album.videoCount > 0 && (
-                        <div className="flex items-center gap-1.5 bg-[#1E1A16]/80 backdrop-blur-md px-2.5 py-1 text-white/90 text-[10px] font-bold uppercase tracking-wider border border-white/10">
-                          <Video className="w-3.5 h-3.5" />
-                          <span>{album.videoCount}</span>
-                        </div>
-                      )}
-                    </div>
+              <Link 
+                key={album.id} 
+                href={`/gallery/${album.slug || album.id}`} 
+                className="masonry-tile artwork reveal in group block"
+                style={{ aspectRatio: styleRatio }}
+              >
+                {album.hero_image_url ? (
+                  <img 
+                    src={album.hero_image_url} 
+                    alt={title} 
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[#1E1A16]">
+                    <ImageIcon className="w-12 h-12 text-[#5C5347]/20" />
                   </div>
-
-                  <div className="p-6 flex-1 flex flex-col bg-[#F4EEDF]">
-                    <div className="flex items-center gap-2 text-[#B4233A] text-[10px] font-bold uppercase tracking-widest mb-3">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {dateDisplay || album.year}
-                    </div>
-                    
-                    <h3 className="font-serif text-2xl font-bold text-[#1E1A16] mb-3 line-clamp-2 group-hover:text-[#B4233A] transition-colors leading-tight">
-                      {title}
-                    </h3>
-                    
-                    {description && (
-                      <p className="text-[#5C5347] line-clamp-2 text-sm mb-6 flex-1 leading-relaxed">
-                        {description}
-                      </p>
-                    )}
-
-                    <div className="mt-auto pt-4 border-t border-[#DCCFAE] flex items-center justify-between text-xs font-bold uppercase tracking-widest text-[#1E1A16] group-hover:text-[#B4233A] transition-colors">
-                      <span>{locale === 'bn' ? 'গ্যালারি দেখুন' : 'View Gallery'}</span>
-                      <ArrowRight className="w-4 h-4 text-[#B4233A] transform group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
+                )}
+                <div className="scrim"></div>
+                <div className="frame-edge"></div>
+                <div className="masonry-expand">
+                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                    <path d="M8 3H3v5M17 8V3h-5M3 12v5h5M12 17h5v-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <div className="wall-label">
+                  <span className="no">{categoryTag}</span>
+                  <b>{title}</b>
+                  <span>{totalMedia} {locale === 'bn' ? 'টি ছবি/ভিডিও' : 'Media'} · {dateDisplay || album.year}</span>
                 </div>
               </Link>
             )

@@ -1425,3 +1425,137 @@
   }
 }
 
+/* ── Gallery Page Styles ────────────────────────────────────────────────────── */
+.gallery-page-wrapper {
+  background: var(--color-void);
+  min-height: 100vh;
+}
+
+/* ================= CATEGORY TABS ================= */
+.cat-tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: var(--container);
+  margin: 0 auto 56px;
+  padding: 0 var(--edge);
+}
+.cat-tab {
+  padding: 11px 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  border: 1px solid var(--color-hairline);
+  color: var(--color-parchment-dim);
+  transition: all .3s ease;
+  cursor: pointer;
+}
+.cat-tab.active {
+  background: var(--color-gold-bright);
+  color: var(--color-void);
+  border-color: var(--color-gold-bright);
+}
+.cat-tab:not(.active):hover {
+  border-color: var(--color-parchment-faint);
+  color: var(--color-parchment);
+}
+
+/* ================= GALLERY MASONRY ================= */
+.masonry {
+  max-width: var(--container);
+  margin: 0 auto;
+  columns: 3 280px;
+  column-gap: 24px;
+  padding: 0 var(--edge);
+}
+.masonry-tile {
+  break-inside: avoid;
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+.masonry-tile img {
+  position: static;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.masonry-tile .scrim {
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.masonry-tile:hover .scrim {
+  opacity: 1;
+}
+.masonry-tile .wall-label {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.masonry-tile:hover .wall-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+.wall-label {
+  position: absolute;
+  left: 20px;
+  bottom: 18px;
+  right: 20px;
+  z-index: 2;
+}
+.wall-label .no {
+  font-size: 10.5px;
+  color: var(--color-gold-bright);
+  letter-spacing: .14em;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: block;
+  text-transform: uppercase;
+}
+.wall-label b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 16.5px;
+  color: var(--color-parchment);
+  font-weight: 600;
+}
+.wall-label span {
+  font-size: 11.5px;
+  color: var(--color-parchment-faint);
+  letter-spacing: .03em;
+}
+.masonry-expand {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(11,9,8,.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-parchment);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.masonry-tile:hover .masonry-expand {
+  opacity: 1;
+}
+
+@media (max-width: 1080px) {
+  .masonry {
+    columns: 2 280px;
+  }
+}
+@media (max-width: 760px) {
+  .masonry {
+    columns: 1;
+  }
+}
+

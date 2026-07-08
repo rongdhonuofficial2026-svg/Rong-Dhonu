@@ -3,19 +3,20 @@ import { AlbumGrid } from "@/components/public/AlbumGrid"
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { getCmsContent } from "@/lib/cms/content"
-
+import { Metadata } from 'next'
 import { generateDynamicMetadata } from "@/lib/seo"
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const settingsData = await getCmsContent('global', 'settings', locale)
   const siteName = settingsData?.site_name || 'Rongdhono'
   const faviconUrl = settingsData?.favicon_url
 
   return generateDynamicMetadata({
-    title: locale === 'bn' ? 'অ্যালবাম' : 'Albums',
+    title: locale === 'bn' ? 'গ্যালারি' : 'Gallery',
     description: locale === 'bn' ? 'রঙধনু প্রদর্শনী ও ইভেন্টের মেমরি অ্যালবাম।' : 'Explore curated memory albums from Rongdhono exhibitions and events.',
     url: '/gallery',
+    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1200&auto=format&fit=crop',
     locale,
     siteName,
     faviconUrl,
@@ -87,52 +88,56 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
       exhibition_end: null,
       year: album.created_at ? new Date(album.created_at).getFullYear() : new Date().getFullYear(),
       photoCount,
-      videoCount
+      videoCount,
+      album_type: album.album_type,
+      category_slug: album.category_slug,
     }
   })
 
   // Fetch CMS hero configurations
-  const heroData = await getCmsContent('gallery', 'hero', locale);
+  const heroData = await getCmsContent('gallery', 'hero', locale)
 
-  const heroTitle = heroData?.title || (locale === 'bn' ? 'প্রদর্শনী অ্যালবাম' : 'Exhibition Albums');
+  const heroTitle = heroData?.title || (locale === 'bn' ? 'প্রদর্শনী অ্যালবাম' : 'Exhibition Albums')
   const heroSubtitle = heroData?.subtitle || (locale === 'bn' 
     ? 'আমাদের প্রদর্শনী ও ইভেন্টের স্মৃতিগুলো অন্বেষণ করুন।' 
-    : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes.');
+    : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes — every album a room in the museum.')
 
   return (
-    <main className="min-h-screen pb-32 bg-[#EFE6D2]">
-      {/* Decorative Textures */}
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
-
-      {/* Minimal Editorial Hero */}
-      <section className="relative pt-40 pb-20 px-6 overflow-hidden border-b border-[#DCCFAE]">
-        <div className="absolute inset-0 z-0 bg-[#EFE6D2]" />
-        
-        {/* Subtle decorative blob */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#F4C662]/5 rounded-full blur-[100px] mix-blend-multiply translate-x-1/3 -translate-y-1/4 pointer-events-none" />
-        
-        <div className="container relative z-10 mx-auto max-w-7xl">
-          <div className="max-w-4xl space-y-8 text-center mx-auto">
-            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-[#1E1A16] leading-[1.1]">
-              {heroTitle}
+    <div className="gallery-page-wrapper">
+      {/* ============ PAGE HERO ============ */}
+      <header className="page-hero artwork">
+        <img 
+          src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1200&auto=format&fit=crop" 
+          alt="Abstract painting detail, brushstrokes" 
+          loading="eager"
+        />
+        <div className="scrim"></div>
+        <div className="frame-edge"></div>
+        <div className="page-hero-inner">
+          <div className="reveal in">
+            <div className="eyebrow center">{locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Visual Archive'}</div>
+            <h1>
+              {locale === 'bn' ? (
+                <span>প্রদর্শনী <em>অ্যালবাম</em></span>
+              ) : (
+                <>Exhibition <em>Albums</em></>
+              )}
             </h1>
-            <div className="w-16 h-[1.5px] bg-[#DCCFAE] mx-auto" />
-            <p className="text-xl md:text-2xl text-[#5C5347] font-light max-w-2xl mx-auto leading-relaxed">
+            <p className="page-hero-sub">
               {heroSubtitle}
             </p>
           </div>
         </div>
-      </section>
+      </header>
 
-      <div className="container mx-auto px-6 max-w-[1600px] pt-12 relative z-20">
-        <Suspense fallback={<div className="flex justify-center p-32"><Loader2 className="w-10 h-10 animate-spin text-[#B4233A]" strokeWidth={1} /></div>}>
-          <AlbumGrid 
-            albums={albums} 
-            locale={locale} 
-            searchParams={resolvedSearchParams} 
-          />
-        </Suspense>
-      </div>
-    </main>
+      {/* ============ GRID & FILTERS ============ */}
+      <Suspense fallback={<div className="flex justify-center p-32 bg-[#0B0908]"><Loader2 className="w-10 h-10 animate-spin text-[#B4233A]" strokeWidth={1} /></div>}>
+        <AlbumGrid 
+          albums={albums} 
+          locale={locale} 
+          searchParams={resolvedSearchParams} 
+        />
+      </Suspense>
+    </div>
   )
 }
