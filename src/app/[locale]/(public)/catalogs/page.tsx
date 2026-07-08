@@ -104,16 +104,22 @@ export default async function PublicCatalogsPage({
       {/* ============ PAGE HERO ============ */}
       <header className="page-hero artwork">
         <img 
-          src="/images/catalogs/hero.jpg" 
-          alt="Rows of archived books and publications" 
+          src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=2400&auto=format&fit=crop" 
+          alt="Exhibition catalog cover mockup on display table" 
           loading="eager"
         />
         <div className="scrim"></div>
         <div className="frame-edge"></div>
         <div className="page-hero-inner">
           <div className="reveal in">
-            <div className="eyebrow center">{locale === 'bn' ? 'ডিজিটাল আর্কাইভ' : 'Digital Archive'}</div>
-            <h1>{locale === 'bn' ? 'প্রদর্শনী ক্যাটালগ আর্কাইভ' : <>Exhibition <em>Catalog<br />Archive</em></>}</h1>
+            <div className="eyebrow center">{locale === 'bn' ? 'প্রকাশনা' : 'Publications'}</div>
+            <h1>
+              {locale === 'bn' ? (
+                <span>প্রদর্শনী <em>ক্যাটালগ</em></span>
+              ) : (
+                <>Exhibition <em>Catalogs</em></>
+              )}
+            </h1>
             <p className="page-hero-sub">
               {locale === 'bn' 
                 ? 'রংধনুর প্রতিটি অফিসিয়াল প্রদর্শনী ক্যাটালগ ব্রাউজ করুন। সুন্দরভাবে কিউরেট করা ডিজিটাল প্রকাশনাগুলোর মাধ্যমে প্রতিটি প্রদর্শনী অন্বেষণ করুন।'

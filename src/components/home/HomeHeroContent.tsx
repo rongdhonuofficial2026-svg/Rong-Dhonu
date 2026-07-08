@@ -140,7 +140,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
             </div>
             <div>
               <b>{totalArtworks >= 1000 ? `${(totalArtworks / 1000).toFixed(1)}K` : totalArtworks}+</b>
-              <span>{locale === 'bn' ? 'patrons' : 'Patrons'}</span>
+              <span>{locale === 'bn' ? 'পৃষ্ঠপোষক' : 'Patrons'}</span>
             </div>
           </div>
         </div>

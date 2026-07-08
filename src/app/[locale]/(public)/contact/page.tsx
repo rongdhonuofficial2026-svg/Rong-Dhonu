@@ -31,7 +31,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       {/* ============ CONTACT HERO ============ */}
       <header className="contact-hero artwork">
         <img 
-          src="/images/contact/hero.jpg" 
+          src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?q=80&w=2400&auto=format&fit=crop" 
           alt="Guests conversing warmly during a gallery reception" 
           loading="eager"
         />

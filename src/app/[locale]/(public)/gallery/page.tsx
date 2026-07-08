@@ -104,11 +104,10 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
 
   return (
     <div className="gallery-page-wrapper">
-      {/* ============ PAGE HERO ============ */}
       <header className="page-hero artwork">
         <img 
-          src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1200&auto=format&fit=crop" 
-          alt="Abstract painting detail, brushstrokes" 
+          src="https://images.unsplash.com/photo-1580136579312-94651dfd596d?q=80&w=2400&auto=format&fit=crop" 
+          alt="Visitor walking through an illuminated gallery corridor" 
           loading="eager"
         />
         <div className="scrim"></div>
@@ -118,9 +117,9 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
             <div className="eyebrow center">{locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Visual Archive'}</div>
             <h1>
               {locale === 'bn' ? (
-                <span>প্রদর্শনী <em>অ্যালবাম</em></span>
+                <span>আমাদের গ্যালারি <em>ঘুরে দেখুন</em></span>
               ) : (
-                <>Exhibition <em>Albums</em></>
+                <>Walk Through <em>Our Gallery</em></>
               )}
             </h1>
             <p className="page-hero-sub">
