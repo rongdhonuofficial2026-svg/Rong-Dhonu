@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/Sidebar'
-import { TopNavigation } from '@/components/admin/TopNavigation'
 import { DebugErrorBoundary } from '@/components/DebugErrorBoundary'
 
 import { getUserRole, canAccessAdmin } from '@/lib/auth/roles'
@@ -43,13 +42,8 @@ export default async function AdminLayout({
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden relative scroll-smooth">
         
-        {/* Floating Top Navigation */}
-        <DebugErrorBoundary id="TopNavigation">
-          <TopNavigation />
-        </DebugErrorBoundary>
-        
         {/* Page Content Container */}
-        <div className="flex-1 px-6 pb-12 w-full max-w-7xl mx-auto">
+        <div className="flex-1 px-6 pt-12 pb-12 w-full max-w-7xl mx-auto">
           <DebugErrorBoundary id="PageContent">
             {children}
           </DebugErrorBoundary>

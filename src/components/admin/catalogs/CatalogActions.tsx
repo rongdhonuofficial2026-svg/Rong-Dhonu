@@ -83,49 +83,49 @@ export function CatalogActions({ catalog }: { catalog: any }) {
     <>
       <Link
         href={`/admin/catalogs/${catalog.id}`}
-        className="flex-1 h-9 px-3 inline-flex items-center justify-center text-xs font-medium rounded-lg glass border border-white/20 text-foreground hover:bg-white/50 transition-all"
+        className="flex-grow h-9 px-3 inline-flex items-center justify-center text-[11px] font-semibold rounded-lg bg-white/5 border border-white/[0.08] text-white hover:bg-white/10 hover:border-white/20 transition-all"
       >
-        <Edit className="w-3.5 h-3.5 mr-1.5" /> Edit
+        <Edit className="w-3.5 h-3.5 mr-1" /> Edit
       </Link>
 
       {catalog.status !== 'archived' && (
         <button
-          className="flex-1 h-9 px-3 inline-flex items-center justify-center text-xs font-medium rounded-lg glass border border-white/20 text-foreground hover:bg-white/50 transition-all disabled:opacity-50"
+          className="flex-grow h-9 px-3 inline-flex items-center justify-center text-[11px] font-semibold rounded-lg bg-white/5 border border-white/[0.08] text-white hover:bg-white/10 hover:border-white/20 transition-all disabled:opacity-50"
           onClick={handleTogglePublish}
           disabled={isBusy}
         >
           {isPublishing
             ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            : <Power className={`w-3.5 h-3.5 mr-1.5 ${catalog.status === 'published' ? 'text-rose-400' : 'text-emerald-400'}`} />
+            : <Power className={`w-3.5 h-3.5 mr-1 ${catalog.status === 'published' ? 'text-rose-400' : 'text-emerald-400'}`} />
           }
           {publishLabel}
         </button>
       )}
 
       <button
-        className="flex-1 h-9 px-3 inline-flex items-center justify-center text-xs font-medium rounded-lg glass border border-white/20 text-foreground hover:bg-white/50 transition-all disabled:opacity-50"
+        className="flex-grow h-9 px-3 inline-flex items-center justify-center text-[11px] font-semibold rounded-lg bg-[#C9A227]/10 border border-[#C9A227]/20 text-[#C9A227] hover:bg-[#C9A227] hover:text-black hover:border-transparent transition-all disabled:opacity-50"
         onClick={handleDuplicate}
         disabled={isBusy}
         title="Duplicate as new draft"
       >
         {isDuplicating
           ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          : <Copy className="w-3.5 h-3.5 mr-1.5" />
+          : <Copy className="w-3.5 h-3.5 mr-1" />
         }
-        Duplicate
+        Copy
       </button>
 
       <a
         href={catalog.pdf_url}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-9 h-9 px-0 flex-shrink-0 flex items-center justify-center rounded-lg glass border border-white/20 text-foreground hover:bg-white/50 transition-all"
+        className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-lg bg-white/5 border border-white/[0.08] text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
       >
         <Eye className="w-3.5 h-3.5" />
       </a>
 
       <button
-        className="w-9 h-9 px-0 flex-shrink-0 flex items-center justify-center rounded-lg glass border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all disabled:opacity-50"
+        className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white hover:border-transparent transition-all disabled:opacity-50"
         onClick={handleDelete}
         disabled={isBusy}
       >

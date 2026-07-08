@@ -113,79 +113,87 @@ export default async function AdminCatalogsPage({
               const coverImage = cat.cover_image_url || exhibition?.hero_image_url || '/images/catalogs_hero.png';
               
               return (
-              <LuxuryCard key={cat.id} padding="none" className="overflow-hidden group h-[380px] flex flex-col">
-                <div className="relative h-40 w-full shrink-0">
-                  <Image 
-                    src={coverImage} 
-                    alt={cat.title_en}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90" />
-                  
-                  {/* Status Badge */}
-                  <div className="absolute top-4 right-4">
-                    {cat.status === 'published' ? (
-                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-emerald-500/20 text-emerald-300 border-emerald-500/40 flex items-center gap-1.5 shadow-xl">
-                        <CheckCircle className="w-3 h-3" /> Published
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md bg-amber-500/20 text-amber-300 border-amber-500/40 flex items-center gap-1.5 shadow-xl">
-                        <Clock className="w-3 h-3" /> Draft
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-6 relative z-10 flex flex-col flex-1 mt-[-60px]">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-black border border-amber-500/30 flex items-center justify-center shrink-0 shadow-xl backdrop-blur-md">
-                      <FileText className="w-6 h-6 text-amber-400/80" />
+                <div 
+                  key={cat.id} 
+                  className="flex flex-col bg-[#171717]/90 border border-white/[0.08] hover:border-white/[0.16] rounded-[24px] overflow-hidden shadow-xl shadow-black/25 hover:shadow-2xl transition-all duration-300 group"
+                >
+                  {/* Top Area: Cover Artwork & Status */}
+                  <div className="relative h-52 w-full overflow-hidden shrink-0">
+                    <Image 
+                      src={coverImage} 
+                      alt={cat.title_en}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                    
+                    {/* Status Badge */}
+                    <div className="absolute top-4 right-4">
+                      {cat.status === 'published' ? (
+                        <span className="px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 flex items-center gap-1 shadow-md">
+                          <CheckCircle className="w-3 h-3" /> Published
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/20 flex items-center gap-1 shadow-md">
+                          <Clock className="w-3 h-3" /> Draft
+                        </span>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0 pt-1 pr-2">
-                      <h3 className="font-serif font-bold text-xl text-foreground line-clamp-1 group-hover:text-gradient-gold transition-all duration-500">
+
+                    {/* Catalog Icon overlapping bottom border */}
+                    <div className="absolute -bottom-5 left-6 w-10 h-10 rounded-full bg-[#111111] border border-white/[0.08] flex items-center justify-center shadow-lg shadow-black/40 z-20">
+                      <FileText className="w-5 h-5 text-[#C9A227]" />
+                    </div>
+                  </div>
+
+                  {/* Middle Content Area */}
+                  <div className="pt-8 px-6 pb-6 flex-1 flex flex-col">
+                    <div className="flex-1">
+                      <h3 className="font-serif font-bold text-lg text-white leading-snug tracking-wide line-clamp-2 group-hover:text-[#C9A227] transition-colors duration-300">
                         {cat.title_en}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground/70 mt-1">
-                        <span className="uppercase tracking-widest font-mono text-[10px] border border-white/10 px-2 py-0.5 rounded text-white/50">{cat.language}</span>
-                        <span className="uppercase tracking-widest font-mono text-[10px] border border-white/10 px-2 py-0.5 rounded text-white/50">v{cat.version}</span>
+                      <p className="text-xs text-white/50 mt-1 line-clamp-1">
+                        {exhibition?.theme_en || 'Unknown Exhibition'} ({exhibition?.year || '—'})
+                      </p>
+
+                      {/* Structured Metadata Grid */}
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-[10px] font-mono border-t border-b border-white/[0.04] py-3.5 my-4">
+                        <div className="flex justify-between border-r border-white/[0.04] pr-4">
+                          <span className="text-white/40">VERSION</span>
+                          <span className="text-white/80 font-semibold">v{cat.version}</span>
+                        </div>
+                        <div className="flex justify-between pl-2">
+                          <span className="text-white/40">LANG</span>
+                          <span className="text-white/80 font-semibold uppercase">{cat.language}</span>
+                        </div>
+                        <div className="flex justify-between border-r border-white/[0.04] pr-4">
+                          <span className="text-white/40">SIZE</span>
+                          <span className="text-white/80 font-semibold">
+                            {cat.file_size ? (cat.file_size / 1024 / 1024).toFixed(2) + ' MB' : '—'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between pl-2">
+                          <span className="text-white/40">DOWNLOADS</span>
+                          <span className="text-white/80 font-semibold">{cat.total_downloads || 0}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="mt-2 mb-4 flex-1">
-                    <p className="text-sm text-muted-foreground/80 line-clamp-1">
-                      Exhibition: {exhibition?.theme_en || 'Unknown'} ({exhibition?.year})
-                    </p>
-                    <p className="text-xs text-muted-foreground/60 mt-1">
-                      {cat.file_size ? (cat.file_size / 1024 / 1024).toFixed(2) + ' MB' : 'Unknown Size'} • {new Date(cat.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
 
-                  {/* Stats & Meta */}
-                  <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
-                    <div className="flex gap-6 text-sm text-muted-foreground/80">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1 flex items-center gap-1.5"><ArrowDownToLine className="w-3 h-3"/> Downloads</span>
-                        <span className="font-medium text-foreground">{cat.total_downloads || 0}</span>
-                      </div>
+                    {/* Bottom Area: Dates & Actions */}
+                    <div className="flex items-center justify-between text-[9px] font-mono text-white/35 uppercase tracking-wider mb-4 px-1 shrink-0">
+                      <span>Created: {new Date(cat.created_at).toLocaleDateString()}</span>
+                      {cat.published_at && (
+                        <span>Published: {new Date(cat.published_at).toLocaleDateString()}</span>
+                      )}
                     </div>
-                    
-                    {cat.published_at && (
-                      <div className="flex flex-col text-right">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1">Published Date</span>
-                        <span className="text-xs text-foreground font-mono">{new Date(cat.published_at).toLocaleDateString()}</span>
-                      </div>
-                    )}
+
+                    <div className="flex items-center gap-2 pt-4 border-t border-white/[0.04] w-full mt-auto shrink-0">
+                      <CatalogActions catalog={cat} />
+                    </div>
                   </div>
                 </div>
-
-                {/* Hover Actions Footer */}
-                <div className="bg-black/60 backdrop-blur-xl border-t border-white/10 p-3 flex gap-2 absolute bottom-0 left-0 right-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
-                  <CatalogActions catalog={cat} />
-                </div>
-              </LuxuryCard>
-            )})
+              )
+            })
           )}
         </div>
       </section>
