@@ -222,6 +222,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
 
         </div>
       </section>
+
+      <div className="cursor" id="cursor"></div>
+      <div className="grain"></div>
     </main>
   )
 }

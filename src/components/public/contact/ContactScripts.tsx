@@ -46,6 +46,30 @@ export function ContactScripts() {
       })
     })
 
+    // Custom Cursor tracking
+    const cursor = document.getElementById('cursor')
+    const handleMouseMoveCursor = (e: MouseEvent) => {
+      if (cursor) {
+        cursor.style.left = e.clientX + 'px'
+        cursor.style.top = e.clientY + 'px'
+      }
+    }
+    const handleMouseDown = () => cursor?.classList.add('grow')
+    const handleMouseUp = () => cursor?.classList.remove('grow')
+    
+    document.addEventListener('mousemove', handleMouseMoveCursor)
+    document.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('mouseup', handleMouseUp)
+
+    const interactiveElements = document.querySelectorAll('a, button, .inquiry-type')
+    const handleMouseEnterInteractive = () => cursor?.classList.add('grow')
+    const handleMouseLeaveInteractive = () => cursor?.classList.remove('grow')
+
+    interactiveElements.forEach(el => {
+      el.addEventListener('mouseenter', handleMouseEnterInteractive)
+      el.addEventListener('mouseleave', handleMouseLeaveInteractive)
+    })
+
     // Inquiry type selector tabs switching
     const tabs = document.querySelectorAll('.inquiry-type')
     const handleTabClick = (e: Event) => {
@@ -67,6 +91,14 @@ export function ContactScripts() {
       })
       tabs.forEach(tab => {
         tab.removeEventListener('click', handleTabClick)
+      })
+      
+      document.removeEventListener('mousemove', handleMouseMoveCursor)
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('mouseup', handleMouseUp)
+      interactiveElements.forEach(el => {
+        el.removeEventListener('mouseenter', handleMouseEnterInteractive)
+        el.removeEventListener('mouseleave', handleMouseLeaveInteractive)
       })
     }
   }, [])
