@@ -115,7 +115,26 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
             <span className="dot"></span> 
             {locale === 'bn' ? '১৪তম বার্ষিক প্রদর্শনী — বর্তমানে উন্মুক্ত' : '14th Annual Exhibition — Now Open'}
           </div>
-          <h1 dangerouslySetInnerHTML={{ __html: title }} />
+          {(() => {
+            const cleanTitle = title.replace(/<br\s*\/?>/gi, ' ');
+            if (locale === 'en' && (cleanTitle.toLowerCase().includes('where art') && cleanTitle.toLowerCase().includes('meets') && cleanTitle.toLowerCase().includes('soul'))) {
+              return (
+                <h1 style={{ textShadow: '0 6px 40px rgba(0,0,0,.35)' }}>
+                  <span className="where-art-meets" style={{ fontFamily: "'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>Where Art<br />Meets</span>{' '}
+                  <span className="soul" style={{ fontFamily: "'Arsenica Medium Italic', var(--font-display)", fontWeight: 500, fontStyle: 'italic', color: 'var(--color-gold-bright)' }}>Soul</span>
+                </h1>
+              )
+            }
+            if (locale === 'bn' && (cleanTitle.includes('যেখানে শিল্প') && cleanTitle.includes('স্পর্শ করে') && cleanTitle.includes('আত্মাকে'))) {
+              return (
+                <h1 style={{ textShadow: '0 6px 40px rgba(0,0,0,.35)' }}>
+                  <span className="where-art-meets" style={{ fontFamily: "'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>যেখানে শিল্প<br />স্পর্শ করে</span>{' '}
+                  <span className="soul" style={{ fontFamily: "'Arsenica Medium Italic', var(--font-display)", fontWeight: 500, fontStyle: 'italic', color: 'var(--color-gold-bright)' }}>আত্মাকে</span>
+                </h1>
+              )
+            }
+            return <h1 dangerouslySetInnerHTML={{ __html: title }} />
+          })()}
         </div>
 
         <div className="hero-bottom reveal">

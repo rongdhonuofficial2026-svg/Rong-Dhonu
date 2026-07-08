@@ -2,6 +2,18 @@
    RONGDHONO HOME PAGE REDESIGN MODULE
    ========================================================================== */
 
+@font-face {
+  font-family: 'Calligraphic Afera Beauty Bold';
+  src: local('Fraunces'), local('Georgia'), serif;
+  font-weight: 700;
+}
+@font-face {
+  font-family: 'Arsenica Medium Italic';
+  src: local('Fraunces Italic'), local('Georgia Italic'), serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
 /* Override fonts to prevent layout font leak */
 .hero, .about, .spotlight, .artists, .collection, .testimonials, .newsletter {
   font-family: var(--font-body), 'Inter', -apple-system, sans-serif !important;
