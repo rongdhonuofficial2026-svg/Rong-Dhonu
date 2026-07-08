@@ -1,10 +1,7 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from "framer-motion"
-import { PremiumImage } from "@/components/ui/PremiumImage"
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { useRef, useEffect } from 'react'
+import { Link } from "@/lib/i18n/routing"
 
 interface AboutContentProps {
   content: any
@@ -12,240 +9,223 @@ interface AboutContentProps {
 }
 
 export function AboutContent({ content, locale }: AboutContentProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  })
+  const heroArtRef = useRef<HTMLDivElement>(null)
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [100, -100])
-  const y2 = useTransform(scrollYProgress, [0, 1], [-100, 100])
+  useEffect(() => {
+    // Parallax mouse effect on page hero image
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!heroArtRef.current) return
+      const x = (e.clientX / window.innerWidth - 0.5) * 14
+      const y = (e.clientY / window.innerHeight - 0.5) * 14
+      heroArtRef.current.style.setProperty('--px', `${x}px`)
+      heroArtRef.current.style.setProperty('--py', `${y}px`)
+    };
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    };
+  }, [])
+
+  // Dynamic layout animation trigger
+  useEffect(() => {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in')
+          io.unobserve(e.target)
+        }
+      })
+    }, { threshold: 0.12 })
+
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  const committee = [
+    {
+      name: locale === 'bn' ? 'রনিতা বসু' : 'Ronita Basu',
+      role: locale === 'bn' ? 'প্রতিষ্ঠাতা ও সভাপতি' : 'Founder & Chair',
+      image: 'https://images.unsplash.com/photo-1622542796254-5b9c46ab0d2f?q=80&w=900&auto=format&fit=crop',
+      index: 'No. 01'
+    },
+    {
+      name: locale === 'bn' ? 'অরিন্দম সেন' : 'Arindam Sen',
+      role: locale === 'bn' ? 'বোর্ড সদস্য' : 'Board Member',
+      image: 'https://images.unsplash.com/photo-1578059457717-721408f0758e?q=80&w=900&auto=format&fit=crop',
+      index: 'No. 02'
+    },
+    {
+      name: locale === 'bn' ? 'প্রিয়াঙ্কা দত্ত' : 'Priyanka Dutta',
+      role: locale === 'bn' ? 'বোর্ড সদস্য' : 'Board Member',
+      image: 'https://images.unsplash.com/photo-1531056416665-266c4099c928?q=80&w=900&auto=format&fit=crop',
+      index: 'No. 03'
+    },
+    {
+      name: locale === 'bn' ? 'দেবজ্যোতি রায়' : 'Debojyoti Roy',
+      role: locale === 'bn' ? 'বোর্ড সদস্য' : 'Board Member',
+      image: 'https://images.unsplash.com/photo-1681235014294-588fea095706?q=80&w=900&auto=format&fit=crop',
+      index: 'No. 04'
+    }
+  ]
 
   return (
-    <div ref={containerRef} className="relative w-full overflow-hidden bg-[#EFE6D2] text-[#1E1A16]">
-      
-      {/* Ambient color and blur */}
-      <div className="pointer-events-none absolute top-1/4 -left-1/4 w-[80vw] h-[80vw] rounded-full bg-[#F4C662]/5 blur-[120px] mix-blend-multiply" />
-      <div className="pointer-events-none absolute bottom-1/4 -right-1/4 w-[60vw] h-[60vw] rounded-full bg-[#B4233A]/5 blur-[120px] mix-blend-multiply" />
+    <div style={{ background: 'var(--color-void)' }}>
+      {/* Decorative Textures */}
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
-      {/* Hero Section */}
-      <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-[#0B0908]">
-        <motion.div style={{ y: y1 }} className="absolute inset-0 z-0 w-full h-[120%] -top-[10%]">
-          <PremiumImage 
-            src="/images/placeholders/exhibition.webp"
-            fallbackSrc="/images/placeholders/exhibition.webp"
-            alt="Museum Interior"
-            fill
-            priority
-            className="object-cover opacity-50"
-          />
-        </motion.div>
-        
-        {/* Gradient overlay for text readability */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0B0908] via-transparent to-black/30" />
-        
-        <div className="relative z-20 text-center px-6 max-w-4xl mx-auto space-y-6 mt-20">
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
-            className="font-serif text-5xl md:text-7xl lg:text-8xl text-[#F4EEDF] font-bold tracking-tight drop-shadow-xl"
-          >
-            {content.title || (locale === 'bn' ? 'আমাদের সম্পর্কে' : 'Our Story')}
-          </motion.h1>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-            className="w-16 h-[1.5px] bg-[#F4C662]/50 mx-auto"
-          />
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-            className="text-lg md:text-2xl text-[#F4EEDF]/90 font-light leading-relaxed max-w-2xl mx-auto"
-          >
+      {/* ============ PAGE HERO ============ */}
+      <header className="page-hero artwork" id="pageHeroArt" ref={heroArtRef}>
+        <img 
+          src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?q=80&w=2400&auto=format&fit=crop" 
+          alt="Deep abstract painting texture" 
+          loading="eager"
+        />
+        <div className="scrim"></div>
+        <div className="page-hero-inner reveal">
+          <div className="eyebrow center">{locale === 'bn' ? 'রঙধনু শিল্পী সংঘ' : "Rongdhono Artists' Collective"}</div>
+          <h1>{content.title || (locale === 'bn' ? 'রঙধনু সম্পর্কে' : 'About Rongdhono')}</h1>
+          <div className="hero-rule"></div>
+          <p>
             {locale === 'bn' 
-              ? 'শিল্প ও শিল্পীর সেতুবন্ধন' 
+              ? '২০১০ সাল থেকে সৃজনশীলতা লালন এবং ঐতিহ্য সংরক্ষণে ললিতকলার একটি উত্তরাধিকার।' 
               : 'A legacy of fine arts, nurturing creativity and preserving heritage since 2010.'}
-          </motion.p>
+          </p>
+        </div>
+      </header>
+
+      {/* ============ MISSION ============ */}
+      <section className="about" id="mission">
+        <div className="about-grid">
+          <div className="about-copy reveal">
+            <div className="eyebrow on-paper">{locale === 'bn' ? 'আমাদের লক্ষ্য' : 'Our Mission'}</div>
+            <h2>
+              {locale === 'bn' ? (
+                <>শিল্পীদের একটি সমৃদ্ধ সম্প্রদায় গড়ে তোলা এবং সৃজনশীল অভিব্যক্তির জন্য এমন একটি প্ল্যাটফর্ম প্রদান করা যা <b>সীমানা অতিক্রম করে।</b></>
+              ) : (
+                <>To foster a thriving community of artists and provide a platform for creative expression that <b>transcends boundaries.</b></>
+              )}
+            </h2>
+            <p className="mission-body">
+              {content.mission || (locale === 'bn'
+                ? 'শিল্পকলা সমাজকে রূপান্তর করার ক্ষমতা রাখে - এই বিশ্বাসের ভিত্তিতে প্রতিষ্ঠিত রঙধনু দূরদর্শী নির্মাতা এবং অনুরাগী সংগ্রাহকদের মধ্যে সেতু হিসাবে কাজ করে। আমরা এমন অভিজ্ঞতা তৈরি করি যা দৃষ্টিভঙ্গিকে চ্যালেঞ্জ করে এবং সমসাময়িক শিল্পচর্চাকে উন্নত করে।'
+                : 'Founded on the belief that art has the power to transform society, Rongdhono serves as a bridge between visionary creators and passionate collectors. We curate experiences that challenge perspectives and elevate the contemporary art discourse.')}
+            </p>
+          </div>
+          <div className="about-visual reveal">
+            <div className="mission-img-main artwork">
+              <img 
+                src="https://images.unsplash.com/photo-1615184697985-c9bde1b07da7?q=80&w=1200&auto=format&fit=crop" 
+                alt="Blue, yellow and red abstract painting" 
+                loading="lazy"
+              />
+              <div className="scrim soft"></div>
+              <div className="frame-edge"></div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="max-w-[1320px] mx-auto px-6 md:px-12 relative z-10 pt-32 pb-48 space-y-48">
-        
-        {/* Mission & Vision Split Layout */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
-            className="space-y-8"
-          >
-            <h2 className="eyebrow on-paper">
-              {locale === 'bn' ? 'আমাদের লক্ষ্য' : 'Our Mission'}
-            </h2>
-            <p className="font-serif text-3xl md:text-5xl leading-[1.1] text-[#1E1A16] font-bold">
-              {content.mission || "We aim to create a global stage for local artists to shine."}
-            </p>
-            <div className="h-[1px] w-16 bg-[#DCCFAE]" />
-            <p className="text-[#5C5347] text-lg leading-relaxed">
-              Founded on the belief that art has the power to transform society, Rongdhono serves as a bridge between visionary creators and passionate collectors. We curate experiences that challenge perspectives and elevate the contemporary art discourse.
-            </p>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
-            className="relative w-full aspect-[4/5] bg-[#DCCFAE]/20 overflow-hidden group shadow-2xl border border-[#DCCFAE]"
-          >
-            <PremiumImage 
-              src="/images/placeholders/artwork-1.webp"
-              fallbackSrc="/images/placeholders/artwork-1.webp"
-              alt="Mission Artwork"
-              fill
-              className="object-cover transition-transform duration-[3s] ease-out group-hover:scale-105"
-            />
-          </motion.div>
-        </section>
-
-        {/* Vision */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
-            className="order-2 lg:order-1 relative w-full aspect-[4/5] bg-[#DCCFAE]/20 overflow-hidden group shadow-2xl border border-[#DCCFAE]"
-          >
-            <PremiumImage 
-              src="/images/placeholders/artwork-2.webp"
-              fallbackSrc="/images/placeholders/artwork-2.webp"
-              alt="Vision Artwork"
-              fill
-              className="object-cover transition-transform duration-[3s] ease-out group-hover:scale-105"
-            />
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
-            className="order-1 lg:order-2 space-y-8 lg:pl-12"
-          >
-            <h2 className="eyebrow on-paper">
-              {locale === 'bn' ? 'আমাদের রূপকল্প' : 'Our Vision'}
-            </h2>
-            <p className="font-serif text-3xl md:text-5xl leading-[1.1] text-[#1E1A16] font-bold">
-              {content.vision || "A world where every stroke of genius finds its rightful audience."}
-            </p>
-            <div className="h-[1px] w-16 bg-[#DCCFAE]" />
-            <p className="text-[#5C5347] text-lg leading-relaxed">
-              We envision a future where cultural heritage and contemporary expression seamlessly intertwine. Through rigorous curation, global partnerships, and a deep commitment to artistic integrity, we are building a lasting sanctuary for fine arts.
-            </p>
-          </motion.div>
-        </section>
-
-        {/* Committee Members (Static Preview for Design) */}
-        <section className="space-y-16">
-          <div className="text-center space-y-6 max-w-3xl mx-auto">
-            <h2 className="eyebrow on-paper flex justify-center">
-              {locale === 'bn' ? 'কমিটি মেম্বার' : 'Our Committee'}
-            </h2>
-            <p className="font-serif text-4xl md:text-5xl text-[#1E1A16] font-bold">
-              {locale === 'bn' ? 'যাদের অবদানে আমরা সমৃদ্ধ' : 'The Visionaries Behind Rongdhono'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {[1, 2, 3, 4].map((i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.19, 1, 0.22, 1] }}
-                className="group relative flex flex-col items-center text-center space-y-4 bg-[#F4EEDF] border border-[#DCCFAE] p-5 pb-8"
-                style={{ boxShadow: '0 20px 50px -10px rgba(30,26,22,0.06)' }}
-              >
-                <div className="relative w-full aspect-[3/4] overflow-hidden bg-[#DCCFAE]/20 border border-[#DCCFAE] mb-2">
-                  <PremiumImage
-                    src={`/images/placeholders/artist-${i}.webp`}
-                    fallbackSrc={`/images/placeholders/artist-${i}.webp`}
-                    alt={`Committee Member ${i}`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-[#B4233A]/5 transition-colors duration-500" />
-                </div>
-                <h3 className="font-serif text-lg font-bold text-[#1E1A16] group-hover:text-[#B4233A] transition-colors leading-tight">
-                  {locale === 'bn' ? 'শিল্পী নাম' : 'Eminent Artist'}
-                </h3>
-                <p className="text-[10px] tracking-widest text-[#B4233A] uppercase font-bold">
-                  {locale === 'bn' ? 'কমিটি মেম্বার' : 'Board Member'}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Legacy & History (Dark Section) */}
-        <section className="relative py-32 md:py-48 bg-[#151210] text-[#F4EEDF] -mx-6 px-6 overflow-hidden border border-white/[0.08] shadow-2xl">
-          <div className="absolute inset-0 z-0">
-            <PremiumImage 
-              src="/images/placeholders/hero.webp"
-              fallbackSrc="/images/placeholders/hero.webp"
-              alt="History Background"
-              fill
-              className="object-cover opacity-20 mix-blend-luminosity"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#151210] via-transparent to-[#151210]" />
-          </div>
-          
-          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-16">
-            <h2 className="eyebrow flex justify-center">
-              {locale === 'bn' ? 'ইতিহাস ও ঐতিহ্য' : 'History & Legacy'}
-            </h2>
-            
-            <div className="font-serif text-3xl md:text-5xl leading-relaxed text-[#F4EEDF] font-bold">
-              {content.history || "Founded with a passion for fine arts, Rongdhono has grown into a prestigious institution celebrating creativity and heritage."}
-            </div>
-            
-            <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-              <div className="space-y-4 border-t border-white/10 pt-6">
-                <p className="font-serif text-5xl md:text-6xl font-bold text-[#F4C662]">2010</p>
-                <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest">{locale === 'bn' ? 'প্রতিষ্ঠা' : 'Foundation'}</p>
-              </div>
-              <div className="space-y-4 border-t border-white/10 pt-6">
-                <p className="font-serif text-5xl md:text-6xl font-bold text-[#F4C662]">50+</p>
-                <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest">{locale === 'bn' ? 'প্রদর্শনী' : 'Major Exhibitions'}</p>
-              </div>
-              <div className="space-y-4 border-t border-white/10 pt-6">
-                <p className="font-serif text-5xl md:text-6xl font-bold text-[#F4C662]">2k+</p>
-                <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest">{locale === 'bn' ? 'শিল্পী' : 'Global Artists'}</p>
-              </div>
+      {/* ============ VISION ============ */}
+      <section className="about about-flip">
+        <div className="about-grid">
+          <div className="about-visual reveal">
+            <div className="mission-img-main artwork">
+              <img 
+                src="https://images.unsplash.com/photo-1602464729960-f95937746b68?q=80&w=1200&auto=format&fit=crop" 
+                alt="Yellow, red and white abstract painting" 
+                loading="lazy"
+              />
+              <div className="scrim soft"></div>
+              <div className="frame-edge"></div>
             </div>
           </div>
-        </section>
+          <div className="about-copy reveal">
+            <div className="eyebrow on-paper">{locale === 'bn' ? 'আমাদের রূপকল্প' : 'Our Vision'}</div>
+            <h2>
+              {locale === 'bn' ? (
+                <>পশ্চিমবঙ্গের সমসাময়িক শিল্পের শীর্ষস্থানীয় গন্তব্য হয়ে ওঠা, আধুনিক শৈল্পিক ধারাকে আলিঙ্গন করার পাশাপাশি আমাদের <b>সাংস্কৃতিক ঐতিহ্যকে সংরক্ষণ করা।</b></>
+              ) : (
+                <>To become the premier destination for contemporary art in <b>West Bengal,</b> preserving our cultural heritage while embracing modern artistic narratives.</>
+              )}
+            </h2>
+            <p className="mission-body">
+              {content.vision || (locale === 'bn'
+                ? 'আমরা এমন একটি ভবিষ্যতের স্বপ্ন দেখি যেখানে সাংস্কৃতিক ঐতিহ্য এবং সমসাময়িক শৈল্পিক অভিব্যক্তি নির্বিঘ্নে মিশে যাবে। কঠোর কিউরেশন, বৈশ্বিক অংশীদারিত্ব এবং শৈল্পিক সততার প্রতি গভীর প্রতিশ্রুতির মাধ্যমে আমরা ললিতকলার একটি স্থায়ী অভয়ারণ্য গড়ে তুলছি।'
+                : 'We envision a future where cultural heritage and contemporary expression seamlessly intertwine. Through rigorous curation, global partnerships, and a deep commitment to artistic integrity, we are building a lasting sanctuary for fine arts.')}
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <section className="py-24 flex flex-col items-center justify-center text-center space-y-10">
-          <p className="font-serif text-3xl md:text-5xl text-[#1E1A16] max-w-3xl leading-snug font-bold">
-            {locale === 'bn' ? 'আমাদের শিল্পযাত্রায় যোগ দিন' : 'Join our collective journey of artistic discovery.'}
+      {/* ============ COMMITTEE ============ */}
+      <section className="artists" id="committee">
+        <div className="section-head reveal" style={{ justifyContent: 'center', textAlign: 'center', flexDirection: 'column', alignItems: 'center' }}>
+          <div className="eyebrow center">{locale === 'bn' ? 'আমাদের কমিটি' : 'Our Committee'}</div>
+          <h2>{locale === 'bn' ? 'রঙধনুর নেপথ্যের রূপকারগণ' : 'The Visionaries Behind Rongdhono'}</h2>
+        </div>
+        <div className="artist-row">
+          {committee.map((member, idx) => (
+            <div key={idx} className="artist-card artwork reveal">
+              <img 
+                src={member.image} 
+                alt={`Signature work representing ${member.name}`} 
+                loading="lazy"
+              />
+              <div className="scrim"></div>
+              <div className="frame-edge"></div>
+              <span className="artist-index">{member.index}</span>
+              <div className="artist-info">
+                <b>{member.name}</b>
+                <span>{member.role}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ============ HISTORY & LEGACY ============ */}
+      <section className="legacy-wrap">
+        <div className="legacy-card reveal">
+          <div className="eyebrow center on-dark-card">{locale === 'bn' ? 'ইতিহাস ও ঐতিহ্য' : 'History & Legacy'}</div>
+          <p className="legacy-quote">
+            {content.history || (locale === 'bn'
+              ? 'শিল্পের প্রতি গভীর অনুরাগে প্রতিষ্ঠিত রঙধনু আজ ক্ষুদ্র পরিসর পেরিয়ে সিলভার থ্রেড আর্ট গ্যালারিতে বার্ষিক প্রদর্শনীর আয়োজনকারী এক মর্যাদাপূর্ণ শিল্পী সংঘে পরিণত হয়েছে।'
+              : 'Founded with a passion for the arts, Rongdhono has grown from a small group of local artists to a prestigious collective hosting an annual exhibition at the Silver Thread Art Gallery.')}
           </p>
-          <Link 
-            href={`/${locale}/contact`}
-            className="btn btn-paper uppercase tracking-widest font-bold text-[13px] rounded-full active:scale-[0.97]"
-          >
-            {locale === 'bn' ? 'যোগাযোগ করুন' : 'Get in Touch'}
-          </Link>
-        </section>
+          <div className="legacy-stats">
+            <div>
+              <b>2010</b>
+              <span>{locale === 'bn' ? 'প্রতিষ্ঠা' : 'Foundation'}</span>
+            </div>
+            <div>
+              <b>50+</b>
+              <span>{locale === 'bn' ? 'প্রধান প্রদর্শনীসমূহ' : 'Major Exhibitions'}</span>
+            </div>
+            <div>
+              <b>2K+</b>
+              <span>{locale === 'bn' ? 'আন্তর্জাতিক শিল্পী' : 'Global Artists'}</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      </div>
+      {/* ============ CLOSING CTA ============ */}
+      <section className="closing-cta">
+        <h2 className="reveal">
+          {locale === 'bn' ? (
+            <>আমাদের শৈল্পিক আবিষ্কারের যৌথ যাত্রায়<br />যোগ দিন।</>
+          ) : (
+            <>Join our collective journey of<br />artistic discovery.</>
+          )}
+        </h2>
+        <Link href="/contact" className="btn btn-paper magnetic reveal">
+          {locale === 'bn' ? 'যোগাযোগ করুন' : 'Get in Touch'}{' '}
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ marginLeft: '2px' }}>
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </Link>
+      </section>
     </div>
   )
 }
