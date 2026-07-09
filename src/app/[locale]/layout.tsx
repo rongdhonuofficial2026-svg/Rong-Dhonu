@@ -12,10 +12,19 @@ const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-s
 const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn' });
 
 const calligraphicAfera = localFont({
-  src: '../../../public/fonts/calligraphicaferabeautytrial-bold.otf',
+  src: [
+    {
+      path: '../../../public/fonts/calligraphicaferabeautytrial-bold.otf',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/fonts/calligraphicaferabeautytrial-midi.otf',
+      weight: '500',
+      style: 'normal',
+    }
+  ],
   variable: '--font-afera',
-  weight: '700',
-  style: 'normal',
 });
 
 const arsenica = localFont({

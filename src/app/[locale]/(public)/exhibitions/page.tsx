@@ -84,7 +84,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.35] mix-blend-overlay canvas-texture" />
 
       {/* ============ PAGE HERO ============ */}
-      <header className="page-hero artwork">
+      <header className="page-hero exhibitions-page-hero artwork">
         <img 
           src={heroImage} 
           alt="Visitors viewing paintings in a gallery" 

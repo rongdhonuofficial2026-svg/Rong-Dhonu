@@ -2173,3 +2173,27 @@
   }
 }
 
+/* ================= EXHIBITIONS PAGE HERO TYPOGRAPHY ================= */
+.exhibitions-page-hero h1 {
+  font-family: var(--font-arsenica), var(--font-serif-bn), serif !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
+  font-size: clamp(46px, 6.4vw, 96px) !important;
+  line-height: .98 !important;
+  letter-spacing: -.02em !important;
+  color: var(--color-parchment) !important;
+  max-width: 900px !important;
+  margin: 0 auto !important;
+  font-synthesis: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+.exhibitions-page-hero h1 em {
+  font-family: var(--font-afera), var(--font-serif-bn), cursive !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
+  color: var(--color-gold-bright) !important;
+}
+
