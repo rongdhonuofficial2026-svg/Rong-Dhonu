@@ -132,7 +132,7 @@ export function CatalogPreviewModal({ pdfUrl, title, catalogId, isOpen, onClose 
               style={{ height: `${Math.max(100, 100 * (100 / zoom))}vh` }}
               title={`PDF Preview: ${title}`}
               loading="lazy"
-              sandbox="allow-scripts allow-same-origin allow-popups"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-downloads"
             />
           </div>
         </div>

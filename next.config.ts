@@ -37,8 +37,8 @@ const securityHeaders = [
       "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co",
       // Media
       "media-src 'self' blob: https://*.supabase.co https://*.supabase.in",
-      // Frames: deny all
-      "frame-src 'none'",
+      // Frames: allow self, google docs viewer, and supabase storage
+      "frame-src 'self' https://docs.google.com https://*.supabase.co https://*.supabase.in",
       // Workers
       "worker-src 'self' blob:",
     ].join('; '),

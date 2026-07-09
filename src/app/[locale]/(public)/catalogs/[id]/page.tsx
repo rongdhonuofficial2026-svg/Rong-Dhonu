@@ -126,7 +126,10 @@ export default async function CatalogDetailPage({ params }: Props) {
               />
               
               <div className="flex-1">
-                <CatalogDownloadButton catalog={catalog} className="w-full h-14 text-base font-semibold rounded-xl shadow-md" />
+                <CatalogDownloadButton 
+                  catalog={catalog} 
+                  className="w-full h-14 text-base font-semibold rounded-xl bg-[#F4C662] text-[#0B0908] hover:bg-[#ebd083] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-[#F4C662]/10 hover:shadow-[#F4C662]/20 cursor-pointer" 
+                />
               </div>
             </div>
           </div>
