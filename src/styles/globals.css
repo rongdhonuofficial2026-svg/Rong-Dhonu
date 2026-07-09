@@ -491,15 +491,29 @@
   position: relative;
   z-index: 2;
   width: 100%;
+  text-align: center;
 }
 .contact-inner h1 {
-  font-size: clamp(46px,6vw,86px);
-  color: var(--color-parchment);
-  letter-spacing: -.02em;
-  line-height: 1;
+  font-family: var(--font-apparel), var(--font-serif-bn), serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: clamp(46px, 6vw, 86px) !important;
+  color: var(--color-parchment) !important;
+  letter-spacing: -.02em !important;
+  line-height: 1 !important;
+  font-synthesis: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+.contact-inner h1 em {
+  font-family: var(--font-afera), var(--font-serif-bn), cursive !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
+  color: var(--color-gold-bright) !important;
 }
 .contact-inner p {
-  margin-top: 22px;
+  margin: 22px auto 0;
   font-size: 17px;
   color: var(--color-parchment-dim);
   max-width: 520px;
@@ -1053,10 +1067,12 @@
   padding: 200px 0 76px;
   text-align: center;
 }
-.page-hero-inner .eyebrow {
+.page-hero-inner .eyebrow,
+.contact-inner .eyebrow {
   justify-content: center;
 }
-.page-hero-inner .eyebrow::after {
+.page-hero-inner .eyebrow::after,
+.contact-inner .eyebrow::after {
   content: "";
   width: 26px;
   height: 1px;
