@@ -70,27 +70,12 @@ export function ContactScripts() {
       el.addEventListener('mouseleave', handleMouseLeaveInteractive)
     })
 
-    // Inquiry type selector tabs switching
-    const tabs = document.querySelectorAll('.inquiry-type')
-    const handleTabClick = (e: Event) => {
-      tabs.forEach(t => t.classList.remove('active'))
-      const target = e.currentTarget as HTMLElement
-      target.classList.add('active')
-    }
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', handleTabClick)
-    })
-
     // Cleanup listeners on unmount
     return () => {
       io.disconnect()
       magneticListeners.forEach(({ el, mouseMove, mouseLeave }) => {
         el.removeEventListener('mousemove', mouseMove)
         el.removeEventListener('mouseleave', mouseLeave)
-      })
-      tabs.forEach(tab => {
-        tab.removeEventListener('click', handleTabClick)
       })
       
       document.removeEventListener('mousemove', handleMouseMoveCursor)

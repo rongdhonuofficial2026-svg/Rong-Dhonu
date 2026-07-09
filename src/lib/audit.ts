@@ -31,10 +31,12 @@ type ActionType =
   | 'delete_user_by_admin'
   | 'send_notification_by_admin'
   | 'delete_artwork_by_admin'
+  | 'submit_inquiry'
+  | 'subscribe_newsletter'
 
 export async function logAudit(
   action: ActionType,
-  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media' | 'gallery_album' | 'profiles' | 'notifications',
+  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media' | 'gallery_album' | 'profiles' | 'notifications' | 'newsletter_subscribers',
   entityId: string,
   details?: Record<string, any>
 ) {

@@ -2,6 +2,7 @@ import { getCmsContent } from "@/lib/cms/content"
 import { generateDynamicMetadata } from "@/lib/seo"
 import { Link } from "@/lib/i18n/routing"
 import { ContactScripts } from "@/components/public/contact/ContactScripts"
+import { ContactForm } from "@/components/public/contact/ContactForm"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -163,62 +164,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           </div>
           
           {/* Right Column: Contact Form */}
-          <div className="form-card reveal">
-            <div className="form-eyebrow">{locale === 'bn' ? "অনুসন্ধান ও অর্জন" : "Inquiries & Acquisitions"}</div>
-            <h2>{locale === 'bn' ? "আমাদের একটি বার্তা পাঠান" : "Send a Message"}</h2>
-            <p>
-              {locale === 'bn' 
-                ? "প্রদর্শনী বিবরণ, ব্যক্তিগত প্রদর্শনী, বা শিল্পকর্ম অর্জনের জন্য, দয়া করে নিচে আপনার বিবরণ দিন এবং আমাদের কিউরেটরিয়াল দল আপনাকে সহায়তা করবে।" 
-                : "For exhibition details, private viewings, or artwork acquisitions, please leave your details below and our curatorial team will assist you."}
-            </p>
-
-            <div className="inquiry-types">
-              <span className="inquiry-type active">{locale === 'bn' ? "সাধারণ অনুসন্ধান" : "General Inquiry"}</span>
-              <span className="inquiry-type">{locale === 'bn' ? "শিল্পী আবেদন" : "Artist Application"}</span>
-              <span className="inquiry-type">{locale === 'bn' ? "গ্যালারি পরিদর্শন" : "Gallery Visit"}</span>
-              <span className="inquiry-type">{locale === 'bn' ? "আহরণ" : "Acquisition"}</span>
-            </div>
-
-            <form>
-              <div className="field-row">
-                <div className="field">
-                  <label>{locale === 'bn' ? "সম্পূর্ণ নাম" : "Full Name"}</label>
-                  <input 
-                    type="text" 
-                    placeholder={locale === 'bn' ? "যেমন: জেন ডো" : "e.g. Jane Doe"} 
-                    required 
-                  />
-                </div>
-                <div className="field">
-                  <label>{locale === 'bn' ? "ইমেইল ঠিকানা" : "Email Address"}</label>
-                  <input 
-                    type="email" 
-                    placeholder="jane@example.com" 
-                    required 
-                  />
-                </div>
-              </div>
-              <div className="field" style={{ marginBottom: '30px' }}>
-                <label>{locale === 'bn' ? "অনুসন্ধানের বিষয়" : "Subject of Inquiry"}</label>
-                <input 
-                  type="text" 
-                  placeholder={locale === 'bn' ? "আমরা আপনাকে কীভাবে সাহায্য করতে পারি?" : "How can we assist you?"} 
-                />
-              </div>
-              <div className="field" style={{ marginBottom: '8px' }}>
-                <label>{locale === 'bn' ? "বার্তা" : "Message"}</label>
-                <textarea 
-                  rows={4} 
-                  placeholder={locale === 'bn' ? "অনুগ্রহ করে আপনার অনুসন্ধানের বিবরণ শেয়ার করুন..." : "Please share the details of your inquiry…"}
-                ></textarea>
-              </div>
-              <div className="form-submit">
-                <button type="submit" className="btn btn-paper magnetic">
-                  {locale === 'bn' ? "অনুসন্ধান জমা দিন →" : "Submit Inquiry →"}
-                </button>
-              </div>
-            </form>
-          </div>
+          <ContactForm locale={locale} />
 
         </div>
       </section>

@@ -96,3 +96,21 @@ export const profileUpdateSchema = z.object({
   notify_deadline_reminders: z.boolean().optional(),
   notify_artwork_updates: z.boolean().optional(),
 })
+
+export const contactInquirySchema = z.object({
+  inquiryType: z.enum([
+    'General Inquiry', 'Artist Application', 'Gallery Visit', 'Acquisition',
+    'সাধারণ অনুসন্ধান', 'শিল্পী আবেদন', 'গ্যালারি পরিদর্শন', 'আহরণ'
+  ]),
+  name: z.string().trim().min(2, 'Name is required').max(200, 'Name must be under 200 characters'),
+  email: z.string().trim().email('Invalid email address'),
+  subject: z.string().trim().min(3, 'Subject is required').max(200, 'Subject must be under 200 characters'),
+  message: z.string().trim().min(10, 'Message is required').max(5000, 'Message must be under 5000 characters'),
+})
+
+export const newsletterSubscriptionSchema = z.object({
+  email: z.string().trim().email('Invalid email address'),
+  sourcePage: z.enum(['homepage', 'footer', 'contact', 'future expansion']),
+  locale: z.string().max(10),
+})
+
