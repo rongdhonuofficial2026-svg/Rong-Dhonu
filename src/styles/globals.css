@@ -2072,11 +2072,18 @@
   margin: 0 auto !important;
 }
 .about-page-hero h1 {
+  font-family: var(--font-arsenica), serif !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
   font-size: clamp(46px, 6vw, 84px) !important;
   letter-spacing: -.02em !important;
   line-height: 1.02 !important;
   margin: 6px 0 26px !important;
   max-width: none !important;
+  font-synthesis: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
 }
 .about-page-hero .hero-rule {
   width: 64px;

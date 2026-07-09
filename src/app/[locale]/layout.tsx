@@ -18,11 +18,25 @@ const calligraphicAfera = localFont({
   style: 'normal',
 });
 
-const arsenicaItalic = localFont({
-  src: '../../../public/fonts/ArsenicaTrial-MediumItalic.ttf',
+const arsenica = localFont({
+  src: [
+    {
+      path: '../../../public/fonts/ArsenicaTrial-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/fonts/ArsenicaTrial-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/fonts/ArsenicaTrial-MediumItalic.ttf',
+      weight: '500',
+      style: 'italic',
+    }
+  ],
   variable: '--font-arsenica',
-  weight: '500',
-  style: 'italic',
 });
 
 export default async function LocaleLayout({
@@ -44,7 +58,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
  
   return (
-    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable} ${calligraphicAfera.variable} ${arsenicaItalic.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable} ${calligraphicAfera.variable} ${arsenica.variable}`}>
       <body className="min-h-screen flex flex-col font-sans text-charcoal bg-cream">
         <NextIntlClientProvider messages={messages}>
           {/* Accessibility: skip navigation for keyboard/screen reader users */}
