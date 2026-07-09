@@ -43,7 +43,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
           <div className="about-note">
             <p>"{history}"</p>
             <div className="sig">
-              {locale === 'bn' ? '— প্রতিষ্ঠিত ২০১২, বর্ধমান' : '— Est. 2012, Bardhaman'}
+              {locale === 'bn' ? '— প্রতিষ্ঠিত ২০২২, বেলডাঙ্গা' : '— EST, 2022, BELDANGA'}
             </div>
           </div>
         </div>
