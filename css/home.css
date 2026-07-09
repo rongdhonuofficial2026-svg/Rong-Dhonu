@@ -250,6 +250,38 @@
   text-transform: uppercase;
   color: var(--color-crimson);
 }
+
+/* Phones only — editorial card must flow below image, never float over hero */
+@media (max-width: 767px) {
+  .about {
+    padding-top: 72px;
+  }
+
+  .about-visual {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 28px;
+    max-width: 100%;
+  }
+
+  .about-note {
+    position: static !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    margin-top: 18px;
+    padding: 24px 22px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 50px -24px rgba(30, 26, 22, 0.35);
+  }
+
+  .about-note p {
+    font-size: 15.5px;
+    line-height: 1.6;
+  }
+}
+
 .about-copy h2 {
   font-size: clamp(30px, 3.2vw, 44px);
   line-height: 1.18;
