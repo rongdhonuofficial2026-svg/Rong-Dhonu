@@ -104,7 +104,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
 
   return (
     <div className="gallery-page-wrapper">
-      <header className="page-hero artwork">
+      <header className="page-hero gallery-page-hero artwork">
         <img 
           src="https://images.unsplash.com/photo-1580136579312-94651dfd596d?q=80&w=2400&auto=format&fit=crop" 
           alt="Visitor walking through an illuminated gallery corridor" 
