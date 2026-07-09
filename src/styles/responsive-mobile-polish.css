@@ -257,3 +257,24 @@
     max-width: 100%;
   }
 }
+
+/* ── About page — Mission / Vision mobile spacing ─────────────────────────── */
+@media (max-width: 767px) {
+  .about-page-hero ~ section.about#mission {
+    padding-bottom: 48px;
+  }
+
+  .about-page-hero ~ section.about#mission + .about.about-flip {
+    padding-top: 40px;
+  }
+
+  .about-page-hero ~ section.about .about-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .about-page-hero ~ section.about .about-visual {
+    max-width: 100%;
+    margin: 0;
+  }
+}
