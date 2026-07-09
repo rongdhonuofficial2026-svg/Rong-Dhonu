@@ -1,5 +1,6 @@
 import { Link } from '@/lib/i18n/routing';
 import { FooterNewsletterForm } from '@/components/layout/FooterNewsletterForm';
+import { SOCIAL_LINKS } from '@/lib/config/social';
 
 export default function Footer({ footerData, locale = 'en', settingsData }: { footerData?: any, locale?: string, settingsData?: any }) {
   return (
@@ -15,19 +16,34 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
               : (footerData?.brand_description || 'Cultivating contemporary art and preserving cultural heritage through exhibitions, catalogues, and a thriving network for artists and appreciators alike.')}
           </p>
           <div className="footer-social">
-            <a href="#" aria-label="Instagram">
+            <a 
+              href={SOCIAL_LINKS.instagram} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Visit Rongdhono on Instagram"
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <rect x="3" y="3" width="18" height="18" rx="5" stroke="#F4EEDF" strokeWidth="1.6"/>
                 <circle cx="12" cy="12" r="4" stroke="#F4EEDF" strokeWidth="1.6"/>
                 <circle cx="17.5" cy="6.5" r="1" fill="#F4EEDF"/>
               </svg>
             </a>
-            <a href="#" aria-label="Facebook">
+            <a 
+              href={SOCIAL_LINKS.facebook} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Visit Rongdhono on Facebook"
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z" fill="#F4EEDF"/>
               </svg>
             </a>
-            <a href="#" aria-label="X">
+            <a 
+              href={SOCIAL_LINKS.x} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Visit Rongdhono on X (Twitter)"
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M4 4l16 16M20 4L4 20" stroke="#F4EEDF" strokeWidth="1.6" stroke-linecap="round"/>
               </svg>
