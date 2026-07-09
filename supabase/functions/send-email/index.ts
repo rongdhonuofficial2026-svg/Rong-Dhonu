@@ -47,10 +47,10 @@ serve(async (req) => {
 
     // 2. Fallback attempt: if Resend returns a 403 unverified domain error, retry in sandbox mode
     if (res.status === 403 || (data && (data.statusCode === 403 || data.error))) {
-      console.warn(`Resend email delivery failed (Status: ${res.status}). Attempting unverified domain sandbox fallback for recipient: ${to}`)
+      console.warn(`Resend email delivery failed (Status: ${res.status}). Attempting sandbox fallback with onboarding sender for recipient: ${to}`)
       fromEmail = 'onboarding@resend.dev'
-      toEmail = adminEmail
-      subjectLine = `[Rerouted Sandbox to ${to}] ${subject}`
+      toEmail = to
+      subjectLine = subject
 
       res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
