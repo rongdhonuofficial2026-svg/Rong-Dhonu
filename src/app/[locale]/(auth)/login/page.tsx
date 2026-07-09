@@ -106,7 +106,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group relative flex w-full justify-center rounded-md bg-charcoal px-3 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal disabled:opacity-70 transition-colors"
+            className="group relative flex w-full justify-center rounded-md bg-[#1E1A16] px-3 py-2.5 text-sm font-semibold text-[#F8F6F2] shadow-md shadow-black/10 transition-colors hover:bg-[#111111] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E1A16] disabled:opacity-70"
           >
             {isSubmitting ? <Loader2 className="animate-spin mr-2" size={20} /> : 'Sign in'}
           </button>
