@@ -4,11 +4,26 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/lib/i18n/routing';
 import '@/styles/globals.css';
 import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali } from 'next/font/google';
+import localFont from 'next/font/local';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-serif' });
 const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn' });
 const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn' });
+
+const calligraphicAfera = localFont({
+  src: '../../../public/fonts/calligraphicaferabeautytrial-bold.otf',
+  variable: '--font-afera',
+  weight: '700',
+  style: 'normal',
+});
+
+const arsenicaItalic = localFont({
+  src: '../../../public/fonts/ArsenicaTrial-MediumItalic.ttf',
+  variable: '--font-arsenica',
+  weight: '500',
+  style: 'italic',
+});
 
 export default async function LocaleLayout({
   children,
@@ -29,7 +44,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
  
   return (
-    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable} ${calligraphicAfera.variable} ${arsenicaItalic.variable}`}>
       <body className="min-h-screen flex flex-col font-sans text-charcoal bg-cream">
         <NextIntlClientProvider messages={messages}>
           {/* Accessibility: skip navigation for keyboard/screen reader users */}

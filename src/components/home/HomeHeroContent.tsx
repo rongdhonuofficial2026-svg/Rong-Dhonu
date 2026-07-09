@@ -69,7 +69,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const heroImage = exhibition?.hero_image_url || content?.imageUrl || "/images/home/hero_bg.jpg"
+  const heroImage = "/images/home/hero_bg.jpg"
 
   const title = content?.title || (locale === 'bn' 
     ? "যেখানে শিল্প<br>স্পর্শ করে <em>আত্মাকে</em>" 
@@ -77,8 +77,6 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
   const subtitle = content?.subtitle || (locale === 'bn' 
     ? "রংধনু শিল্পী সংঘের বার্ষিক প্রদর্শনী — বর্ধমান ও তার বাইরে থেকে সমসাময়িক খোদাইকৃত শিল্পকর্ম এবং প্রদর্শনীর একটি সমৃদ্ধ সংগ্রহ।" 
     : "A living archive of contemporary Bengali art — original works, working studios, and stories carried forward from Bardhaman and beyond.")
-  const ctaPrimary = content?.ctaPrimary || (locale === 'bn' ? "গ্যালারি দেখুন" : "View Gallery")
-  const ctaSecondary = content?.ctaSecondary || (locale === 'bn' ? "প্রদর্শনী অনুসন্ধান →" : "Explore Exhibitions →")
 
   const totalExhibitions = stats?.totalExhibitions || 14
   const totalArtists = stats?.totalArtists || 340
@@ -120,16 +118,20 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
             if (locale === 'en' && (cleanTitle.toLowerCase().includes('where art') && cleanTitle.toLowerCase().includes('meets') && cleanTitle.toLowerCase().includes('soul'))) {
               return (
                 <h1 style={{ textShadow: '0 6px 40px rgba(0,0,0,.35)' }}>
-                  <span className="where-art-meets" style={{ fontFamily: "'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>Where Art<br />Meets</span>{' '}
-                  <span className="soul" style={{ fontFamily: "'Arsenica Medium Italic', var(--font-display)", fontWeight: 500, fontStyle: 'italic', color: 'var(--color-gold-bright)' }}>Soul</span>
+                  <span className="where-art-meets" style={{ fontFamily: "var(--font-afera), 'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>Where Art</span>
+                  <br />
+                  <span className="where-art-meets" style={{ fontFamily: "var(--font-afera), 'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>Meets</span>{' '}
+                  <span className="soul" style={{ fontFamily: "var(--font-arsenica), 'Arsenica Medium Italic', var(--font-display)", fontWeight: 500, fontStyle: 'italic', color: 'var(--color-gold-bright)' }}>Soul</span>
                 </h1>
               )
             }
             if (locale === 'bn' && (cleanTitle.includes('যেখানে শিল্প') && cleanTitle.includes('স্পর্শ করে') && cleanTitle.includes('আত্মাকে'))) {
               return (
                 <h1 style={{ textShadow: '0 6px 40px rgba(0,0,0,.35)' }}>
-                  <span className="where-art-meets" style={{ fontFamily: "'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>যেখানে শিল্প<br />স্পর্শ করে</span>{' '}
-                  <span className="soul" style={{ fontFamily: "'Arsenica Medium Italic', var(--font-display)", fontWeight: 500, fontStyle: 'italic', color: 'var(--color-gold-bright)' }}>আত্মাকে</span>
+                  <span className="where-art-meets" style={{ fontFamily: "var(--font-afera), 'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>যেখানে শিল্প</span>
+                  <br />
+                  <span className="where-art-meets" style={{ fontFamily: "var(--font-afera), 'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>স্পর্শ করে</span>{' '}
+                  <span className="soul" style={{ fontFamily: "var(--font-arsenica), 'Arsenica Medium Italic', var(--font-display)", fontWeight: 500, fontStyle: 'italic', color: 'var(--color-gold-bright)' }}>আত্মাকে</span>
                 </h1>
               )
             }
@@ -141,10 +143,10 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
           <p className="hero-sub">{subtitle}</p>
           <div className="hero-ctas">
             <Link href="#collection" className="btn btn-gold magnetic">
-              {ctaPrimary}
+              {locale === 'bn' ? "গ্যালারি দেখুন" : "View Gallery"}
             </Link>
-            <Link href="#exhibition" className="btn btn-line magnetic">
-              {ctaSecondary}
+            <Link href="/exhibitions" className="btn btn-line magnetic">
+              {locale === 'bn' ? "প্রদর্শনী অনুসন্ধান →" : "Explore Exhibitions →"}
             </Link>
           </div>
           
