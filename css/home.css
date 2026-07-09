@@ -4,14 +4,17 @@
 
 @font-face {
   font-family: 'Calligraphic Afera Beauty Bold';
-  src: local('Fraunces'), local('Georgia'), serif;
+  src: url('/fonts/calligraphicaferabeautytrial-bold.otf') format('opentype');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'Arsenica Medium Italic';
-  src: local('Fraunces Italic'), local('Georgia Italic'), serif;
+  src: url('/fonts/ArsenicaTrial-MediumItalic.ttf') format('truetype');
   font-weight: 500;
   font-style: italic;
+  font-display: swap;
 }
 
 /* Override fonts to prevent layout font leak */

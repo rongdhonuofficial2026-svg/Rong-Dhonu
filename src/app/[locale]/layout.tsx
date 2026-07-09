@@ -5,17 +5,8 @@ import { routing } from '@/lib/i18n/routing';
 import '@/styles/globals.css';
 import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali } from 'next/font/google';
 
-const inter = Inter({ 
-  subsets: ['latin'], 
-  weight: ['400', '500', '600', '700', '800'], 
-  variable: '--font-sans' 
-});
-const fraunces = Fraunces({ 
-  subsets: ['latin'], 
-  weight: ['300', '400', '500', '600', '700', '900'], 
-  style: ['normal', 'italic'], 
-  variable: '--font-serif' 
-});
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-serif' });
 const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn' });
 const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn' });
 
