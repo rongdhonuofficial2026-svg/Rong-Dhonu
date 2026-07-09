@@ -352,7 +352,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
       </section>
 
       {/* ============ GALLERY + CATALOG CROSS-PROMO ============ */}
-      <section className="collection">
+      <section className="collection continue-exploring-section">
         <div className="section-head reveal in">
           <h2>{locale === 'bn' ? 'অনুসন্ধান অব্যাহত রাখুন' : 'Continue Exploring'}</h2>
           <p>
@@ -361,7 +361,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
               : 'Step deeper into the visual archive or browse our full library of exhibition publications.'}
           </p>
         </div>
-        <div className="album-grid" style={{ gridTemplateColumns: 'repeat(2,1fr)', maxWidth: '900px', margin: '0 auto' }}>
+        <div className="album-grid continue-exploring-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', maxWidth: '900px', margin: '0 auto' }}>
           <div className="album-card reveal in">
             <div className="album-media artwork">
               <img 

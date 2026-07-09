@@ -40,32 +40,35 @@ export function MobileNavigation() {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="w-[min(100vw-2rem,400px)] pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        className="mobile-nav-sheet"
       >
-        <SheetHeader>
-          <SheetTitle className="text-left font-serif text-2xl text-accent">Rongdhono</SheetTitle>
+        <SheetHeader className="mobile-nav-header text-left space-y-0">
+          <SheetTitle className="mobile-nav-title text-left">Rongdhono</SheetTitle>
         </SheetHeader>
-        <nav className="flex flex-col gap-4 mt-8">
-          {navItems.map((item) => (
-            <Link 
-              key={item.href} 
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="text-lg font-medium text-foreground/80 hover:text-accent transition-colors min-h-11 flex items-center py-2 border-b border-border/50"
-            >
-              {item.name}
-            </Link>
-          ))}
-          
-          <div className="mt-8 flex flex-col gap-3">
-            <Button asChild variant="outline" className="w-full justify-center">
-              <Link href="/login" onClick={() => setOpen(false)}>{t('login')}</Link>
-            </Button>
-            <Button asChild className="w-full justify-center">
-              <Link href="/register" onClick={() => setOpen(false)}>{t('register')}</Link>
-            </Button>
+
+        <nav className="mobile-nav-body" aria-label="Mobile navigation">
+          <div className="mobile-nav-links">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="mobile-nav-link"
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
         </nav>
+
+        <div className="mobile-nav-footer">
+          <Button asChild variant="outline" className="w-full justify-center border-[#F4EEDF]/20 text-[#F4EEDF] hover:bg-white/5">
+            <Link href="/login" onClick={() => setOpen(false)}>{t('login')}</Link>
+          </Button>
+          <Button asChild className="w-full justify-center bg-[#F4C662] text-[#0B0908] hover:bg-[#ebd083]">
+            <Link href="/register" onClick={() => setOpen(false)}>{t('register')}</Link>
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   )
