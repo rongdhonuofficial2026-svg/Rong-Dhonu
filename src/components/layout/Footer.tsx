@@ -39,7 +39,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
           <ul>
             <li><Link href="/about">{locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhono'}</Link></li>
             <li><Link href="/exhibitions">{locale === 'bn' ? 'বার্ষিক প্রদর্শনী' : 'Annual Exhibitions'}</Link></li>
-            <li><Link href="/artists">{locale === 'bn' ? 'শিল্পী ডিরেক্টরি' : 'Artists Directory'}</Link></li>
+            <li><Link href="/catalogs">{locale === 'bn' ? 'প্রদর্শনী ক্যাটালগ' : 'Exhibition Catalogs'}</Link></li>
             <li><Link href="/gallery">{locale === 'bn' ? 'কিউরেটেড কালেকশন' : 'Curated Collection'}</Link></li>
           </ul>
         </div>
