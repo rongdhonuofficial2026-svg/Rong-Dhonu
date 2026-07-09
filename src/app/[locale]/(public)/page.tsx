@@ -67,7 +67,7 @@ export default async function HomePage({
   let artists: any[] = []
 
   if (exhibition) {
-    const [artworksRes, artistsRes] = await Promise.all([
+    const [artworksRes, artistArtworkRowsRes] = await Promise.all([
       // Artworks with full artist profile (avatar + name)
       supabase.from('artworks')
         .select(`
@@ -78,19 +78,31 @@ export default async function HomePage({
         .eq('exhibition_id', exhibition.id)
         .limit(8),
       
-      // Approved participants with full profile (for Featured Artists section)
-      supabase.from('exhibition_participants')
-        .select('profiles(id, full_name_en, full_name_bn, avatar_url, bio_en, slug, role)')
+      supabase.from('artworks')
+        .select(`
+          artist_id,
+          profiles!artist_id(id, full_name_en, full_name_bn, avatar_url, bio_en, slug, role)
+        `)
         .eq('status', 'approved')
         .eq('exhibition_id', exhibition.id)
-        .limit(6)
+        .not('artist_id', 'is', null)
     ])
 
     artworks = artworksRes.data || []
     
-    // Map participants to their profile objects
-    if (artistsRes.data) {
-      artists = artistsRes.data.map(p => p.profiles).filter(Boolean)
+    if (artistArtworkRowsRes.data) {
+      const artistMap = new Map<string, any>()
+      artistArtworkRowsRes.data.forEach((row: any) => {
+        const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles
+        if (profile?.id && !artistMap.has(profile.id)) {
+          artistMap.set(profile.id, profile)
+        }
+      })
+      artists = Array.from(artistMap.values()).sort((a, b) => {
+        const aName = (a.full_name_en || a.full_name_bn || '').toString()
+        const bName = (b.full_name_en || b.full_name_bn || '').toString()
+        return aName.localeCompare(bName, 'en', { sensitivity: 'base' }) || a.id.localeCompare(b.id)
+      })
     }
   }
 
