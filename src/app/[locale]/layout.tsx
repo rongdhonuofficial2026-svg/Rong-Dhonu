@@ -48,6 +48,13 @@ const arsenica = localFont({
   variable: '--font-arsenica',
 });
 
+const apparel = localFont({
+  src: '../../../public/fonts/Fontspring-DEMO-appareldisplay-bold.otf',
+  variable: '--font-apparel',
+  weight: '400',
+  style: 'normal',
+});
+
 export default async function LocaleLayout({
   children,
   params
@@ -67,7 +74,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
  
   return (
-    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable} ${calligraphicAfera.variable} ${arsenica.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable} ${calligraphicAfera.variable} ${arsenica.variable} ${apparel.variable}`}>
       <body className="min-h-screen flex flex-col font-sans text-charcoal bg-cream">
         <NextIntlClientProvider messages={messages}>
           {/* Accessibility: skip navigation for keyboard/screen reader users */}

@@ -102,10 +102,10 @@ export default async function PublicCatalogsPage({
   return (
     <div className="catalogs-page-wrapper">
       {/* ============ PAGE HERO ============ */}
-      <header className="page-hero artwork">
+      <header className="page-hero catalogs-page-hero artwork">
         <img 
-          src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=2400&auto=format&fit=crop" 
-          alt="Exhibition catalog cover mockup on display table" 
+          src="/images/hero-bg-catalogs.png" 
+          alt="Rows of archived books and publications" 
           loading="eager"
         />
         <div className="scrim"></div>
@@ -115,9 +115,9 @@ export default async function PublicCatalogsPage({
             <div className="eyebrow center">{locale === 'bn' ? 'প্রকাশনা' : 'Publications'}</div>
             <h1>
               {locale === 'bn' ? (
-                <span>প্রদর্শনী <em>ক্যাটালগ</em></span>
+                <span>প্রদর্শনী <em>ক্যাটালগ আর্কাইভ</em></span>
               ) : (
-                <>Exhibition <em>Catalogs</em></>
+                <>Exhibition <em>Catalog Archive</em></>
               )}
             </h1>
             <p className="page-hero-sub">
