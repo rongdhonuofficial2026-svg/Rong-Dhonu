@@ -25,10 +25,12 @@ export async function submitInquiry(locale: string, rawData: ContactFormInput) {
 
     const { inquiryType, name, email, subject, message } = validated.data
 
+    const adminRecipient = process.env.ADMIN_EMAIL || 'rongdhonuofficial2026@gmail.com'
+
     // 2. Send detailed notification email to the administrator inbox
     const adminHtml = adminInquiryTemplate({ inquiryType, name, email, subject, message })
     const adminRes = await sendEmail({
-      to: 'contact@rongdhono.art',
+      to: adminRecipient,
       subject: `New Contact Inquiry: ${subject}`,
       html: adminHtml
     })
@@ -40,13 +42,16 @@ export async function submitInquiry(locale: string, rawData: ContactFormInput) {
 
     // 3. Send automated confirmation/auto-reply email to the customer
     const userHtml = userAutoReplyTemplate(name, subject, locale)
-    await sendEmail({
+    const userRes = await sendEmail({
       to: email,
       subject: locale === 'bn' ? 'যোগাযোগের জন্য ধন্যবাদ' : 'Inquiry Received - Rongdhono',
       html: userHtml
-    }).catch(err => {
-      console.warn('Failed to send inquiry confirmation auto-reply:', err)
     })
+
+    if (!userRes.success) {
+      console.error('Failed to deliver auto-reply email to visitor:', userRes.error)
+      return { error: locale === 'bn' ? 'আমরা এই মুহূর্তে নিশ্চিতকরণ ইমেল পাঠাতে পারছি না। অনুগ্রহ করে পরে চেষ্টা করুন।' : "We couldn't send the confirmation email. Please try again later." }
+    }
 
     // 4. Log transaction inside database audit logs (fire and forget, safety caught)
     try {

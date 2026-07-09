@@ -99,7 +99,7 @@ export async function getUsers(params: {
       return { success: false, error: error.message }
     }
 
-    let processedUsers = (data || []).map((user: any) => {
+    const processedUsers = (data || []).map((user: any) => {
       const artworksCount = user.artworks?.length || 0
       const exhibitionsCount = user.exhibition_participants?.length || 0
       const galleryCount = user.gallery_media?.length || 0

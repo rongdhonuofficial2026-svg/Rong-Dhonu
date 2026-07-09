@@ -54,25 +54,33 @@ export async function subscribeToNewsletter(rawData: NewsletterFormInput) {
       }
     }
 
+    const adminRecipient = process.env.ADMIN_EMAIL || 'rongdhonuofficial2026@gmail.com'
+
     // 3. Send welcome confirmation email to subscriber
     const welcomeHtml = newsletterWelcomeTemplate(locale)
-    await sendEmail({
+    const welcomeRes = await sendEmail({
       to: email,
       subject: locale === 'bn' ? 'রংধনু নিউজলেটারে আপনাকে স্বাগতম' : 'Welcome to Rongdhono',
       html: welcomeHtml
-    }).catch(err => {
-      console.warn('Failed to send newsletter welcome email:', err)
     })
+
+    if (!welcomeRes.success) {
+      console.error('Failed to deliver newsletter welcome email:', welcomeRes.error)
+      return { error: locale === 'bn' ? 'আমরা এই মুহূর্তে নিউজলেটার নিশ্চিতকরণ ইমেল পাঠাতে পারছি না। অনুগ্রহ করে পরে চেষ্টা করুন।' : "We couldn't send the welcome confirmation email. Please try again later." }
+    }
 
     // 4. Send administrative notification email
     const adminHtml = newsletterAdminNotification(email, sourcePage, locale)
-    await sendEmail({
-      to: 'contact@rongdhono.art',
+    const adminRes = await sendEmail({
+      to: adminRecipient,
       subject: `New Newsletter Subscriber: ${email}`,
       html: adminHtml
-    }).catch(err => {
-      console.warn('Failed to send newsletter admin notification:', err)
     })
+
+    if (!adminRes.success) {
+      console.error('Failed to deliver newsletter admin notification:', adminRes.error)
+      return { error: locale === 'bn' ? 'নিউজলেটার সাবস্ক্রিপশন সম্পন্ন করা যায়নি। অনুগ্রহ করে পরে চেষ্টা করুন।' : "We couldn't send the admin notification email. Please try again later." }
+    }
 
     // 5. Log transaction inside database audit logs (fire and forget)
     if (newSubscriber) {
