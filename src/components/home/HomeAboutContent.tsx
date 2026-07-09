@@ -54,11 +54,38 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
             {locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhono'}
           </div>
           <h2>
-            {typeof mission === 'string' ? (
-              <span dangerouslySetInnerHTML={{ __html: mission }} />
-            ) : (
-              mission
-            )}
+            {(() => {
+              if (typeof mission !== 'string') {
+                return mission
+              }
+              const cleanStr = mission.replace(/<\/?b>/gi, '').trim()
+              const endsWithDot = cleanStr.endsWith('.')
+              const searchStr = endsWithDot ? cleanStr.slice(0, -1) : cleanStr
+
+              if (searchStr.toLowerCase().includes('transcends boundaries')) {
+                const phrase = "transcends boundaries"
+                const parts = searchStr.split(new RegExp(phrase, 'i'))
+                return (
+                  <>
+                    {parts[0]}
+                    <b>{phrase}.</b>
+                    {parts[1] || ''}
+                  </>
+                )
+              }
+              if (searchStr.includes('সীমানা অতিক্রম করে')) {
+                const phrase = "সীমানা অতিক্রম করে"
+                const parts = searchStr.split(phrase)
+                return (
+                  <>
+                    {parts[0]}
+                    <b>{phrase}।</b>
+                    {parts[1] || ''}
+                  </>
+                )
+              }
+              return <span dangerouslySetInnerHTML={{ __html: mission }} />
+            })()}
           </h2>
           <p className="about-vision">{vision}</p>
           

@@ -257,10 +257,10 @@
   color: var(--color-ink-on-paper);
 }
 .about-copy h2 b {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-crimson);
   font-style: italic;
-  font-family: var(--font-display);
+  font-family: var(--font-arsenica), 'Arsenica Medium Italic', var(--font-display), serif;
 }
 .about-vision {
   margin: 32px 0 44px;
