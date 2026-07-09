@@ -80,7 +80,7 @@ export default async function HomePage({
       
       // Approved participants with full profile (for Featured Artists section)
       supabase.from('exhibition_participants')
-        .select('profiles(id, full_name_en, full_name_bn, avatar_url, bio_en, slug)')
+        .select('profiles(id, full_name_en, full_name_bn, avatar_url, bio_en, slug, role)')
         .eq('status', 'approved')
         .eq('exhibition_id', exhibition.id)
         .limit(6)
