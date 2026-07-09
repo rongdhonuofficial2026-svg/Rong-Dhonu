@@ -67,7 +67,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
             <li><span>{locale === 'bn' ? '১২ আর্ট কলেজ রোড' : '12 Art College Road'}</span></li>
             <li><span>{locale === 'bn' ? 'গোরাবাজার, বহরমপুর' : 'Gorabazar, Berhampore'}</span></li>
             <li><span>{locale === 'bn' ? 'পশ্চিমবঙ্গ ৭৪২১০১' : 'West Bengal 742101'}</span></li>
-            <li><a href="mailto:info@rongdhono.art">info@rongdhono.art</a></li>
+            <li><a href="mailto:rongdhonuofficial2026@gmail.com">rongdhonuofficial2026@gmail.com</a></li>
           </ul>
         </div>
 

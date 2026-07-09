@@ -79,7 +79,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 </div>
                 <div>
                   <div className="info-label">{locale === 'bn' ? "ইমেইল" : "Email"}</div>
-                  <b>{infoContent.email || "contact@rongdhono.art"}</b>
+                  <b>{infoContent.email || "rongdhonuofficial2026@gmail.com"}</b>
                 </div>
               </div>
               <div className="info-row">

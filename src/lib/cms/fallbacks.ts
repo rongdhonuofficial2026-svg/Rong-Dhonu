@@ -72,7 +72,7 @@ export const fallbackCMSContent: Record<string, Record<string, any>> = {
       venue_bn: "সিলভা তীর্থ আর্ট গ্যালারি",
       address_en: "Opposite Rabindra Bhavan (Southern Auditorium), Berhampore, West Bengal, India",
       address_bn: "রবীন্দ্র ভবন (সাউদার্ন অডিটোরিয়াম) এর বিপরীতে, বহরমপুর, পশ্চিমবঙ্গ, ভারত",
-      email: "contact@rongdhono.art",
+      email: "rongdhonuofficial2026@gmail.com",
       phone: "+91 98765 43210"
     }
   }
