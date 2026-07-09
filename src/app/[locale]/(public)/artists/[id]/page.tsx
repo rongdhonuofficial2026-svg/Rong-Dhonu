@@ -69,12 +69,12 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
   const exhibitions = (profile.exhibition_participants as any[])?.map((p) => p.exhibitions).filter(Boolean) || []
 
   return (
-    <main className="min-h-screen py-16 px-4 md:px-8 max-w-7xl mx-auto space-y-16">
+    <main className="min-h-screen py-16 px-4 md:px-8 max-w-7xl mx-auto space-y-16 artist-profile-main">
       {/* JSON-LD injection */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Header Profile Section */}
-      <section className="flex flex-col md:flex-row gap-8 items-start bg-muted/30 p-8 rounded-3xl border border-border">
+      <section className="flex flex-col md:flex-row gap-8 items-start bg-muted/30 p-8 rounded-3xl border border-border artist-profile-header">
         <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden shrink-0 border-4 border-background shadow-lg bg-muted">
           {profile.avatar_url ? (
             <Image src={profile.avatar_url} alt={name} fill className="object-cover" priority />

@@ -90,7 +90,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <main className="min-h-screen py-12 px-4 md:px-8 max-w-[1400px] mx-auto space-y-12">
+    <main className="min-h-screen py-12 px-4 md:px-8 max-w-[1400px] mx-auto space-y-12 public-page-shell">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <Button variant="ghost" asChild className="mb-4">

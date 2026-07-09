@@ -1,0 +1,463 @@
+/* ==========================================================================
+   RESPONSIVE PUBLIC — Phase 1B
+   Mobile/tablet-only rules. Desktop layout at ≥1025px is unchanged.
+   ========================================================================== */
+
+/* ── Safe area & overflow guard ─────────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .site-nav {
+    padding-left: max(var(--edge), env(safe-area-inset-left));
+    padding-right: max(var(--edge), env(safe-area-inset-right));
+  }
+
+  .site-footer {
+    padding-left: max(var(--edge), env(safe-area-inset-left));
+    padding-right: max(var(--edge), env(safe-area-inset-right));
+    padding-bottom: max(30px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Navigation ─────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .nav-links,
+  .nav-actions .nav-action-login,
+  .nav-actions .nav-action-register {
+    display: none !important;
+  }
+
+  .nav-burger {
+    display: flex !important;
+    align-items: center;
+  }
+
+  .nav-actions {
+    display: flex !important;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .nav-actions .nav-action-lang {
+    display: none !important;
+  }
+
+  .site-nav {
+    padding-top: max(18px, env(safe-area-inset-top));
+    padding-bottom: 18px;
+  }
+
+  .brand-word {
+    font-size: 20px;
+  }
+}
+
+.nav-burger button,
+.nav-icon-btn button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ── Touch targets (shared) ───────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .footer-social a {
+    width: 44px;
+    height: 44px;
+  }
+
+  .filter-pill {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .cat-tab {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .inquiry-type {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+  }
+
+  .masonry-expand {
+    width: 44px;
+    height: 44px;
+    opacity: 1;
+  }
+
+  .masonry-tile .wall-label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .footer-newsletter .btn,
+  .footer-newsletter input {
+    min-height: 44px;
+  }
+
+  .footer-newsletter input {
+    font-size: 16px;
+  }
+
+  .form-submit .btn,
+  .catalog-actions .btn {
+    min-height: 44px;
+  }
+}
+
+/* ── Toolbar / filter wrapping ────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .toolbar-wrap {
+    padding-bottom: 48px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .toolbar-divider {
+    display: none;
+  }
+
+  .toolbar-search {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .toolbar-search input {
+    font-size: 16px;
+  }
+
+  .toolbar .filter-pill {
+    flex: 1 1 calc(50% - 5px);
+    min-width: calc(50% - 5px);
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .toolbar .filter-pill {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+}
+
+/* ── Hero sections (inner pages) ──────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .page-hero {
+    min-height: 52vh;
+  }
+
+  .page-hero-inner {
+    padding: 140px 0 56px;
+  }
+
+  .page-hero h1 {
+    font-size: clamp(36px, 10vw, 56px);
+  }
+
+  .page-hero-sub {
+    font-size: 15px;
+    margin-top: 18px;
+  }
+
+  .page-hero-meta {
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .contact-hero {
+    min-height: 44vh;
+  }
+
+  .contact-inner {
+    padding: 140px 0 60px;
+  }
+
+  .about-page-hero {
+    padding: 140px var(--edge) 72px !important;
+    min-height: auto;
+  }
+
+  .exhibitions-page-hero h1,
+  .gallery-page-hero h1,
+  .catalogs-page-hero h1 {
+    font-size: clamp(34px, 9vw, 52px) !important;
+  }
+
+  .legacy-card {
+    padding: 60px var(--edge);
+  }
+
+  .site-footer {
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 430px) {
+  .page-hero-meta b {
+    font-size: 24px;
+  }
+
+  .page-hero-meta {
+    gap: 18px;
+  }
+}
+
+/* ── Home hero ────────────────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .hero {
+    min-height: 92vh;
+  }
+
+  .hero-content {
+    padding: 130px 0 64px;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero-content {
+    padding-top: 120px;
+  }
+}
+
+/* ── Responsive grids ─────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .artist-row {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .expo-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Forms (contact + public) ─────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .field input,
+  .field textarea {
+    font-size: 16px;
+    padding: 12px 2px;
+  }
+
+  .form-card {
+    padding: 28px 20px;
+  }
+
+  .contact-grid {
+    gap: 32px;
+  }
+
+  .visit-tile {
+    padding: 20px;
+  }
+}
+
+/* ── Coarse pointer / touch performance ─────────────────────────────────────── */
+@media (hover: none), (pointer: coarse) {
+  .page-hero:hover img {
+    transform: scale(1.02);
+  }
+
+  .magnetic {
+    transform: none !important;
+  }
+
+  .reveal:not(.in) {
+    opacity: 1;
+    transform: none;
+  }
+
+  .masonry-tile:hover .scrim {
+    opacity: 0.55;
+  }
+
+  .album-card:hover {
+    transform: none;
+  }
+
+  .featured-catalog-media:hover img {
+    transform: none;
+  }
+}
+
+/* ── Landscape phones & small-height tablets ──────────────────────────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-content {
+    padding-top: 100px;
+    padding-bottom: 40px;
+  }
+
+  .page-hero-inner {
+    padding-top: 110px;
+    padding-bottom: 40px;
+  }
+
+  .contact-inner {
+    padding-top: 110px;
+    padding-bottom: 40px;
+  }
+
+  .about-page-hero {
+    padding-top: 110px !important;
+    padding-bottom: 56px !important;
+  }
+}
+
+/* ── Search dialog ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .search-dialog-content {
+    width: calc(100vw - 16px) !important;
+    max-width: none !important;
+    margin: 8px;
+    max-height: calc(100dvh - 16px);
+  }
+
+  .search-dialog-input {
+    font-size: 16px !important;
+    min-height: 48px;
+  }
+}
+
+/* ── PDF preview modal ──────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .pdf-modal-control {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .pdf-modal-toolbar {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    gap: 8px;
+  }
+
+  .pdf-modal-title {
+    max-width: 42vw;
+  }
+}
+
+/* ── Exhibition detail (public) ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .exhibition-detail-hero {
+    min-height: 380px !important;
+    height: 60vh !important;
+    padding-bottom: 4rem !important;
+  }
+
+  .exhibition-detail-title {
+    font-size: clamp(2rem, 8vw, 2.75rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  .exhibition-detail-sticky {
+    position: static !important;
+    top: auto !important;
+    padding: 1.5rem !important;
+  }
+
+  .exhibition-detail-body {
+    font-size: 1.125rem !important;
+    line-height: 1.75 !important;
+  }
+}
+
+/* ── Artist profile ───────────────────────────────────────────────────────── */
+@media (max-width: 430px) {
+  .artist-profile-header {
+    padding: 1.25rem !important;
+    gap: 1.25rem !important;
+  }
+
+  .artist-profile-main {
+    padding-top: 6rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* ── Auth forms ─────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .auth-public-shell input[type="email"],
+  .auth-public-shell input[type="password"],
+  .auth-public-shell input[type="text"] {
+    font-size: 16px;
+    min-height: 44px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .auth-public-shell button[type="submit"] {
+    min-height: 44px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .auth-public-shell .auth-toggle-password {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 12px;
+  }
+
+  .auth-public-shell .auth-link-row a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-public-shell {
+    padding: 1.5rem !important;
+  }
+}
+
+/* ── Public utility pages (artists directory, artwork detail) ─────────────── */
+@media (max-width: 430px) {
+  .public-page-shell {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .public-page-hero-offset {
+    padding-top: 7rem !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .public-page-shell .group .absolute.top-4.right-4 {
+    opacity: 1;
+  }
+}
+
+/* ── Lightbox (gallery album) ───────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .lightbox-close {
+    top: max(16px, env(safe-area-inset-top));
+    right: max(var(--edge), env(safe-area-inset-right));
+  }
+
+  .lightbox-caption {
+    bottom: max(24px, env(safe-area-inset-bottom));
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

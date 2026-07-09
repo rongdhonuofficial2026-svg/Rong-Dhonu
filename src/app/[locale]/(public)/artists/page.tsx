@@ -33,7 +33,7 @@ export default async function ArtistsDirectoryPage({ params: { locale } }: { par
   const displayData = hasData ? artists : fallbackArtists
 
   return (
-    <main className="flex flex-col w-full min-h-screen pt-32 pb-24 bg-background">
+    <main className="flex flex-col w-full min-h-screen pt-32 pb-24 bg-background public-page-shell public-page-hero-offset">
       <div className="container mx-auto px-6">
         <SectionHeading 
           title={locale === 'bn' ? "আমাদের শিল্পীবৃন্দ" : "Our Artists"} 

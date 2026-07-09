@@ -885,3 +885,10 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 480px) {
+  .artist-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

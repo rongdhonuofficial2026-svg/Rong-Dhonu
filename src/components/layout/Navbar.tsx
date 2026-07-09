@@ -81,31 +81,31 @@ export function Navbar({ menuItems, locale = 'en', settingsData }: { menuItems?:
 
       {/* Right Actions */}
       <div className="nav-actions">
-        <div className="nav-icon-btn">
+        <div className="nav-icon-btn nav-action-search">
           <SearchOverlay />
         </div>
         
-        <div className="nav-icon-btn lang">
+        <div className="nav-icon-btn lang nav-action-lang">
           <LanguageSwitcher />
         </div>
         
         <Link 
           href="/login"
-          className="nav-login"
+          className="nav-login nav-action-login"
         >
           {t('login')}
         </Link>
         <Link 
           href="/register"
-          className="btn btn-sm btn-gold magnetic"
+          className="btn btn-sm btn-gold magnetic nav-action-register"
         >
           {t('register')}
         </Link>
+      </div>
 
-        {/* Mobile Nav Burger */}
-        <div className="lg:hidden text-[#F4EEDF]">
-          <MobileNavigation />
-        </div>
+      {/* Mobile Nav — outside .nav-actions so it stays visible below 760px */}
+      <div className="nav-burger">
+        <MobileNavigation />
       </div>
     </header>
   );

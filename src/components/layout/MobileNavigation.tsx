@@ -29,12 +29,19 @@ export function MobileNavigation() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="min-h-11 min-w-11 text-[#F4EEDF] hover:bg-white/10"
+        >
           <Menu className="h-6 w-6" />
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+      <SheetContent
+        side="right"
+        className="w-[min(100vw-2rem,400px)] pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+      >
         <SheetHeader>
           <SheetTitle className="text-left font-serif text-2xl text-accent">Rongdhono</SheetTitle>
         </SheetHeader>
@@ -44,7 +51,7 @@ export function MobileNavigation() {
               key={item.href} 
               href={item.href}
               onClick={() => setOpen(false)}
-              className="text-lg font-medium text-foreground/80 hover:text-accent transition-colors py-2 border-b border-border/50"
+              className="text-lg font-medium text-foreground/80 hover:text-accent transition-colors min-h-11 flex items-center py-2 border-b border-border/50"
             >
               {item.name}
             </Link>

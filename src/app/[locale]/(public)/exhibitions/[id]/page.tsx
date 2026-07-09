@@ -80,7 +80,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
   return (
     <main className="min-h-screen bg-background pb-32">
       {/* Hero Section */}
-      <section className="relative h-[80vh] min-h-[600px] flex items-end justify-center text-white pb-32 overflow-hidden">
+      <section className="relative h-[80vh] min-h-[600px] flex items-end justify-center text-white pb-32 overflow-hidden exhibition-detail-hero">
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/40 to-transparent" />
         {exhibition.hero_image_url && (
           <Image src={exhibition.hero_image_url} alt={title} fill className="object-cover scale-105" priority quality={100} />
@@ -92,7 +92,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
           >
             {exhibition.status === 'active' ? 'ongoing' : exhibition.status}
           </Badge>
-          <h1 className="font-serif text-6xl md:text-8xl font-bold drop-shadow-2xl leading-[1.1] tracking-tight">{title}</h1>
+          <h1 className="font-serif text-6xl md:text-8xl font-bold drop-shadow-2xl leading-[1.1] tracking-tight exhibition-detail-title">{title}</h1>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-lg md:text-xl text-white/90 font-light tracking-wide pt-4">
             <div className="flex items-center gap-3">
@@ -117,13 +117,13 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
             <h2 className="text-xs uppercase tracking-[0.3em] font-sans font-bold text-muted-foreground mb-8 border-b border-border/50 pb-4">
               {locale === 'bn' ? 'প্রদর্শনীর সম্পর্কে' : 'Curatorial Statement'}
             </h2>
-            <div className="whitespace-pre-line drop-cap text-2xl leading-[1.8] text-foreground">
+            <div className="whitespace-pre-line drop-cap text-2xl leading-[1.8] text-foreground exhibition-detail-body">
               {desc}
             </div>
           </div>
           
           <div className="lg:col-span-4">
-            <div className="sticky top-32 space-y-10 bg-muted/10 p-10 border border-border/50 backdrop-blur-sm shadow-sm">
+            <div className="sticky top-32 space-y-10 bg-muted/10 p-10 border border-border/50 backdrop-blur-sm shadow-sm exhibition-detail-sticky">
               <h3 className="font-bold text-xs tracking-[0.2em] uppercase text-muted-foreground border-b border-border/50 pb-4">
                 {locale === 'bn' ? 'সংক্ষিপ্ত তথ্য' : 'At a Glance'}
               </h3>

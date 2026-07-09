@@ -41,7 +41,7 @@ export default function LoginPage() {
       </h2>
       <p className="mt-2 text-center text-sm text-gray-600">
         Or{' '}
-        <Link href="/register" className="font-medium text-accent-gold hover:text-yellow-600">
+        <Link href="/register" className="font-medium text-accent-gold hover:text-yellow-600 auth-link-row">
           request membership
         </Link>
       </p>
@@ -76,7 +76,7 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                className="auth-toggle-password absolute inset-y-0 right-0 flex items-center text-gray-400 hover:text-gray-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -95,7 +95,7 @@ export default function LoginPage() {
             Remember me
           </label>
 
-          <div className="text-sm">
+          <div className="text-sm auth-link-row">
             <Link href="/forgot-password" className="font-medium text-accent-indigo hover:text-indigo-800">
               Forgot your password?
             </Link>

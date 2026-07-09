@@ -45,7 +45,7 @@ export default function RegisterPage() {
         <h2 className="mt-6 text-3xl font-bold tracking-tight text-charcoal">Check your email</h2>
         <p className="mt-2 text-sm text-gray-600">{success}</p>
         <div className="mt-6">
-          <Link href="/login" className="font-medium text-accent-indigo hover:text-indigo-800">
+          <Link href="/login" className="font-medium text-accent-indigo hover:text-indigo-800 auth-link-row">
             Return to sign in
           </Link>
         </div>
@@ -60,7 +60,7 @@ export default function RegisterPage() {
       </h2>
       <p className="mt-2 text-center text-sm text-gray-600">
         Already have an account?{' '}
-        <Link href="/login" className="font-medium text-accent-gold hover:text-yellow-600">
+        <Link href="/login" className="font-medium text-accent-gold hover:text-yellow-600 auth-link-row">
           Sign in
         </Link>
       </p>
@@ -104,7 +104,7 @@ export default function RegisterPage() {
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                className="auth-toggle-password absolute inset-y-0 right-0 flex items-center text-gray-400 hover:text-gray-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}

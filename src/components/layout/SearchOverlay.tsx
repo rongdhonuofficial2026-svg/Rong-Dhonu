@@ -18,19 +18,19 @@ export function SearchOverlay() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Open search">
+        <Button variant="ghost" size="icon" className="min-h-11 min-w-11" aria-label="Open search">
           <Search className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl bg-white/95 backdrop-blur-xl border-white/20 shadow-2xl p-0 overflow-hidden">
+      <DialogContent className="search-dialog-content sm:max-w-2xl bg-white/95 backdrop-blur-xl border-white/20 shadow-2xl p-0 overflow-hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Search</DialogTitle>
         </DialogHeader>
         <div className="flex items-center border-b border-border px-4 py-3">
-          <Search className="h-5 w-5 text-muted-foreground mr-3" />
+          <Search className="h-5 w-5 text-muted-foreground mr-3 shrink-0" />
           <Input 
             placeholder="Search exhibitions, artists, and artworks..." 
-            className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0 h-12"
+            className="search-dialog-input border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0 h-12"
             autoFocus
           />
         </div>

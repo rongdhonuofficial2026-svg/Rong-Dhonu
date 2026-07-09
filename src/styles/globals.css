@@ -1013,11 +1013,8 @@
   display: none;
 }
 @media (max-width: 760px) {
-  .nav-links, .nav-actions {
+  .nav-links {
     display: none;
-  }
-  .nav-burger {
-    display: block;
   }
 }
 
@@ -2186,6 +2183,12 @@
   .artist-row {
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+  }
+}
+@media (max-width: 480px) {
+  .artist-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
 

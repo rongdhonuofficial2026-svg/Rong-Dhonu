@@ -53,14 +53,14 @@ export function CatalogPreviewModal({ pdfUrl, title, catalogId, isOpen, onClose 
       <div className="relative z-10 flex flex-col w-full h-full max-w-6xl mx-auto">
         
         {/* Control bar */}
-        <div className="flex items-center justify-between gap-4 px-4 py-3 bg-black/70 backdrop-blur-xl border-b border-white/10 shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+        <div className="flex items-center justify-between gap-4 px-4 py-3 bg-black/70 backdrop-blur-xl border-b border-white/10 shrink-0 pdf-modal-toolbar">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
               <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <span className="text-sm font-medium text-white truncate">{title}</span>
+            <span className="text-sm font-medium text-white truncate pdf-modal-title">{title}</span>
           </div>
           
           <div className="flex items-center gap-2 shrink-0">
@@ -69,19 +69,19 @@ export function CatalogPreviewModal({ pdfUrl, title, catalogId, isOpen, onClose 
               <button
                 onClick={zoomOut}
                 disabled={zoom <= 50}
-                className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors disabled:opacity-30"
+                className="pdf-modal-control w-11 h-11 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors disabled:opacity-30"
                 title="Zoom out"
               >
-                <ZoomOut className="w-3.5 h-3.5" />
+                <ZoomOut className="w-4 h-4" />
               </button>
               <span className="text-xs text-white/60 min-w-[2.5rem] text-center font-mono">{zoom}%</span>
               <button
                 onClick={zoomIn}
                 disabled={zoom >= 200}
-                className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors disabled:opacity-30"
+                className="pdf-modal-control w-11 h-11 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors disabled:opacity-30"
                 title="Zoom in"
               >
-                <ZoomIn className="w-3.5 h-3.5" />
+                <ZoomIn className="w-4 h-4" />
               </button>
             </div>
 
@@ -90,10 +90,10 @@ export function CatalogPreviewModal({ pdfUrl, title, catalogId, isOpen, onClose 
               href={pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-8 px-3 flex items-center gap-1.5 text-xs font-medium text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+              className="pdf-modal-control h-11 px-3 flex items-center gap-1.5 text-xs font-medium text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
               title="Open in new tab"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-4 h-4" />
               <span className="hidden sm:inline">Open</span>
             </a>
 
@@ -102,20 +102,20 @@ export function CatalogPreviewModal({ pdfUrl, title, catalogId, isOpen, onClose 
               href={`/api/catalogs/download?id=${catalogId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-8 px-3 flex items-center gap-1.5 text-xs font-medium text-white bg-primary hover:bg-primary/80 rounded-lg transition-colors"
+              className="pdf-modal-control h-11 px-3 flex items-center gap-1.5 text-xs font-medium text-white bg-primary hover:bg-primary/80 rounded-lg transition-colors"
               title="Download PDF"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-4 h-4" />
               <span className="hidden sm:inline">Download</span>
             </a>
 
             {/* Close */}
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              className="pdf-modal-control w-11 h-11 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               title="Close preview (Esc)"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
