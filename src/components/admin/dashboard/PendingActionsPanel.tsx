@@ -102,7 +102,7 @@ export function PendingActionsPanel({ kpis }: PendingActionsPanelProps) {
             return (
               <Link key={i} href={action.href as any} className="block focus:outline-none rounded-xl">
                 <div className={cn(
-                  'group flex items-start gap-3.5 p-4 rounded-xl transition-all duration-200 shadow-md',
+                  'group flex items-start gap-3.5 p-4 min-h-[52px] rounded-xl transition-all duration-200 shadow-md',
                   PRIORITY_STYLES[action.priority]
                 )}>
                   <div className="p-2 rounded-lg shrink-0 bg-white/5 border border-white/[0.06] group-hover:scale-105 transition-transform duration-200">

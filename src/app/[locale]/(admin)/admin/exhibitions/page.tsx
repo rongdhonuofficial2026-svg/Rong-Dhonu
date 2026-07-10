@@ -61,9 +61,9 @@ export default async function ExhibitionsManagementPage({
   }
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-8 md:space-y-12 pb-16 md:pb-20">
       {/* Module Hero */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[300px] flex flex-col justify-end p-8 md:p-12 museum-shadow">
+      <section className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[300px] flex flex-col justify-end p-6 md:p-8 lg:p-12 museum-shadow">
         <div className="absolute inset-0 z-0">
           <Image 
             src="/images/exhibitions_hero.png" 
@@ -76,16 +76,16 @@ export default async function ExhibitionsManagementPage({
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
         </div>
         
-        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+        <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-end">
           <div className="max-w-2xl text-white">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-3 leading-tight text-shadow-elegant">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-3 leading-tight text-shadow-elegant">
               Curation <span className="text-gradient-gold">Timeline</span>
             </h1>
             <p className="text-white/80 text-lg font-light">
               Architect and schedule the museum's exhibitions. Oversee active galleries, plan upcoming showcases, and preserve the archives.
             </p>
           </div>
-          <PremiumButton variant="primary" asChild leftIcon={<Plus className="w-4 h-4" />}>
+          <PremiumButton variant="primary" asChild leftIcon={<Plus className="w-4 h-4" />} className="w-full sm:w-auto min-h-11">
             <Link href="/admin/exhibitions/new">New Exhibition</Link>
           </PremiumButton>
         </div>
@@ -143,7 +143,7 @@ export default async function ExhibitionsManagementPage({
               >
                 <div className="flex flex-col sm:flex-row h-full">
                   {/* Image Column */}
-                  <div className="sm:w-2/5 h-48 sm:h-auto relative overflow-hidden group">
+                  <div className="w-full h-48 sm:w-2/5 sm:min-h-[200px] relative overflow-hidden group shrink-0">
                     <div 
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
                       style={{ backgroundImage: ex.hero_image_url ? `url(${ex.hero_image_url})` : 'none' }}
@@ -158,7 +158,7 @@ export default async function ExhibitionsManagementPage({
                   </div>
                   
                   {/* Content Column */}
-                  <div className="sm:w-3/5 p-6 flex flex-col">
+                  <div className="sm:w-3/5 p-5 md:p-6 flex flex-col flex-1">
                     <div className="mb-2">
                       <p className="text-xs font-mono text-accent tracking-widest uppercase mb-1">
                         {ex.exhibition_start ? new Date(ex.exhibition_start).getFullYear() : 'TBD'} Season
@@ -182,14 +182,14 @@ export default async function ExhibitionsManagementPage({
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2 mt-auto pt-4 border-t border-border/40">
-                      <PremiumButton variant="ghost" size="sm" className="flex-1" leftIcon={<Edit className="w-4 h-4"/>} asChild>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-auto pt-4 border-t border-border/40">
+                      <PremiumButton variant="ghost" size="sm" className="flex-1 min-h-11" leftIcon={<Edit className="w-4 h-4"/>} asChild>
                         <Link href={`/admin/exhibitions/${ex.id}`}>Edit</Link>
                       </PremiumButton>
-                      <PremiumButton variant="ghost" size="sm" className="flex-1" leftIcon={<Eye className="w-4 h-4"/>} asChild>
+                      <PremiumButton variant="ghost" size="sm" className="flex-1 min-h-11" leftIcon={<Eye className="w-4 h-4"/>} asChild>
                         <Link href={`/exhibitions/${ex.id}`} target="_blank">Preview</Link>
                       </PremiumButton>
-                      <div className="pl-2 border-l border-border/40">
+                      <div className="sm:pl-2 sm:border-l border-border/40 flex justify-center sm:justify-start">
                         <ExhibitionActions exhibition={ex} locale={locale} />
                       </div>
                     </div>

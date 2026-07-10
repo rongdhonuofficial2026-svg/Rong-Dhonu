@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/Sidebar'
 import { DebugErrorBoundary } from '@/components/DebugErrorBoundary'
+import '@/styles/responsive-admin.css'
 
 import { getUserRole, canAccessAdmin } from '@/lib/auth/roles'
 
@@ -30,7 +31,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground flex overflow-hidden">
+    <div data-admin-shell className="relative min-h-screen bg-background text-foreground flex flex-col md:flex-row overflow-hidden">
       {/* Global Grain Texture Overlay */}
       <div className="grain-overlay" />
       
@@ -40,10 +41,10 @@ export default async function AdminLayout({
       </DebugErrorBoundary>
       
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden relative scroll-smooth">
+      <main className="admin-main flex-1 flex flex-col min-w-0 min-h-0 h-[100dvh] md:h-screen overflow-y-auto overflow-x-hidden relative scroll-smooth">
         
         {/* Page Content Container */}
-        <div className="flex-1 px-6 pt-12 pb-12 w-full max-w-7xl mx-auto">
+        <div className="admin-content flex-1 px-4 pt-4 pb-10 md:px-6 md:pt-12 md:pb-12 w-full max-w-7xl mx-auto">
           <DebugErrorBoundary id="PageContent">
             {children}
           </DebugErrorBoundary>

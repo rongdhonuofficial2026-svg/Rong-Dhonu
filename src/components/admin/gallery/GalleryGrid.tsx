@@ -70,7 +70,7 @@ export function GalleryGrid({ media, selectedIds, onSelectToggle, onSelectAll, c
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 admin-gallery-grid">
         {media.map((item) => {
           const isSelected = selectedIds.includes(item.id)
           const isPublished = item.status === 'published'

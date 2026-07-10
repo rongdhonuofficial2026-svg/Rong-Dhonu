@@ -34,7 +34,7 @@ export default async function AdminDashboardOverview({
   const data = await fetchDashboardData(supabase, user.id)
 
   return (
-    <div className="space-y-[80px] pb-16 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-left" role="main" aria-label="Admin Overview Dashboard">
+    <div className="space-y-10 md:space-y-[80px] pb-12 md:pb-16 max-w-[1600px] mx-auto px-0 sm:px-2 lg:px-8 text-left" role="main" aria-label="Admin Overview Dashboard">
 
       {/* SECTION 1: Executive Header */}
       <DashboardHero

@@ -45,7 +45,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
   ]
 
   const sidebarContent = (
-    <GlassPanel intensity="medium" className="flex flex-col h-full m-6 border-white/20 dark:border-white/10 rounded-3xl">
+    <GlassPanel intensity="medium" className="flex flex-col h-full md:m-6 border-white/20 dark:border-white/10 rounded-none md:rounded-3xl">
       <div className="p-8 pb-4">
         <h2 className="font-serif text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-[#CC5500] flex items-center justify-center shadow-lg">
@@ -87,7 +87,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-              <div className={`relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all font-medium text-sm z-10
+              <div className={`relative flex items-center gap-4 px-4 py-3.5 min-h-[48px] rounded-2xl transition-all font-medium text-sm z-10
                 ${isActive 
                   ? 'text-accent-foreground dark:text-accent font-semibold' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5'}`}
@@ -119,30 +119,30 @@ export function AdminSidebar({ locale }: { locale: string }) {
 
   return (
     <>
-      {/* Mobile Topbar */}
-      <div className="md:hidden p-4 border-b border-border bg-background/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-50">
-        <h2 className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#D4AF37] to-[#CC5500] flex items-center justify-center">
+      {/* Mobile Topbar — fixed full-width header */}
+      <div className="md:hidden fixed top-0 inset-x-0 z-50 h-14 px-4 border-b border-border bg-background/90 backdrop-blur-xl flex items-center justify-between safe-area-top">
+        <h2 className="font-serif text-lg font-bold text-foreground flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 shrink-0 rounded-md bg-gradient-to-br from-[#D4AF37] to-[#CC5500] flex items-center justify-center">
             <span className="text-white font-serif italic text-xs">R</span>
           </div>
-          Rongdhono OS
+          <span className="truncate">Rongdhono OS</span>
         </h2>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <PremiumButton variant="ghost" size="icon">
+            <PremiumButton variant="ghost" size="icon" className="shrink-0 min-w-11 min-h-11" aria-label={locale === 'bn' ? 'মেনু খুলুন' : 'Open navigation menu'}>
               <Menu className="w-6 h-6" />
             </PremiumButton>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-80 bg-transparent border-none shadow-none">
+          <SheetContent side="left" className="admin-mobile-sheet p-0 w-[min(100vw,320px)] max-w-[85vw] bg-[#0b0908] border-r border-white/10 shadow-2xl">
             {sidebarContent}
           </SheetContent>
         </Sheet>
       </div>
 
       {/* Desktop Floating Sidebar */}
-      <div className="hidden md:block w-[320px] h-screen sticky top-0 bg-transparent z-40">
+      <aside className="hidden md:block w-[320px] shrink-0 h-screen sticky top-0 bg-transparent z-40">
         {sidebarContent}
-      </div>
+      </aside>
     </>
   )
 }

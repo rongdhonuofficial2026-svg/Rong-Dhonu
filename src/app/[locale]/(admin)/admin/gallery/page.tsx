@@ -41,10 +41,10 @@ export default async function GalleryManagementPage({ params }: { params: Promis
   }
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-8 md:space-y-12 pb-16 md:pb-20">
       
       {/* Immersive Hero Section */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[250px] flex flex-col justify-end p-8 md:p-12 museum-shadow">
+      <section className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[250px] flex flex-col justify-end p-6 md:p-8 lg:p-12 museum-shadow">
         <div className="absolute inset-0 z-0">
           <Image 
             src="/images/gallery_hero.png" 
@@ -62,7 +62,7 @@ export default async function GalleryManagementPage({ params }: { params: Promis
             <ImageIcon className="w-4 h-4 text-purple-400" />
             <span className="text-xs font-medium tracking-widest uppercase">Media Curation</span>
           </div>
-          <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-elegant">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-elegant">
             Gallery <span className="text-gradient-gold">Management</span>
           </h1>
           <p className="text-white/80 text-lg font-light max-w-2xl">

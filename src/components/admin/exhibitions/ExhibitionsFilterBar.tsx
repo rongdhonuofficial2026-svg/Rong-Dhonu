@@ -41,21 +41,23 @@ export function ExhibitionsFilterBar() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 mb-8">
-      <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2 relative">
-        <Input 
-          placeholder="Search by theme or venue..." 
-          value={q} 
-          onChange={(e) => setQ(e.target.value)} 
-          className="pl-10 h-12 bg-white/5 border-border/50 text-foreground"
-        />
-        <Search className="w-4 h-4 absolute left-4 top-4 text-muted-foreground" />
-        <PremiumButton type="submit" variant="secondary" className="px-6 h-12">Search</PremiumButton>
+    <div className="flex flex-col gap-4 mb-8">
+      <form onSubmit={handleSearchSubmit} className="w-full flex flex-col sm:flex-row gap-2 relative">
+        <div className="relative flex-1 w-full">
+          <Input 
+            placeholder="Search by theme or venue..." 
+            value={q} 
+            onChange={(e) => setQ(e.target.value)} 
+            className="pl-10 h-12 w-full bg-white/5 border-border/50 text-foreground"
+          />
+          <Search className="w-4 h-4 absolute left-4 top-4 text-muted-foreground" />
+        </div>
+        <PremiumButton type="submit" variant="secondary" className="w-full sm:w-auto px-6 h-12 min-h-11">Search</PremiumButton>
       </form>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
         <Select value={currentStatus} onValueChange={(v) => handleSelectChange('status', v)}>
-          <SelectTrigger className="w-[140px] h-12 bg-white/5 border-border/50 text-foreground">
+          <SelectTrigger className="w-full sm:w-[140px] h-12 min-h-11 bg-white/5 border-border/50 text-foreground">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -69,7 +71,7 @@ export function ExhibitionsFilterBar() {
         </Select>
 
         <Select value={currentSort} onValueChange={(v) => handleSelectChange('sort', v)}>
-          <SelectTrigger className="w-[160px] h-12 bg-white/5 border-border/50 text-foreground">
+          <SelectTrigger className="w-full sm:w-[160px] h-12 min-h-11 bg-white/5 border-border/50 text-foreground">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
           <SelectContent>

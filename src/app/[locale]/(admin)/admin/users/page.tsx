@@ -41,12 +41,10 @@ export default async function UserManagementPage({ params }: { params: Promise<{
   const totalCount = res.success ? (res.totalCount || 0) : 0
 
   return (
-    <main className="container mx-auto px-6 max-w-7xl pt-10">
-      <UserManager 
-        initialUsers={initialUsers} 
-        totalCount={totalCount} 
-        locale={locale} 
-      />
-    </main>
+    <UserManager 
+      initialUsers={initialUsers} 
+      totalCount={totalCount} 
+      locale={locale} 
+    />
   )
 }

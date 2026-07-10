@@ -29,7 +29,7 @@ export function QuickActions() {
   return (
     <div className="bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-6 h-full shadow-xl shadow-black/25 hover:border-white/[0.15] transition-all duration-300">
       <h2 className="font-serif text-xl font-semibold tracking-tight text-white mb-6">Quick Actions</h2>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+      <div className="admin-quick-actions grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-3">
         {ACTIONS.map((action) => {
           const Icon = action.icon
           return (
@@ -38,7 +38,7 @@ export function QuickActions() {
               onClick={() => router.push(action.href)}
               aria-label={action.label}
               className={cn(
-                'group flex flex-col items-center justify-center gap-2.5 p-3.5 rounded-xl border border-white/[0.04] transition-all duration-300',
+                'group flex flex-col items-center justify-center gap-2.5 p-4 min-h-[88px] rounded-xl border border-white/[0.04] transition-all duration-300',
                 'hover:-translate-y-1 hover:border-white/[0.12] hover:shadow-lg hover:shadow-black/30',
                 'focus:outline-none focus:ring-2 focus:ring-[#C9A227]/40 focus:border-[#C9A227]',
                 'active:scale-[0.95]',

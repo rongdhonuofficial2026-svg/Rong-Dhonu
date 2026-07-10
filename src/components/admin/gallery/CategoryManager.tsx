@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Plus, Trash2, GripVertical, Edit2, Check, X, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Trash2, Edit2, Check, X, Loader2, ChevronUp, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
@@ -15,12 +15,10 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
   const [isAdding, setIsAdding] = useState(false)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   
-  // New Category State
   const [newNameEn, setNewNameEn] = useState('')
   const [newNameBn, setNewNameBn] = useState('')
   const [newSlug, setNewSlug] = useState('')
 
-  // Edit State
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editNameEn, setEditNameEn] = useState('')
   const [editNameBn, setEditNameBn] = useState('')
@@ -92,7 +90,6 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
     setLoadingId(null)
   }
 
-  // Simple move up/down instead of drag/drop for quick implementation
   const move = async (index: number, direction: 'up' | 'down') => {
     if (direction === 'up' && index === 0) return
     if (direction === 'down' && index === categories.length - 1) return
@@ -100,24 +97,45 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
     const newCategories = [...categories]
     const targetIndex = direction === 'up' ? index - 1 : index + 1
     
-    // Swap
     const temp = newCategories[index]
     newCategories[index] = newCategories[targetIndex]
     newCategories[targetIndex] = temp
 
-    // Update sort_orders locally
     newCategories.forEach((c, i) => c.sort_order = i + 1)
     setCategories(newCategories)
 
-    // Save to DB
     await reorderGalleryCategories(newCategories.map(c => ({ id: c.id, sort_order: c.sort_order || 0 })))
   }
+
+  const renderActions = (cat: Category, onSave: () => void, onCancel: () => void) => (
+    <div className="flex justify-end gap-1">
+      {editingId === cat.id ? (
+        <>
+          <Button variant="ghost" size="icon" onClick={onCancel} className="h-10 w-10 text-muted-foreground hover:text-rose-500" aria-label="Cancel edit">
+            <X className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={onSave} disabled={loadingId === cat.id} className="h-10 w-10 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" aria-label="Save">
+            {loadingId === cat.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button variant="ghost" size="icon" onClick={() => startEdit(cat)} className="h-10 w-10 text-muted-foreground hover:text-accent" aria-label="Edit category">
+            <Edit2 className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => handleDelete(cat.id)} disabled={loadingId === cat.id} className="h-10 w-10 text-muted-foreground hover:text-rose-500" aria-label="Delete category">
+            {loadingId === cat.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+          </Button>
+        </>
+      )}
+    </div>
+  )
 
   return (
     <div className="space-y-6">
       
       {!isAdding && (
-        <Button onClick={() => setIsAdding(true)}>
+        <Button onClick={() => setIsAdding(true)} className="w-full sm:w-auto min-h-11">
           <Plus className="w-4 h-4 mr-2" />
           Add Category
         </Button>
@@ -126,7 +144,7 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
       {isAdding && (
         <div className="bg-muted/10 border border-border/50 p-4 rounded-xl space-y-4 max-w-2xl">
           <h3 className="font-medium">New Category</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Name (English) *</label>
               <Input value={newNameEn} onChange={e => setNewNameEn(e.target.value)} placeholder="e.g. Artwork" />
@@ -135,14 +153,14 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
               <label className="text-xs text-muted-foreground mb-1 block">Name (Bengali) *</label>
               <Input value={newNameBn} onChange={e => setNewNameBn(e.target.value)} placeholder="e.g. শিল্পকর্ম" />
             </div>
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <label className="text-xs text-muted-foreground mb-1 block">Slug (Optional - auto-generated from English name)</label>
               <Input value={newSlug} onChange={e => setNewSlug(e.target.value)} placeholder="e.g. artwork" />
             </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
-            <Button onClick={handleAdd} disabled={loadingId === 'new'}>
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2">
+            <Button variant="ghost" onClick={() => setIsAdding(false)} className="w-full sm:w-auto min-h-11">Cancel</Button>
+            <Button onClick={handleAdd} disabled={loadingId === 'new'} className="w-full sm:w-auto min-h-11">
               {loadingId === 'new' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Check className="w-4 h-4 mr-2" />}
               Save
             </Button>
@@ -150,7 +168,8 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
         </div>
       )}
 
-      <div className="bg-background border border-border/40 rounded-2xl overflow-hidden max-w-4xl shadow-sm">
+      {/* Desktop table */}
+      <div className="hidden md:block bg-background border border-border/40 rounded-2xl overflow-hidden max-w-4xl shadow-sm">
         <div className="grid grid-cols-12 gap-4 p-4 border-b border-border/40 bg-muted/5 font-medium text-sm text-muted-foreground">
           <div className="col-span-1">Order</div>
           <div className="col-span-3">English</div>
@@ -178,13 +197,8 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
                   <div className="col-span-3">
                     <Input value={editSlug} onChange={e => setEditSlug(e.target.value)} className="h-8 text-sm" />
                   </div>
-                  <div className="col-span-2 flex justify-end gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => setEditingId(null)} className="h-8 w-8 text-muted-foreground hover:text-rose-500">
-                      <X className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => saveEdit(cat.id)} disabled={loadingId === cat.id} className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
-                      {loadingId === cat.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                    </Button>
+                  <div className="col-span-2">
+                    {renderActions(cat, () => saveEdit(cat.id), () => setEditingId(null))}
                   </div>
                 </>
               ) : (
@@ -192,25 +206,74 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
                   <div className="col-span-3 font-medium">{cat.name_en}</div>
                   <div className="col-span-3">{cat.name_bn}</div>
                   <div className="col-span-3 text-sm text-muted-foreground">{cat.slug}</div>
-                  <div className="col-span-2 flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" onClick={() => startEdit(cat)} className="h-8 w-8 text-muted-foreground hover:text-accent">
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(cat.id)} disabled={loadingId === cat.id} className="h-8 w-8 text-muted-foreground hover:text-rose-500">
-                      {loadingId === cat.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                    </Button>
+                  <div className="col-span-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {renderActions(cat, () => saveEdit(cat.id), () => setEditingId(null))}
                   </div>
                 </>
               )}
             </div>
           ))}
-          {categories.length === 0 && (
-            <div className="p-8 text-center text-muted-foreground">
-              No categories found. Create one to get started.
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3 max-w-4xl">
+        {categories.map((cat, index) => (
+          <div key={cat.id} className="bg-background border border-border/40 rounded-2xl p-4 shadow-sm space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Order {index + 1}</span>
+              <div className="admin-category-order-btns flex gap-1">
+                <Button variant="outline" size="icon" onClick={() => move(index, 'up')} disabled={index === 0} aria-label="Move up">
+                  <ChevronUp className="w-4 h-4" />
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => move(index, 'down')} disabled={index === categories.length - 1} aria-label="Move down">
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {editingId === cat.id ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">English</label>
+                  <Input value={editNameEn} onChange={e => setEditNameEn(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Bengali</label>
+                  <Input value={editNameBn} onChange={e => setEditNameBn(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Slug</label>
+                  <Input value={editSlug} onChange={e => setEditSlug(e.target.value)} />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">English</p>
+                  <p className="font-medium">{cat.name_en}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Bengali</p>
+                  <p>{cat.name_bn}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Slug</p>
+                  <p className="text-sm text-muted-foreground font-mono">{cat.slug}</p>
+                </div>
+              </div>
+            )}
+
+            {renderActions(cat, () => saveEdit(cat.id), () => setEditingId(null))}
+          </div>
+        ))}
+      </div>
+
+      {categories.length === 0 && (
+        <div className="p-8 text-center text-muted-foreground border border-border/40 rounded-2xl">
+          No categories found. Create one to get started.
+        </div>
+      )}
     </div>
   )
 }

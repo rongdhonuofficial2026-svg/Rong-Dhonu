@@ -41,6 +41,7 @@ export function GalleryManager({ initialMedia, categories, exhibitions, albums }
 
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isBulkActioning, setIsBulkActioning] = useState(false)
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false)
   const router = useRouter()
 
   // Generate dynamic unique years, photographers, videographers for advanced filtering
@@ -273,7 +274,7 @@ export function GalleryManager({ initialMedia, categories, exhibitions, albums }
             </Select>
           </div>
           
-          <div className="shrink-0 flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+          <div className="admin-gallery-toolbar-actions shrink-0 flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
             <PremiumButton 
               variant="glass"
               leftIcon={<Settings className="w-4 h-4" />}
@@ -307,11 +308,20 @@ export function GalleryManager({ initialMedia, categories, exhibitions, albums }
 
         {/* Advanced Filters Section */}
         <div className="border-t border-border/40 pt-4 mt-2">
-          <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5 text-accent" />
-            Advanced Filters
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+          <button
+            type="button"
+            onClick={() => setAdvancedFiltersOpen((v) => !v)}
+            className="w-full flex items-center justify-between gap-2 min-h-11 text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3"
+            aria-expanded={advancedFiltersOpen}
+          >
+            <span className="flex items-center gap-1.5">
+              <Filter className="w-3.5 h-3.5 text-accent" />
+              Advanced Filters
+            </span>
+            <span className="text-[10px] normal-case tracking-normal">{advancedFiltersOpen ? 'Hide' : 'Show'}</span>
+          </button>
+          {advancedFiltersOpen && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
             <Select value={filterAlbum} onValueChange={setFilterAlbum}>
               <SelectTrigger className="h-9 bg-background/30 border-border/40 text-xs">
                 <SelectValue placeholder="Filter by Album" />
@@ -385,6 +395,7 @@ export function GalleryManager({ initialMedia, categories, exhibitions, albums }
               </SelectContent>
             </Select>
           </div>
+          )}
         </div>
       </div>
 

@@ -36,9 +36,9 @@ export default async function AdminCatalogsPage({
   }
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-8 md:space-y-12 pb-16 md:pb-20">
       {/* Immersive Hero Section */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[300px] flex flex-col justify-end p-8 md:p-12 museum-shadow">
+      <section className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[300px] flex flex-col justify-end p-6 md:p-8 lg:p-12 museum-shadow">
         <div className="absolute inset-0 z-0">
           <Image 
             src="/images/catalogs_hero.png" 
@@ -57,7 +57,7 @@ export default async function AdminCatalogsPage({
               <BookOpen className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-medium tracking-widest uppercase">Digital Archives</span>
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-elegant">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight text-shadow-elegant">
               Historical <span className="text-gradient-gold">Catalogs</span>
             </h1>
             <p className="text-white/80 text-lg font-light">
@@ -68,7 +68,7 @@ export default async function AdminCatalogsPage({
           <div className="w-full sm:w-auto">
             <Link
               href="/admin/catalogs/new"
-              className="inline-flex items-center justify-center gap-2 h-11 px-6 text-sm font-medium rounded-xl bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg transition-all"
+              className="inline-flex w-full sm:w-auto items-center justify-center gap-2 min-h-11 h-11 px-6 text-sm font-medium rounded-xl bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg transition-all"
             >
               <Plus className="w-4 h-4" />
               Create Catalog
@@ -79,12 +79,12 @@ export default async function AdminCatalogsPage({
 
       {/* Directory Section */}
       <section className="space-y-8">
-        <GlassPanel intensity="medium" className="p-4 rounded-2xl flex flex-col sm:flex-row justify-between gap-4 items-center">
+        <GlassPanel intensity="medium" className="p-4 rounded-2xl flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
           <CatalogSearch />
           <CatalogFilter />
         </GlassPanel>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
           {!catalogs || catalogs.length === 0 ? (
             <div className="col-span-full py-24 text-center">
               <div className="w-20 h-20 rounded-full border border-white/10 glass flex items-center justify-center mb-6 mx-auto">

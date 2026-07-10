@@ -50,7 +50,7 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
   const artworksCount = artworksRes?.count || 0
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-24">
+    <div className="admin-exhibition-dashboard space-y-6 max-w-5xl mx-auto pb-24">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/admin/exhibitions">

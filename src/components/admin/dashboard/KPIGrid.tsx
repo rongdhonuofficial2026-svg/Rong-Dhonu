@@ -17,7 +17,7 @@ export function KPIGrid({ kpis, cmsSections }: KPIGridProps) {
 
   return (
     <section aria-labelledby="kpi-heading" className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="admin-kpi-grid grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <MetricTile
           title="Artists"
           value={kpis.totalArtists}

@@ -324,10 +324,10 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
   }, [saveStatus])
 
   return (
-    <div className="space-y-8 pb-20 text-[#FFFFFF] bg-[#111111] min-h-screen p-2 sm:p-6 md:p-8 rounded-3xl">
+    <div className="space-y-6 md:space-y-8 pb-16 md:pb-20 text-[#FFFFFF] bg-[#111111] min-h-screen p-3 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl">
       
       {/* 1. Header Toolbar */}
-      <div className="bg-[#181818] border border-white/[0.08] rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.35)] p-6 md:p-8 flex flex-col xl:flex-row justify-between gap-6 items-center">
+      <div className="bg-[#181818] border border-white/[0.08] rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.35)] p-4 md:p-6 lg:p-8 flex flex-col xl:flex-row justify-between gap-4 md:gap-6 items-stretch xl:items-center">
         
         {/* Left Side: Page Selector and Tab options */}
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-6 w-full xl:w-auto">
@@ -352,7 +352,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
           <div className="hidden lg:block w-[1px] h-12 bg-white/[0.08]" />
 
           {/* Editing Tools Tabs */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 admin-cms-toolbar">
             <button 
               onClick={() => setActiveView('editor')}
               className={cn(
@@ -504,11 +504,11 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
       )}
 
       {/* 3. Splitted Editor & Preview viewports */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="admin-cms-split grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
         
         {/* Form area */}
         <div className={cn(
-          "space-y-8 transition-all duration-300",
+          "admin-cms-editor-panel space-y-6 md:space-y-8 transition-all duration-300",
           isLivePreviewOpen && activeView !== 'analytics' ? 'lg:col-span-7' : 'lg:col-span-12'
         )}>
           
@@ -528,7 +528,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                 sections.map((sec, secIdx) => (
                   <div 
                     key={sec.id}
-                    className="bg-[#171717] border border-white/[0.08] rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.35)] p-8 hover:border-white/[0.12] transition-all duration-200 relative text-left"
+                    className="admin-cms-section-card bg-[#171717] border border-white/[0.08] rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.35)] p-4 md:p-8 hover:border-white/[0.12] transition-all duration-200 relative text-left"
                   >
                     
                     {/* Header: Title, Description, controls */}
@@ -767,7 +767,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                                     handleFieldChange(sec.id, field.field_key, 'value_en', e.target.value)
                                     handleFieldChange(sec.id, field.field_key, 'value_bn', e.target.value)
                                   }}
-                                  className="w-full font-mono text-xs bg-zinc-900 border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-[#C9A227] p-4 rounded-[14px]"
+                                  className="admin-json-editor w-full font-mono text-xs bg-zinc-900 border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-[#C9A227] p-4 rounded-[14px]"
                                 />
                               </div>
                             )}
@@ -1171,7 +1171,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
 
         {/* 4. Right Side: Simulated Live Preview Panel */}
         {isLivePreviewOpen && activeView !== 'analytics' && (
-          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8 z-10">
+          <div className="admin-cms-preview-panel lg:col-span-5 space-y-6 lg:sticky lg:top-8 z-10">
             
             {/* Device Switcher Header */}
             <div className="bg-[#181818] border border-white/[0.08] p-4 rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.35)] flex items-center justify-between">

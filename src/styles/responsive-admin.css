@@ -1,0 +1,232 @@
+/* ==========================================================================
+   RESPONSIVE ADMIN — Smartphone UX pass (phones only, max-width: 767px)
+   Tablet (768px+) and desktop remain unchanged.
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* ── Shell: offset for fixed mobile header ─────────────────────────────── */
+  [data-admin-shell] .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  [data-admin-shell] .admin-mobile-sheet nav a {
+    min-height: 48px;
+  }
+
+  [data-admin-shell] .admin-main {
+    padding-top: 3.5rem;
+  }
+
+  [data-admin-shell] .admin-content {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
+  }
+
+  /* ── Touch-friendly form controls ──────────────────────────────────────── */
+  [data-admin-shell] input:not([type="checkbox"]):not([type="radio"]),
+  [data-admin-shell] textarea,
+  [data-admin-shell] select,
+  [data-admin-shell] [role="combobox"] {
+    min-height: 44px;
+  }
+
+  [data-admin-shell] button:not(.admin-icon-only),
+  [data-admin-shell] a[role="button"] {
+    min-height: 44px;
+  }
+
+  /* ── Module heroes ─────────────────────────────────────────────────────── */
+  [data-admin-shell] section[class*="min-h-["] {
+    min-height: 200px !important;
+  }
+
+  [data-admin-shell] .museum-shadow.min-h-\[340px\] {
+    min-height: auto !important;
+  }
+
+  [data-admin-shell] .admin-committee-hero {
+    min-height: 200px !important;
+  }
+
+  /* ── Prevent page-level horizontal scroll ──────────────────────────────── */
+  [data-admin-shell] {
+    overflow-x: hidden;
+  }
+
+  [data-admin-shell] .admin-content > * {
+    max-width: 100%;
+  }
+
+  /* ── Dashboard panels — comfortable mobile padding ─────────────────────── */
+  [data-admin-shell] .admin-content .rounded-\[20px\].p-6 {
+    padding: 1.25rem;
+  }
+
+  /* ── JSON / code editors scroll inside container only ──────────────────── */
+  [data-admin-shell] pre,
+  [data-admin-shell] textarea.font-mono,
+  [data-admin-shell] .admin-json-editor {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Responsive data tables → card rows ──────────────────────────────── */
+  [data-admin-shell] .admin-responsive-table {
+    display: block;
+    overflow-x: visible;
+  }
+
+  [data-admin-shell] .admin-responsive-table thead {
+    display: none;
+  }
+
+  [data-admin-shell] .admin-responsive-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  [data-admin-shell] .admin-responsive-table tr {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    background: rgba(23, 23, 23, 0.6);
+  }
+
+  [data-admin-shell] .admin-responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0;
+    border: none;
+  }
+
+  [data-admin-shell] .admin-responsive-table td::before {
+    content: attr(data-label);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    flex-shrink: 0;
+  }
+
+  [data-admin-shell] .admin-responsive-table td.admin-table-actions {
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  [data-admin-shell] .admin-responsive-table td.admin-table-actions::before {
+    display: none;
+  }
+
+  /* ── CMS: stack editor above preview ───────────────────────────────────── */
+  [data-admin-shell] .admin-cms-split {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  [data-admin-shell] .admin-cms-preview-panel {
+    order: 2;
+    position: static !important;
+    top: auto !important;
+  }
+
+  [data-admin-shell] .admin-cms-editor-panel {
+    order: 1;
+  }
+
+  [data-admin-shell] .admin-cms-section-card {
+    padding: 1.25rem !important;
+  }
+
+  [data-admin-shell] .admin-cms-toolbar button {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: 0;
+    justify-content: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  [data-admin-shell] .admin-cms-toolbar button span {
+    font-size: 0.75rem;
+  }
+
+  /* ── Gallery toolbar — 2-column action grid ──────────────────────────── */
+  [data-admin-shell] .admin-gallery-toolbar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  [data-admin-shell] .admin-gallery-toolbar-actions > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ── Exhibition dashboard ──────────────────────────────────────────────── */
+  [data-admin-shell] .admin-exhibition-dashboard {
+    gap: 1.5rem;
+  }
+
+  [data-admin-shell] .admin-exhibition-dashboard .space-y-8 > * + * {
+    margin-top: 1.5rem;
+  }
+
+  /* ── Dialogs / sheets — full usable width ─────────────────────────────── */
+  [data-admin-shell] [data-radix-dialog-content],
+  [data-admin-shell] [data-radix-sheet-content] {
+    max-width: calc(100vw - 1rem);
+  }
+
+  /* ── Truncation helpers ────────────────────────────────────────────────── */
+  [data-admin-shell] .admin-truncate-email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  /* ── Committee roster — always show actions on touch ───────────────────── */
+  [data-admin-shell] .admin-committee-row .admin-committee-actions {
+    opacity: 1 !important;
+    position: static !important;
+    background: none !important;
+    padding-left: 0 !important;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* ── Category cards on mobile ──────────────────────────────────────────── */
+  [data-admin-shell] .admin-category-order-btns button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 359px) {
+  [data-admin-shell] .admin-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-admin-shell] .admin-gallery-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-admin-shell] .admin-user-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-admin-shell] .admin-gallery-toolbar-actions {
+    grid-template-columns: 1fr;
+  }
+}

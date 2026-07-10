@@ -31,7 +31,7 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
   const now = new Date()
 
   return (
-    <section className="relative rounded-3xl overflow-hidden min-h-[340px] flex flex-col justify-between p-8 md:p-12 museum-shadow bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1208] border border-white/[0.08]">
+    <section className="relative rounded-3xl overflow-hidden min-h-[280px] md:min-h-[340px] flex flex-col justify-between p-6 md:p-8 lg:p-12 museum-shadow bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1208] border border-white/[0.08]">
       {/* Decorative ambient glow */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-accent/10 blur-3xl" />
@@ -44,7 +44,7 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
       </div>
 
       {/* Top row — system status + date */}
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative z-10 flex flex-col gap-3 order-1">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md w-fit">
           <Wifi className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-xs font-medium tracking-widest uppercase text-white/70">System Operational</span>
@@ -57,14 +57,14 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 mt-8">
+      <div className="relative z-10 mt-6 md:mt-8 order-2">
         <p className="text-white/50 text-sm font-medium tracking-wide mb-2">
           {getGreeting()}, <span className="text-white/80">{currentUser.full_name_en || 'Administrator'}</span>
         </p>
 
         {activeExhibition ? (
           <>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white leading-tight mb-3 text-shadow-elegant">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight mb-3 text-shadow-elegant">
               {activeExhibition.theme_en}
             </h1>
             <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -82,16 +82,16 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
             {activeExhibition.exhibition_start && (
               <ClientSideCountdown targetDate={activeExhibition.exhibition_start} />
             )}
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/admin/cms"
-                className="px-6 h-10 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-accent bg-[#C9A227] text-black hover:bg-[#b08d22] transition-all duration-300 shadow-[0_4px_14px_rgba(201,162,39,0.35)]"
+                className="w-full sm:w-auto min-h-11 px-6 h-11 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-accent bg-[#C9A227] text-black hover:bg-[#b08d22] transition-all duration-300 shadow-[0_4px_14px_rgba(201,162,39,0.35)]"
               >
                 Open Content Studio
               </Link>
               <Link
                 href="/admin/artworks"
-                className="px-6 h-10 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                className="w-full sm:w-auto min-h-11 px-6 h-11 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
               >
                 Review Submissions
               </Link>
@@ -108,7 +108,7 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
             <div className="mt-6">
               <Link
                 href="/admin/exhibitions/new"
-                className="px-6 h-10 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-[#C9A227] bg-[#C9A227]/10 text-[#C9A227] hover:bg-[#C9A227] hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(200,169,106,0.15)]"
+                className="w-full sm:w-auto min-h-11 px-6 h-11 inline-flex items-center justify-center text-xs font-semibold tracking-wider uppercase rounded-xl border border-[#C9A227] bg-[#C9A227]/10 text-[#C9A227] hover:bg-[#C9A227] hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(200,169,106,0.15)]"
               >
                 Create Exhibition
               </Link>
@@ -118,7 +118,7 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
       </div>
 
       {/* Bottom row — admin info */}
-      <div className="relative z-10 mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="relative z-10 mt-6 md:mt-8 pt-6 border-t border-white/10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between order-3">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center">
             {currentUser.avatar_url ? (

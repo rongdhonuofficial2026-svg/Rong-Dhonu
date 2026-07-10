@@ -22,7 +22,7 @@ export default async function CommitteeManagementPage({ params }: { params: Prom
   return (
     <div className="space-y-12 pb-20">
       {/* Immersive Hero Section */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[300px] flex flex-col justify-end p-8 md:p-12 museum-shadow">
+      <section className="admin-committee-hero relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[300px] flex flex-col justify-end p-6 md:p-12 museum-shadow">
         <div className="absolute inset-0 z-0">
           <Image 
             src="/images/committee_hero.png" 
@@ -48,7 +48,7 @@ export default async function CommitteeManagementPage({ params }: { params: Prom
               Govern the institution. Manage the esteemed board members, assign critical roles, and oversee the curatorial council for every exhibition.
             </p>
           </div>
-          <PremiumButton variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
+          <PremiumButton variant="primary" className="w-full sm:w-auto min-h-11" leftIcon={<Plus className="w-4 h-4" />}>
             Appoint Member
           </PremiumButton>
         </div>
@@ -76,10 +76,11 @@ export default async function CommitteeManagementPage({ params }: { params: Prom
               </div>
             ) : (
               members.map((member: any) => (
-                <div key={member.id} className="relative flex items-center gap-4 p-4 border border-white/10 rounded-xl bg-black/20 hover:bg-black/40 transition-colors group overflow-hidden">
+                <div key={member.id} className="admin-committee-row relative flex flex-col sm:flex-row sm:items-center gap-4 p-4 border border-white/10 rounded-xl bg-black/20 hover:bg-black/40 transition-colors group overflow-hidden">
                   
+                  <div className="flex items-center gap-4 w-full min-w-0">
                   {/* Drag Handle */}
-                  <div className="cursor-grab text-muted-foreground/50 hover:text-white transition-colors p-2">
+                  <div className="cursor-grab text-muted-foreground/50 hover:text-white transition-colors p-2 shrink-0">
                     <GripVertical className="w-5 h-5" />
                   </div>
                   
@@ -105,9 +106,10 @@ export default async function CommitteeManagementPage({ params }: { params: Prom
                       <span>{member.exhibitions?.theme_en || `Exhibition ${member.exhibitions?.year}` || 'Global'}</span>
                     </div>
                   </div>
+                  </div>
                   
                   {/* Actions */}
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 md:static md:opacity-100 bg-gradient-to-l from-black/80 via-black/80 to-transparent md:bg-none pl-8 md:pl-0 h-full md:h-auto items-center justify-end md:justify-center">
+                  <div className="admin-committee-actions flex gap-2 opacity-100 sm:opacity-100 transition-opacity w-full sm:w-auto justify-end items-center">
                     <PremiumButton variant="glass" size="icon" className="w-10 h-10 rounded-full">
                       <Edit className="w-4 h-4" />
                     </PremiumButton>

@@ -95,9 +95,9 @@ export function ActivityTimeline({ audits }: ActivityTimelineProps) {
                 </div>
 
                 {/* Content with requested hierarchy */}
-                <div className="flex-1 min-w-0 pt-0.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex-1 min-w-0 pt-0.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
                   <div className="min-w-0 flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-semibold text-white tracking-wide">{actorName}</span>
+                    <span className="text-sm font-semibold text-white tracking-wide truncate max-w-[140px] sm:max-w-none">{actorName}</span>
                     <span className="text-xs text-white/60">{formatAction(log.action)}</span>
                     {log.entity_type && (
                       <span className="text-[9px] px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/5 text-white/50 font-mono uppercase tracking-wider">

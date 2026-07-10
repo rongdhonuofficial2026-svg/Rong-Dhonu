@@ -318,9 +318,9 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
   const totalPages = Math.ceil(totalCount / limit)
 
   return (
-    <div className="space-y-10 pb-20">
+    <div className="space-y-8 md:space-y-10 pb-16 md:pb-20">
       {/* Immersive Hero Section */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[300px] flex flex-col justify-end p-8 md:p-12 border border-white/[0.06] bg-[#0c0c0e] shadow-2xl">
+      <section className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[300px] flex flex-col justify-end p-6 md:p-8 lg:p-12 border border-white/[0.06] bg-[#0c0c0e] shadow-2xl">
         <div className="absolute inset-0 z-0">
           <Image 
             src="/images/users_hero.png" 
@@ -339,7 +339,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
               <UsersIcon className="w-3.5 h-3.5 text-[#C8A96A]" />
               <span className="text-[9px] font-bold tracking-widest uppercase text-white/95">Network & Personnel</span>
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight text-white">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight text-white">
               User <span className="text-gradient-gold">Directory</span>
             </h1>
             <p className="text-zinc-300 text-sm md:text-base font-light leading-relaxed">
@@ -351,25 +351,25 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
 
       {/* Directory Section */}
       <section className="space-y-8">
-        <GlassPanel intensity="light" className="p-5 rounded-2xl flex flex-col xl:flex-row justify-between gap-5 items-center border border-white/[0.06] bg-[#0e0e10]/85">
+        <GlassPanel intensity="light" className="p-4 md:p-5 rounded-2xl flex flex-col xl:flex-row justify-between gap-4 md:gap-5 items-stretch xl:items-center border border-white/[0.06] bg-[#0e0e10]/85">
           <div className="relative w-full xl:flex-1 max-w-lg">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <Input 
               placeholder="Search directory by name, email, or username..." 
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-11 bg-white/[0.02] border-white/[0.08] focus-visible:ring-[#C8A96A] rounded-xl h-11 text-white placeholder:text-zinc-500 transition-all font-light text-sm"
+              className="pl-11 w-full bg-white/[0.02] border-white/[0.08] focus-visible:ring-[#C8A96A] rounded-xl h-11 min-h-11 text-white placeholder:text-zinc-500 transition-all font-light text-sm"
             />
           </div>
           
-          <div className="flex flex-wrap gap-4 w-full xl:w-auto items-center justify-between sm:justify-end">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full xl:w-auto items-stretch sm:items-center justify-between sm:justify-end">
             <div className="text-xs text-zinc-500 font-light uppercase tracking-wider shrink-0">
               Found <span className="text-white font-medium">{totalCount}</span> members
             </div>
             
-            <div className="flex flex-wrap gap-3 items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full sm:w-auto items-center">
               {/* Role filter */}
-              <div className="flex flex-col gap-1 w-[120px]">
+              <div className="flex flex-col gap-1 w-full sm:w-[120px]">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-550">Access Role</span>
                 <Select value={role} onValueChange={(val) => { setRole(val); setPage(1); }}>
                   <SelectTrigger className="bg-white/[0.02] border-white/[0.08] h-9 text-xs text-white">
@@ -386,7 +386,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
               </div>
 
               {/* Status filter */}
-              <div className="flex flex-col gap-1 w-[120px]">
+              <div className="flex flex-col gap-1 w-full sm:w-[120px]">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-550">Status</span>
                 <Select value={status} onValueChange={(val) => { setStatus(val); setPage(1); }}>
                   <SelectTrigger className="bg-white/[0.02] border-white/[0.08] h-9 text-xs text-white">
@@ -402,7 +402,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
               </div>
 
               {/* Sorting */}
-              <div className="flex flex-col gap-1 w-[140px]">
+              <div className="flex flex-col gap-1 w-full sm:w-[140px]">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-550">Sorting</span>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="bg-white/[0.02] border-white/[0.08] h-9 text-xs text-white">
@@ -422,7 +422,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
         </GlassPanel>
 
         {/* Directory Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
+        <div className="admin-user-grid grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 relative">
           {isLoading ? (
             // Layout-shift-prevention skeleton loaders
             Array.from({ length: 6 }).map((_, idx) => <SkeletonCard key={idx} />)
@@ -496,7 +496,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
                     </div>
 
                     {/* Email */}
-                    <p className="text-xs text-zinc-400 font-light truncate max-w-full px-2">
+                    <p className="admin-truncate-email text-xs text-zinc-400 font-light max-w-full px-2">
                       {user.email}
                     </p>
 

@@ -283,7 +283,7 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
       </GlassPanel>
 
       {/* Artworks Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
         {filteredArtworks.length === 0 ? (
           <div className="col-span-full py-20 text-center">
             <div className="w-20 h-20 rounded-full border border-white/10 glass flex items-center justify-center mb-6 mx-auto">
