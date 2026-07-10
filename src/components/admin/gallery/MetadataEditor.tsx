@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
+import { PremiumSwitch } from '@/components/admin/ui/PremiumSwitch'
+import { AdminSettingTile } from '@/components/admin/ui/AdminSettingTile'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import type { GalleryMediaRow, GalleryCategory } from '@/types/gallery'
@@ -345,21 +346,24 @@ export function MetadataEditor({ media, open, onOpenChange, onSaved, categories,
               />
             </div>
 
-            {/* Featured Switch */}
-            <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-200 bg-white shadow-sm">
-              <div className="space-y-1">
-                <Label htmlFor="edit_featured" className="text-sm font-bold text-neutral-900 flex items-center gap-2 cursor-pointer">
-                  <Star className={`w-4 h-4 ${formData.is_featured ? 'text-amber-500 fill-amber-500' : 'text-neutral-400'}`} />
-                  Featured Media
-                </Label>
-                <p className="text-xs text-neutral-500">Highlight and pin this asset to the gallery homepage.</p>
-              </div>
-              <Switch 
+            <AdminSettingTile
+              icon={
+                <Star
+                  className={`h-4 w-4 ${formData.is_featured ? 'fill-amber-500 text-amber-500' : 'text-neutral-400'}`}
+                />
+              }
+              title="Featured Media"
+              description="Highlight and pin this asset to the gallery homepage."
+              active={formData.is_featured || false}
+              className="border-neutral-200 bg-white shadow-sm"
+            >
+              <PremiumSwitch
                 id="edit_featured"
-                checked={formData.is_featured || false} 
+                checked={formData.is_featured || false}
                 onCheckedChange={val => setFormData(p => ({ ...p, is_featured: val }))}
+                aria-label="Feature this media on the gallery homepage"
               />
-            </div>
+            </AdminSettingTile>
 
           </div>
         </div>

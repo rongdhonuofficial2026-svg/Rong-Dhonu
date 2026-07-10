@@ -6,6 +6,10 @@ import { deleteCatalog, publishCatalog, duplicateCatalog } from '@/actions/catal
 import { Edit, Trash, Power, Eye, Loader2, Copy } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
+
+const actionBase =
+  'inline-flex min-h-11 items-center justify-center rounded-xl border text-xs font-semibold transition-all disabled:opacity-50'
 
 export function CatalogActions({ catalog }: { catalog: any }) {
   const router = useRouter()
@@ -14,7 +18,6 @@ export function CatalogActions({ catalog }: { catalog: any }) {
   const [isDuplicating, setIsDuplicating] = useState(false)
 
   const handleTogglePublish = async () => {
-    // Only allow draft → published, not published → draft via this button
     if (catalog.status === 'archived') {
       toast.error('Archived catalogs cannot be re-published from here. Duplicate it first.')
       return
@@ -55,7 +58,7 @@ export function CatalogActions({ catalog }: { catalog: any }) {
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this catalog? The PDF and cover image will be permanently removed.')) return
-    
+
     setIsDeleting(true)
     try {
       const res = await deleteCatalog(catalog.id)
@@ -75,62 +78,95 @@ export function CatalogActions({ catalog }: { catalog: any }) {
   const isBusy = isPublishing || isDeleting || isDuplicating
   const publishLabel = catalog.status === 'published' ? 'Unpublish' : 'Publish'
 
-  // IMPORTANT: Do NOT use PremiumButton with asChild here.
-  // PremiumButton uses motion.create(Slot) which creates a new component type on every render,
-  // breaking React reconciliation and causing an infinite update loop → Error Boundary crash.
-  // Use plain <a>, <Link>, or <button> elements instead.
   return (
-    <>
-      <Link
-        href={`/admin/catalogs/${catalog.id}`}
-        className="flex-grow h-9 px-3 inline-flex items-center justify-center text-[11px] font-semibold rounded-lg bg-white/5 border border-white/[0.08] text-white hover:bg-white/10 hover:border-white/20 transition-all"
-      >
-        <Edit className="w-3.5 h-3.5 mr-1" /> Edit
-      </Link>
-
-      {catalog.status !== 'archived' && (
-        <button
-          className="flex-grow h-9 px-3 inline-flex items-center justify-center text-[11px] font-semibold rounded-lg bg-white/5 border border-white/[0.08] text-white hover:bg-white/10 hover:border-white/20 transition-all disabled:opacity-50"
-          onClick={handleTogglePublish}
-          disabled={isBusy}
+    <div className="admin-catalog-actions flex w-full flex-col gap-2.5 md:flex-row md:flex-wrap md:items-center md:gap-2">
+      <div className="grid w-full grid-cols-2 gap-2.5 md:contents">
+        <Link
+          href={`/admin/catalogs/${catalog.id}`}
+          className={cn(
+            actionBase,
+            'w-full border-white/[0.08] bg-white/5 text-white hover:border-white/20 hover:bg-white/10 md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
+          )}
         >
-          {isPublishing
-            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            : <Power className={`w-3.5 h-3.5 mr-1 ${catalog.status === 'published' ? 'text-rose-400' : 'text-emerald-400'}`} />
-          }
-          {publishLabel}
+          <Edit className="mr-1.5 h-4 w-4 md:h-3.5 md:w-3.5" />
+          Edit
+        </Link>
+
+        {catalog.status !== 'archived' && (
+          <button
+            className={cn(
+              actionBase,
+              'w-full border-white/[0.08] bg-white/5 text-white hover:border-white/20 hover:bg-white/10 md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
+            )}
+            onClick={handleTogglePublish}
+            disabled={isBusy}
+          >
+            {isPublishing ? (
+              <Loader2 className="h-4 w-4 animate-spin md:h-3.5 md:w-3.5" />
+            ) : (
+              <>
+                <Power
+                  className={cn(
+                    'mr-1.5 h-4 w-4 md:h-3.5 md:w-3.5',
+                    catalog.status === 'published' ? 'text-rose-400' : 'text-emerald-400'
+                  )}
+                />
+                {publishLabel}
+              </>
+            )}
+          </button>
+        )}
+      </div>
+
+      <div className="grid w-full grid-cols-3 gap-2.5 md:contents">
+        <button
+          className={cn(
+            actionBase,
+            'col-span-1 border-[#C9A227]/20 bg-[#C9A227]/10 text-[#C9A227] hover:border-transparent hover:bg-[#C9A227] hover:text-black md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
+          )}
+          onClick={handleDuplicate}
+          disabled={isBusy}
+          title="Duplicate as new draft"
+        >
+          {isDuplicating ? (
+            <Loader2 className="h-4 w-4 animate-spin md:h-3.5 md:w-3.5" />
+          ) : (
+            <>
+              <Copy className="mr-1.5 h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="md:inline">Copy</span>
+            </>
+          )}
         </button>
-      )}
 
-      <button
-        className="flex-grow h-9 px-3 inline-flex items-center justify-center text-[11px] font-semibold rounded-lg bg-[#C9A227]/10 border border-[#C9A227]/20 text-[#C9A227] hover:bg-[#C9A227] hover:text-black hover:border-transparent transition-all disabled:opacity-50"
-        onClick={handleDuplicate}
-        disabled={isBusy}
-        title="Duplicate as new draft"
-      >
-        {isDuplicating
-          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          : <Copy className="w-3.5 h-3.5 mr-1" />
-        }
-        Copy
-      </button>
+        <a
+          href={catalog.pdf_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            actionBase,
+            'border-white/[0.08] bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10 hover:text-white md:h-9 md:w-9 md:min-h-0 md:flex-shrink-0 md:rounded-lg md:px-0'
+          )}
+          aria-label="Preview catalog PDF"
+        >
+          <Eye className="h-4 w-4 md:h-3.5 md:w-3.5" />
+        </a>
 
-      <a
-        href={catalog.pdf_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-lg bg-white/5 border border-white/[0.08] text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
-      >
-        <Eye className="w-3.5 h-3.5" />
-      </a>
-
-      <button
-        className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white hover:border-transparent transition-all disabled:opacity-50"
-        onClick={handleDelete}
-        disabled={isBusy}
-      >
-        {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash className="w-3.5 h-3.5" />}
-      </button>
-    </>
+        <button
+          className={cn(
+            actionBase,
+            'border-rose-500/20 bg-rose-500/10 text-rose-400 hover:border-transparent hover:bg-rose-500 hover:text-white md:h-9 md:w-9 md:min-h-0 md:flex-shrink-0 md:rounded-lg md:px-0'
+          )}
+          onClick={handleDelete}
+          disabled={isBusy}
+          aria-label="Delete catalog"
+        >
+          {isDeleting ? (
+            <Loader2 className="h-4 w-4 animate-spin md:h-3.5 md:w-3.5" />
+          ) : (
+            <Trash className="h-4 w-4 md:h-3.5 md:w-3.5" />
+          )}
+        </button>
+      </div>
+    </div>
   )
 }

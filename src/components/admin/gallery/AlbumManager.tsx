@@ -16,7 +16,8 @@ import {
 } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Switch } from '@/components/ui/switch'
+import { PremiumSwitch } from '@/components/admin/ui/PremiumSwitch'
+import { AdminSettingTile } from '@/components/admin/ui/AdminSettingTile'
 import { toast } from 'sonner'
 import { createIndependentAlbum, updateGalleryAlbum, deleteGalleryAlbum } from '@/actions/gallery'
 
@@ -488,16 +489,17 @@ export function AlbumManager({ initialAlbums, categories }: AlbumManagerProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-xl border border-neutral-100 bg-neutral-50/50">
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold text-neutral-700">Feature Album</span>
-                <span className="text-[10px] text-muted-foreground">Highlight this album in the public gallery view.</span>
-              </div>
-              <Switch 
+            <AdminSettingTile
+              title="Feature Album"
+              description="Highlight this album in the public gallery view."
+              className="border-neutral-100 bg-neutral-50/50"
+            >
+              <PremiumSwitch
                 checked={createForm.is_featured}
                 onCheckedChange={checked => setCreateForm(prev => ({ ...prev, is_featured: checked }))}
+                aria-label="Feature this album in the public gallery"
               />
-            </div>
+            </AdminSettingTile>
 
             <DialogFooter className="pt-4 border-t border-neutral-100">
               <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
@@ -593,16 +595,17 @@ export function AlbumManager({ initialAlbums, categories }: AlbumManagerProps) {
                   </Select>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-xl border border-neutral-100 bg-neutral-50/50">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-neutral-700">Feature Album</span>
-                    <span className="text-[9px] text-muted-foreground">Showcase on public home.</span>
-                  </div>
-                  <Switch 
+                <AdminSettingTile
+                  title="Feature Album"
+                  description="Showcase on public home."
+                  className="border-neutral-100 bg-neutral-50/50"
+                >
+                  <PremiumSwitch
                     checked={editForm.is_featured}
                     onCheckedChange={checked => setEditForm(prev => ({ ...prev, is_featured: checked }))}
+                    aria-label="Feature this album on the public home page"
                   />
-                </div>
+                </AdminSettingTile>
               </div>
 
               {/* SEO Block */}

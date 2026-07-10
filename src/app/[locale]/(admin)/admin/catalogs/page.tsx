@@ -1,12 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/lib/i18n/routing'
-import { Plus, FileText, CheckCircle, Clock, BookOpen, ArrowDownToLine } from 'lucide-react'
+import { Plus, BookOpen, FileText } from 'lucide-react'
 import Image from "next/image"
-import { LuxuryCard } from "@/components/admin/ui/LuxuryCard"
 import { GlassPanel } from "@/components/admin/ui/GlassPanel"
-import { CatalogActions } from '@/components/admin/catalogs/CatalogActions'
 import { CatalogSearch } from '@/components/admin/catalogs/CatalogSearch'
 import { CatalogFilter } from '@/components/admin/catalogs/CatalogFilter'
+import { CatalogDirectoryCard } from '@/components/admin/catalogs/CatalogDirectoryCard'
 
 export default async function AdminCatalogsPage({
   searchParams,
@@ -108,92 +107,9 @@ export default async function AdminCatalogsPage({
               )}
             </div>
           ) : (
-            catalogs.map((cat: any) => {
-              const exhibition = cat.exhibitions as any;
-              const coverImage = cat.cover_image_url || exhibition?.hero_image_url || '/images/catalogs_hero.png';
-              
-              return (
-                <div 
-                  key={cat.id} 
-                  className="flex flex-col bg-[#171717]/90 border border-white/[0.08] hover:border-white/[0.16] rounded-[24px] overflow-hidden shadow-xl shadow-black/25 hover:shadow-2xl transition-all duration-300 group"
-                >
-                  {/* Top Area: Cover Artwork & Status */}
-                  <div className="relative h-52 w-full overflow-hidden shrink-0">
-                    <Image 
-                      src={coverImage} 
-                      alt={cat.title_en}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                    
-                    {/* Status Badge */}
-                    <div className="absolute top-4 right-4">
-                      {cat.status === 'published' ? (
-                        <span className="px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 flex items-center gap-1 shadow-md">
-                          <CheckCircle className="w-3 h-3" /> Published
-                        </span>
-                      ) : (
-                        <span className="px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/20 flex items-center gap-1 shadow-md">
-                          <Clock className="w-3 h-3" /> Draft
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Catalog Icon overlapping bottom border */}
-                    <div className="absolute -bottom-5 left-6 w-10 h-10 rounded-full bg-[#111111] border border-white/[0.08] flex items-center justify-center shadow-lg shadow-black/40 z-20">
-                      <FileText className="w-5 h-5 text-[#C9A227]" />
-                    </div>
-                  </div>
-
-                  {/* Middle Content Area */}
-                  <div className="pt-8 px-6 pb-6 flex-1 flex flex-col">
-                    <div className="flex-1">
-                      <h3 className="font-serif font-bold text-lg text-white leading-snug tracking-wide line-clamp-2 group-hover:text-[#C9A227] transition-colors duration-300">
-                        {cat.title_en}
-                      </h3>
-                      <p className="text-xs text-white/50 mt-1 line-clamp-1">
-                        {exhibition?.theme_en || 'Unknown Exhibition'} ({exhibition?.year || '—'})
-                      </p>
-
-                      {/* Structured Metadata Grid */}
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-[10px] font-mono border-t border-b border-white/[0.04] py-3.5 my-4">
-                        <div className="flex justify-between border-r border-white/[0.04] pr-4">
-                          <span className="text-white/40">VERSION</span>
-                          <span className="text-white/80 font-semibold">v{cat.version}</span>
-                        </div>
-                        <div className="flex justify-between pl-2">
-                          <span className="text-white/40">LANG</span>
-                          <span className="text-white/80 font-semibold uppercase">{cat.language}</span>
-                        </div>
-                        <div className="flex justify-between border-r border-white/[0.04] pr-4">
-                          <span className="text-white/40">SIZE</span>
-                          <span className="text-white/80 font-semibold">
-                            {cat.file_size ? (cat.file_size / 1024 / 1024).toFixed(2) + ' MB' : '—'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between pl-2">
-                          <span className="text-white/40">DOWNLOADS</span>
-                          <span className="text-white/80 font-semibold">{cat.total_downloads || 0}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bottom Area: Dates & Actions */}
-                    <div className="flex items-center justify-between text-[9px] font-mono text-white/35 uppercase tracking-wider mb-4 px-1 shrink-0">
-                      <span>Created: {new Date(cat.created_at).toLocaleDateString()}</span>
-                      {cat.published_at && (
-                        <span>Published: {new Date(cat.published_at).toLocaleDateString()}</span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-4 border-t border-white/[0.04] w-full mt-auto shrink-0">
-                      <CatalogActions catalog={cat} />
-                    </div>
-                  </div>
-                </div>
-              )
-            })
+            catalogs.map((cat: any) => (
+              <CatalogDirectoryCard key={cat.id} catalog={cat} />
+            ))
           )}
         </div>
       </section>

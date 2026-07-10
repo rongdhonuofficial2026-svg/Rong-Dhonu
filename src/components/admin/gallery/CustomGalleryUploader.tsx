@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
+import { PremiumSwitch } from "@/components/admin/ui/PremiumSwitch"
+import { AdminSettingTile } from "@/components/admin/ui/AdminSettingTile"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -418,17 +419,17 @@ export function CustomGalleryUploader({ locale, categories, exhibitions, indepen
                   }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 >
-                  <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
+                  <div className="admin-option-tile flex items-start gap-3 rounded-2xl border border-border/60 bg-muted/10 p-4 transition-colors hover:bg-muted/20">
                     <RadioGroupItem value="associate" id="r_associate" className="mt-1" />
-                    <label htmlFor="r_associate" className="space-y-1 cursor-pointer w-full flex flex-col">
-                      <span className="font-semibold text-sm">Associate with Exhibition</span>
+                    <label htmlFor="r_associate" className="flex w-full cursor-pointer flex-col space-y-1">
+                      <span className="text-sm font-semibold">Associate with Exhibition</span>
                       <span className="text-xs text-muted-foreground">Map to a specific roster exhibition event.</span>
                     </label>
                   </div>
-                  <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
+                  <div className="admin-option-tile flex items-start gap-3 rounded-2xl border border-border/60 bg-muted/10 p-4 transition-colors hover:bg-muted/20">
                     <RadioGroupItem value="independent" id="r_independent" className="mt-1" />
-                    <label htmlFor="r_independent" className="space-y-1 cursor-pointer w-full flex flex-col">
-                      <span className="font-semibold text-sm">Independent Gallery Media</span>
+                    <label htmlFor="r_independent" className="flex w-full cursor-pointer flex-col space-y-1">
+                      <span className="text-sm font-semibold">Independent Gallery Media</span>
                       <span className="text-xs text-muted-foreground">Store independently without linking to an exhibition.</span>
                     </label>
                   </div>
@@ -609,58 +610,56 @@ export function CustomGalleryUploader({ locale, categories, exhibitions, indepen
               <div className="space-y-6">
                 
                 {/* Visibility Selector */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   <Label className="text-sm font-semibold">Visibility Settings</Label>
                   <RadioGroup
                     value={formData.visibility}
                     onValueChange={val => updateField("visibility", val)}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    className="space-y-4"
                   >
-                    <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
-                      <RadioGroupItem value="public" id="v_public" className="mt-1" />
-                      <label htmlFor="v_public" className="space-y-1 cursor-pointer w-full flex flex-col">
-                        <span className="font-semibold text-sm flex items-center gap-1.5">
-                          <Eye className="w-3.5 h-3.5 text-emerald-400" /> Public
-                        </span>
-                        <span className="text-xs text-muted-foreground">Instantly index into the public gallery grid archive.</span>
-                      </label>
-                    </div>
-                    <div className="flex items-start gap-3 p-4 rounded-xl border border-border/60 bg-muted/10 hover:bg-muted/20 transition-colors">
-                      <RadioGroupItem value="hidden" id="v_hidden" className="mt-1" />
-                      <label htmlFor="v_hidden" className="space-y-1 cursor-pointer w-full flex flex-col">
-                        <span className="font-semibold text-sm flex items-center gap-1.5">
-                          <EyeOff className="w-3.5 h-3.5 text-rose-400" /> Hidden / Admin Only
-                        </span>
-                        <span className="text-xs text-muted-foreground">Store safely in the database backend. Access only via admin panels.</span>
-                      </label>
-                    </div>
+                    <AdminSettingTile
+                      icon={
+                        <Eye className={`h-4 w-4 ${formData.visibility === 'public' ? 'text-emerald-400' : 'text-muted-foreground'}`} />
+                      }
+                      title="Public"
+                      description="Instantly index into the public gallery grid archive."
+                      active={formData.visibility === 'public'}
+                    >
+                      <RadioGroupItem value="public" id="v_public" aria-label="Public visibility" />
+                    </AdminSettingTile>
+
+                    <AdminSettingTile
+                      icon={
+                        <EyeOff className={`h-4 w-4 ${formData.visibility === 'hidden' ? 'text-rose-400' : 'text-muted-foreground'}`} />
+                      }
+                      title="Hidden / Admin Only"
+                      description="Store safely in the database backend. Access only via admin panels."
+                      active={formData.visibility === 'hidden'}
+                    >
+                      <RadioGroupItem value="hidden" id="v_hidden" aria-label="Hidden admin-only visibility" />
+                    </AdminSettingTile>
                   </RadioGroup>
                 </div>
 
-                {/* Featured Switch */}
-                <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/30 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
-                      formData.is_featured
-                        ? "bg-amber-500/20 border border-amber-500/30"
-                        : "bg-muted/50 border border-border/40"
-                    }`}>
-                      <Star className={`w-4 h-4 transition-colors ${
-                        formData.is_featured ? "text-amber-400 fill-amber-400/30" : "text-muted-foreground"
-                      }`} />
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-semibold">Pin to Gallery Showcase</p>
-                      <p className="text-xs text-muted-foreground">Highlight this media as a featured artifact.</p>
-                    </div>
-                  </div>
-                  <Switch
+                <AdminSettingTile
+                  icon={
+                    <Star
+                      className={`h-4 w-4 ${
+                        formData.is_featured ? 'fill-amber-400/30 text-amber-400' : 'text-muted-foreground'
+                      }`}
+                    />
+                  }
+                  title="Pin to Gallery Showcase"
+                  description="Highlight this media as a featured artifact."
+                  active={formData.is_featured}
+                >
+                  <PremiumSwitch
                     id="is_featured_switch"
                     checked={formData.is_featured}
                     onCheckedChange={checked => updateField("is_featured", checked)}
                     aria-label="Pin this media file to the featured showcase"
                   />
-                </div>
+                </AdminSettingTile>
               </div>
             </CardContent>
           </Card>
