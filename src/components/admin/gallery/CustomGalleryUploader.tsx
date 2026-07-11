@@ -612,33 +612,37 @@ export function CustomGalleryUploader({ locale, categories, exhibitions, indepen
                 {/* Visibility Selector */}
                 <div className="flex flex-col gap-3">
                   <Label className="text-sm font-semibold">Visibility Settings</Label>
-                  <RadioGroup
-                    value={formData.visibility}
-                    onValueChange={val => updateField("visibility", val)}
-                    className="space-y-4"
-                  >
-                    <AdminSettingTile
-                      icon={
-                        <Eye className={`h-4 w-4 ${formData.visibility === 'public' ? 'text-emerald-400' : 'text-muted-foreground'}`} />
-                      }
-                      title="Public"
-                      description="Instantly index into the public gallery grid archive."
-                      active={formData.visibility === 'public'}
+                  <div className="flex flex-col gap-4 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => updateField("visibility", "public")}
+                      className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-3xl sm:rounded-2xl"
                     >
-                      <RadioGroupItem value="public" id="v_public" aria-label="Public visibility" />
-                    </AdminSettingTile>
+                      <AdminSettingTile
+                        icon={
+                          <Eye className={`h-5 w-5 sm:h-4 sm:w-4 ${formData.visibility === 'public' ? 'text-emerald-400' : 'text-muted-foreground'}`} />
+                        }
+                        title="Public"
+                        description="Instantly index into the public gallery grid archive."
+                        active={formData.visibility === 'public'}
+                      />
+                    </button>
 
-                    <AdminSettingTile
-                      icon={
-                        <EyeOff className={`h-4 w-4 ${formData.visibility === 'hidden' ? 'text-rose-400' : 'text-muted-foreground'}`} />
-                      }
-                      title="Hidden / Admin Only"
-                      description="Store safely in the database backend. Access only via admin panels."
-                      active={formData.visibility === 'hidden'}
+                    <button
+                      type="button"
+                      onClick={() => updateField("visibility", "hidden")}
+                      className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-3xl sm:rounded-2xl"
                     >
-                      <RadioGroupItem value="hidden" id="v_hidden" aria-label="Hidden admin-only visibility" />
-                    </AdminSettingTile>
-                  </RadioGroup>
+                      <AdminSettingTile
+                        icon={
+                          <EyeOff className={`h-5 w-5 sm:h-4 sm:w-4 ${formData.visibility === 'hidden' ? 'text-rose-400' : 'text-muted-foreground'}`} />
+                        }
+                        title="Hidden / Admin Only"
+                        description="Store safely in the database backend. Access only via admin panels."
+                        active={formData.visibility === 'hidden'}
+                      />
+                    </button>
+                  </div>
                 </div>
 
                 <AdminSettingTile

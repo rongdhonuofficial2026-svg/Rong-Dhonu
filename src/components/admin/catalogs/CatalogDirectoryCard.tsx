@@ -36,11 +36,11 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-function MetaItem({ label, value }: { label: string; value: string }) {
+function MetaItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="admin-catalog-meta-item flex flex-col gap-1 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 md:flex-row md:items-center md:justify-between md:rounded-none md:border-0 md:bg-transparent md:p-0">
+    <div className="admin-catalog-meta-item flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
       <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">{label}</span>
-      <span className="text-sm font-semibold text-white/90 md:text-[10px] md:font-mono md:font-semibold md:uppercase md:text-white/80">
+      <span className="text-base font-semibold text-white/90 md:text-[10px] md:font-mono md:font-semibold md:uppercase md:text-white/80">
         {value}
       </span>
     </div>
@@ -58,12 +58,12 @@ export function CatalogDirectoryCard({ catalog }: CatalogDirectoryCardProps) {
   return (
     <article className="admin-catalog-card group flex flex-col overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#171717]/90 shadow-xl shadow-black/25 transition-all duration-300 hover:border-white/[0.16] hover:shadow-2xl">
       {/* Mobile: badge above image */}
-      <div className="px-5 pt-5 pb-3 md:hidden">
+      <div className="px-5 pt-5 pb-4 md:hidden">
         <StatusBadge status={catalog.status} />
       </div>
 
       {/* Cover */}
-      <div className="relative mx-4 aspect-[4/3] overflow-hidden rounded-2xl md:mx-0 md:aspect-auto md:h-52 md:rounded-none">
+      <div className="relative mx-5 aspect-video overflow-hidden rounded-2xl md:mx-0 md:aspect-auto md:h-52 md:rounded-none">
         <Image
           src={coverImage}
           alt={catalog.title_en}
@@ -83,7 +83,7 @@ export function CatalogDirectoryCard({ catalog }: CatalogDirectoryCardProps) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col gap-5 px-5 pb-5 pt-4 md:px-6 md:pb-6 md:pt-8">
+      <div className="flex flex-1 flex-col gap-6 px-5 pb-6 pt-5 md:px-6 md:pb-6 md:pt-8">
         <div className="space-y-2">
           <h3 className="font-serif text-xl font-bold leading-snug tracking-wide text-white line-clamp-2 transition-colors duration-300 group-hover:text-[#C9A227] md:text-lg">
             {catalog.title_en}
@@ -94,25 +94,23 @@ export function CatalogDirectoryCard({ catalog }: CatalogDirectoryCardProps) {
           </p>
         </div>
 
-        <div className="admin-catalog-meta-grid grid grid-cols-2 gap-3 border-y border-white/[0.05] py-4 md:gap-x-4 md:gap-y-2.5 md:border-white/[0.04] md:py-3.5">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-y border-white/[0.05] py-5 md:gap-x-4 md:gap-y-2.5 md:border-white/[0.04] md:py-3.5">
           <MetaItem label="Version" value={`v${catalog.version}`} />
           <MetaItem label="Language" value={(catalog.language || '—').toUpperCase()} />
-          <MetaItem label="Size" value={fileSize} />
           <MetaItem label="Downloads" value={String(catalog.total_downloads || 0)} />
+          <MetaItem label="Size" value={fileSize} />
+          
+          <MetaItem 
+            label="Created" 
+            value={new Date(catalog.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} 
+          />
+          <MetaItem 
+            label="Published" 
+            value={catalog.published_at ? new Date(catalog.published_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '—'} 
+          />
         </div>
 
-        <div className="grid grid-cols-1 gap-2 text-[10px] font-mono uppercase tracking-wider text-white/40 sm:grid-cols-2 md:flex md:items-center md:justify-between md:px-1 md:text-[9px] md:text-white/35">
-          <span>Created: {new Date(catalog.created_at).toLocaleDateString()}</span>
-          {catalog.published_at ? (
-            <span className="sm:text-right">
-              Published: {new Date(catalog.published_at).toLocaleDateString()}
-            </span>
-          ) : (
-            <span className="hidden sm:block sm:text-right md:hidden">Not published yet</span>
-          )}
-        </div>
-
-        <div className="mt-auto border-t border-white/[0.05] pt-4 md:border-white/[0.04]">
+        <div className="mt-auto border-t border-transparent pt-1 md:border-white/[0.04] md:pt-4">
           <CatalogActions catalog={catalog} />
         </div>
       </div>

@@ -9,21 +9,21 @@ export function PremiumSwitch({
   ...props
 }: React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>) {
   return (
-    <div className="admin-switch-touch flex items-center justify-center shrink-0">
+    <div className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center">
       <SwitchPrimitives.Root
         className={cn(
-          'peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border shadow-sm transition-all duration-300 ease-out',
-          'border-white/10 bg-white/10 data-[state=checked]:bg-[#C9A227] data-[state=checked]:border-[#C9A227]/40',
+          'peer inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border border-transparent shadow-sm transition-colors duration-300 ease-out',
+          'bg-white/10 hover:bg-white/15 data-[state=checked]:bg-[#C9A227]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A227]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          'disabled:cursor-not-allowed disabled:opacity-50',
+          'disabled:cursor-not-allowed disabled:opacity-50 active:scale-95',
           className
         )}
         {...props}
       >
         <SwitchPrimitives.Thumb
           className={cn(
-            'pointer-events-none block h-5 w-5 rounded-full bg-white shadow-md ring-0 transition-transform duration-300 ease-out',
-            'data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0.5'
+            'pointer-events-none block h-6 w-6 rounded-full bg-white shadow-md ring-0 transition-transform duration-300 ease-out',
+            'data-[state=checked]:translate-x-[22px] data-[state=unchecked]:translate-x-[2px]'
           )}
         />
       </SwitchPrimitives.Root>

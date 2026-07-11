@@ -15,6 +15,7 @@ import type { Database } from '@/types/database'
 import { updateGalleryMedia } from '@/actions/gallery'
 import { toast } from 'sonner'
 import { Loader2, Star, Eye, EyeOff, User, Globe, HelpCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 type CategoryRow = Database["public"]["Tables"]["gallery_categories"]["Row"]
 type ExhibitionRow = Pick<Database["public"]["Tables"]["exhibitions"]["Row"], "id" | "theme_en" | "theme_bn" | "year" | "status">
@@ -187,25 +188,49 @@ export function MetadataEditor({ media, open, onOpenChange, onSaved, categories,
             </div>
 
             {/* Exhibition Association */}
-            <div className="space-y-3 p-4 rounded-xl border border-neutral-200 bg-neutral-50/50">
+            <div className="space-y-3 p-4 rounded-2xl border border-neutral-200 bg-neutral-50/30">
               <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Exhibition Link</Label>
-              <RadioGroup
-                value={exhibitionAssociation}
-                onValueChange={val => {
-                  setExhibitionAssociation(val as any)
-                  if (val === "independent") setFormData(p => ({ ...p, exhibition_id: null as any }))
-                }}
-                className="flex gap-6 mt-2"
-              >
-                <Label htmlFor="edit_r_associate" className="flex items-center gap-2 cursor-pointer">
-                  <RadioGroupItem value="associate" id="edit_r_associate" className="border-neutral-300 text-blue-600 focus-visible:ring-blue-500" />
-                  <span className="text-sm font-medium text-neutral-800">Associate with Exhibition</span>
-                </Label>
-                <Label htmlFor="edit_r_independent" className="flex items-center gap-2 cursor-pointer">
-                  <RadioGroupItem value="independent" id="edit_r_independent" className="border-neutral-300 text-blue-600 focus-visible:ring-blue-500" />
-                  <span className="text-sm font-medium text-neutral-800">Independent Media</span>
-                </Label>
-              </RadioGroup>
+              <div className="flex flex-col gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setExhibitionAssociation('associate')}
+                  className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-2xl"
+                >
+                  <AdminSettingTile
+                    icon={<Globe className={`h-5 w-5 ${exhibitionAssociation === 'associate' ? 'text-blue-600' : 'text-neutral-400'}`} />}
+                    title="Associate with Exhibition"
+                    description="Link this media to a specific exhibition gallery."
+                    active={exhibitionAssociation === 'associate'}
+                    className={cn(
+                      "transition-all duration-300",
+                      exhibitionAssociation === 'associate' 
+                        ? "border-blue-200 bg-blue-50/50 shadow-sm" 
+                        : "border-neutral-200 bg-white hover:bg-neutral-50/80 hover:border-neutral-300"
+                    )}
+                  />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExhibitionAssociation('independent')
+                    setFormData(p => ({ ...p, exhibition_id: null as any }))
+                  }}
+                  className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-2xl"
+                >
+                  <AdminSettingTile
+                    icon={<Star className={`h-5 w-5 ${exhibitionAssociation === 'independent' ? 'text-amber-500' : 'text-neutral-400'}`} />}
+                    title="Independent Media"
+                    description="Stand-alone media not tied to any exhibition."
+                    active={exhibitionAssociation === 'independent'}
+                    className={cn(
+                      "transition-all duration-300",
+                      exhibitionAssociation === 'independent' 
+                        ? "border-amber-200 bg-amber-50/50 shadow-sm" 
+                        : "border-neutral-200 bg-white hover:bg-neutral-50/80 hover:border-neutral-300"
+                    )}
+                  />
+                </button>
+              </div>
 
               {exhibitionAssociation === "associate" && (
                 <div className="mt-4 pt-3 border-t border-neutral-200">

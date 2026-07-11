@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 const actionBase =
-  'inline-flex min-h-11 items-center justify-center rounded-xl border text-xs font-semibold transition-all disabled:opacity-50'
+  'flex min-h-[44px] w-full sm:flex-1 items-center justify-center rounded-xl border text-sm font-semibold transition-all disabled:opacity-50'
 
 export function CatalogActions({ catalog }: { catalog: any }) {
   const router = useRouter()
@@ -58,7 +58,6 @@ export function CatalogActions({ catalog }: { catalog: any }) {
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this catalog? The PDF and cover image will be permanently removed.')) return
-
     setIsDeleting(true)
     try {
       const res = await deleteCatalog(catalog.id)
@@ -80,12 +79,12 @@ export function CatalogActions({ catalog }: { catalog: any }) {
 
   return (
     <div className="admin-catalog-actions flex w-full flex-col gap-2.5 md:flex-row md:flex-wrap md:items-center md:gap-2">
-      <div className="grid w-full grid-cols-2 gap-2.5 md:contents">
+      <div className="flex w-full flex-col sm:flex-row gap-2.5 md:contents">
         <Link
           href={`/admin/catalogs/${catalog.id}`}
           className={cn(
             actionBase,
-            'w-full border-white/[0.08] bg-white/5 text-white hover:border-white/20 hover:bg-white/10 md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
+            'border-white/[0.08] bg-white/5 text-white hover:border-white/20 hover:bg-white/10 md:w-auto md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
           )}
         >
           <Edit className="mr-1.5 h-4 w-4 md:h-3.5 md:w-3.5" />
@@ -96,7 +95,7 @@ export function CatalogActions({ catalog }: { catalog: any }) {
           <button
             className={cn(
               actionBase,
-              'w-full border-white/[0.08] bg-white/5 text-white hover:border-white/20 hover:bg-white/10 md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
+              'border-white/[0.08] bg-white/5 text-white hover:border-white/20 hover:bg-white/10 md:w-auto md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
             )}
             onClick={handleTogglePublish}
             disabled={isBusy}
@@ -118,11 +117,11 @@ export function CatalogActions({ catalog }: { catalog: any }) {
         )}
       </div>
 
-      <div className="grid w-full grid-cols-3 gap-2.5 md:contents">
+      <div className="flex w-full flex-col sm:flex-row gap-2.5 md:contents">
         <button
           className={cn(
             actionBase,
-            'col-span-1 border-[#C9A227]/20 bg-[#C9A227]/10 text-[#C9A227] hover:border-transparent hover:bg-[#C9A227] hover:text-black md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
+            'border-[#C9A227]/20 bg-[#C9A227]/10 text-[#C9A227] hover:border-transparent hover:bg-[#C9A227] hover:text-black md:w-auto md:flex-grow md:h-9 md:min-h-0 md:rounded-lg md:px-3 md:text-[11px]'
           )}
           onClick={handleDuplicate}
           disabled={isBusy}
@@ -144,26 +143,30 @@ export function CatalogActions({ catalog }: { catalog: any }) {
           rel="noopener noreferrer"
           className={cn(
             actionBase,
-            'border-white/[0.08] bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10 hover:text-white md:h-9 md:w-9 md:min-h-0 md:flex-shrink-0 md:rounded-lg md:px-0'
+            'border-white/[0.08] bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10 hover:text-white md:w-auto md:h-9 md:w-9 md:min-h-0 md:flex-shrink-0 md:rounded-lg md:px-0'
           )}
           aria-label="Preview catalog PDF"
         >
-          <Eye className="h-4 w-4 md:h-3.5 md:w-3.5" />
+          <Eye className="h-5 w-5 md:h-3.5 md:w-3.5" />
+          <span className="ml-2 font-medium sm:hidden">Preview</span>
         </a>
 
         <button
           className={cn(
             actionBase,
-            'border-rose-500/20 bg-rose-500/10 text-rose-400 hover:border-transparent hover:bg-rose-500 hover:text-white md:h-9 md:w-9 md:min-h-0 md:flex-shrink-0 md:rounded-lg md:px-0'
+            'border-rose-500/20 bg-rose-500/10 text-rose-400 hover:border-transparent hover:bg-rose-500 hover:text-white md:w-auto md:h-9 md:w-9 md:min-h-0 md:flex-shrink-0 md:rounded-lg md:px-0'
           )}
           onClick={handleDelete}
           disabled={isBusy}
           aria-label="Delete catalog"
         >
           {isDeleting ? (
-            <Loader2 className="h-4 w-4 animate-spin md:h-3.5 md:w-3.5" />
+            <Loader2 className="h-5 w-5 animate-spin md:h-3.5 md:w-3.5" />
           ) : (
-            <Trash className="h-4 w-4 md:h-3.5 md:w-3.5" />
+            <>
+              <Trash className="h-5 w-5 md:h-3.5 md:w-3.5" />
+              <span className="ml-2 font-medium sm:hidden">Delete</span>
+            </>
           )}
         </button>
       </div>
