@@ -153,7 +153,7 @@ export function ExhibitionForm({ locale }: { locale: string }) {
         icon: <Sparkles className="w-4 h-4 text-yellow-400" />,
       })
 
-      router.push(`/${locale}/admin/exhibitions`)
+      router.push(`/${locale}/admin/exhibitions/${res.data.id}`)
 
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)

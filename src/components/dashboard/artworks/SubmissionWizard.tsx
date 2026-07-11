@@ -13,7 +13,7 @@ import { toast } from "sonner"
 import { Upload, X, Check, Loader2, ArrowRight, ArrowLeft, AlertCircle } from "lucide-react"
 import Image from "next/image"
 
-const DRAFT_KEY = "rongdhono_artwork_draft_v2"
+const DRAFT_KEY = "rongdhonu_artwork_draft_v2"
 
 interface Exhibition {
   id: string
@@ -530,7 +530,7 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
                   <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
                 </div>
                 <span className="text-sm font-medium text-[#6B655C] leading-relaxed group-hover:text-charcoal transition-colors">
-                  I confirm that this artwork is <strong className="text-charcoal">original</strong>, created by me, and I agree to the Rongdhono exhibition terms and conditions. I understand my submission will be reviewed by the moderation team.
+                  I confirm that this artwork is <strong className="text-charcoal">original</strong>, created by me, and I agree to the Rongdhonu exhibition terms and conditions. I understand my submission will be reviewed by the moderation team.
                 </span>
               </label>
             </div>

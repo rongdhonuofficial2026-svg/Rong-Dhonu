@@ -140,7 +140,7 @@ export function SystemHealthPanel() {
 
       {/* Platform info footer */}
       <div className="mt-4 pt-4 border-t border-border/30 dark:border-white/5 flex flex-wrap gap-4 text-[10px] font-mono text-muted-foreground/50 uppercase tracking-wider">
-        <span>Rongdhono Administrative OS · v1.0.0</span>
+        <span>Rongdhonu Administrative OS · v1.0.0</span>
         <span>Next.js 16.2.10</span>
         <span>Supabase SSR</span>
         <span className="ml-auto">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>

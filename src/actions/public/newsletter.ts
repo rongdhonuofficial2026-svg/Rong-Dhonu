@@ -60,7 +60,7 @@ export async function subscribeToNewsletter(rawData: NewsletterFormInput) {
     const welcomeHtml = newsletterWelcomeTemplate(locale)
     const welcomeRes = await sendEmail({
       to: email,
-      subject: locale === 'bn' ? 'রংধনু নিউজলেটারে আপনাকে স্বাগতম' : 'Welcome to Rongdhono',
+      subject: locale === 'bn' ? 'রংধনু নিউজলেটারে আপনাকে স্বাগতম' : 'Welcome to Rongdhonu',
       html: welcomeHtml
     })
 

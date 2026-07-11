@@ -60,7 +60,7 @@ export function Navbar({ menuItems, locale = 'en', settingsData }: { menuItems?:
             }}
           />
         )}
-        <span className="brand-word">{locale === 'bn' ? 'রংধনু' : 'Rongdhono'}</span>
+        <span className="brand-word">{locale === 'bn' ? 'রংধনু' : 'Rongdhonu'}</span>
       </Link>
 
       {/* Desktop Nav */}

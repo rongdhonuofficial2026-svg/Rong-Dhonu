@@ -8,7 +8,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
       <div className="footer-grid">
         <div className="footer-brand">
           <Link href="/" className="brand">
-            <span className="brand-word">{locale === 'bn' ? 'রংধনু' : 'Rongdhono'}</span>
+            <span className="brand-word">{locale === 'bn' ? 'রংধনু' : 'Rongdhonu'}</span>
           </Link>
           <p>
             {locale === 'bn'
@@ -20,7 +20,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
               href={SOCIAL_LINKS.instagram} 
               target="_blank" 
               rel="noopener noreferrer" 
-              aria-label="Visit Rongdhono on Instagram"
+              aria-label="Visit Rongdhonu on Instagram"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <rect x="3" y="3" width="18" height="18" rx="5" stroke="#F4EEDF" strokeWidth="1.6"/>
@@ -32,7 +32,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
               href={SOCIAL_LINKS.facebook} 
               target="_blank" 
               rel="noopener noreferrer" 
-              aria-label="Visit Rongdhono on Facebook"
+              aria-label="Visit Rongdhonu on Facebook"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z" fill="#F4EEDF"/>
@@ -42,7 +42,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
               href={SOCIAL_LINKS.x} 
               target="_blank" 
               rel="noopener noreferrer" 
-              aria-label="Visit Rongdhono on X (Twitter)"
+              aria-label="Visit Rongdhonu on X (Twitter)"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M4 4l16 16M20 4L4 20" stroke="#F4EEDF" strokeWidth="1.6" stroke-linecap="round"/>
@@ -54,7 +54,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
         <div className="footer-col">
           <h4>{locale === 'bn' ? 'অন্বেষণ' : 'Explore'}</h4>
           <ul>
-            <li><Link href="/about">{locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhono'}</Link></li>
+            <li><Link href="/about">{locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhonu'}</Link></li>
             <li><Link href="/exhibitions">{locale === 'bn' ? 'বার্ষিক প্রদর্শনী' : 'Annual Exhibitions'}</Link></li>
             <li><Link href="/catalogs">{locale === 'bn' ? 'প্রদর্শনী ক্যাটালগ' : 'Exhibition Catalogs'}</Link></li>
             <li><Link href="/gallery">{locale === 'bn' ? 'কিউরেটেড কালেকশন' : 'Curated Collection'}</Link></li>
@@ -83,7 +83,7 @@ export default function Footer({ footerData, locale = 'en', settingsData }: { fo
       </div>
 
       <div className="footer-bottom">
-        <span>© 2026 {settingsData?.copyright_text || "Rongdhono Artists' Collective. All rights reserved."}</span>
+        <span>© 2026 {settingsData?.copyright_text || "Rongdhonu Artists' Collective. All rights reserved."}</span>
         <span>{locale === 'bn' ? 'বহরমপুর, পশ্চিমবঙ্গ, ভারত' : 'Berhampore, West Bengal, India'}</span>
       </div>
     </footer>

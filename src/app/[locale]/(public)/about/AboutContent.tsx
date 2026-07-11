@@ -83,8 +83,8 @@ export function AboutContent({ content, locale }: AboutContentProps) {
         />
         <div className="scrim"></div>
         <div className="page-hero-inner reveal">
-          <div className="eyebrow center">{locale === 'bn' ? 'রঙধনু শিল্পী সংঘ' : "Rongdhono Artists' Collective"}</div>
-          <h1>{content.title || (locale === 'bn' ? 'রঙধনু সম্পর্কে' : 'About Rongdhono')}</h1>
+          <div className="eyebrow center">{locale === 'bn' ? 'রঙধনু শিল্পী সংঘ' : "Rongdhonu Artists' Collective"}</div>
+          <h1>{content.title || (locale === 'bn' ? 'রঙধনু সম্পর্কে' : 'About Rongdhonu')}</h1>
           <div className="hero-rule"></div>
           <p>
             {locale === 'bn' 
@@ -109,7 +109,7 @@ export function AboutContent({ content, locale }: AboutContentProps) {
             <p className="mission-body">
               {content.mission || (locale === 'bn'
                 ? 'শিল্পকলা সমাজকে রূপান্তর করার ক্ষমতা রাখে - এই বিশ্বাসের ভিত্তিতে প্রতিষ্ঠিত রঙধনু দূরদর্শী নির্মাতা এবং অনুরাগী সংগ্রাহকদের মধ্যে সেতু হিসাবে কাজ করে। আমরা এমন অভিজ্ঞতা তৈরি করি যা দৃষ্টিভঙ্গিকে চ্যালেঞ্জ করে এবং সমসাময়িক শিল্পচর্চাকে উন্নত করে।'
-                : 'Founded on the belief that art has the power to transform society, Rongdhono serves as a bridge between visionary creators and passionate collectors. We curate experiences that challenge perspectives and elevate the contemporary art discourse.')}
+                : 'Founded on the belief that art has the power to transform society, Rongdhonu serves as a bridge between visionary creators and passionate collectors. We curate experiences that challenge perspectives and elevate the contemporary art discourse.')}
             </p>
           </div>
           <div className="about-visual reveal">
@@ -162,7 +162,7 @@ export function AboutContent({ content, locale }: AboutContentProps) {
       <section className="artists" id="committee">
         <div className="section-head reveal" style={{ justifyContent: 'center', textAlign: 'center', flexDirection: 'column', alignItems: 'center' }}>
           <div className="eyebrow center">{locale === 'bn' ? 'আমাদের কমিটি' : 'Our Committee'}</div>
-          <h2>{locale === 'bn' ? 'রঙধনুর নেপথ্যের রূপকারগণ' : 'The Visionaries Behind Rongdhono'}</h2>
+          <h2>{locale === 'bn' ? 'রঙধনুর নেপথ্যের রূপকারগণ' : 'The Visionaries Behind Rongdhonu'}</h2>
         </div>
         <div className="artist-row">
           {committee.map((member, idx) => (
@@ -191,7 +191,7 @@ export function AboutContent({ content, locale }: AboutContentProps) {
           <p className="legacy-quote">
             {content.history || (locale === 'bn'
               ? 'শিল্পের প্রতি গভীর অনুরাগে প্রতিষ্ঠিত রঙধনু আজ ক্ষুদ্র পরিসর পেরিয়ে সিলভার থ্রেড আর্ট গ্যালারিতে বার্ষিক প্রদর্শনীর আয়োজনকারী এক মর্যাদাপূর্ণ শিল্পী সংঘে পরিণত হয়েছে।'
-              : 'Founded with a passion for the arts, Rongdhono has grown from a small group of local artists to a prestigious collective hosting an annual exhibition at the Silver Thread Art Gallery.')}
+              : 'Founded with a passion for the arts, Rongdhonu has grown from a small group of local artists to a prestigious collective hosting an annual exhibition at the Silver Thread Art Gallery.')}
           </p>
           <div className="legacy-stats">
             <div>

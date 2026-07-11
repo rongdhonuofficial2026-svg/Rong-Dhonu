@@ -6,7 +6,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   const content = await getCmsContent('homepage', 'about', locale)
   const settingsData = await getCmsContent('global', 'settings', locale)
-  const siteName = settingsData?.site_name || 'Rongdhono'
+  const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
   return generateDynamicMetadata({
     title: content.title || "About Us",

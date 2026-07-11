@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const image = catalog.cover_image_url || (catalog.exhibitions as any)?.hero_image_url || '/images/catalogs_hero.png'
 
   return {
-    title: `${title} | Rongdhono Art Gallery`,
+    title: `${title} | Rongdhonu Art Gallery`,
     description,
     openGraph: {
       title,

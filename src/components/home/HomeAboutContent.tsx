@@ -18,7 +18,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
   
   const history = content?.history || (locale === 'bn' 
     ? "২০১২ সালে শিল্পকলার প্রতি গভীর অনুরাগের মধ্য দিয়ে প্রতিষ্ঠিত রংধনু স্থানীয় চিত্রশিল্পীদের একটি ক্ষুদ্র বৃত্ত থেকে বাংলার অন্যতম সেরা প্রদর্শনী সংস্থায় পরিণত হয়েছে।" 
-    : "Founded in 2012 with a passion for the arts, Rongdhono has grown from a small circle of local painters into Bengal's premier exhibition collective.")
+    : "Founded in 2012 with a passion for the arts, Rongdhonu has grown from a small circle of local painters into Bengal's premier exhibition collective.")
 
   const totalExhibitions = stats?.totalExhibitions || 14
   const totalArtists = stats?.totalArtists || 340
@@ -51,7 +51,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
         {/* Right Copy Panel */}
         <div className="about-copy reveal">
           <div className="eyebrow on-paper">
-            {locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhono'}
+            {locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhonu'}
           </div>
           <h2>
             {(() => {

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const description = locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en
 
   return {
-    title: `${title} | Rongdhono`,
+    title: `${title} | Rongdhonu`,
     description,
     openGraph: {
       title,

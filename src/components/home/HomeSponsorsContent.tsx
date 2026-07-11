@@ -32,7 +32,7 @@ export function HomeTestimonialsContent({ locale, content }: { locale: string, c
       author: locale === 'bn' ? 'দেবাশীষ রায়' : 'Debashish Roy',
       role_en: 'Gallery Patron',
       role_bn: 'গ্যালারি পৃষ্ঠপোষক',
-      quote_en: 'Rongdhono is a beacon of light for the artistic community — a rare place where emerging and established artists genuinely learn from one another.',
+      quote_en: 'Rongdhonu is a beacon of light for the artistic community — a rare place where emerging and established artists genuinely learn from one another.',
       quote_bn: 'রংধনু শৈল্পিক সম্প্রদায়ের জন্য আশার আলো — এমন একটি বিরল জায়গা যেখানে উদীয়মান এবং সুপ্রতিষ্ঠিত শিল্পীরা একে অপরের কাছ থেকে সত্যিকারের শিক্ষা পান।'
     },
     {
@@ -46,7 +46,7 @@ export function HomeTestimonialsContent({ locale, content }: { locale: string, c
       author: locale === 'bn' ? 'অর্ক মুখার্জী' : 'Arka Mukherjee',
       role_en: 'Member Artist',
       role_bn: 'সদস্য শিল্পী',
-      quote_en: 'What sets Rongdhono apart is how personally the collective invests in every emerging artist — it never feels transactional, always like family.',
+      quote_en: 'What sets Rongdhonu apart is how personally the collective invests in every emerging artist — it never feels transactional, always like family.',
       quote_bn: 'রংধনু-কে যা অনন্য করে তোলে তা হলো উদীয়মান শিল্পীদের প্রতি তাদের ব্যক্তিগত যত্ন — এটি কখনো পেশাদারী লেনদেন মনে হয় না, সবসময় একটি পরিবারের মতো।'
     }
   ]

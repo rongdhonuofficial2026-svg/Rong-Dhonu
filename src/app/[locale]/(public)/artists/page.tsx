@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/museum/states"
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
   return generateDynamicMetadata({
     title: locale === 'bn' ? "শিল্পীবৃন্দ" : "Artists",
-    description: locale === 'bn' ? "রংধনু শিল্পী সংঘের মেধাবী সদস্যদের আবিষ্কার করুন।" : "Discover the talented members of the Rongdhono artists' collective.",
+    description: locale === 'bn' ? "রংধনু শিল্পী সংঘের মেধাবী সদস্যদের আবিষ্কার করুন।" : "Discover the talented members of the Rongdhonu artists' collective.",
     url: '/artists',
     locale
   })
@@ -37,7 +37,7 @@ export default async function ArtistsDirectoryPage({ params: { locale } }: { par
       <div className="container mx-auto px-6">
         <SectionHeading 
           title={locale === 'bn' ? "আমাদের শিল্পীবৃন্দ" : "Our Artists"} 
-          subtitle={locale === 'bn' ? "রংধনু পরিবারের সৃজনশীল মন" : "The creative minds of the Rongdhono family"}
+          subtitle={locale === 'bn' ? "রংধনু পরিবারের সৃজনশীল মন" : "The creative minds of the Rongdhonu family"}
         />
         
         {displayData.length === 0 ? (

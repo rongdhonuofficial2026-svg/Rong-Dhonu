@@ -20,7 +20,7 @@ export default function DesignSystemPage() {
   return (
     <div className="container mx-auto py-12 px-4 space-y-24">
       <div className="text-center">
-        <h1 className="font-serif text-5xl font-bold mb-4 text-accent">Rongdhono Design System</h1>
+        <h1 className="font-serif text-5xl font-bold mb-4 text-accent">Rongdhonu Design System</h1>
         <p className="text-muted-foreground text-lg">Premium Museum Aesthetic UI Component Library</p>
       </div>
 

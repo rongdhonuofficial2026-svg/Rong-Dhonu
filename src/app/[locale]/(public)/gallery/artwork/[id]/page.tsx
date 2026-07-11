@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const artist = (locale === 'bn' && p?.full_name_bn) ? p.full_name_bn : (p?.full_name_en ?? 'Unknown')
 
   return {
-    title: `${title} by ${artist} | Rongdhono Gallery`,
+    title: `${title} by ${artist} | Rongdhonu Gallery`,
     description: desc,
     openGraph: {
-      title: `${title} | Rongdhono Gallery`,
+      title: `${title} | Rongdhonu Gallery`,
       description: desc,
       images: artwork.main_image_url ? [artwork.main_image_url] : [],
     },
@@ -75,7 +75,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
     creator: {
       '@type': 'Person',
       name: profile?.full_name_en,
-      url:  `https://rongdhono.org/${locale}/artists/${artistId}`,
+      url:  `https://rongdhonu.org/${locale}/artists/${artistId}`,
     },
     artMedium:    artwork.medium_en,
     dateCreated:  artwork.year ?? exhibition?.year,

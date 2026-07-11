@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { CustomGalleryUploader } from "@/components/admin/gallery/CustomGalleryUploader"
 
 export const metadata = {
-  title: "Upload Gallery Media — Rongdhono Admin",
+  title: "Upload Gallery Media — Rongdhonu Admin",
 }
 
 export default async function NewGalleryMediaPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -70,7 +70,7 @@ export default async function NewGalleryMediaPage({ params }: { params: Promise<
             Upload Gallery Media
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-relaxed">
-            Upload photographs or videos directly into the Rongdhono media archive. Associate them with an exhibition or store them independently for future use.
+            Upload photographs or videos directly into the Rongdhonu media archive. Associate them with an exhibition or store them independently for future use.
           </p>
         </div>
       </div>

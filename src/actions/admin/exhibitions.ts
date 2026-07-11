@@ -29,10 +29,21 @@ export async function createExhibition(payload: any) {
   const { data: { user } } = await supabase.auth.getUser()
   await requireAdmin(supabase, user)
 
-  // Derive year from exhibition start date
-  const startYear = payload.exhibition_start ? new Date(payload.exhibition_start).getFullYear() : new Date().getFullYear();
+  // 1. Sanitize optional dates to prevent PostgreSQL type cast crashes (empty string -> null)
+  const safeDate = (dateStr: any) => (dateStr && typeof dateStr === 'string' && dateStr.trim() !== '') ? dateStr : null;
+  const exhibition_start = safeDate(payload.exhibition_start);
+  const exhibition_end = safeDate(payload.exhibition_end);
+  const registration_start = safeDate(payload.registration_start);
+  const submission_end = safeDate(payload.submission_end);
 
-  // Check if active exhibition already exists for that year
+  // 2. Derive year securely
+  const startYear = exhibition_start ? new Date(exhibition_start).getFullYear() : new Date().getFullYear();
+
+  if (isNaN(startYear)) {
+    return { error: `Invalid date format provided for Exhibition Opening.` }
+  }
+
+  // 3. Concurrency / Duplicate check
   const { data: existing } = await supabase
     .from('exhibitions')
     .select('id')
@@ -41,23 +52,24 @@ export async function createExhibition(payload: any) {
     .maybeSingle()
 
   if (existing) {
-    return { error: `An exhibition already exists for the year ${startYear}. Please choose a different start date.` }
+    return { error: `An exhibition already exists for the year ${startYear}. Please choose a different Exhibition Opening date to avoid conflicts.` }
   }
 
+  // 4. Database Insert
   const { data, error } = await supabase.from('exhibitions').insert([{
     year: startYear,
     theme_en: payload.theme_en,
-    theme_bn: payload.theme_bn,
-    description_en: payload.description_en,
-    description_bn: payload.description_bn,
-    exhibition_start: payload.exhibition_start,
-    exhibition_end: payload.exhibition_end,
-    registration_start: payload.registration_start,
-    submission_end: payload.submission_end,
-    venue_en: payload.venue_en,
-    venue_bn: payload.venue_bn,
+    theme_bn: payload.theme_bn || '',
+    description_en: payload.description_en || null,
+    description_bn: payload.description_bn || null,
+    exhibition_start,
+    exhibition_end,
+    registration_start,
+    submission_end,
+    venue_en: payload.venue_en || null,
+    venue_bn: payload.venue_bn || null,
     status: 'draft', // Always force new exhibitions to draft
-    hero_image_url: payload.hero_image_url,
+    hero_image_url: payload.hero_image_url || null,
     is_featured: payload.is_featured === true,
     is_deleted: false,
     views_count: 0,
@@ -67,17 +79,27 @@ export async function createExhibition(payload: any) {
     catalog_downloads_count: 0
   }]).select().single()
 
-  if (error) return { error: error.message }
+  // 5. Explicit Error Handling
+  if (error) {
+    if (error.code === '23505') { // Unique violation
+      return { error: `Database Constraint Violation: An exhibition for the year ${startYear} already exists. Please choose a different opening date.` }
+    }
+    return { error: `Database Error (${error.code || 'Unknown'}): ${error.message}` }
+  }
   
-  // Log action
-  await supabase.from('audit_logs').insert([{
+  // 6. Audit Log
+  const { error: auditError } = await supabase.from('audit_logs').insert([{
     actor_id: user!.id,
     action: 'CREATE_EXHIBITION',
     entity_type: 'exhibition',
     entity_id: data.id,
     details: { theme: payload.theme_en, year: startYear }
   }])
+  if (auditError) {
+    console.warn("Audit Log Warning:", auditError.message)
+  }
 
+  // 7. Cache Revalidation
   revalidateExhibitionCaches(data.id)
   return { success: true, data }
 }
@@ -87,10 +109,21 @@ export async function updateExhibition(id: string, payload: any) {
   const { data: { user } } = await supabase.auth.getUser()
   await requireAdmin(supabase, user)
 
-  // Derive year from exhibition start date
-  const startYear = payload.exhibition_start ? new Date(payload.exhibition_start).getFullYear() : new Date().getFullYear();
+  // 1. Sanitize optional dates to prevent PostgreSQL type cast crashes (empty string -> null)
+  const safeDate = (dateStr: any) => (dateStr && typeof dateStr === 'string' && dateStr.trim() !== '') ? dateStr : null;
+  const exhibition_start = safeDate(payload.exhibition_start);
+  const exhibition_end = safeDate(payload.exhibition_end);
+  const registration_start = safeDate(payload.registration_start);
+  const submission_end = safeDate(payload.submission_end);
 
-  // Check if year is taken by another active exhibition
+  // 2. Derive year securely
+  const startYear = exhibition_start ? new Date(exhibition_start).getFullYear() : new Date().getFullYear();
+
+  if (isNaN(startYear)) {
+    return { error: `Invalid date format provided for Exhibition Opening.` }
+  }
+
+  // 3. Concurrency / Duplicate check
   const { data: existing } = await supabase
     .from('exhibitions')
     .select('id')
@@ -100,29 +133,37 @@ export async function updateExhibition(id: string, payload: any) {
     .maybeSingle()
 
   if (existing) {
-    return { error: `An exhibition already exists for the year ${startYear}. Please choose a different start date.` }
+    return { error: `An exhibition already exists for the year ${startYear}. Please choose a different Exhibition Opening date to avoid conflicts.` }
   }
 
   const updateData: any = {
     year: startYear,
     theme_en: payload.theme_en,
-    theme_bn: payload.theme_bn,
-    description_en: payload.description_en,
-    description_bn: payload.description_bn,
-    exhibition_start: payload.exhibition_start,
-    exhibition_end: payload.exhibition_end,
-    registration_start: payload.registration_start,
-    submission_end: payload.submission_end,
-    venue_en: payload.venue_en,
-    venue_bn: payload.venue_bn,
-    hero_image_url: payload.hero_image_url
+    theme_bn: payload.theme_bn || '',
+    description_en: payload.description_en || null,
+    description_bn: payload.description_bn || null,
+    exhibition_start,
+    exhibition_end,
+    registration_start,
+    submission_end,
+    venue_en: payload.venue_en || null,
+    venue_bn: payload.venue_bn || null,
+    hero_image_url: payload.hero_image_url || null
   }
 
+  // 4. Database Update
   const { data, error } = await supabase.from('exhibitions').update(updateData).eq('id', id).select().single()
 
-  if (error) return { error: error.message }
+  // 5. Explicit Error Handling
+  if (error) {
+    if (error.code === '23505') {
+      return { error: `Database Constraint Violation: An exhibition for the year ${startYear} already exists. Please choose a different opening date.` }
+    }
+    return { error: `Database Error (${error.code || 'Unknown'}): ${error.message}` }
+  }
   
-  await supabase.from('audit_logs').insert([{
+  // 6. Audit Log
+  const { error: auditError } = await supabase.from('audit_logs').insert([{
     actor_id: user!.id,
     action: 'UPDATE_EXHIBITION',
     entity_type: 'exhibition',

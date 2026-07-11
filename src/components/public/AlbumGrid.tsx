@@ -206,7 +206,7 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
           <p>
             {locale === 'bn' 
               ? 'আর্কাইভ থেকে সম্পাদকের পছন্দ — মুহূর্তগুলো যা রঙধনুর চেতনাকে সর্বোত্তমভাবে ফুটিয়ে তোলে।' 
-              : "Editor's picks from across the archive — the moments that best capture Rongdhono's spirit."}
+              : "Editor's picks from across the archive — the moments that best capture Rongdhonu's spirit."}
           </p>
         </div>
         

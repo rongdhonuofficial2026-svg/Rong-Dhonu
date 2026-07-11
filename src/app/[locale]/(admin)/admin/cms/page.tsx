@@ -4,7 +4,7 @@ import { CMSEngineManager } from "@/components/admin/cms/CMSEngineManager"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   return {
-    title: locale === 'bn' ? 'কন্টেন্ট স্টুডিও | রঙধনু' : 'Content Studio | Rongdhono',
+    title: locale === 'bn' ? 'কন্টেন্ট স্টুডিও | রঙধনু' : 'Content Studio | Rongdhonu',
   }
 }
 

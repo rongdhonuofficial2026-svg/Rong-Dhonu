@@ -353,7 +353,7 @@ export function MetadataEditor({ media, open, onOpenChange, onSaved, categories,
                   id="edit_copyright"
                   value={formData.copyright || ''} 
                   onChange={e => setFormData(p => ({ ...p, copyright: e.target.value }))}
-                  placeholder="e.g. © 2026 Rongdhono"
+                  placeholder="e.g. © 2026 Rongdhonu"
                   className="h-11 bg-neutral-50 border-neutral-200 text-neutral-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent rounded-lg"
                 />
               </div>

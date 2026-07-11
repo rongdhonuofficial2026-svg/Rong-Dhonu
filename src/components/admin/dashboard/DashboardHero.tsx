@@ -135,7 +135,7 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
         </div>
         <div className="flex items-center gap-2 text-xs text-white/30 font-mono">
           <Palette className="w-3.5 h-3.5" />
-          <span>Rongdhono Administrative OS · v1.0</span>
+          <span>Rongdhonu Administrative OS · v1.0</span>
         </div>
       </div>
     </section>

@@ -6,7 +6,7 @@ import { getUsers } from "@/actions/admin/users"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   return {
-    title: locale === 'bn' ? 'ব্যবহারকারী ডিরেক্টরি | রঙধনু' : 'User Directory | Rongdhono',
+    title: locale === 'bn' ? 'ব্যবহারকারী ডিরেক্টরি | রঙধনু' : 'User Directory | Rongdhonu',
   }
 }
 

@@ -9,12 +9,12 @@ import { generateDynamicMetadata } from "@/lib/seo"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const settingsData = await getCmsContent('global', 'settings', locale)
-  const siteName = settingsData?.site_name || 'Rongdhono'
+  const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
 
   return generateDynamicMetadata({
     title: locale === 'bn' ? 'গ্যালারি' : 'Gallery',
-    description: locale === 'bn' ? 'রঙধনু প্রদর্শনী ও ইভেন্টের মেমরি অ্যালবাম।' : 'Explore curated memory albums from Rongdhono exhibitions and events.',
+    description: locale === 'bn' ? 'রঙধনু প্রদর্শনী ও ইভেন্টের মেমরি অ্যালবাম।' : 'Explore curated memory albums from Rongdhonu exhibitions and events.',
     url: '/gallery',
     imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1200&auto=format&fit=crop',
     locale,

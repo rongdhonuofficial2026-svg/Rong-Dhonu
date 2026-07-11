@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   const content = await getCmsContent('contact', 'hero', locale)
   const settingsData = await getCmsContent('global', 'settings', locale)
-  const siteName = settingsData?.site_name || 'Rongdhono'
+  const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
   return generateDynamicMetadata({
     title: content.title || "Contact Us",
@@ -117,13 +117,13 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             <div className="map-card reveal artwork">
               <img 
                 src="/images/placeholders/hero.webp" 
-                alt="Rongdhono Gallery Map Location" 
+                alt="Rongdhonu Gallery Map Location" 
                 loading="lazy" 
               />
               <div className="scrim soft"></div>
               <div className="frame-edge"></div>
               <div className="map-pin-label">
-                <b>Rongdhono Gallery</b>
+                <b>Rongdhonu Gallery</b>
                 <span>{locale === 'bn' ? "দিকনির্দেশ পান" : "Get Directions"}</span>
               </div>
             </div>

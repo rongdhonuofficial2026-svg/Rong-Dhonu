@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const ogImage = album.og_image_url || null
 
   return {
-    title: locale === 'bn' ? `${title} | রঙধনু` : `${title} | Rongdhono`,
+    title: locale === 'bn' ? `${title} | রঙধনু` : `${title} | Rongdhonu`,
     description,
     openGraph: ogImage ? {
       images: [{ url: ogImage }]

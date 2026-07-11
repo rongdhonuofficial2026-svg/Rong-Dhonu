@@ -7,7 +7,7 @@ export const fallbackCMSContent: Record<string, Record<string, any>> = {
     hero: {
       title_en: "Where Art Meets Soul",
       title_bn: "যেখানে শিল্পের সাথে আত্মার মিলন ঘটে",
-      subtitle_en: "Experience the vibrant annual exhibition of the Rongdhono artists' collective. Discover masterpieces from emerging and established artists.",
+      subtitle_en: "Experience the vibrant annual exhibition of the Rongdhonu artists' collective. Discover masterpieces from emerging and established artists.",
       subtitle_bn: "রংধনু শিল্পী সংঘের বার্ষিক প্রদর্শনী উপভোগ করুন। উদীয়মান ও প্রতিষ্ঠিত শিল্পীদের মাস্টারপিস আবিষ্কার করুন।",
       imageUrl: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=2000",
       ctaPrimary_en: "View Gallery",
@@ -16,13 +16,13 @@ export const fallbackCMSContent: Record<string, Record<string, any>> = {
       ctaSecondary_bn: "আরও জানুন"
     },
     about: {
-      title_en: "About Rongdhono",
+      title_en: "About Rongdhonu",
       title_bn: "রংধনু সম্পর্কে",
       mission_en: "To foster a thriving community of artists and provide a platform for creative expression that transcends boundaries.",
       mission_bn: "শিল্পীদের একটি সমৃদ্ধ সম্প্রদায় গড়ে তোলা এবং সৃজনশীল প্রকাশের জন্য একটি প্ল্যাটফর্ম প্রদান করা যা সীমানা অতিক্রম করে।",
       vision_en: "To become the premier destination for contemporary art in West Bengal, preserving our cultural heritage while embracing modern artistic narratives.",
       vision_bn: "পশ্চিমবঙ্গের সমসাময়িক শিল্পের প্রধান গন্তব্য হয়ে ওঠা, আমাদের সাংস্কৃতিক ঐতিহ্য সংরক্ষণ করা এবং আধুনিক শৈল্পিক আখ্যান গ্রহণ করা।",
-      history_en: "Founded with a passion for the arts, Rongdhono has grown from a small group of local artists to a prestigious collective hosting an annual exhibition at the Silva Tirtha Art Gallery.",
+      history_en: "Founded with a passion for the arts, Rongdhonu has grown from a small group of local artists to a prestigious collective hosting an annual exhibition at the Silva Tirtha Art Gallery.",
       history_bn: "শিল্পকলার প্রতি অনুরাগের সাথে প্রতিষ্ঠিত, রংধনু স্থানীয় শিল্পীদের একটি ছোট দল থেকে একটি মর্যাদাপূর্ণ কালেক্টিভ হিসেবে বেড়ে উঠেছে যা সিলভা তীর্থ আর্ট গ্যালারিতে বার্ষিক প্রদর্শনীর আয়োজন করে।"
     },
     sponsors: {
@@ -38,7 +38,7 @@ export const fallbackCMSContent: Record<string, Record<string, any>> = {
       title_bn: "তারা যা বলে",
       items: [
         {
-          quote_en: "Rongdhono is a beacon of light for the artistic community.",
+          quote_en: "Rongdhonu is a beacon of light for the artistic community.",
           quote_bn: "রংধনু শৈল্পিক সম্প্রদায়ের জন্য আলোর একটি বীকন।",
           author: "Anindita Ray",
           role_en: "Art Critic",

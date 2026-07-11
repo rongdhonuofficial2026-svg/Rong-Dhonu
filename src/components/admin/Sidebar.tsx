@@ -51,7 +51,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-[#CC5500] flex items-center justify-center shadow-lg">
             <span className="text-white font-serif italic font-bold">R</span>
           </div>
-          Rongdhono
+          Rongdhonu
         </h2>
         <p className="text-[10px] text-muted-foreground/80 mt-2 uppercase tracking-[0.2em] font-medium ml-11">Operating System</p>
       </div>
@@ -125,7 +125,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
           <div className="w-7 h-7 shrink-0 rounded-md bg-gradient-to-br from-[#D4AF37] to-[#CC5500] flex items-center justify-center">
             <span className="text-white font-serif italic text-xs">R</span>
           </div>
-          <span className="truncate">Rongdhono OS</span>
+          <span className="truncate">Rongdhonu OS</span>
         </h2>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>

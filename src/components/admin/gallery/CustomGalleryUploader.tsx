@@ -348,7 +348,7 @@ export function CustomGalleryUploader({ locale, categories, exhibitions, indepen
                     id="copyright"
                     value={formData.copyright}
                     onChange={e => updateField("copyright", e.target.value)}
-                    placeholder="e.g. © 2026 Rongdhono Artists Collective"
+                    placeholder="e.g. © 2026 Rongdhonu Artists Collective"
                     className="h-11"
                   />
                 </Field>

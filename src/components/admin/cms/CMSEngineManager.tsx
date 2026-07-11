@@ -77,10 +77,10 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
 
   // SEO states
   const [seoConfig, setSeoConfig] = useState<Record<string, any>>({
-    title: 'Rongdhono Artists\' Collective',
-    description: 'The official digital museum and gallery of Rongdhono Artists\' Collective. Discover curated catalogs, visual exhibitions, and talented local fine artists.',
+    title: 'Rongdhonu Artists\' Collective',
+    description: 'The official digital museum and gallery of Rongdhonu Artists\' Collective. Discover curated catalogs, visual exhibitions, and talented local fine artists.',
     keywords: 'fine arts, exhibitions, digital museum, artists collective, West Bengal',
-    canonical: 'https://rongdhono.art',
+    canonical: 'https://rongdhonu.art',
     og_image: 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=1200'
   })
 
@@ -988,7 +988,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                   {/* Google search card preview */}
                   <div className="bg-[#1e1e1e] p-6 border border-zinc-800 rounded-[18px] space-y-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] text-left">
                     <span className="text-[10px] text-white/52 uppercase tracking-[0.08em] block font-bold mb-2">Google Card Simulator</span>
-                    <span className="text-[11px] text-white/38 block">https://rongdhono.art/{selectedPageSlug}</span>
+                    <span className="text-[11px] text-white/38 block">https://rongdhonu.art/{selectedPageSlug}</span>
                     <h4 className="text-xl text-blue-400 font-serif font-semibold hover:underline cursor-pointer leading-tight truncate">
                       {seoConfig.title} | {selectedPageSlug.toUpperCase()}
                     </h4>
@@ -1224,7 +1224,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                 {/* Simulated URL bar */}
                 <div className="flex-1 bg-black/40 rounded-md py-1 px-3 border border-white/[0.04] text-left truncate max-w-[280px]">
                   <span className="text-white/28 font-mono">https://</span>
-                  <span className="text-white/52 font-mono">rongdhono.art/</span>
+                  <span className="text-white/52 font-mono">rongdhonu.art/</span>
                   <span className="text-[#C9A227] font-mono">{selectedPageSlug}</span>
                 </div>
                 <span className="text-[10px] font-mono uppercase text-white/28">{previewDevice}</span>

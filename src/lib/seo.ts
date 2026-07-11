@@ -23,8 +23,8 @@ export function generateDynamicMetadata({
   siteName,
   faviconUrl
 }: SEOMetadataProps): Metadata {
-  const brandName = siteName || 'Rongdhono'
-  const suffix = siteName ? siteName : "Rongdhono Artists' Collective"
+  const brandName = siteName || 'Rongdhonu'
+  const suffix = siteName ? siteName : "Rongdhonu Artists' Collective"
   return {
     title: {
       default: `${title} | ${suffix}`,
@@ -73,9 +73,9 @@ export function generateOrganizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Rongdhono Artists' Collective",
-    "url": "https://rongdhono.art",
-    "logo": "https://rongdhono.art/logo.png",
+    "name": "Rongdhonu Artists' Collective",
+    "url": "https://rongdhonu.art",
+    "logo": "https://rongdhonu.art/logo.png",
     "description": "A thriving community of artists and an annual art exhibition at Silva Tirtha Art Gallery.",
     "location": {
       "@type": "Place",

@@ -44,7 +44,7 @@ export async function submitInquiry(locale: string, rawData: ContactFormInput) {
     const userHtml = userAutoReplyTemplate(name, subject, locale)
     const userRes = await sendEmail({
       to: email,
-      subject: locale === 'bn' ? 'যোগাযোগের জন্য ধন্যবাদ' : 'Inquiry Received - Rongdhono',
+      subject: locale === 'bn' ? 'যোগাযোগের জন্য ধন্যবাদ' : 'Inquiry Received - Rongdhonu',
       html: userHtml
     })
 

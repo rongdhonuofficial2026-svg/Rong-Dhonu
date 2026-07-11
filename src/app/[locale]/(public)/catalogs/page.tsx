@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'Navigation' })
   const settingsData = await getCmsContent('global', 'settings', locale)
-  const siteName = settingsData?.site_name || 'Rongdhono'
+  const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
 
   return generateDynamicMetadata({
@@ -123,7 +123,7 @@ export default async function PublicCatalogsPage({
             <p className="page-hero-sub">
               {locale === 'bn' 
                 ? 'রংধনুর প্রতিটি অফিসিয়াল প্রদর্শনী ক্যাটালগ ব্রাউজ করুন। সুন্দরভাবে কিউরেট করা ডিজিটাল প্রকাশনাগুলোর মাধ্যমে প্রতিটি প্রদর্শনী অন্বেষণ করুন।'
-                : 'Browse every official Rongdhono exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.'}
+                : 'Browse every official Rongdhonu exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.'}
             </p>
           </div>
           <div className="page-hero-meta reveal in">

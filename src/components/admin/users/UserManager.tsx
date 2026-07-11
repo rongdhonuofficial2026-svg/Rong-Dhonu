@@ -343,7 +343,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
               User <span className="text-gradient-gold">Directory</span>
             </h1>
             <p className="text-zinc-300 text-sm md:text-base font-light leading-relaxed">
-              Oversee the creative network. Manage credentials, evaluate catalog roles, and moderate artist permissions across the Rongdhono administrative layer.
+              Oversee the creative network. Manage credentials, evaluate catalog roles, and moderate artist permissions across the Rongdhonu administrative layer.
             </p>
           </div>
         </div>

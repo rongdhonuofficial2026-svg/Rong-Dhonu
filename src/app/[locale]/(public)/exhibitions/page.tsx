@@ -7,12 +7,12 @@ import { Metadata } from 'next'
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const settingsData = await getCmsContent('global', 'settings', locale)
-  const siteName = settingsData?.site_name || 'Rongdhono'
+  const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
 
   return generateDynamicMetadata({
     title: locale === 'bn' ? 'প্রদর্শনী সমূহ' : 'Exhibitions',
-    description: locale === 'bn' ? 'রঙধনু বার্ষিক চারুকলা প্রদর্শনীর আর্কাইভ।' : 'Archive of Rongdhono Annual Fine Arts Exhibitions.',
+    description: locale === 'bn' ? 'রঙধনু বার্ষিক চারুকলা প্রদর্শনীর আর্কাইভ।' : 'Archive of Rongdhonu Annual Fine Arts Exhibitions.',
     url: '/exhibitions',
     imageUrl: 'https://images.unsplash.com/photo-1577720580479-7d839d829c73?q=80&w=2400&auto=format&fit=crop',
     locale,
@@ -289,7 +289,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
                 ? 'আমাদের আয়োজিত প্রতিটি প্রদর্শনী হচ্ছে বাঙালি শিল্পীদের প্রজন্মের মধ্যকার কথোপকথন — নতুন কাজগুলো সব সময়ই পূর্বসূরিদের সৃষ্টির সাথে ডায়ালগে যুক্ত হয়। এই বছরও তার ব্যতিক্রম নয়।'
                 : 'Every exhibition we host is a conversation between generations of Bengali artists — the newest works always speak in dialogue with those who came before them. This year is no exception.'}
             </p>
-            <div className="sig">{locale === 'bn' ? '— রঙধনু কিউরেটর দল' : '— Rongdhono Curatorial Team'}</div>
+            <div className="sig">{locale === 'bn' ? '— রঙধনু কিউরেটর দল' : '— Rongdhonu Curatorial Team'}</div>
           </div>
           
           <div className="visitor-info reveal in">

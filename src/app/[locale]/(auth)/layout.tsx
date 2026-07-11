@@ -10,7 +10,7 @@ export default async function AuthLayout({
 }) {
   const { locale } = await params;
   const settingsData = await getCmsContent('global', 'settings', locale);
-  const siteName = settingsData?.site_name || 'Rongdhono';
+  const siteName = settingsData?.site_name || 'Rongdhonu';
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cream py-12 px-4 sm:px-6 lg:px-8">

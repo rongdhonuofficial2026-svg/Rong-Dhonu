@@ -52,7 +52,7 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
     <div className="flex flex-col h-full bg-[#FAF9F6] border-r border-[#E5E0D8]">
       <div className="p-8 pb-4">
         <Link href="/" className="font-serif text-3xl font-bold tracking-tight text-accent-gold">
-          Rongdhono
+          Rongdhonu
         </Link>
         <p className="text-sm text-[#6B655C] mt-2 font-medium tracking-wide uppercase">Artist Portal</p>
       </div>
@@ -108,7 +108,7 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
       {/* Mobile Topbar & Sheet */}
       <div className="lg:hidden fixed top-0 inset-x-0 h-16 bg-white/80 backdrop-blur-md border-b border-[#E5E0D8]/60 z-50 flex items-center justify-between px-4 shadow-sm">
         <Link href="/" className="font-serif text-2xl font-bold text-accent-gold tracking-tight">
-          Rongdhono
+          Rongdhonu
         </Link>
         <Sheet>
           <SheetTrigger asChild>

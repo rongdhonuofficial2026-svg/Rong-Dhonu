@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { AlbumManager } from "@/components/admin/gallery/AlbumManager"
 
 export const metadata = {
-  title: "Gallery Albums — Rongdhono Admin",
+  title: "Gallery Albums — Rongdhonu Admin",
 }
 
 export default async function GalleryAlbumsPage({ params }: { params: Promise<{ locale: string }> }) {

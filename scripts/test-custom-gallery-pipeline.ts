@@ -105,7 +105,7 @@ async function runTests() {
         description_en: 'Test description english',
         description_bn: 'টেস্ট বিবরণ বাংলা',
         alt_text: 'Alt image text',
-        photographer: 'Rongdhono Photographer',
+        photographer: 'Rongdhonu Photographer',
         visibility: 'public',
         status: 'published',
         exhibition_id: null
@@ -126,8 +126,8 @@ async function runTests() {
         media_type: 'video',
         category: 'opening_ceremony',
         title_en: 'E2E Associated Video Test',
-        videographer: 'Rongdhono Videographer',
-        copyright: 'Copyright 2026 Rongdhono',
+        videographer: 'Rongdhonu Videographer',
+        copyright: 'Copyright 2026 Rongdhonu',
         visibility: 'public',
         status: 'published',
         exhibition_id: ongoingId

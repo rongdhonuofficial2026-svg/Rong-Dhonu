@@ -403,7 +403,7 @@ export async function approveUser(id: string) {
     await supabase.from('notifications').insert({
       user_id: id,
       type: 'registration_approved',
-      message_en: 'Your Rongdhono account registration has been approved. Welcome to the network!',
+      message_en: 'Your Rongdhonu account registration has been approved. Welcome to the network!',
       message_bn: 'আপনার রঙধনু অ্যাকাউন্ট নিবন্ধন অনুমোদিত হয়েছে। নেটওয়ার্কে স্বাগতম!',
       read_status: false
     })

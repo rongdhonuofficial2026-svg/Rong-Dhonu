@@ -21,10 +21,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const bio = locale === 'bn' && profile.bio_bn ? profile.bio_bn : profile.bio_en
 
   return {
-    title: `${name} | Rongdhono Artists`,
+    title: `${name} | Rongdhonu Artists`,
     description: bio,
     openGraph: {
-      title: `${name} | Rongdhono Artists`,
+      title: `${name} | Rongdhonu Artists`,
       description: bio,
       images: profile.avatar_url ? [profile.avatar_url] : []
     }
@@ -60,7 +60,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
     image: profile.avatar_url,
     description: profile.bio_en,
     jobTitle: 'Artist',
-    url: `https://rongdhono.org/${locale}/artists/${profile.id}`
+    url: `https://rongdhonu.org/${locale}/artists/${profile.id}`
   }
 
   const name = locale === 'bn' && profile.full_name_bn ? profile.full_name_bn : (profile.full_name_en || 'Artist')

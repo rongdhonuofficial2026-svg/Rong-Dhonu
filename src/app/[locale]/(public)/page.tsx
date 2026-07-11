@@ -18,12 +18,12 @@ export async function generateMetadata({
   const { getCmsContent } = await import('@/lib/cms/content')
   const settingsData = await getCmsContent('global', 'settings', locale)
   
-  const siteName = settingsData?.site_name || 'Rongdhono'
+  const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
   const siteDescription = settingsData?.site_description || (
     locale === 'bn'
       ? "রংধনু শিল্পী সংঘের অফিসিয়াল ওয়েবসাইট এবং ডিজিটাল মিউজিয়াম।"
-      : "The official website and digital museum of the Rongdhono artists' collective."
+      : "The official website and digital museum of the Rongdhonu artists' collective."
   )
 
   return generateDynamicMetadata({

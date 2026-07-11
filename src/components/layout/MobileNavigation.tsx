@@ -43,7 +43,7 @@ export function MobileNavigation() {
         className="mobile-nav-sheet"
       >
         <SheetHeader className="mobile-nav-header text-left space-y-0">
-          <SheetTitle className="mobile-nav-title text-left">Rongdhono</SheetTitle>
+          <SheetTitle className="mobile-nav-title text-left">Rongdhonu</SheetTitle>
         </SheetHeader>
 
         <nav className="mobile-nav-body" aria-label="Mobile navigation">
