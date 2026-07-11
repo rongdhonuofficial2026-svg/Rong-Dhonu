@@ -67,12 +67,12 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
             <Button
               key={item.href}
               asChild
-              variant={isActive ? "secondary" : "ghost"}
+              variant="ghost"
               className={cn(
-                "w-full justify-start gap-3 h-12 text-base relative transition-all duration-300 rounded-xl",
+                "w-full justify-start gap-3 min-h-[44px] sm:h-12 text-[15px] sm:text-base relative transition-all duration-300 rounded-xl font-medium",
                 isActive 
-                  ? "bg-white text-charcoal shadow-sm border border-[#E5E0D8] font-medium" 
-                  : "text-[#6B655C] hover:text-charcoal hover:bg-white/50"
+                  ? "bg-charcoal text-white shadow-md hover:bg-[#2A2A2A] hover:text-white" 
+                  : "text-[#6B655C] hover:text-charcoal hover:bg-white/60"
               )}
             >
               <Link href={item.href as any}>
@@ -106,17 +106,17 @@ export function DashboardSidebar({ locale, className }: SidebarProps) {
       </aside>
 
       {/* Mobile Topbar & Sheet */}
-      <div className="lg:hidden fixed top-0 inset-x-0 h-16 bg-[#FAF9F6] border-b border-[#E5E0D8] z-50 flex items-center justify-between px-4">
-        <Link href="/" className="font-serif text-2xl font-bold text-accent-gold">
+      <div className="lg:hidden fixed top-0 inset-x-0 h-16 bg-white/80 backdrop-blur-md border-b border-[#E5E0D8]/60 z-50 flex items-center justify-between px-4 shadow-sm">
+        <Link href="/" className="font-serif text-2xl font-bold text-accent-gold tracking-tight">
           Rongdhono
         </Link>
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full hover:bg-[#F5F2EB] text-charcoal">
               <Menu className="w-6 h-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-72">
+          <SheetContent side="left" className="p-0 w-[280px] sm:w-[320px] border-r-0 shadow-2xl">
             {SidebarContent}
           </SheetContent>
         </Sheet>

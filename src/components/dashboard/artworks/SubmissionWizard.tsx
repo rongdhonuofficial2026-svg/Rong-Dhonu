@@ -203,30 +203,30 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
   return (
     <div className="max-w-3xl mx-auto">
       {/* Progress Tracker */}
-      <div className="flex items-center justify-between mb-8 relative">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-border -z-10 rounded-full" />
+      <div className="flex items-center justify-between mb-8 sm:mb-10 relative px-2 sm:px-0">
+        <div className="absolute left-2 sm:left-0 top-1/2 -translate-y-1/2 w-[calc(100%-16px)] sm:w-full h-1 bg-[#E5E0D8] -z-10 rounded-full" />
         <div
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-accent -z-10 rounded-full transition-all duration-300"
-          style={{ width: `${((step - 1) / 5) * 100}%` }}
+          className="absolute left-2 sm:left-0 top-1/2 -translate-y-1/2 h-1 bg-charcoal -z-10 rounded-full transition-all duration-500 ease-out"
+          style={{ width: `calc(${((step - 1) / 5) * 100}% - ${step === 1 ? '16px' : '0px'})` }}
         />
         {[1, 2, 3, 4, 5, 6].map((num) => (
           <div
             key={num}
-            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-colors border-2
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-300 border-2
               ${step === num
-                ? 'bg-accent text-accent-foreground border-accent'
+                ? 'bg-charcoal text-white border-charcoal scale-110 shadow-md'
                 : step > num
-                  ? 'bg-accent text-accent-foreground border-accent'
-                  : 'bg-background border-border text-muted-foreground'}`}
+                  ? 'bg-charcoal text-white border-charcoal'
+                  : 'bg-[#FAF9F6] border-[#E5E0D8] text-[#6B655C]'}`}
           >
-            {step > num ? <Check className="w-5 h-5" /> : num}
+            {step > num ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : num}
           </div>
         ))}
       </div>
 
-      <Card className="shadow-lg border-border/50">
-        <CardHeader className="bg-muted/30 border-b border-border">
-          <CardTitle className="text-2xl font-serif">
+      <Card className="shadow-sm border-[#E5E0D8]/60 rounded-3xl md:rounded-2xl overflow-hidden bg-white">
+        <CardHeader className="bg-gradient-to-b from-[#FAF9F6] to-white border-b border-[#E5E0D8]/60 p-5 sm:p-6 md:p-8">
+          <CardTitle className="text-xl sm:text-2xl font-serif text-charcoal tracking-tight">
             {step === 1 && (locale === 'bn' ? "ধাপ ১: শিরোনাম ও বিভাগ" : "Step 1: Title & Category")}
             {step === 2 && (locale === 'bn' ? "ধাপ ২: বিবরণ" : "Step 2: Description")}
             {step === 3 && (locale === 'bn' ? "ধাপ ৩: উপকরণ ও পরিমাপ" : "Step 3: Materials & Dimensions")}
@@ -234,47 +234,50 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
             {step === 5 && (locale === 'bn' ? "ধাপ ৫: ছবি আপলোড" : "Step 5: Image Upload")}
             {step === 6 && (locale === 'bn' ? "ধাপ ৬: পর্যালোচনা ও জমা" : "Step 6: Review & Submit")}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm sm:text-base mt-1.5 font-medium text-[#6B655C]/80">
             {locale === 'bn' ? "খসড়া স্বয়ংক্রিয়ভাবে সংরক্ষিত হচ্ছে।" : "Drafts are auto-saved locally."}
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-8 min-h-[400px]">
+        <CardContent className="p-5 sm:p-6 md:p-8 min-h-[400px]">
 
           {/* Step 1: Title & Category */}
           {step === 1 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Title (English) <span className="text-destructive">*</span></label>
+                  <label className="text-sm font-medium text-charcoal">Title (English) <span className="text-destructive">*</span></label>
                   <Input
                     value={formData.title_en}
                     onChange={(e) => updateField('title_en', e.target.value)}
                     placeholder="e.g. Morning Rain"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">শিরোনাম (বাংলা)</label>
+                  <label className="text-sm font-medium text-charcoal">শিরোনাম (বাংলা)</label>
                   <Input
                     value={formData.title_bn}
                     onChange={(e) => updateField('title_bn', e.target.value)}
                     placeholder="যেমন: ভোরের বৃষ্টি"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Theme</label>
+                  <label className="text-sm font-medium text-charcoal">Theme</label>
                   <Input
                     value={formData.theme}
                     onChange={(e) => updateField('theme', e.target.value)}
                     placeholder="e.g. Nature, Portrait, Abstract"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Category</label>
+                  <label className="text-sm font-medium text-charcoal">Category</label>
                   <Select value={formData.category} onValueChange={(v) => updateField('category', v)}>
-                    <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map(c => <SelectItem key={c} value={c.toLowerCase()}>{c}</SelectItem>)}
+                    <SelectTrigger className="min-h-[44px] rounded-xl border-[#E5E0D8]/80"><SelectValue placeholder="Select Category" /></SelectTrigger>
+                    <SelectContent className="rounded-xl border-[#E5E0D8]/80 shadow-lg">
+                      {CATEGORIES.map(c => <SelectItem key={c} value={c.toLowerCase()} className="py-2.5">{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -284,23 +287,25 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
 
           {/* Step 2: Description */}
           {step === 2 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description (English)</label>
+                <label className="text-sm font-medium text-charcoal">Description (English)</label>
                 <Textarea
                   rows={5}
                   value={formData.description_en}
                   onChange={(e) => updateField('description_en', e.target.value)}
                   placeholder="Describe your artwork, its inspiration, technique..."
+                  className="rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal resize-none leading-relaxed"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">বিবরণ (বাংলা)</label>
+                <label className="text-sm font-medium text-charcoal">বিবরণ (বাংলা)</label>
                 <Textarea
                   rows={5}
                   value={formData.description_bn}
                   onChange={(e) => updateField('description_bn', e.target.value)}
                   placeholder="আপনার শিল্পকর্মের বিবরণ লিখুন..."
+                  className="rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal resize-none leading-relaxed"
                 />
               </div>
             </div>
@@ -308,53 +313,60 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
 
           {/* Step 3: Materials & Dimensions */}
           {step === 3 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Medium (English)</label>
+                  <label className="text-sm font-medium text-charcoal">Medium (English)</label>
                   <Input
                     value={formData.medium_en}
                     onChange={(e) => updateField('medium_en', e.target.value)}
                     placeholder="e.g. Watercolor on paper"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">উপকরণ (বাংলা)</label>
+                  <label className="text-sm font-medium text-charcoal">উপকরণ (বাংলা)</label>
                   <Input
                     value={formData.medium_bn}
                     onChange={(e) => updateField('medium_bn', e.target.value)}
                     placeholder="যেমন: কাগজে জলরঙ"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Width (inches)</label>
+                  <label className="text-sm font-medium text-charcoal">Width (inches)</label>
                   <Input
                     type="number"
                     min={1}
                     value={formData.width}
                     onChange={(e) => updateField('width', e.target.value)}
                     placeholder="e.g. 18"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Height (inches)</label>
+                  <label className="text-sm font-medium text-charcoal">Height (inches)</label>
                   <Input
                     type="number"
                     min={1}
                     value={formData.height}
                     onChange={(e) => updateField('height', e.target.value)}
                     placeholder="e.g. 24"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4"
-                      checked={formData.framed}
-                      onChange={(e) => updateField('framed', e.target.checked)}
-                    />
-                    <span className="text-sm font-medium">This artwork is framed</span>
+                <div className="space-y-2 md:col-span-2 pt-2">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <div className="relative flex items-center justify-center w-5 h-5">
+                      <input
+                        type="checkbox"
+                        className="peer appearance-none w-5 h-5 border-2 border-[#E5E0D8] rounded-[4px] checked:bg-charcoal checked:border-charcoal focus:ring-2 focus:ring-charcoal/20 focus:ring-offset-1 transition-all cursor-pointer"
+                        checked={formData.framed}
+                        onChange={(e) => updateField('framed', e.target.checked)}
+                      />
+                      <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                    </div>
+                    <span className="text-sm font-medium text-charcoal group-hover:text-black transition-colors">This artwork is framed</span>
                   </label>
                 </div>
               </div>
@@ -363,41 +375,42 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
 
           {/* Step 4: Pricing & Exhibition */}
           {step === 4 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Price (₹)</label>
+                  <label className="text-sm font-medium text-charcoal">Price (₹)</label>
                   <Input
                     type="number"
                     min={0}
                     value={formData.price}
                     onChange={(e) => updateField('price', e.target.value)}
                     placeholder="Leave empty if not for sale"
+                    className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Availability</label>
+                  <label className="text-sm font-medium text-charcoal">Availability</label>
                   <Select value={formData.availability} onValueChange={(v) => updateField('availability', v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="available">Available for Sale</SelectItem>
-                      <SelectItem value="not_for_sale">Not for Sale</SelectItem>
+                    <SelectTrigger className="min-h-[44px] rounded-xl border-[#E5E0D8]/80"><SelectValue /></SelectTrigger>
+                    <SelectContent className="rounded-xl border-[#E5E0D8]/80 shadow-lg">
+                      <SelectItem value="available" className="py-2.5">Available for Sale</SelectItem>
+                      <SelectItem value="not_for_sale" className="py-2.5">Not for Sale</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium">Exhibition</label>
+                  <label className="text-sm font-medium text-charcoal">Exhibition</label>
                   {exhibitions.length > 0 ? (
                     <Select value={formData.exhibitionId} onValueChange={(v) => updateField('exhibitionId', v)}>
-                      <SelectTrigger><SelectValue placeholder="Select an active exhibition" /></SelectTrigger>
-                      <SelectContent>
+                      <SelectTrigger className="min-h-[44px] rounded-xl border-[#E5E0D8]/80"><SelectValue placeholder="Select an active exhibition" /></SelectTrigger>
+                      <SelectContent className="rounded-xl border-[#E5E0D8]/80 shadow-lg">
                         {exhibitions.map((ex) => (
-                          <SelectItem key={ex.id} value={ex.id}>{ex.title_en}</SelectItem>
+                          <SelectItem key={ex.id} value={ex.id} className="py-2.5">{ex.title_en}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   ) : (
-                    <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted">
+                    <p className="text-sm font-medium text-[#6B655C] p-4 rounded-xl bg-[#FAF9F6] border border-[#E5E0D8]/60">
                       No exhibitions are currently active. Your artwork will be saved as a portfolio piece.
                     </p>
                   )}
@@ -409,9 +422,9 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
           {/* Step 5: Image Upload */}
           {step === 5 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center min-h-[300px] bg-muted/10 relative">
+              <div className="border-2 border-dashed border-[#E5E0D8] rounded-2xl p-6 sm:p-10 flex flex-col items-center justify-center min-h-[320px] bg-[#FAF9F6] hover:bg-[#F5F2EB] transition-colors group relative overflow-hidden">
                 {formData.main_image_url ? (
-                  <div className="relative w-full h-[250px]">
+                  <div className="relative w-full h-[280px] rounded-xl overflow-hidden bg-white shadow-sm border border-[#E5E0D8]/60">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={formData.main_image_url}
@@ -421,7 +434,7 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
                     <Button
                       variant="destructive"
                       size="icon"
-                      className="absolute top-2 right-2 rounded-full"
+                      className="absolute top-3 right-3 rounded-full shadow-lg"
                       onClick={() => {
                         updateField('main_image_url', '')
                         updateField('image_file', null)
@@ -431,10 +444,12 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
                     </Button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center cursor-pointer w-full h-full py-8">
-                    <Upload className="w-12 h-12 text-muted-foreground mb-4" />
-                    <p className="text-lg font-medium">Click to upload Artwork Image</p>
-                    <p className="text-sm text-muted-foreground mt-2">JPG, PNG, WebP — max 10MB</p>
+                  <label className="flex flex-col items-center cursor-pointer w-full h-full py-10">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-[#E5E0D8]/60 group-hover:scale-105 transition-transform duration-300">
+                      <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-accent-gold opacity-80" />
+                    </div>
+                    <p className="text-lg sm:text-xl font-serif font-medium text-charcoal text-center mb-2">Click to upload Artwork Image</p>
+                    <p className="text-sm font-medium text-[#6B655C]">JPG, PNG, WebP — max 10MB</p>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
@@ -445,17 +460,17 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
                 )}
 
                 {isSubmitting && uploadProgress > 0 && uploadProgress < 100 && (
-                  <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center p-8 z-10 backdrop-blur-sm rounded-xl">
-                    <Loader2 className="w-8 h-8 animate-spin text-accent mb-4" />
-                    <p className="font-medium">Uploading image to secure storage...</p>
-                    <div className="w-full max-w-xs h-2 bg-muted mt-4 rounded-full overflow-hidden">
-                      <div className="h-full bg-accent transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+                  <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center p-8 z-10 backdrop-blur-sm">
+                    <Loader2 className="w-10 h-10 animate-spin text-accent-gold mb-5" />
+                    <p className="font-medium text-charcoal">Uploading image to secure storage...</p>
+                    <div className="w-full max-w-xs h-2.5 bg-[#E5E0D8] mt-5 rounded-full overflow-hidden">
+                      <div className="h-full bg-accent-gold transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
                     </div>
                   </div>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground flex items-center gap-2">
-                <AlertCircle className="w-3 h-3" />
+              <p className="text-xs sm:text-sm font-medium text-[#6B655C] flex items-center gap-2 justify-center">
+                <AlertCircle className="w-4 h-4 text-accent-gold" />
                 An image is recommended but not required. You can add it later.
               </p>
             </div>
@@ -463,63 +478,59 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
 
           {/* Step 6: Review & Submit */}
           {step === 6 && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="bg-muted p-6 rounded-xl border border-border">
-                <h3 className="font-serif text-xl font-bold mb-6">Review Submission</h3>
+            <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="bg-[#FAF9F6] p-5 sm:p-8 rounded-3xl md:rounded-2xl border border-[#E5E0D8]/60 shadow-sm">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold mb-6 text-charcoal border-b border-[#E5E0D8] pb-4">Review Submission</h3>
 
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wide font-medium mb-1">Title</p>
-                    <p className="font-semibold text-base">{formData.title_en || <span className="text-muted-foreground italic">Untitled</span>}</p>
-                    {formData.title_bn && <p className="text-muted-foreground text-xs mt-0.5">{formData.title_bn}</p>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+                  <div className="bg-white p-4 rounded-xl border border-[#E5E0D8]/60 shadow-sm">
+                    <p className="text-[#6B655C] text-[11px] uppercase tracking-wider font-bold mb-1">Title</p>
+                    <p className="font-bold text-charcoal text-base">{formData.title_en || <span className="text-[#6B655C] italic font-normal">Untitled</span>}</p>
+                    {formData.title_bn && <p className="text-[#6B655C] text-xs font-medium mt-1">{formData.title_bn}</p>}
                   </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wide font-medium mb-1">Medium</p>
-                    <p className="font-medium">{formData.medium_en || <span className="text-muted-foreground italic">Not specified</span>}</p>
+                  <div className="bg-white p-4 rounded-xl border border-[#E5E0D8]/60 shadow-sm">
+                    <p className="text-[#6B655C] text-[11px] uppercase tracking-wider font-bold mb-1">Medium</p>
+                    <p className="font-semibold text-charcoal">{formData.medium_en || <span className="text-[#6B655C] italic font-normal">Not specified</span>}</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wide font-medium mb-1">Dimensions</p>
-                    <p className="font-medium">
+                  <div className="bg-white p-4 rounded-xl border border-[#E5E0D8]/60 shadow-sm">
+                    <p className="text-[#6B655C] text-[11px] uppercase tracking-wider font-bold mb-1">Dimensions</p>
+                    <p className="font-semibold text-charcoal">
                       {formData.width && formData.height
                         ? `${formData.width} × ${formData.height} inches`
-                        : <span className="text-muted-foreground italic">Not specified</span>}
+                        : <span className="text-[#6B655C] italic font-normal">Not specified</span>}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wide font-medium mb-1">Price</p>
-                    <p className="font-medium">{formData.price ? `₹${formData.price}` : <span className="text-muted-foreground">Not for sale</span>}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wide font-medium mb-1">Category</p>
-                    <p className="font-medium capitalize">{formData.category || <span className="text-muted-foreground italic">None</span>}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wide font-medium mb-1">Image</p>
-                    <p className="font-medium">{formData.main_image_url ? '✓ Attached' : <span className="text-amber-600">No image</span>}</p>
+                  <div className="bg-white p-4 rounded-xl border border-[#E5E0D8]/60 shadow-sm">
+                    <p className="text-[#6B655C] text-[11px] uppercase tracking-wider font-bold mb-1">Price & Category</p>
+                    <p className="font-semibold text-charcoal mb-0.5">{formData.price ? `₹${formData.price}` : <span className="text-[#6B655C] font-normal">Not for sale</span>}</p>
+                    <p className="font-medium text-[#6B655C] capitalize text-xs">{formData.category || <span className="italic">No category</span>}</p>
                   </div>
                 </div>
               </div>
 
               {formData.main_image_url && (
-                <div className="rounded-xl overflow-hidden border border-border">
+                <div className="rounded-2xl overflow-hidden border border-[#E5E0D8]/60 shadow-sm">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={formData.main_image_url}
                     alt="Preview"
-                    className="w-full max-h-48 object-cover"
+                    className="w-full max-h-64 object-cover"
                   />
                 </div>
               )}
 
-              <label className="flex items-start gap-3 p-4 border border-border rounded-lg bg-card cursor-pointer hover:bg-muted/30 transition-colors">
-                <input
-                  type="checkbox"
-                  className="mt-1 w-4 h-4 accent-primary"
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                />
-                <span className="text-sm leading-relaxed">
-                  I confirm that this artwork is <strong>original</strong>, created by me, and I agree to the Rongdhono exhibition terms and conditions. I understand my submission will be reviewed by the moderation team.
+              <label className="flex items-start gap-4 p-5 sm:p-6 border border-[#E5E0D8] rounded-2xl bg-[#FAF9F6] cursor-pointer hover:bg-[#F5F2EB] transition-colors group">
+                <div className="relative flex items-center justify-center w-5 h-5 shrink-0 mt-0.5">
+                  <input
+                    type="checkbox"
+                    className="peer appearance-none w-5 h-5 border-2 border-[#E5E0D8] rounded-[4px] checked:bg-charcoal checked:border-charcoal focus:ring-2 focus:ring-charcoal/20 focus:ring-offset-1 transition-all cursor-pointer"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                  />
+                  <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                </div>
+                <span className="text-sm font-medium text-[#6B655C] leading-relaxed group-hover:text-charcoal transition-colors">
+                  I confirm that this artwork is <strong className="text-charcoal">original</strong>, created by me, and I agree to the Rongdhono exhibition terms and conditions. I understand my submission will be reviewed by the moderation team.
                 </span>
               </label>
             </div>
@@ -527,21 +538,29 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
         </CardContent>
 
         {/* Navigation Footer */}
-        <div className="p-6 border-t border-border bg-muted/10 flex justify-between items-center">
-          <Button variant="outline" onClick={handlePrev} disabled={step === 1 || isSubmitting}>
+        <div className="p-5 sm:p-6 md:p-8 border-t border-[#E5E0D8]/60 bg-[#FAF9F6] flex flex-col-reverse sm:flex-row justify-between items-center gap-3 sm:gap-4">
+          <Button 
+            variant="outline" 
+            onClick={handlePrev} 
+            disabled={step === 1 || isSubmitting}
+            className="w-full sm:w-auto min-h-[44px] rounded-full border-[#E5E0D8] text-charcoal hover:bg-[#F5F2EB] hover:text-charcoal"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             {locale === 'bn' ? "আগে" : "Previous"}
           </Button>
 
           {step < 6 ? (
-            <Button onClick={handleNext}>
+            <Button 
+              onClick={handleNext}
+              className="w-full sm:w-auto min-h-[44px] rounded-full bg-charcoal hover:bg-[#2A2A2A] text-white shadow-md active:scale-95 transition-all"
+            >
               {locale === 'bn' ? "পরবর্তী" : "Next"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           ) : (
             <Button
               size="lg"
-              className="min-w-40"
+              className="w-full sm:w-auto sm:min-w-40 min-h-[44px] rounded-full bg-charcoal hover:bg-[#2A2A2A] text-white shadow-lg active:scale-95 transition-all"
               onClick={handleSubmit}
               disabled={isSubmitting || !agreed}
             >

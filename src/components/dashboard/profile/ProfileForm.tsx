@@ -6,9 +6,8 @@ import { updateProfile, uploadAvatar, deleteAvatar } from "@/actions/member"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
-import { Camera, Trash2, Loader2, User } from "lucide-react"
+import { Camera, Trash2, Loader2, User, Check } from "lucide-react"
 
 interface Profile {
   id?: string
@@ -97,10 +96,10 @@ function AvatarUploader({ currentUrl, locale }: { currentUrl?: string | null; lo
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-6">
+    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
       {/* Avatar Preview */}
       <div className="relative shrink-0">
-        <div className="w-28 h-28 rounded-full border-4 border-border overflow-hidden bg-muted flex items-center justify-center">
+        <div className="w-32 h-32 rounded-full border border-[#E5E0D8] overflow-hidden bg-white flex items-center justify-center shadow-sm">
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -109,48 +108,46 @@ function AvatarUploader({ currentUrl, locale }: { currentUrl?: string | null; lo
               className="w-full h-full object-cover"
             />
           ) : (
-            <User className="w-12 h-12 text-muted-foreground" />
+            <User className="w-12 h-12 text-[#E5E0D8]" />
           )}
         </div>
         {uploading && (
-          <div className="absolute inset-0 rounded-full bg-background/70 flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-accent" />
+          <div className="absolute inset-0 rounded-full bg-white/70 flex items-center justify-center backdrop-blur-[2px]">
+            <Loader2 className="w-6 h-6 animate-spin text-charcoal" />
           </div>
         )}
       </div>
 
       {/* Upload Controls */}
-      <div className="flex flex-col gap-3 text-sm">
-        <p className="font-medium text-base">
+      <div className="flex flex-col gap-3 text-sm text-center sm:text-left w-full sm:w-auto pt-2">
+        <p className="font-serif font-bold text-lg sm:text-xl text-charcoal tracking-tight">
           {locale === 'bn' ? "প্রোফাইল ছবি" : "Profile Picture"}
         </p>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-[#6B655C] text-sm leading-relaxed max-w-sm">
           {locale === 'bn'
-            ? "JPG, PNG, বা WebP, সর্বোচ্চ ৫ MB। এটি গ্যালারি, শিল্পী প্রোফাইল এবং মডারেশনে দেখাবে।"
+            ? "JPG, PNG, বা WebP, সর্বোচ্চ ৫ MB। এটি গ্যালারি এবং শিল্পী প্রোফাইলে দেখাবে।"
             : "JPG, PNG or WebP, max 5MB. Shown in gallery, artist profile, and moderation cards."}
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full">
           <Button
             type="button"
             variant="outline"
-            size="sm"
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
-            className="gap-2"
+            className="w-full sm:w-auto min-h-[44px] rounded-full gap-2 border-[#E5E0D8] text-charcoal hover:bg-[#F5F2EB] hover:text-charcoal"
           >
             <Camera className="w-4 h-4" />
             {preview
-              ? (locale === 'bn' ? "বদলান" : "Change Photo")
+              ? (locale === 'bn' ? "ছবি বদলান" : "Change Photo")
               : (locale === 'bn' ? "ছবি আপলোড করুন" : "Upload Photo")}
           </Button>
           {preview && (
             <Button
               type="button"
               variant="ghost"
-              size="sm"
               disabled={uploading}
               onClick={handleDelete}
-              className="gap-2 text-destructive hover:text-destructive"
+              className="w-full sm:w-auto min-h-[44px] rounded-full gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
             >
               <Trash2 className="w-4 h-4" />
               {locale === 'bn' ? "সরান" : "Remove"}
@@ -187,91 +184,96 @@ export function ProfileForm({ profile, locale }: { profile: Profile | null; loca
   }
 
   return (
-    <div className="space-y-8">
-      {/* Avatar Upload (outside the form since it uses client-side upload) */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{locale === 'bn' ? "প্রোফাইল ছবি" : "Profile Picture"}</CardTitle>
-          <CardDescription>
-            {locale === 'bn'
-              ? "আপনার প্রোফাইল ছবি গ্যালারি, শিল্পী পাতা এবং মডারেশনে দেখাবে।"
-              : "Your photo appears in the public gallery, artist directory, and moderation cards."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AvatarUploader currentUrl={profile?.avatar_url} locale={locale} />
-        </CardContent>
-      </Card>
+    <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8">
+      {/* Avatar Upload */}
+      <div className="bg-[#FAF9F6] p-5 sm:p-8 rounded-3xl md:rounded-2xl border border-[#E5E0D8]/60 shadow-sm">
+        <AvatarUploader currentUrl={profile?.avatar_url} locale={locale} />
+      </div>
 
       {/* Profile Details Form */}
-      <form action={action} className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>{locale === 'bn' ? "প্রাথমিক তথ্য" : "Basic Information"}</CardTitle>
-            <CardDescription>
+      <form action={action} className="space-y-6 sm:space-y-8">
+        
+        {/* Basic Information */}
+        <div className="bg-[#FAF9F6] p-5 sm:p-8 rounded-3xl md:rounded-2xl border border-[#E5E0D8]/60 shadow-sm">
+          <div className="mb-6 border-b border-[#E5E0D8] pb-4">
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-charcoal tracking-tight">
+              {locale === 'bn' ? "প্রাথমিক তথ্য" : "Basic Information"}
+            </h3>
+            <p className="text-sm sm:text-base font-medium text-[#6B655C] mt-1.5">
               {locale === 'bn' ? "আপনার নাম এবং শিল্পী বায়ো আপডেট করুন।" : "Your name and artist biography."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </p>
+          </div>
+          
+          <div className="space-y-5 sm:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium">
+                <label className="text-sm font-medium text-charcoal">
                   {locale === 'bn' ? "সম্পূর্ণ নাম (ইংরেজি)" : "Full Name (English)"} <span className="text-destructive">*</span>
                 </label>
-                <Input name="full_name_en" defaultValue={profile?.full_name_en || ''} required />
+                <Input name="full_name_en" defaultValue={profile?.full_name_en || ''} required className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">
+                <label className="text-sm font-medium text-charcoal">
                   {locale === 'bn' ? "সম্পূর্ণ নাম (বাংলা)" : "Full Name (Bengali)"}
                 </label>
-                <Input name="full_name_bn" defaultValue={profile?.full_name_bn || ''} />
+                <Input name="full_name_bn" defaultValue={profile?.full_name_bn || ''} className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">{locale === 'bn' ? "বায়ো (ইংরেজি)" : "Biography (English)"}</label>
+              <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "বায়ো (ইংরেজি)" : "Biography (English)"}</label>
               <Textarea name="bio_en" defaultValue={profile?.bio_en || ''} rows={4}
-                placeholder="Tell visitors about yourself, your artistic journey and inspiration..." />
+                placeholder="Tell visitors about yourself, your artistic journey and inspiration..." 
+                className="rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal resize-none leading-relaxed" />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">{locale === 'bn' ? "বায়ো (বাংলা)" : "Biography (Bengali)"}</label>
+              <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "বায়ো (বাংলা)" : "Biography (Bengali)"}</label>
               <Textarea name="bio_bn" defaultValue={profile?.bio_bn || ''} rows={4}
-                placeholder="আপনার শিল্পী পরিচয় এবং অনুপ্রেরণা সম্পর্কে লিখুন..." />
+                placeholder="আপনার শিল্পী পরিচয় এবং অনুপ্রেরণা সম্পর্কে লিখুন..." 
+                className="rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal resize-none leading-relaxed" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{locale === 'bn' ? "যোগাযোগ এবং সোশ্যাল" : "Contact & Social Links"}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Contact & Social Links */}
+        <div className="bg-[#FAF9F6] p-5 sm:p-8 rounded-3xl md:rounded-2xl border border-[#E5E0D8]/60 shadow-sm">
+          <div className="mb-6 border-b border-[#E5E0D8] pb-4">
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-charcoal tracking-tight">
+              {locale === 'bn' ? "যোগাযোগ এবং সোশ্যাল" : "Contact & Social Links"}
+            </h3>
+          </div>
+          
+          <div className="space-y-5 sm:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium">{locale === 'bn' ? "ফোন নম্বর" : "Phone Number"}</label>
-                <Input name="phone" defaultValue={profile?.phone || ''} placeholder="+880..." />
+                <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "ফোন নম্বর" : "Phone Number"}</label>
+                <Input name="phone" defaultValue={profile?.phone || ''} placeholder="+880..." className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">{locale === 'bn' ? "ইনস্টাগ্রাম" : "Instagram URL"}</label>
-                <Input name="instagram_url" type="url" defaultValue={profile?.instagram_url || ''} placeholder="https://instagram.com/yourhandle" />
+                <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "ইনস্টাগ্রাম" : "Instagram URL"}</label>
+                <Input name="instagram_url" type="url" defaultValue={profile?.instagram_url || ''} placeholder="https://instagram.com/yourhandle" className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal" />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium">{locale === 'bn' ? "ওয়েবসাইট / পোর্টফোলিও" : "Website / Portfolio URL"}</label>
-                <Input name="website_url" type="url" defaultValue={profile?.website_url || ''} placeholder="https://yourwebsite.com" />
+                <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "ওয়েবসাইট / পোর্টফোলিও" : "Website / Portfolio URL"}</label>
+                <Input name="website_url" type="url" defaultValue={profile?.website_url || ''} placeholder="https://yourwebsite.com" className="min-h-[44px] rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal" />
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{locale === 'bn' ? "নোটিফিকেশন সেটিংস" : "Notification Preferences"}</CardTitle>
-            <CardDescription>
+        {/* Notification Settings */}
+        <div className="bg-[#FAF9F6] p-5 sm:p-8 rounded-3xl md:rounded-2xl border border-[#E5E0D8]/60 shadow-sm">
+          <div className="mb-6 border-b border-[#E5E0D8] pb-4">
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-charcoal tracking-tight">
+              {locale === 'bn' ? "নোটিফিকেশন সেটিংস" : "Notification Preferences"}
+            </h3>
+            <p className="text-sm sm:text-base font-medium text-[#6B655C] mt-1.5">
               {locale === 'bn' ? "আপনি কীভাবে আপডেট পেতে চান তা চয়ন করুন।" : "Choose how you want to receive updates."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+            </p>
+          </div>
+          
+          <div className="space-y-3">
             {[
               { name: 'notify_email', label: locale === 'bn' ? "ইমেইল নোটিফিকেশন" : "Email Notifications", desc: "Receive important updates via email", default: profile?.notify_email },
               { name: 'notify_in_app', label: locale === 'bn' ? "ইন-অ্যাপ নোটিফিকেশন" : "In-App Notifications", desc: "Receive updates within the dashboard", default: profile?.notify_in_app },
@@ -279,28 +281,32 @@ export function ProfileForm({ profile, locale }: { profile: Profile | null; loca
               { name: 'notify_exhibition_announcements', label: "Exhibition Announcements", desc: "Be notified when new exhibitions open", default: profile?.notify_exhibition_announcements },
               { name: 'notify_deadline_reminders', label: "Deadline Reminders", desc: "Receive reminders before submission deadlines", default: profile?.notify_deadline_reminders },
             ].map(setting => (
-              <div key={setting.name} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30 transition-colors">
-                <div className="space-y-0.5">
-                  <label htmlFor={setting.name} className="text-sm font-medium cursor-pointer">{setting.label}</label>
-                  <p className="text-xs text-muted-foreground">{setting.desc}</p>
+              <label key={setting.name} className="flex items-center justify-between p-4 bg-white border border-[#E5E0D8]/60 rounded-xl hover:bg-[#F5F2EB] transition-colors cursor-pointer group">
+                <div className="space-y-0.5 pr-4">
+                  <span className="text-sm font-semibold text-charcoal">{setting.label}</span>
+                  <p className="text-xs font-medium text-[#6B655C] leading-relaxed">{setting.desc}</p>
                 </div>
-                <input
-                  id={setting.name}
-                  type="checkbox"
-                  name={setting.name}
-                  value="true"
-                  defaultChecked={setting.default !== false}
-                  className="w-4 h-4 accent-primary"
-                />
-              </div>
+                <div className="relative flex items-center justify-center w-5 h-5 shrink-0">
+                  <input
+                    id={setting.name}
+                    type="checkbox"
+                    name={setting.name}
+                    value="true"
+                    defaultChecked={setting.default !== false}
+                    className="peer appearance-none w-5 h-5 border-2 border-[#E5E0D8] rounded-[4px] checked:bg-accent-gold checked:border-accent-gold focus:ring-2 focus:ring-accent-gold/20 focus:ring-offset-1 transition-all cursor-pointer"
+                  />
+                  <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                </div>
+              </label>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <div className="flex justify-end">
-          <Button type="submit" disabled={saving} className="min-w-36">
+        <div className="flex justify-end pt-4">
+          <Button type="submit" disabled={saving} className="w-full sm:w-auto sm:min-w-40 min-h-[44px] rounded-full bg-charcoal hover:bg-[#2A2A2A] text-white shadow-lg active:scale-95 transition-all gap-2">
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             {saving
-              ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> {locale === 'bn' ? "সংরক্ষণ করা হচ্ছে..." : "Saving..."}</>
+              ? (locale === 'bn' ? "সংরক্ষণ করা হচ্ছে..." : "Saving...")
               : (locale === 'bn' ? "সংরক্ষণ করুন" : "Save Changes")}
           </Button>
         </div>

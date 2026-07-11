@@ -213,36 +213,36 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
 
   return (
     <>
-      <Card className="overflow-hidden flex flex-col group">
+      <Card className="overflow-hidden flex flex-col group rounded-3xl md:rounded-2xl border border-[#E5E0D8]/60 shadow-sm hover:shadow-md transition-all duration-300 bg-white">
         {/* Artwork Thumbnail */}
-        <div className="relative aspect-[4/3] bg-muted w-full border-b border-border">
+        <div className="relative aspect-[4/3] bg-muted w-full border-b border-[#E5E0D8]/60 overflow-hidden">
           {artwork.main_image_url ? (
             <Image
               src={artwork.main_image_url}
               alt={title}
               fill
-              className="object-cover transition-transform group-hover:scale-105"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
-              <ImageIcon className="w-10 h-10 opacity-50" />
-              <span className="text-sm font-medium">No Image</span>
+            <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2 bg-gradient-to-br from-gray-50 to-gray-100">
+              <ImageIcon className="w-10 h-10 opacity-30" />
+              <span className="text-sm font-medium opacity-50">No Image</span>
             </div>
           )}
 
           {/* Status Badge */}
-          <div className="absolute top-3 left-3 z-10">
-            <Badge variant="outline" className={`capitalize shadow-sm backdrop-blur-md bg-background/80 flex items-center gap-1.5 ${statusConfig.color}`}>
-              <StatusIcon className="w-3 h-3" />
+          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-10">
+            <Badge variant="outline" className={`capitalize shadow-sm backdrop-blur-md bg-white/90 border-white/20 px-3 py-1 font-medium tracking-wide ${statusConfig.color}`}>
+              <StatusIcon className="w-3.5 h-3.5 mr-1.5" />
               {locale === 'bn' ? statusConfig.labelBn : statusConfig.label}
             </Badge>
           </div>
 
           {/* Category Badge */}
           {artwork.category && (
-            <div className="absolute top-3 right-3 z-10">
-              <Badge variant="secondary" className="text-xs shadow-sm backdrop-blur-md bg-background/80">
+            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
+              <Badge variant="secondary" className="text-xs shadow-sm backdrop-blur-md bg-white/90 text-charcoal px-2.5 py-1">
                 {artwork.category}
               </Badge>
             </div>
@@ -250,37 +250,52 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-5 flex-1 flex flex-col gap-3">
+        <div className="p-5 sm:p-6 flex-1 flex flex-col gap-4">
           <div>
-            <h3 className="font-serif text-lg font-bold line-clamp-1">{title}</h3>
+            <h3 className="font-serif text-xl sm:text-2xl font-bold line-clamp-1 text-charcoal">{title}</h3>
             {exhibition && (
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-sm text-[#6B655C] mt-1 font-medium">
                 {exhibition.year} — {locale === 'bn' && exhibition.theme_bn ? exhibition.theme_bn : exhibition.theme_en}
               </p>
             )}
           </div>
 
-          {/* Metadata */}
-          <div className="text-xs text-muted-foreground space-y-0.5 flex-1">
-            {artwork.medium_en && <p><span className="font-medium">Medium:</span> {artwork.medium_en}</p>}
-            {artwork.dimensions && <p><span className="font-medium">Dimensions:</span> {artwork.dimensions}</p>}
-            <p>Submitted: {new Date(artwork.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+          {/* Metadata Grid */}
+          <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-[#6B655C] flex-1">
+            {artwork.medium_en && (
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold uppercase tracking-wider opacity-60">Medium</span>
+                <span className="truncate">{artwork.medium_en}</span>
+              </div>
+            )}
+            {artwork.dimensions && (
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold uppercase tracking-wider opacity-60">Dimensions</span>
+                <span className="truncate">{artwork.dimensions}</span>
+              </div>
+            )}
+            <div className="flex flex-col col-span-2 sm:col-span-1">
+              <span className="text-xs font-semibold uppercase tracking-wider opacity-60">Submitted</span>
+              <span>{new Date(artwork.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+            </div>
             {artwork.approved_at && (
-              <p className="text-green-600 dark:text-green-400 font-medium">
-                Approved: {new Date(artwork.approved_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-              </p>
+              <div className="flex flex-col col-span-2 sm:col-span-1">
+                <span className="text-xs font-semibold uppercase tracking-wider opacity-60 text-green-600">Approved</span>
+                <span className="text-green-700 font-medium">{new Date(artwork.approved_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
             )}
           </div>
 
           {/* Moderator Feedback (shown for revision and rejection) */}
           {feedback && (artwork.status === 'changes_requested' || artwork.status === 'rejected') && (
-            <div className={`p-3 rounded-lg border text-sm ${
+            <div className={`p-4 rounded-2xl border text-sm ${
               artwork.status === 'changes_requested'
-                ? 'bg-blue-500/10 border-blue-500/20 text-blue-700 dark:text-blue-300'
-                : 'bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-300'
+                ? 'bg-blue-50/50 border-blue-200 text-blue-800'
+                : 'bg-red-50/50 border-red-200 text-red-800'
             }`}>
-              <p className="font-semibold text-xs uppercase tracking-wide mb-1">
-                {artwork.status === 'changes_requested' ? '📝 Moderator Feedback' : '❌ Reason'}
+              <p className="font-bold text-xs uppercase tracking-wider mb-1.5 opacity-80 flex items-center gap-1.5">
+                {artwork.status === 'changes_requested' ? <Edit2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                {artwork.status === 'changes_requested' ? 'Moderator Feedback' : 'Reason'}
               </p>
               <p className="leading-relaxed">{feedback}</p>
             </div>
@@ -288,17 +303,19 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
 
           {/* Approved: Show link to public view */}
           {artwork.status === 'approved' && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-300 text-sm">
-              <Check className="w-4 h-4 shrink-0" />
-              <span className="flex-1">Selected for exhibition</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-green-50/50 border border-green-200 text-green-800 text-sm">
+              <div className="flex items-center gap-2 font-medium">
+                <Check className="w-4 h-4 shrink-0 text-green-600" />
+                <span>Selected for exhibition</span>
+              </div>
               {artwork.exhibition_id && (
                 <a
                   href={`/${locale}/exhibitions/${artwork.exhibition_id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs hover:underline"
+                  className="flex items-center gap-1.5 text-xs font-semibold bg-white px-3 py-1.5 rounded-full border border-green-200 hover:bg-green-50 transition-colors w-full sm:w-auto justify-center"
                 >
-                  View <ExternalLink className="w-3 h-3" />
+                  View Public Page <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               )}
             </div>
@@ -306,7 +323,7 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
 
           {/* Actions */}
           {artwork.status === 'changes_requested' && (
-            <div className="pt-3 border-t border-border mt-auto">
+            <div className="pt-4 border-t border-[#E5E0D8]/60 mt-auto">
               <Button
                 onClick={() => {
                   setEditData({
@@ -326,8 +343,8 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
                   setImageFile(null)
                   setIsEditOpen(true)
                 }}
-                className="w-full gap-2"
-                size="sm"
+                className="w-full min-h-[44px] gap-2 rounded-xl text-white shadow-sm active:scale-[0.98] transition-all"
+                size="default"
               >
                 <Edit2 className="w-4 h-4" />
                 {locale === 'bn' ? 'সংশোধন করুন ও পুনরায় জমা দিন' : 'Edit & Submit Revision'}
@@ -336,10 +353,10 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
           )}
 
           {artwork.status === 'rejected' && (
-            <div className="pt-3 border-t border-border mt-auto">
-              <p className="text-xs text-muted-foreground text-center">
+            <div className="pt-4 border-t border-[#E5E0D8]/60 mt-auto">
+              <p className="text-sm font-medium text-[#6B655C] text-center">
                 {locale === 'bn'
-                  ? 'নতুন শিল্পকর্ম জমা দিন।'
+                  ? 'পরবর্তী প্রদর্শনীর জন্য নতুন শিল্পকর্ম জমা দিন।'
                   : 'You may submit a new artwork for the next exhibition.'}
               </p>
             </div>

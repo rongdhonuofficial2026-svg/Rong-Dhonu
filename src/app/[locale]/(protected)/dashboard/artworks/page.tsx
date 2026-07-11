@@ -26,21 +26,21 @@ export default async function MyArtworksPage({ params }: { params: Promise<{ loc
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 sm:gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold mb-2">
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 text-charcoal tracking-tight">
             {locale === 'bn' ? "আমার শিল্পকর্ম" : "My Artworks"}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-[#6B655C]">
             {locale === 'bn'
               ? "আপনার জমা দেওয়া সমস্ত শিল্পকর্ম পরিচালনা করুন।"
               : "Manage your submitted artworks and track their moderation status."}
           </p>
         </div>
-        <Button asChild size="lg" className="shrink-0 gap-2">
+        <Button asChild size="lg" className="shrink-0 w-full sm:w-auto min-h-[44px] rounded-full bg-charcoal hover:bg-[#2A2A2A] text-white shadow-lg active:scale-95 transition-all duration-300 ease-out gap-2">
           <Link href="/dashboard/artworks/new">
             <Plus className="w-5 h-5" />
-            {locale === 'bn' ? "নতুন জমা দিন" : "Submit New"}
+            {locale === 'bn' ? "নতুন জমা দিন" : "Submit New Artwork"}
           </Link>
         </Button>
       </div>
