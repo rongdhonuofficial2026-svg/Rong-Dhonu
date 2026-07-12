@@ -71,11 +71,12 @@ export default async function HomePage({
       // Artworks with full artist profile (avatar + name)
       supabase.from('artworks')
         .select(`
-          id, title_en, title_bn, main_image_url, category, medium_en,
+          id, title_en, title_bn, main_image_url, category, medium_en, created_at,
           profiles!artist_id(id, full_name_en, full_name_bn, avatar_url)
         `)
         .eq('status', 'approved')
         .eq('exhibition_id', exhibition.id)
+        .order('created_at', { ascending: false, nullsFirst: false })
         .limit(8),
       
       supabase.from('artworks')
@@ -86,6 +87,7 @@ export default async function HomePage({
         .eq('status', 'approved')
         .eq('exhibition_id', exhibition.id)
         .not('artist_id', 'is', null)
+        .order('created_at', { ascending: false, nullsFirst: false })
     ])
 
     artworks = artworksRes.data || []

@@ -24,8 +24,10 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
           <p>{subtitle}</p>
         </div>
         <div className="text-center py-24">
-          <p className="font-serif text-2xl text-white/40 italic">
-            {locale === 'bn' ? 'কিউরেটররা পরবর্তী সংগ্রহ প্রস্তুত করছেন।' : 'Our curators are preparing the next collection.'}
+          <p className="font-serif text-[1.35rem] md:text-2xl text-[#F4EEDF]/60 leading-relaxed italic px-6 max-w-2xl mx-auto">
+            {locale === 'bn' 
+              ? 'আমাদের কিউরেটররা এই প্রদর্শনীর প্রথম সংগ্রহ প্রস্তুত করছেন। অনুমোদিত শিল্পকর্ম প্রকাশিত হওয়ার পর সংগ্রহটি দৃশ্যমান হবে।' 
+              : 'Our curators are preparing the first public selection for this exhibition. The collection will appear once approved artworks are published.'}
           </p>
         </div>
       </section>
@@ -48,8 +50,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
             : artwork.artist_name
           const year = artwork.year || (artwork.created_at ? new Date(artwork.created_at).getFullYear() : 2026)
           
-          const fallbackIdx = (index % 3) + 1
-          const imgUrl = artwork.main_image_url || `/images/home/artwork_${fallbackIdx}.jpg`
+          const imgUrl = artwork.main_image_url
           const artworkNo = `No. 0${index + 1}`
 
           return (
