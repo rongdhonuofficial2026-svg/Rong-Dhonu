@@ -56,7 +56,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
           return (
             <Link
               key={artwork.id}
-              href={`/gallery/artwork/${artwork.id}`}
+              href={artwork.target_href || `/gallery/artwork/${artwork.id}`}
               className="bento-tile artwork reveal block"
             >
               <img

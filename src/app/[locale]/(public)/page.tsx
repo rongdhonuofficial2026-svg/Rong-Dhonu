@@ -62,36 +62,72 @@ export default async function HomePage({
   const totalArtworks = artworksCountRes.count || 1200
   const stats = { totalExhibitions, totalArtists, totalArtworks }
 
-  // If no exhibition at all, handle gracefully.
-  let artworks: any[] = []
-  let artists: any[] = []
-
-  if (exhibition) {
-    const [artworksRes, artistArtworkRowsRes] = await Promise.all([
-      // Artworks with full artist profile (avatar + name)
+  // Helper to fetch artworks and gallery media for an exhibition
+  async function fetchCuratedCollection(exhibitionId: string) {
+    const [artworksRes, mediaRes] = await Promise.all([
       supabase.from('artworks')
         .select(`
           id, title_en, title_bn, main_image_url, category, medium_en, created_at,
           profiles!artist_id(id, full_name_en, full_name_bn, avatar_url)
         `)
         .eq('status', 'approved')
-        .eq('exhibition_id', exhibition.id)
+        .eq('exhibition_id', exhibitionId)
         .order('created_at', { ascending: false, nullsFirst: false })
         .limit(8),
       
-      supabase.from('artworks')
-        .select(`
-          artist_id,
-          profiles!artist_id(id, full_name_en, full_name_bn, avatar_url, bio_en, slug, role)
-        `)
-        .eq('status', 'approved')
-        .eq('exhibition_id', exhibition.id)
-        .not('artist_id', 'is', null)
+      supabase.from('gallery_media')
+        .select('id, title_en, title_bn, url, created_at, gallery_album_id, gallery_albums(slug)')
+        .eq('status', 'published')
+        .eq('exhibition_id', exhibitionId)
+        .eq('media_type', 'image')
         .order('created_at', { ascending: false, nullsFirst: false })
+        .limit(8)
     ])
 
-    artworks = artworksRes.data || []
+    const artworksData = (artworksRes.data || []).map((a: any) => ({
+      ...a,
+      target_href: `/gallery/artwork/${a.id}`
+    }))
     
+    const mediaAsArtworks = (mediaRes.data || []).map((m: any) => {
+      const albumData = Array.isArray(m.gallery_albums) ? m.gallery_albums[0] : m.gallery_albums
+      const slugOrId = albumData?.slug || m.gallery_album_id || ''
+      return {
+        id: m.id,
+        title_en: m.title_en || 'Exhibition Moment',
+        title_bn: m.title_bn || 'প্রদর্শনীর মুহূর্ত',
+        main_image_url: m.url,
+        category: 'gallery_media',
+        medium_en: 'Photography',
+        created_at: m.created_at,
+        profiles: null,
+        artist_name: 'Gallery Archives',
+        target_href: slugOrId ? `/gallery/${slugOrId}` : '/gallery'
+      }
+    })
+
+    const combined = [...artworksData, ...mediaAsArtworks]
+    combined.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+    return combined.slice(0, 8)
+  }
+
+  // If no exhibition at all, handle gracefully.
+  let artworks: any[] = []
+  let artists: any[] = []
+
+  if (exhibition) {
+    // 1. Fetch Featured Artists for CURRENT exhibition only
+    const artistArtworkRowsRes = await supabase.from('artworks')
+      .select(`
+        artist_id,
+        profiles!artist_id(id, full_name_en, full_name_bn, avatar_url, bio_en, slug, role)
+      `)
+      .eq('status', 'approved')
+      .eq('exhibition_id', exhibition.id)
+      .not('artist_id', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
+
     if (artistArtworkRowsRes.data) {
       const artistMap = new Map<string, any>()
       artistArtworkRowsRes.data.forEach((row: any) => {
@@ -105,6 +141,29 @@ export default async function HomePage({
         const bName = (b.full_name_en || b.full_name_bn || '').toString()
         return aName.localeCompare(bName, 'en', { sensitivity: 'base' }) || a.id.localeCompare(b.id)
       })
+    }
+
+    // 2. Fetch Curated Collection with Fallback Priority Logic
+    artworks = await fetchCuratedCollection(exhibition.id)
+
+    // Priority 2: If current exhibition has no artworks, locate most recent archived exhibition that DOES
+    if (artworks.length === 0) {
+      const { data: archivedEx } = await supabase
+        .from('exhibitions')
+        .select('id')
+        .eq('status', 'archived')
+        .order('exhibition_start', { ascending: false, nullsFirst: false })
+        .limit(5)
+
+      if (archivedEx) {
+        for (const arch of archivedEx) {
+          const archArtworks = await fetchCuratedCollection(arch.id)
+          if (archArtworks.length > 0) {
+            artworks = archArtworks
+            break
+          }
+        }
+      }
     }
   }
 
