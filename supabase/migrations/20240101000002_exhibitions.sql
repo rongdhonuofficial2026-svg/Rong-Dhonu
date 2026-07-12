@@ -1,7 +1,7 @@
 -- exhibitions table
 CREATE TABLE exhibitions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    year INTEGER UNIQUE NOT NULL,
+    year INTEGER NOT NULL,
     theme_en TEXT NOT NULL,
     theme_bn TEXT NOT NULL,
     description_en TEXT,

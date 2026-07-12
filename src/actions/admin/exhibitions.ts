@@ -36,23 +36,29 @@ export async function createExhibition(payload: any) {
   const registration_start = safeDate(payload.registration_start);
   const submission_end = safeDate(payload.submission_end);
 
-  // 2. Derive year securely
+  // 2. Derive year from start date (display / ordering only — NOT a uniqueness key)
   const startYear = exhibition_start ? new Date(exhibition_start).getFullYear() : new Date().getFullYear();
 
   if (isNaN(startYear)) {
     return { error: `Invalid date format provided for Exhibition Opening.` }
   }
 
-  // 3. Concurrency / Duplicate check
-  const { data: existing } = await supabase
-    .from('exhibitions')
-    .select('id')
-    .eq('year', startYear)
-    .neq('is_deleted', true)
-    .maybeSingle()
+  // 3. True Duplicate Check
+  //    An exhibition is a duplicate only when BOTH the title (English) AND the
+  //    opening date are identical to an existing non-deleted exhibition.
+  //    Multiple exhibitions in the same calendar year are explicitly allowed.
+  if (payload.theme_en && exhibition_start) {
+    const { data: trueDuplicate } = await supabase
+      .from('exhibitions')
+      .select('id, theme_en, exhibition_start')
+      .ilike('theme_en', payload.theme_en.trim())
+      .eq('exhibition_start', exhibition_start)
+      .neq('is_deleted', true)
+      .maybeSingle()
 
-  if (existing) {
-    return { error: `An exhibition already exists for the year ${startYear}. Please choose a different Exhibition Opening date to avoid conflicts.` }
+    if (trueDuplicate) {
+      return { error: `An exhibition with the same title and opening date already exists. Please use a distinct title or a different opening date.` }
+    }
   }
 
   // 4. Database Insert
@@ -81,9 +87,6 @@ export async function createExhibition(payload: any) {
 
   // 5. Explicit Error Handling
   if (error) {
-    if (error.code === '23505') { // Unique violation
-      return { error: `Database Constraint Violation: An exhibition for the year ${startYear} already exists. Please choose a different opening date.` }
-    }
     return { error: `Database Error (${error.code || 'Unknown'}): ${error.message}` }
   }
   
@@ -116,24 +119,29 @@ export async function updateExhibition(id: string, payload: any) {
   const registration_start = safeDate(payload.registration_start);
   const submission_end = safeDate(payload.submission_end);
 
-  // 2. Derive year securely
+  // 2. Derive year from start date (display / ordering only — NOT a uniqueness key)
   const startYear = exhibition_start ? new Date(exhibition_start).getFullYear() : new Date().getFullYear();
 
   if (isNaN(startYear)) {
     return { error: `Invalid date format provided for Exhibition Opening.` }
   }
 
-  // 3. Concurrency / Duplicate check
-  const { data: existing } = await supabase
-    .from('exhibitions')
-    .select('id')
-    .eq('year', startYear)
-    .neq('id', id)
-    .neq('is_deleted', true)
-    .maybeSingle()
+  // 3. True Duplicate Check (on update, exclude the record being edited)
+  //    An exhibition is a duplicate only when BOTH the title (English) AND the
+  //    opening date match another non-deleted exhibition that is not this one.
+  if (payload.theme_en && exhibition_start) {
+    const { data: trueDuplicate } = await supabase
+      .from('exhibitions')
+      .select('id, theme_en, exhibition_start')
+      .ilike('theme_en', payload.theme_en.trim())
+      .eq('exhibition_start', exhibition_start)
+      .neq('id', id)
+      .neq('is_deleted', true)
+      .maybeSingle()
 
-  if (existing) {
-    return { error: `An exhibition already exists for the year ${startYear}. Please choose a different Exhibition Opening date to avoid conflicts.` }
+    if (trueDuplicate) {
+      return { error: `Another exhibition with the same title and opening date already exists. Please use a distinct title or a different opening date.` }
+    }
   }
 
   const updateData: any = {
@@ -156,9 +164,6 @@ export async function updateExhibition(id: string, payload: any) {
 
   // 5. Explicit Error Handling
   if (error) {
-    if (error.code === '23505') {
-      return { error: `Database Constraint Violation: An exhibition for the year ${startYear} already exists. Please choose a different opening date.` }
-    }
     return { error: `Database Error (${error.code || 'Unknown'}): ${error.message}` }
   }
   
@@ -237,21 +242,11 @@ export async function duplicateExhibition(id: string) {
   const { data: original, error: fetchError } = await supabase.from('exhibitions').select('*').eq('id', id).single()
   if (fetchError) return { error: fetchError.message }
 
-  // Find maximum year in the database to increment the duplicated one, preventing UNIQUE constraint violations
-  const { data: maxYearData } = await supabase
-    .from('exhibitions')
-    .select('year')
-    .order('year', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  const nextYear = maxYearData ? maxYearData.year + 1 : new Date().getFullYear();
-
-  // Create copy
+  // Create copy — year is inherited from the original (multiple exhibitions per
+  // year are explicitly supported). The title suffix ensures it is not a true duplicate.
   const { id: _, created_at, updated_at, ...copyPayload } = original
   copyPayload.theme_en = `${copyPayload.theme_en} (Copy)`
   copyPayload.theme_bn = copyPayload.theme_bn ? `${copyPayload.theme_bn} (কপি)` : ''
-  copyPayload.year = nextYear
   copyPayload.status = 'draft' // Duplicates should always be drafts
   copyPayload.is_featured = false // Never copy feature status
   copyPayload.is_deleted = false
@@ -273,7 +268,7 @@ export async function duplicateExhibition(id: string) {
     action: 'DUPLICATE_EXHIBITION',
     entity_type: 'exhibition',
     entity_id: data.id,
-    details: { original_id: id, duplicated_year: nextYear }
+    details: { original_id: id, duplicated_year: copyPayload.year }
   }])
 
   revalidateExhibitionCaches(data.id)
