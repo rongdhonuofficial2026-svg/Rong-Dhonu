@@ -69,12 +69,12 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const heroImage = exhibition?.hero_image_url || "/images/home/hero_bg.jpg"
+  const heroImage = "/images/home/hero_bg.jpg"
 
-  const title = content?.title || (exhibition ? (locale === 'bn' && exhibition.theme_bn ? exhibition.theme_bn : exhibition.theme_en) : null) || (locale === 'bn' 
+  const title = content?.title || (locale === 'bn' 
     ? "যেখানে শিল্প<br>স্পর্শ করে <em>আত্মাকে</em>" 
     : "Where Art<br>Meets <em>Soul</em>")
-  const subtitle = content?.subtitle || (exhibition ? (locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en) : null) || (locale === 'bn' 
+  const subtitle = content?.subtitle || (locale === 'bn' 
     ? "রংধনু শিল্পী সংঘের বার্ষিক প্রদর্শনী — বর্ধমান ও তার বাইরে থেকে সমসাময়িক খোদাইকৃত শিল্পকর্ম এবং প্রদর্শনীর একটি সমৃদ্ধ সংগ্রহ।" 
     : "A living archive of contemporary Bengali art — original works, working studios, and stories carried forward from Bardhaman and beyond.")
 
@@ -110,14 +110,8 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
       <div className="hero-content">
         <div className="reveal">
           <div className="hero-status">
-            <span className={`dot ${exhibition?.status === 'upcoming' ? 'bg-amber-400' : exhibition?.status === 'archived' ? 'bg-muted-foreground' : ''}`}></span> 
-            {exhibition ? (
-              locale === 'bn' 
-                ? `${exhibition.theme_bn || exhibition.theme_en} — ${exhibition.status === 'upcoming' ? 'আসন্ন' : exhibition.status === 'archived' ? 'সমাপ্ত' : 'বর্তমানে উন্মুক্ত'}` 
-                : `${exhibition.theme_en} — ${exhibition.status === 'upcoming' ? 'Upcoming' : exhibition.status === 'archived' ? 'Archived' : 'Now Open'}`
-            ) : (
-              locale === 'bn' ? '১৪তম বার্ষিক প্রদর্শনী — বর্তমানে উন্মুক্ত' : '14th Annual Exhibition — Now Open'
-            )}
+            <span className="dot"></span> 
+            {locale === 'bn' ? '১৪তম বার্ষিক প্রদর্শনী — বর্তমানে উন্মুক্ত' : '14th Annual Exhibition — Now Open'}
           </div>
           {(() => {
             const cleanTitle = title.replace(/<br\s*\/?>/gi, ' ');

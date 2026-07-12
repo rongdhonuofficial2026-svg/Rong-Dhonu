@@ -149,7 +149,11 @@ export async function batchSyncExhibitions(supabase: any) {
 
 /**
  * Fetches the currently featured exhibition and ensures its lifecycle status is synchronized.
- * Priority: manually featured → any active (non-draft, non-archived) exhibition → most recent archived.
+ * Priority: 
+ * 1. Featured AND (ongoing OR upcoming)
+ * 2. Ongoing (newest start date)
+ * 3. Upcoming (nearest start date)
+ * 4. Archived (newest start date)
  */
 export async function getPrimaryPublicExhibition() {
   const supabase = await createClient();
@@ -157,68 +161,54 @@ export async function getPrimaryPublicExhibition() {
   // Run a quick batch sync first to ensure database consistency before fetching
   await batchSyncExhibitions(supabase).catch(err => console.error('[Featured Exhibition] batchSync failed:', err));
 
-  // 1. Try manually featured first (strictly order chronologically to safeguard against duplicate flags)
-  let { data: featured } = await supabase
+  // 1. Try manually featured first, BUT only if it's ongoing or upcoming
+  const { data: featuredActive } = await supabase
     .from('exhibitions')
     .select('*')
     .eq('is_featured', true)
+    .in('status', ['ongoing', 'upcoming'])
     .neq('is_deleted', true)
     .order('exhibition_start', { ascending: false, nullsFirst: false })
     .limit(1)
     .maybeSingle();
 
-  if (!featured) {
-    // 2. Fallback: Latest Ongoing Exhibition (order by exhibition_start DESC)
-    const { data: ongoing } = await supabase
-      .from('exhibitions')
-      .select('*')
-      .eq('status', 'ongoing')
-      .neq('is_deleted', true)
-      .order('exhibition_start', { ascending: false, nullsFirst: false })
-      .limit(1)
-      .maybeSingle();
+  if (featuredActive) return featuredActive;
 
-    featured = ongoing;
-  }
+  // 2. Ongoing (newest start date)
+  const { data: ongoing } = await supabase
+    .from('exhibitions')
+    .select('*')
+    .eq('status', 'ongoing')
+    .neq('is_deleted', true)
+    .order('exhibition_start', { ascending: false, nullsFirst: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (!featured) {
-    // 3. Fallback: Nearest Upcoming Exhibition (order by exhibition_start ASC)
-    const { data: upcoming } = await supabase
-      .from('exhibitions')
-      .select('*')
-      .eq('status', 'upcoming')
-      .neq('is_deleted', true)
-      .order('exhibition_start', { ascending: true, nullsFirst: false })
-      .limit(1)
-      .maybeSingle();
+  if (ongoing) return ongoing;
 
-    featured = upcoming;
-  }
+  // 3. Upcoming (nearest start date, so ascending)
+  const { data: upcoming } = await supabase
+    .from('exhibitions')
+    .select('*')
+    .eq('status', 'upcoming')
+    .neq('is_deleted', true)
+    .order('exhibition_start', { ascending: true, nullsFirst: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (!featured) {
-    // 4. Last resort: Most Recently Archived Exhibition (order by exhibition_start DESC)
-    const { data: archived } = await supabase
-      .from('exhibitions')
-      .select('*')
-      .eq('status', 'archived')
-      .neq('is_deleted', true)
-      .order('exhibition_start', { ascending: false, nullsFirst: false })
-      .limit(1)
-      .maybeSingle();
+  if (upcoming) return upcoming;
 
-    featured = archived;
-  }
+  // 4. Latest Archived
+  const { data: archived } = await supabase
+    .from('exhibitions')
+    .select('*')
+    .eq('status', 'archived')
+    .neq('is_deleted', true)
+    .order('exhibition_start', { ascending: false, nullsFirst: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (featured) {
-    // Lazy sync: only auto-advance status for ongoing/upcoming/archived transitions
-    // Do NOT override manually set statuses like submission_open, reviewing, published
-    const autoSyncStatuses = ['ongoing', 'upcoming', 'archived']
-    if (autoSyncStatuses.includes(featured.status)) {
-      featured = await syncExhibitionLifecycle(featured, supabase);
-    }
-  }
-
-  return featured;
+  return archived || null;
 }
 
 /**

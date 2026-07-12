@@ -37,23 +37,26 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
   }
 
   const active = exhibitions?.filter(e => e.status === 'upcoming' || e.status === 'ongoing') || []
-  const past = exhibitions?.filter(e => e.status === 'archived') || []
-
   // Spotlight is determined by the single source of truth
   const spotlightEx = await getFeaturedExhibition()
   const spotlightYearShort = spotlightEx && spotlightEx.exhibition_start
     ? new Date(spotlightEx.exhibition_start).getFullYear().toString().slice(-2)
     : '26'
 
-  // Group past by year (if spotlight is a past exhibition, we still list it in the archive timeline)
-  const pastByYear = past.reduce((acc, ex) => {
+  // The rest remain in the archive listing. Archived exhibitions are ALWAYS kept.
+  const archiveList = exhibitions?.filter(e => 
+    e.status === 'archived' || (spotlightEx && e.id !== spotlightEx.id)
+  ) || []
+
+  // Group by year
+  const archiveByYear = archiveList.reduce((acc, ex) => {
     const year = ex.exhibition_start ? new Date(ex.exhibition_start).getFullYear() : 'Unknown'
     if (!acc[year]) acc[year] = []
     acc[year].push(ex)
     return acc
-  }, {} as Record<string, typeof past>)
+  }, {} as Record<string, typeof archiveList>)
 
-  const sortedYears = Object.keys(pastByYear).sort((a, b) => {
+  const sortedYears = Object.keys(archiveByYear).sort((a, b) => {
     if (a === 'Unknown') return 1
     if (b === 'Unknown') return -1
     return Number(b) - Number(a)
@@ -215,14 +218,14 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
         <div className="timeline-head reveal in">
           <h2>{locale === 'bn' ? 'অতীতের প্রদর্শনীসমূহ' : 'Past Exhibitions'}</h2>
           <span className="timeline-count">
-            {past.length} {locale === 'bn' ? 'টি প্রদর্শনী আর্কাইভে রয়েছে' : 'Exhibitions Archived'}
+            {archiveList.length} {locale === 'bn' ? 'টি প্রদর্শনী আর্কাইভে রয়েছে' : 'Exhibitions Archived'}
           </span>
         </div>
 
         {sortedYears.map((year, yIdx) => (
           <div key={year}>
             <div className="timeline-year reveal in">{year}</div>
-            {pastByYear[year].map((ex: any) => {
+            {archiveByYear[year].map((ex: any) => {
               const title = locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en
               const dateRange = formatDateRange(ex.exhibition_start, ex.exhibition_end)
               const venue = locale === 'bn' && ex.venue_bn ? ex.venue_bn : ex.venue_en
@@ -237,7 +240,13 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
                     />
                     <div className="scrim"></div>
                     <div className="frame-edge"></div>
-                    <span className="expo-row-tag">{locale === 'bn' ? 'আর্কাইভকৃত' : 'Archived'}</span>
+                    <span className={`expo-row-tag ${ex.status === 'upcoming' ? 'bg-amber-400/20 text-amber-400' : ex.status === 'ongoing' ? 'bg-green-500/20 text-green-400' : ''}`}>
+                      {ex.status === 'upcoming' 
+                        ? (locale === 'bn' ? 'আসন্ন' : 'Upcoming') 
+                        : ex.status === 'ongoing' 
+                          ? (locale === 'bn' ? 'চলমান' : 'Live Now') 
+                          : (locale === 'bn' ? 'আর্কাইভকৃত' : 'Archived')}
+                    </span>
                   </div>
                   <div className="expo-row-info">
                     <h3>{title}</h3>
