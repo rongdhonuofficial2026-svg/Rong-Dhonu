@@ -69,7 +69,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const heroImage = "/images/home/hero_bg_final.jpg"
+  const heroImage = "/images/home/hero_painting_bw.jpg"
 
   const title = content?.title || (locale === 'bn' 
     ? "যেখানে শিল্প<br>স্পর্শ করে <em>আত্মাকে</em>" 
