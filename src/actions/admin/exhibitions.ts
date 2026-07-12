@@ -36,6 +36,10 @@ export async function createExhibition(payload: any) {
   const registration_start = safeDate(payload.registration_start);
   const submission_end = safeDate(payload.submission_end);
 
+  if (!exhibition_start || !exhibition_end || !registration_start || !submission_end) {
+    return { error: `All 4 timeline dates (Registration Opens, Submission Deadline, Exhibition Opens, Exhibition Closes) are mandatory.` }
+  }
+
   // 2. Derive year from start date (display / ordering only — NOT a uniqueness key)
   const startYear = exhibition_start ? new Date(exhibition_start).getFullYear() : new Date().getFullYear();
 
@@ -66,6 +70,8 @@ export async function createExhibition(payload: any) {
     year: startYear,
     theme_en: payload.theme_en,
     theme_bn: payload.theme_bn || '',
+    curatorial_statement_en: payload.curatorial_statement_en || null,
+    curatorial_statement_bn: payload.curatorial_statement_bn || null,
     description_en: payload.description_en || null,
     description_bn: payload.description_bn || null,
     exhibition_start,
@@ -119,6 +125,10 @@ export async function updateExhibition(id: string, payload: any) {
   const registration_start = safeDate(payload.registration_start);
   const submission_end = safeDate(payload.submission_end);
 
+  if (!exhibition_start || !exhibition_end || !registration_start || !submission_end) {
+    return { error: `All 4 timeline dates (Registration Opens, Submission Deadline, Exhibition Opens, Exhibition Closes) are mandatory.` }
+  }
+
   // 2. Derive year from start date (display / ordering only — NOT a uniqueness key)
   const startYear = exhibition_start ? new Date(exhibition_start).getFullYear() : new Date().getFullYear();
 
@@ -148,6 +158,8 @@ export async function updateExhibition(id: string, payload: any) {
     year: startYear,
     theme_en: payload.theme_en,
     theme_bn: payload.theme_bn || '',
+    curatorial_statement_en: payload.curatorial_statement_en || null,
+    curatorial_statement_bn: payload.curatorial_statement_bn || null,
     description_en: payload.description_en || null,
     description_bn: payload.description_bn || null,
     exhibition_start,

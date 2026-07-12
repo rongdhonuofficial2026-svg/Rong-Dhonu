@@ -11,12 +11,15 @@ import { CatalogDownloadButton } from "@/components/public/catalogs/CatalogDownl
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { locale, id } = await params
   const supabase = await createClient()
-  const { data: exhibition } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn, hero_image_url').eq('id', id).maybeSingle()
+  const { data: exhibition } = await supabase.from('exhibitions').select('theme_en, theme_bn, description_en, description_bn, curatorial_statement_en, curatorial_statement_bn, hero_image_url').eq('id', id).maybeSingle()
   
   if (!exhibition) return {}
 
   const title = locale === 'bn' && exhibition.theme_bn ? exhibition.theme_bn : exhibition.theme_en
-  const description = locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en
+  let description = locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en
+  if (!description) {
+    description = locale === 'bn' && exhibition.curatorial_statement_bn ? exhibition.curatorial_statement_bn : exhibition.curatorial_statement_en
+  }
 
   return {
     title: `${title} | Rongdhonu`,
@@ -74,8 +77,40 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
     .maybeSingle()
 
   const title = locale === 'bn' && exhibition.theme_bn ? exhibition.theme_bn : exhibition.theme_en
-  const desc = locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en
+  const curatorialStmt = locale === 'bn' && exhibition.curatorial_statement_bn ? exhibition.curatorial_statement_bn : exhibition.curatorial_statement_en
+  const generalDesc = locale === 'bn' && exhibition.description_bn ? exhibition.description_bn : exhibition.description_en
   const venue = locale === 'bn' && exhibition.venue_bn ? exhibition.venue_bn : exhibition.venue_en
+
+  // Date Formatters
+  const dateFmt = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const shortDateFmt = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-US', { month: 'short', day: 'numeric' })
+  
+  const regStart = exhibition.registration_start ? new Date(exhibition.registration_start) : null
+  const subEnd = exhibition.submission_end ? new Date(exhibition.submission_end) : null
+  const exStart = exhibition.exhibition_start ? new Date(exhibition.exhibition_start) : null
+  const exEnd = exhibition.exhibition_end ? new Date(exhibition.exhibition_end) : null
+
+  // Status Badge Logic
+  const now = new Date()
+  let statusBadgeText = exhibition.status
+  let statusBadgeColor = "bg-white/10 text-white border-white/20"
+  
+  if (exhibition.status === 'upcoming') {
+    if (regStart && subEnd && now >= regStart && now <= subEnd) {
+      statusBadgeText = locale === 'bn' ? 'নিবন্ধন চলছে' : 'Registration Open'
+      statusBadgeColor = "bg-emerald-500/20 text-emerald-50 border-emerald-500/30"
+    } else if (regStart && now < regStart) {
+      statusBadgeText = locale === 'bn' ? 'নিবন্ধন শীঘ্রই শুরু হবে' : 'Registration Opens Soon'
+    } else if (subEnd && now > subEnd && exStart && now < exStart) {
+      statusBadgeText = locale === 'bn' ? 'নিবন্ধন বন্ধ' : 'Submission Closed'
+      statusBadgeColor = "bg-amber-500/20 text-amber-50 border-amber-500/30"
+    }
+  } else if (exhibition.status === 'ongoing') {
+    statusBadgeText = locale === 'bn' ? 'চলমান' : 'Live Now'
+    statusBadgeColor = "bg-primary/90 text-primary-foreground border-primary"
+  } else if (exhibition.status === 'archived') {
+    statusBadgeText = locale === 'bn' ? 'সমাপ্ত' : 'Ended'
+  }
 
   return (
     <main className="min-h-screen bg-background pb-32">
@@ -88,17 +123,19 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
         <div className="relative z-20 text-center max-w-5xl px-6 space-y-8 mt-auto w-full">
           <Badge 
             variant="outline" 
-            className="text-xs tracking-[0.3em] font-bold uppercase px-4 py-1.5 shadow-xl bg-white/10 backdrop-blur-md text-white border-white/20 rounded-none"
+            className={`text-xs tracking-[0.3em] font-bold uppercase px-4 py-1.5 shadow-xl backdrop-blur-md rounded-none transition-colors ${statusBadgeColor}`}
           >
-            {exhibition.status === 'active' ? 'ongoing' : exhibition.status}
+            {statusBadgeText}
           </Badge>
           <h1 className="font-serif text-6xl md:text-8xl font-bold drop-shadow-2xl leading-[1.1] tracking-tight exhibition-detail-title">{title}</h1>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-lg md:text-xl text-white/90 font-light tracking-wide pt-4">
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-white/60" strokeWidth={1.5} />
-              <span>{exhibition.year}</span>
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-base md:text-lg text-white/90 font-light tracking-wide pt-4">
+            {exStart && (
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-white/60" strokeWidth={1.5} />
+                <span>{exEnd ? `${shortDateFmt.format(exStart)} — ${dateFmt.format(exEnd)}` : dateFmt.format(exStart)}</span>
+              </div>
+            )}
             {venue && (
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-white/60" strokeWidth={1.5} />
@@ -111,15 +148,64 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-24 space-y-40">
         
+        {/* Timeline Visual Component */}
+        {(regStart || subEnd || exStart || exEnd) && (
+          <section className="border border-border/50 bg-muted/10 backdrop-blur-sm p-8 lg:p-12">
+            <h2 className="text-xs uppercase tracking-[0.3em] font-sans font-bold text-muted-foreground mb-12 text-center">
+              {locale === 'bn' ? 'প্রদর্শনীর সময়রেখা' : 'Exhibition Timeline'}
+            </h2>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center relative gap-8 md:gap-0">
+              <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-border -z-10 -translate-y-1/2" />
+              
+              {[
+                { label: locale === 'bn' ? 'নিবন্ধন শুরু' : 'Registration Opens', date: regStart },
+                { label: locale === 'bn' ? 'জমা দেওয়ার শেষ দিন' : 'Submission Deadline', date: subEnd },
+                { label: locale === 'bn' ? 'প্রদর্শনী শুরু' : 'Exhibition Opens', date: exStart },
+                { label: locale === 'bn' ? 'প্রদর্শনী সমাপ্ত' : 'Exhibition Closes', date: exEnd }
+              ].map((item, i) => item.date ? (
+                <div key={i} className="flex flex-row md:flex-col items-center gap-4 md:gap-6 bg-background/80 md:bg-transparent md:px-4">
+                  <div className={`w-3 h-3 rounded-full shrink-0 ${now > item.date ? 'bg-primary' : 'bg-muted border border-border/80'}`} />
+                  <div className="text-left md:text-center">
+                    <p className="font-bold text-sm tracking-wide uppercase">{item.label}</p>
+                    <p className="text-muted-foreground font-serif italic mt-1">{dateFmt.format(item.date)}</p>
+                  </div>
+                </div>
+              ) : null)}
+            </div>
+          </section>
+        )}
+
         {/* Description & Stats */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-          <div className="lg:col-span-8 space-y-8 text-xl leading-relaxed text-foreground/80 font-serif">
-            <h2 className="text-xs uppercase tracking-[0.3em] font-sans font-bold text-muted-foreground mb-8 border-b border-border/50 pb-4">
-              {locale === 'bn' ? 'প্রদর্শনীর সম্পর্কে' : 'Curatorial Statement'}
-            </h2>
-            <div className="whitespace-pre-line drop-cap text-2xl leading-[1.8] text-foreground exhibition-detail-body">
-              {desc}
-            </div>
+          <div className="lg:col-span-8 space-y-20 text-xl leading-relaxed text-foreground/80 font-serif">
+            
+            {curatorialStmt && (
+              <div className="space-y-8">
+                <h2 className="text-xs uppercase tracking-[0.3em] font-sans font-bold text-muted-foreground mb-8 border-b border-border/50 pb-4">
+                  {locale === 'bn' ? 'কিউরেটোরিয়াল বিবৃতি' : 'Curatorial Statement'}
+                </h2>
+                <div className="whitespace-pre-line drop-cap text-2xl leading-[1.8] text-foreground exhibition-detail-body">
+                  {curatorialStmt}
+                </div>
+              </div>
+            )}
+
+            {generalDesc && (
+              <div className="space-y-8">
+                <h2 className="text-xs uppercase tracking-[0.3em] font-sans font-bold text-muted-foreground mb-8 border-b border-border/50 pb-4">
+                  {locale === 'bn' ? 'প্রদর্শনীর বিবরণ' : 'Exhibition Description'}
+                </h2>
+                <div className="whitespace-pre-line text-xl leading-[1.8] text-foreground/90">
+                  {generalDesc}
+                </div>
+              </div>
+            )}
+
+            {!curatorialStmt && !generalDesc && (
+              <div className="text-center p-12 border border-dashed border-border/50 text-muted-foreground italic">
+                {locale === 'bn' ? 'এই প্রদর্শনীর জন্য কোনো বিবরণ প্রদান করা হয়নি।' : 'No description has been provided for this exhibition.'}
+              </div>
+            )}
           </div>
           
           <div className="lg:col-span-4">
@@ -128,17 +214,31 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                 {locale === 'bn' ? 'সংক্ষিপ্ত তথ্য' : 'At a Glance'}
               </h3>
               <ul className="space-y-6">
-                <li className="flex justify-between items-center">
-                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">Artworks</span>
+                <li className="flex flex-col gap-1">
+                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'অবস্থা' : 'Status'}</span>
+                  <span className="font-serif text-lg text-primary">{statusBadgeText}</span>
+                </li>
+                {venue && (
+                  <li className="flex flex-col gap-1">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'স্থান' : 'Venue'}</span>
+                    <span className="font-serif text-lg">{venue}</span>
+                  </li>
+                )}
+                {exStart && (
+                  <li className="flex flex-col gap-1">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'শুরুর তারিখ' : 'Opening Date'}</span>
+                    <span className="font-serif text-lg">{dateFmt.format(exStart)}</span>
+                  </li>
+                )}
+                {exEnd && (
+                  <li className="flex flex-col gap-1">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'সমাপ্তির তারিখ' : 'Closing Date'}</span>
+                    <span className="font-serif text-lg">{dateFmt.format(exEnd)}</span>
+                  </li>
+                )}
+                <li className="flex justify-between items-center pt-4 border-t border-border/20">
+                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'শিল্পকর্ম' : 'Artworks'}</span>
                   <span className="font-serif text-2xl font-bold">{exhibition.artworks?.length || 0}</span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">Start Date</span>
-                  <span className="font-serif text-lg">{exhibition.exhibition_start ? new Date(exhibition.exhibition_start).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">End Date</span>
-                  <span className="font-serif text-lg">{exhibition.exhibition_end ? new Date(exhibition.exhibition_end).toLocaleDateString(undefined, {month:'long', day:'numeric'}) : 'TBD'}</span>
                 </li>
               </ul>
               

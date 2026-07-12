@@ -20,6 +20,8 @@ import Image from "next/image"
 interface FormData {
   theme_en: string
   theme_bn: string
+  curatorial_statement_en: string
+  curatorial_statement_bn: string
   description_en: string
   description_bn: string
   exhibition_start: string
@@ -76,6 +78,8 @@ export function ExhibitionForm({ locale }: { locale: string }) {
   const [formData, setFormData] = React.useState<FormData>({
     theme_en: "",
     theme_bn: "",
+    curatorial_statement_en: "",
+    curatorial_statement_bn: "",
     description_en: "",
     description_bn: "",
     exhibition_start: "",
@@ -222,16 +226,38 @@ export function ExhibitionForm({ locale }: { locale: string }) {
                 <div className="space-y-1.5 md:col-span-2">
                   <label className="text-sm font-medium">Curatorial Statement — English</label>
                   <Textarea
-                    id="description_en"
+                    id="curatorial_statement_en"
                     rows={4}
-                    value={formData.description_en}
-                    onChange={e => updateField("description_en", e.target.value)}
-                    placeholder="Describe the artistic vision, themes, and goals of this exhibition…"
+                    value={formData.curatorial_statement_en}
+                    onChange={e => updateField("curatorial_statement_en", e.target.value)}
+                    placeholder="Describe the artistic vision, themes, and curatorial goals of this exhibition…"
                     className="resize-none"
                   />
                 </div>
                 <div className="space-y-1.5 md:col-span-2">
                   <label className="text-sm font-medium">কিউরেটোরিয়াল বিবৃতি — বাংলা</label>
+                  <Textarea
+                    id="curatorial_statement_bn"
+                    rows={3}
+                    value={formData.curatorial_statement_bn}
+                    onChange={e => updateField("curatorial_statement_bn", e.target.value)}
+                    className="resize-none"
+                    dir="auto"
+                  />
+                </div>
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-sm font-medium">Exhibition Description — English</label>
+                  <Textarea
+                    id="description_en"
+                    rows={4}
+                    value={formData.description_en}
+                    onChange={e => updateField("description_en", e.target.value)}
+                    placeholder="General description, history, or context of the exhibition…"
+                    className="resize-none"
+                  />
+                </div>
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-sm font-medium">প্রদর্শনীর বিবরণ — বাংলা</label>
                   <Textarea
                     id="description_bn"
                     rows={3}
@@ -254,23 +280,25 @@ export function ExhibitionForm({ locale }: { locale: string }) {
                 <Info className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
                 <p className="text-sm text-blue-300/80">
                   Dates drive the automatic lifecycle transitions.
-                  <strong className="text-blue-300"> Exhibition Year</strong> is derived from the start date — only one exhibition per year is allowed.
+                  <strong className="text-blue-300"> Exhibition Year</strong> is derived from the start date — multiple exhibitions per year are supported.
                 </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Registration Opens" hint="When artists can start applying.">
+                <Field label="Registration Opens" required hint="When artists can start applying.">
                   <Input
                     id="registration_start"
                     type="date"
+                    required
                     value={formData.registration_start}
                     onChange={e => updateField("registration_start", e.target.value)}
                     className="h-11"
                   />
                 </Field>
-                <Field label="Submission Deadline" hint="Last day for artwork submission.">
+                <Field label="Submission Deadline" required hint="Last day for artwork submission.">
                   <Input
                     id="submission_end"
                     type="date"
+                    required
                     value={formData.submission_end}
                     onChange={e => updateField("submission_end", e.target.value)}
                     min={formData.registration_start || undefined}
@@ -281,16 +309,18 @@ export function ExhibitionForm({ locale }: { locale: string }) {
                   <Input
                     id="exhibition_start"
                     type="date"
+                    required
                     value={formData.exhibition_start}
                     onChange={e => updateField("exhibition_start", e.target.value)}
                     min={formData.submission_end || undefined}
                     className="h-11"
                   />
                 </Field>
-                <Field label="Exhibition Closes" hint="Triggers auto-transition to 'Archived'.">
+                <Field label="Exhibition Closes" required hint="Triggers auto-transition to 'Archived'.">
                   <Input
                     id="exhibition_end"
                     type="date"
+                    required
                     value={formData.exhibition_end}
                     onChange={e => updateField("exhibition_end", e.target.value)}
                     min={formData.exhibition_start || undefined}
