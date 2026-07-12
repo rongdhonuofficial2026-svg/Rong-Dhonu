@@ -20,9 +20,11 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
       </div>
 
       {artists.length === 0 ? (
-        <div className="text-center py-24">
-          <p className="font-serif text-2xl text-white/40 italic">
-            {locale === 'bn' ? 'শিল্পীদের প্রোফাইল শীঘ্রই আসছে।' : 'Artist profiles coming soon.'}
+        <div className="text-center py-24 px-6 max-w-2xl mx-auto reveal in">
+          <p className="font-serif text-[1.35rem] md:text-2xl text-[#F4EEDF]/60 leading-relaxed italic">
+            {locale === 'bn' 
+              ? 'এই প্রদর্শনীর জন্য শিল্পীদের নাম শিল্পকর্ম মূল্যায়ন প্রক্রিয়ার পর ঘোষণা করা হবে। অনুগ্রহ করে পরে আবার চেক করুন।' 
+              : 'Artist selections for this exhibition will be announced after the artwork review process is complete. Check back soon.'}
           </p>
         </div>
       ) : (
