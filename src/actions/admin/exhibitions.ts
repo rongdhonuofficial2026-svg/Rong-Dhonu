@@ -378,20 +378,6 @@ export async function softDeleteExhibition(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   await requireAdmin(supabase, user)
 
-  // Dependency Check using correct relation 'gallery_media' instead of non-existent 'gallery_albums'
-  const [artworksRes, participantsRes, galleriesRes, catalogsRes] = await Promise.all([
-    supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
-    supabase.from('exhibition_participants').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
-    supabase.from('gallery_media').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
-    supabase.from('catalogs').select('id', { count: 'exact', head: true }).eq('exhibition_id', id)
-  ])
-
-  const depsCount = (artworksRes.count || 0) + (participantsRes.count || 0) + (galleriesRes.count || 0) + (catalogsRes.count || 0)
-  
-  if (depsCount > 0) {
-    return { error: `Cannot delete exhibition because it has ${depsCount} dependencies (artworks, galleries, etc.). Please archive it instead.` }
-  }
-
   const { error } = await supabase.from('exhibitions').update({ 
     is_deleted: true, 
     is_featured: false,
