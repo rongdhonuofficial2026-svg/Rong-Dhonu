@@ -8,15 +8,22 @@ import { generateDynamicMetadata } from "@/lib/seo"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
+  const { getCmsContent } = await import('@/lib/cms/content')
+  
   const settingsData = await getCmsContent('global', 'settings', locale)
   const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
+  
+  const seoData = await getCmsContent('gallery', 'seo', locale)
+  const seoTitle = seoData?.seo_title || siteName
+  const seoDescription = seoData?.meta_description || settingsData?.site_description || ''
+  const ogImage = seoData?.og_image || settingsData?.default_og_image || 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=1200'
 
   return generateDynamicMetadata({
-    title: locale === 'bn' ? 'গ্যালারি' : 'Gallery',
-    description: locale === 'bn' ? 'রঙধনু প্রদর্শনী ও ইভেন্টের মেমরি অ্যালবাম।' : 'Explore curated memory albums from Rongdhonu exhibitions and events.',
+    title: seoTitle,
+    description: seoDescription,
     url: '/gallery',
-    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1200&auto=format&fit=crop',
+    imageUrl: ogImage,
     locale,
     siteName,
     faviconUrl,
@@ -106,7 +113,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
     <div className="gallery-page-wrapper">
       <header className="page-hero gallery-page-hero artwork">
         <img 
-          src="https://images.unsplash.com/photo-1580136579312-94651dfd596d?q=80&w=2400&auto=format&fit=crop" 
+          src={heroData?.imageUrl || "https://images.unsplash.com/photo-1580136579312-94651dfd596d?q=80&w=2400&auto=format&fit=crop"} 
           alt="Visitor walking through an illuminated gallery corridor" 
           loading="eager"
         />
@@ -116,11 +123,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Visual Archive'}</div>
             <h1>
-              {locale === 'bn' ? (
-                <span>আমাদের গ্যালারি <em>ঘুরে দেখুন</em></span>
-              ) : (
-                <>Walk Through <em>Our Gallery</em></>
-              )}
+              {heroTitle}
             </h1>
             <p className="page-hero-sub">
               {heroSubtitle}

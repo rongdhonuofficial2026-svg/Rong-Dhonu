@@ -4,7 +4,7 @@ import { AboutContent } from "./AboutContent"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  const content = await getCmsContent('homepage', 'about', locale)
+  const content = await getCmsContent('home', 'about', locale)
   const settingsData = await getCmsContent('global', 'settings', locale)
   const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  const content = await getCmsContent('homepage', 'about', locale)
+  const content = await getCmsContent('home', 'about', locale)
 
   return (
     <main className="flex flex-col w-full min-h-screen bg-background">

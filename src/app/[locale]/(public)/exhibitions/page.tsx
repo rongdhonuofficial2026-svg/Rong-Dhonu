@@ -6,15 +6,22 @@ import { Metadata } from 'next'
 import { getFeaturedExhibition } from "@/lib/exhibition-lifecycle"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
+  const { getCmsContent } = await import('@/lib/cms/content')
+  
   const settingsData = await getCmsContent('global', 'settings', locale)
   const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
+  
+  const seoData = await getCmsContent('exhibitions', 'seo', locale)
+  const seoTitle = seoData?.seo_title || siteName
+  const seoDescription = seoData?.meta_description || settingsData?.site_description || ''
+  const ogImage = seoData?.og_image || settingsData?.default_og_image || 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=1200'
 
   return generateDynamicMetadata({
-    title: locale === 'bn' ? 'প্রদর্শনী সমূহ' : 'Exhibitions',
-    description: locale === 'bn' ? 'রঙধনু বার্ষিক চারুকলা প্রদর্শনীর আর্কাইভ।' : 'Archive of Rongdhonu Annual Fine Arts Exhibitions.',
+    title: seoTitle,
+    description: seoDescription,
     url: '/exhibitions',
-    imageUrl: 'https://images.unsplash.com/photo-1577720580479-7d839d829c73?q=80&w=2400&auto=format&fit=crop',
+    imageUrl: ogImage,
     locale,
     siteName,
     faviconUrl,
@@ -99,11 +106,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'মিউজিয়াম কালানুক্রম' : 'Museum Chronology'}</div>
             <h1>
-              {locale === 'bn' ? (
-                <span>প্রদর্শনী <em>ইতিহাস</em></span>
-              ) : (
-                <>Exhibitions <em>Through the Years</em></>
-              )}
+              {heroTitle}
             </h1>
             <p className="page-hero-sub">
               {heroSubtitle}

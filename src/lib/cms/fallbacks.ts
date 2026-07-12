@@ -2,8 +2,9 @@
  
  
  
-export const fallbackCMSContent: Record<string, Record<string, any>> = {
-  homepage: {
+ 
+export const fallbackCMSContent: Record<string, any> = {
+  home: {
     hero: {
       title_en: "Where Art Meets Soul",
       title_bn: "যেখানে শিল্পের সাথে আত্মার মিলন ঘটে",

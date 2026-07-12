@@ -85,6 +85,26 @@ export async function getCmsContent(page: string, section: string, locale: strin
 }
 
 /**
+ * Fetches the ordered layout configuration of CMS sections for a given page.
+ */
+export async function getCmsSectionLayout(page: string) {
+  try {
+    const { data, error } = await supabase
+      .from('cms_sections')
+      .select('section_key, display_order, enabled, component_type, cms_pages!inner(slug, status)')
+      .eq('cms_pages.slug', page)
+      .eq('cms_pages.status', 'published')
+      .order('display_order', { ascending: true })
+
+    if (error || !data) return []
+    return data
+  } catch (err) {
+    console.error(`[CMS] Error fetching layout for ${page}:`, err)
+    return []
+  }
+}
+
+/**
  * Helper to extract locale-specific strings from a fallback object containing both _en and _bn keys.
  */
 function extractLocalizedContent(content: Record<string, any>, locale: string) {

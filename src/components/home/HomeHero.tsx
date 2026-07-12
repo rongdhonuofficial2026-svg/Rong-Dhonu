@@ -8,7 +8,7 @@ interface HomeHeroProps {
 }
 
 export async function HomeHero({ locale, exhibition, stats }: HomeHeroProps) {
-  const content = await getCmsContent('homepage', 'hero', locale)
+  const content = await getCmsContent('home', 'hero', locale)
   
   return (
     <HomeHeroContent 

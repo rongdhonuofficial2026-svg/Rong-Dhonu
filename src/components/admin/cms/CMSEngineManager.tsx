@@ -11,6 +11,11 @@ import {
   Layers, Settings, Share2, AlertTriangle, FileCheck, CheckCircle,
   ArrowUpDown, Upload
 } from 'lucide-react'
+import { HomeHeroContent } from '@/components/home/HomeHeroContent'
+import { HomeAboutContent } from '@/components/home/HomeAboutContent'
+import { HomeSponsorsContent, HomeTestimonialsContent } from '@/components/home/HomeSponsorsContent'
+import { HomeNewsletterContent } from '@/components/home/HomeExtrasContent'
+
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -76,13 +81,19 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
   const [analyticsLoading, setAnalyticsLoading] = useState(false)
 
   // SEO states
-  const [seoConfig, setSeoConfig] = useState<Record<string, any>>({
-    title: 'Rongdhonu Artists\' Collective',
-    description: 'The official digital museum and gallery of Rongdhonu Artists\' Collective. Discover curated catalogs, visual exhibitions, and talented local fine artists.',
-    keywords: 'fine arts, exhibitions, digital museum, artists collective, West Bengal',
+  const seoSection = sections.find(s => s.section_key === 'seo');
+  const getSeoValue = (key: string) => {
+    const field = seoSection?.cms_content?.find((c: any) => c.field_key === key);
+    return field?.value_en || '';
+  };
+  
+  const seoConfig = {
+    title: getSeoValue('seo_title') || "Rongdhonu Artists' Collective",
+    description: getSeoValue('meta_description') || "The official digital museum and gallery of Rongdhonu Artists' Collective.",
+    keywords: getSeoValue('keywords') || 'fine arts, exhibitions, digital museum, artists collective, West Bengal',
     canonical: 'https://rongdhonu.art',
-    og_image: 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=1200'
-  })
+    og_image: getSeoValue('og_image') || 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=1200'
+  };
 
   // Validation warnings state
   const [validationReport, setValidationReport] = useState<{ errors: string[]; warnings: string[] }>({ errors: [], warnings: [] })
@@ -967,7 +978,11 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                       <input 
                         type="text"
                         value={seoConfig.title}
-                        onChange={(e) => setSeoConfig({ ...seoConfig, title: e.target.value })}
+                        onChange={(e) => {
+    if (seoSection) {
+      handleFieldChange(seoSection.id, 'seo_title', 'value_en', e.target.value);
+    }
+  }}
                         className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] h-12 px-4 text-sm"
                       />
                     </div>
@@ -976,7 +991,11 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                       <textarea 
                         rows={5}
                         value={seoConfig.description}
-                        onChange={(e) => setSeoConfig({ ...seoConfig, description: e.target.value })}
+                        onChange={(e) => {
+    if (seoSection) {
+      handleFieldChange(seoSection.id, 'meta_description', 'value_en', e.target.value);
+    }
+  }}
                         className="w-full bg-[#222222] border border-white/[0.08] hover:border-[#C9A227] focus-visible:border-[#C9A227] focus-visible:ring-1 focus-visible:ring-[#C9A227]/40 focus-visible:outline-none text-white rounded-[14px] p-4 text-sm min-h-[140px] resize-none"
                       />
                     </div>
@@ -1238,58 +1257,35 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                 {/* Simulated rendering output */}
                 <div className="space-y-8">
                   {sections.filter(s => s.enabled !== false).map((sec: any) => {
-                    const findVal = (key: string) => {
-                      const f = sec.cms_content?.find((c: any) => c.field_key === key)
-                      if (!f) return ''
-                      return previewLocale === 'bn' ? (f.value_bn || f.value_en) : f.value_en
-                    }
+                    const mappedContent = (sec.cms_content || []).reduce((acc: any, c: any) => {
+                      acc[c.field_key] = previewLocale === 'bn' ? (c.value_bn || c.value_en) : c.value_en;
+                      // Handle button links
+                      if (c.field_type === 'button' && c.metadata) {
+                         acc[`${c.field_key}_url`] = c.metadata.url;
+                      }
+                      return acc;
+                    }, { enabled: true });
 
-                    if (sec.component_type === 'Hero') {
-                      return (
-                        <div key={sec.id} className="relative rounded-2xl overflow-hidden min-h-[240px] p-6 flex flex-col justify-end border border-white/[0.08] bg-black">
-                          <div className="absolute inset-0 z-0">
-                            {findVal('imageUrl') ? (
-                              <img src={findVal('imageUrl')} alt="Hero" className="object-cover w-full h-full opacity-60" />
-                            ) : null}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
+                    switch (sec.component_type) {
+                      case 'Hero':
+                        return <div key={sec.id} className="relative w-full overflow-hidden zoom-[0.6] origin-top"><HomeHeroContent locale={previewLocale} content={mappedContent} exhibition={{} as any} stats={{ totalExhibitions: 12, totalArtists: 200, totalArtworks: 1400 }} /></div>;
+                      case 'About':
+                        return <div key={sec.id} className="relative w-full overflow-hidden zoom-[0.6] origin-top"><HomeAboutContent locale={previewLocale} content={mappedContent} stats={{ totalExhibitions: 12, totalArtists: 200, totalArtworks: 1400 }} /></div>;
+                      case 'Sponsors':
+                        return <div key={sec.id} className="relative w-full overflow-hidden zoom-[0.6] origin-top"><HomeSponsorsContent locale={previewLocale} content={mappedContent} /></div>;
+                      case 'Testimonials':
+                        return <div key={sec.id} className="relative w-full overflow-hidden zoom-[0.6] origin-top"><HomeTestimonialsContent locale={previewLocale} content={mappedContent} /></div>;
+                      case 'Newsletter':
+                      case 'Contact CTA':
+                        return <div key={sec.id} className="relative w-full overflow-hidden zoom-[0.6] origin-top"><HomeNewsletterContent locale={previewLocale} content={mappedContent} /></div>;
+                      default:
+                        return (
+                          <div key={sec.id} className="p-5 bg-white/[0.01] border border-dashed border-white/[0.08] rounded-xl text-center space-y-1.5">
+                            <span className="text-xs uppercase font-bold tracking-widest text-[#C9A227] block">{sec.section_key} Section</span>
+                            <p className="text-[10px] text-white/52 font-light font-mono">Bilingual Component: {sec.component_type} Active</p>
                           </div>
-                          <div className="relative z-10 text-left space-y-1.5">
-                            <span className="text-[10px] uppercase tracking-wider text-[#C9A227] block font-semibold">{findVal('badge')}</span>
-                            <h2 className="font-serif text-2xl font-bold text-white leading-tight">{findVal('title')}</h2>
-                            <p className="text-xs text-white/72 font-light leading-relaxed">{findVal('subtitle')}</p>
-                            <div className="flex gap-2 pt-2">
-                              <span className="px-4 py-1.5 bg-[#C9A227] text-black text-[10px] font-bold rounded-lg uppercase tracking-wider">{findVal('ctaPrimary_en')}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )
+                        );
                     }
-
-                    if (sec.component_type === 'About') {
-                      return (
-                        <div key={sec.id} className="p-6 bg-white/[0.02] border border-white/[0.06] rounded-2xl space-y-4 text-left">
-                          <h3 className="font-serif font-bold text-xl text-white border-b border-white/[0.08] pb-3">{findVal('title')}</h3>
-                          <div className="space-y-3">
-                            <div>
-                              <span className="text-[9px] uppercase tracking-widest text-[#C9A227] block font-bold mb-1">Our Mission</span>
-                              <p className="text-xs text-white/72 font-light leading-relaxed">{findVal('mission')}</p>
-                            </div>
-                            <div>
-                              <span className="text-[9px] uppercase tracking-widest text-[#C9A227] block font-bold mb-1">Our Vision</span>
-                              <p className="text-xs text-white/72 font-light leading-relaxed">{findVal('vision')}</p>
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    }
-
-                    // Render fallback card view for other sections
-                    return (
-                      <div key={sec.id} className="p-5 bg-white/[0.01] border border-dashed border-white/[0.08] rounded-xl text-center space-y-1.5">
-                        <span className="text-xs uppercase font-bold tracking-widest text-[#C9A227] block">{sec.section_key} Section</span>
-                        <p className="text-[10px] text-white/52 font-light font-mono">Bilingual Component: {sec.component_type} Active</p>
-                      </div>
-                    )
                   })}
                 </div>
               </div>

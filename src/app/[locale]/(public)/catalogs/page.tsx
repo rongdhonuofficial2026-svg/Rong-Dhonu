@@ -10,16 +10,22 @@ import { generateDynamicMetadata } from "@/lib/seo"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'Navigation' })
+  const { getCmsContent } = await import('@/lib/cms/content')
+  
   const settingsData = await getCmsContent('global', 'settings', locale)
   const siteName = settingsData?.site_name || 'Rongdhonu'
   const faviconUrl = settingsData?.favicon_url
+  
+  const seoData = await getCmsContent('catalogs', 'seo', locale)
+  const seoTitle = seoData?.seo_title || siteName
+  const seoDescription = seoData?.meta_description || settingsData?.site_description || ''
+  const ogImage = seoData?.og_image || settingsData?.default_og_image || 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=1200'
 
   return generateDynamicMetadata({
-    title: t('catalogs'),
-    description: 'Browse every official exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.',
+    title: seoTitle,
+    description: seoDescription,
     url: '/catalogs',
-    imageUrl: '/images/catalogs/featured.png',
+    imageUrl: ogImage,
     locale,
     siteName,
     faviconUrl,
@@ -39,6 +45,8 @@ export default async function PublicCatalogsPage({
 
   // Pre-sync all exhibition lifecycles before querying
   await batchSyncExhibitions(supabase).catch(err => console.error('[Public Catalogs] batchSync failed:', err))
+
+  const heroData = await getCmsContent('catalogs', 'hero', locale)
 
   // Build the query
   let query = supabase
@@ -104,7 +112,7 @@ export default async function PublicCatalogsPage({
       {/* ============ PAGE HERO ============ */}
       <header className="page-hero catalogs-page-hero artwork">
         <img 
-          src="/images/hero-bg-catalogs.png" 
+          src={heroData?.imageUrl || "/images/hero-bg-catalogs.png"} 
           alt="Rows of archived books and publications" 
           loading="eager"
         />
@@ -114,16 +122,12 @@ export default async function PublicCatalogsPage({
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'প্রকাশনা' : 'Publications'}</div>
             <h1>
-              {locale === 'bn' ? (
-                <span>প্রদর্শনী <em>ক্যাটালগ আর্কাইভ</em></span>
-              ) : (
-                <>Exhibition <em>Catalog Archive</em></>
-              )}
+              {heroData?.title || (locale === 'bn' ? <span>প্রদর্শনী <em>ক্যাটালগ আর্কাইভ</em></span> : <>Exhibition <em>Catalog Archive</em></>)}
             </h1>
             <p className="page-hero-sub">
-              {locale === 'bn' 
+              {heroData?.subtitle || (locale === 'bn' 
                 ? 'রংধনুর প্রতিটি অফিসিয়াল প্রদর্শনী ক্যাটালগ ব্রাউজ করুন। সুন্দরভাবে কিউরেট করা ডিজিটাল প্রকাশনাগুলোর মাধ্যমে প্রতিটি প্রদর্শনী অন্বেষণ করুন।'
-                : 'Browse every official Rongdhonu exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.'}
+                : 'Browse every official Rongdhonu exhibition catalog. Discover each exhibition through beautifully curated digital publications that preserve our artistic journey.')}
             </p>
           </div>
           <div className="page-hero-meta reveal in">
