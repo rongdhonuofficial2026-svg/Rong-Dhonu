@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const { getCmsContent, getCmsSectionLayout } = await import('@/lib/cms/content')
+  const { getCmsContent } = await import('@/lib/cms/content')
   const settingsData = await getCmsContent('global', 'settings', locale)
   
   const siteName = settingsData?.site_name || 'Rongdhonu'
@@ -46,8 +46,7 @@ export default async function HomePage({
   
   const supabase = await createClient()
   
-  const { getCmsSectionLayout } = await import('@/lib/cms/content')
-  const layout = await getCmsSectionLayout('home')
+
 
   // 1. Determine which exhibition to show based on priority rules + lazy lifecycle sync
   const { getFeaturedExhibition, syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle');
@@ -177,34 +176,29 @@ export default async function HomePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="w-full">
-        {/* 1. Pre-DB CMS Sections */}
-        {layout.filter((s) => s.enabled && s.display_order < 2).map((s) => {
-          switch (s.section_key) {
-            case 'hero': return <HomeHero key="hero" locale={locale} exhibition={exhibition} stats={stats} />
-            case 'about': return <HomeAbout key="about" locale={locale} stats={stats} />
-            case 'sponsors': return <HomeSponsors key="sponsors" locale={locale} />
-            case 'testimonials': return <HomeTestimonials key="testimonials" locale={locale} />
-            case 'contactCTA': return <HomeNewsletter key="contactCTA" locale={locale} />
-            default: return null
-          }
-        })}
+        {/* 1. Hero Section (CMS Controlled) */}
+        <HomeHero locale={locale} exhibition={exhibition} stats={stats} />
+        
+        {/* 2. About Section (CMS Controlled) */}
+        <HomeAbout locale={locale} stats={stats} />
 
-        {/* 2. Fixed Database Sections */}
+        {/* 3. Featured Exhibition Section (Database Controlled) */}
         <HomeExhibition locale={locale} exhibition={exhibition} />
+        
+        {/* 4. Featured Artists (Database Controlled) */}
         <HomeFeaturedArtists locale={locale} artists={artists} />
+        
+        {/* 5. Curated Collection (Database Controlled) */}
         <HomeFeaturedArtworks locale={locale} artworks={artworks} />
 
-        {/* 3. Post-DB CMS Sections */}
-        {layout.filter((s) => s.enabled && s.display_order >= 2).map((s) => {
-          switch (s.section_key) {
-            case 'hero': return <HomeHero key="hero" locale={locale} exhibition={exhibition} stats={stats} />
-            case 'about': return <HomeAbout key="about" locale={locale} stats={stats} />
-            case 'sponsors': return <HomeSponsors key="sponsors" locale={locale} />
-            case 'testimonials': return <HomeTestimonials key="testimonials" locale={locale} />
-            case 'contactCTA': return <HomeNewsletter key="contactCTA" locale={locale} />
-            default: return null
-          }
-        })}
+        {/* 6. Testimonials (CMS Controlled) */}
+        <HomeTestimonials locale={locale} />
+        
+        {/* 7. Sponsors (CMS Controlled) */}
+        <HomeSponsors locale={locale} />
+        
+        {/* 8. Newsletter CTA (CMS Controlled) */}
+        <HomeNewsletter locale={locale} />
       </main>
     </>
   )
