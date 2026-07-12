@@ -3,7 +3,7 @@ import { getCmsContent } from "@/lib/cms/content"
 import { Link } from "@/lib/i18n/routing"
 import { generateDynamicMetadata } from "@/lib/seo"
 import { Metadata } from 'next'
-
+import { getFeaturedExhibition } from "@/lib/exhibition-lifecycle"
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const settingsData = await getCmsContent('global', 'settings', locale)
@@ -39,8 +39,8 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
   const active = exhibitions?.filter(e => e.status === 'upcoming' || e.status === 'ongoing') || []
   const past = exhibitions?.filter(e => e.status === 'archived') || []
 
-  // Spotlight is the active one, or fallback to the latest past one
-  const spotlightEx = active[0] || past[0]
+  // Spotlight is determined by the single source of truth
+  const spotlightEx = await getFeaturedExhibition()
   const spotlightYearShort = spotlightEx && spotlightEx.exhibition_start
     ? new Date(spotlightEx.exhibition_start).getFullYear().toString().slice(-2)
     : '26'

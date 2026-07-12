@@ -94,52 +94,41 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         </div>
         
         <h2 className="reveal">
-          {title} <em>— {locale === 'bn' ? 'রঙের উৎসব' : 'A Festival of Colour'}</em>
+          {title}
         </h2>
         
         <p className="spotlight-sub reveal">
           {locale === 'bn' 
-            ? "একটি যুগান্তকারী শিল্প প্রদর্শনী যা বারোটি স্টুডিও, ষাটটি নতুন কাজ এবং বাংলার সবচেয়ে বিশিষ্ট শিল্পীদের একত্রিত করে।" 
-            : "A season-defining showcase bringing together fourteen studios, sixty new works, and a decade of Bengal's most distinctive visual voices."}
+            ? (currentExhibition.description_bn || currentExhibition.curatorial_statement_bn || currentExhibition.description_en || '')
+            : (currentExhibition.description_en || currentExhibition.curatorial_statement_en || '')}
         </p>
         
-        <div className="spotlight-card reveal">
-          {/* Detail: Date */}
-          <div className="spotlight-detail">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M3 8h14M7 2v3M13 2v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            <div>
-              <b>{formattedDate}</b>
-              <span>{locale === 'bn' ? 'উদ্বোধনী রাত, সন্ধ্যা ৬টা থেকে' : 'Opening Night, 6 PM onward'}</span>
-            </div>
+        <div className="spotlight-card reveal !flex-col md:!flex-row md:!items-center gap-6">
+          <div className="flex-1 w-full flex flex-col gap-3">
+            {timelineItems.map((item, index) => (
+              <div key={item.id} className={`flex justify-between items-center text-sm pb-3 ${index !== timelineItems.length - 1 ? 'border-b border-white/10' : ''}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${item.status === 'current' ? 'bg-[#F4C662] shadow-[0_0_8px_rgba(244,198,98,0.6)]' : item.status === 'completed' ? 'bg-green-500/80' : 'bg-white/20'}`} />
+                  <span className="text-[#F4EEDF] font-medium">{item.title}</span>
+                </div>
+                <span className="text-white/60 font-medium">{item.date}</span>
+              </div>
+            ))}
           </div>
 
-          {/* Detail: Venue */}
-          {venue && (
-            <div className="spotlight-detail">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 18s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z" stroke="currentColor" strokeWidth="1.5"/>
-                <circle cx="10" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-              <div>
-                <b>{venue}</b>
-                <span>{locale === 'bn' ? 'বর্ধমান, পশ্চিমবঙ্গ' : 'Bardhaman, West Bengal'}</span>
-              </div>
-            </div>
-          )}
+          <div className="flex flex-col gap-4 min-w-[200px] shrink-0 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6">
+             <span className="spotlight-tag mx-0 w-fit self-start md:self-auto">
+               {currentExhibition.status === 'ongoing' 
+                 ? (locale === 'bn' ? 'বর্তমানে চলছে' : 'Now Open')
+                 : currentExhibition.status === 'upcoming' 
+                   ? (locale === 'bn' ? 'আসছে শীঘ্রই' : 'Opening Soon')
+                   : (locale === 'bn' ? 'সমাপ্ত' : 'Archived')}
+             </span>
 
-          {/* Status Tag */}
-          <span className="spotlight-tag">
-            {currentExhibition.status === 'ongoing' 
-              ? (locale === 'bn' ? 'বর্তমানে চলছে' : 'Now Open')
-              : (locale === 'bn' ? 'আসছে শীঘ্রই' : 'Opening Soon')}
-          </span>
-
-          <Link href={`/exhibitions/${currentExhibition.id}`} className="btn btn-ink btn-sm magnetic" style={{ marginLeft: 'auto' }}>
-            {locale === 'bn' ? 'প্রদর্শনীতে প্রবেশ করুন →' : 'Enter Exhibition →'}
-          </Link>
+             <Link href={`/exhibitions/${currentExhibition.id}`} className="btn btn-ink btn-sm magnetic justify-center w-full">
+               {locale === 'bn' ? 'প্রদর্শনীতে প্রবেশ করুন →' : 'Enter Exhibition →'}
+             </Link>
+          </div>
         </div>
       </div>
     </section>

@@ -159,28 +159,41 @@ export async function getFeaturedExhibition() {
     .maybeSingle();
 
   if (!featured) {
-    // 2. Fallback: any active exhibition (all non-draft, non-archived statuses)
-    //    Ordered by priority: ongoing > submission_open > upcoming > registration_open > etc.
-    const { data: active } = await supabase
+    // 2. Fallback: Latest Ongoing Exhibition (order by exhibition_start DESC)
+    const { data: ongoing } = await supabase
       .from('exhibitions')
       .select('*')
-      .not('status', 'in', '("draft","archived")')
+      .eq('status', 'ongoing')
       .neq('is_deleted', true)
-      .order('created_at', { ascending: false })
+      .order('exhibition_start', { ascending: false, nullsFirst: false })
       .limit(1)
       .maybeSingle();
 
-    featured = active;
+    featured = ongoing;
   }
 
   if (!featured) {
-    // 3. Last resort: most recent archived (show something rather than nothing)
+    // 3. Fallback: Nearest Upcoming Exhibition (order by exhibition_start ASC)
+    const { data: upcoming } = await supabase
+      .from('exhibitions')
+      .select('*')
+      .eq('status', 'upcoming')
+      .neq('is_deleted', true)
+      .order('exhibition_start', { ascending: true, nullsFirst: false })
+      .limit(1)
+      .maybeSingle();
+
+    featured = upcoming;
+  }
+
+  if (!featured) {
+    // 4. Last resort: Most Recently Archived Exhibition (order by exhibition_start DESC)
     const { data: archived } = await supabase
       .from('exhibitions')
       .select('*')
       .eq('status', 'archived')
       .neq('is_deleted', true)
-      .order('exhibition_end', { ascending: false })
+      .order('exhibition_start', { ascending: false, nullsFirst: false })
       .limit(1)
       .maybeSingle();
 

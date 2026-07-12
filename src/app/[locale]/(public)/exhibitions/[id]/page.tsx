@@ -236,10 +236,18 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                     <span className="font-serif text-lg">{dateFmt.format(exEnd)}</span>
                   </li>
                 )}
-                <li className="flex justify-between items-center pt-4 border-t border-border/20">
-                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'শিল্পকর্ম' : 'Artworks'}</span>
-                  <span className="font-serif text-2xl font-bold">{exhibition.artworks?.length || 0}</span>
-                </li>
+                {regStart && (
+                  <li className="flex flex-col gap-1 pt-4 border-t border-border/20">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'নিবন্ধন শুরু' : 'Registration Opens'}</span>
+                    <span className="font-serif text-lg">{dateFmt.format(regStart)}</span>
+                  </li>
+                )}
+                {subEnd && (
+                  <li className="flex flex-col gap-1">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">{locale === 'bn' ? 'জমা দেওয়ার শেষ দিন' : 'Submission Deadline'}</span>
+                    <span className="font-serif text-lg">{dateFmt.format(subEnd)}</span>
+                  </li>
+                )}
               </ul>
               
               <div className="pt-8 border-t border-border/50">
