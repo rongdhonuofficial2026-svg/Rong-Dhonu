@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { resetPasswordSchema } from '@/lib/validations/auth';
@@ -8,7 +8,7 @@ import { resetPasswordAction } from '@/lib/actions/auth';
 import { z } from 'zod';
 import { useRouter } from '@/lib/i18n/routing';
 import { useLocale } from 'next-intl';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import zxcvbn from 'zxcvbn';
 
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
@@ -17,8 +17,21 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isInvalidLink, setIsInvalidLink] = useState(false);
   const router = useRouter();
   const locale = useLocale();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('error');
+    if (err === 'invalid_token' || err === 'expired') {
+      setIsInvalidLink(true);
+      setError('This password reset link has expired or is invalid.');
+    } else if (err) {
+      setIsInvalidLink(true);
+      setError('An error occurred during authentication.');
+    }
+  }, []);
   
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<ResetPasswordForm>({
     resolver: zodResolver(resetPasswordSchema)
@@ -49,6 +62,26 @@ export default function ResetPasswordPage() {
         <h2 className="mt-6 text-3xl font-bold tracking-tight text-charcoal">Success</h2>
         <p className="mt-2 text-sm text-green-600">{success}</p>
         <p className="mt-2 text-sm text-gray-500">Redirecting to login...</p>
+      </div>
+    );
+  }
+
+  if (isInvalidLink) {
+    return (
+      <div className="text-center">
+        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+          <AlertCircle className="h-6 w-6 text-red-600" />
+        </div>
+        <h2 className="mt-6 text-3xl font-bold tracking-tight text-charcoal">Invalid Link</h2>
+        <p className="mt-2 text-sm text-gray-600">{error}</p>
+        <div className="mt-6">
+          <button
+            onClick={() => router.push('/forgot-password')}
+            className="group relative flex w-full justify-center rounded-md bg-charcoal px-3 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
+          >
+            Request New Link
+          </button>
+        </div>
       </div>
     );
   }

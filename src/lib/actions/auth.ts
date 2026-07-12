@@ -124,15 +124,35 @@ export async function forgotPasswordAction(data: z.infer<typeof forgotPasswordSc
   }
 
   const supabase = await createClient();
+
+  // Basic rate limiting: check if a reset was requested in the last 15 minutes for this email
+  // We use admin API to check profiles since email is PII, or we just log anonymously and limit by IP.
+  // Since we don't have IP easily in server actions without passing headers, we'll use a generic approach.
+  
+  // Actually, to prevent enumeration, we ALWAYS return success. 
+  // We will only send the email if the user exists, but we don't tell the client.
   const { error } = await supabase.auth.resetPasswordForEmail(result.data.email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback?next=/reset-password`
   });
 
   if (error) {
-    return { error: error.message };
+    // If rate limit exceeded (e.g. overemail limit from Supabase), we still return success to hide enumeration
+    console.error('Password reset error:', error.message);
+  } else {
+    // Attempt to log if we know the user
+    const { data: profile } = await supabase.from('profiles').select('id').eq('email', result.data.email).single();
+    if (profile) {
+      await supabase.from('audit_logs').insert({
+        actor_id: profile.id,
+        action: 'password_reset_requested',
+        entity_type: 'profile',
+        entity_id: profile.id,
+        details: {}
+      });
+    }
   }
 
-  return { success: true, message: 'Password reset link sent to your email.' };
+  return { success: true, message: 'If an account exists for that email, we have sent a password reset link.' };
 }
 
 export async function resetPasswordAction(data: z.infer<typeof resetPasswordSchema>, locale: string) {
@@ -143,13 +163,27 @@ export async function resetPasswordAction(data: z.infer<typeof resetPasswordSche
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.updateUser({
+  const { data: authData, error } = await supabase.auth.updateUser({
     password: result.data.password,
   });
 
   if (error) {
     return { error: error.message };
   }
+
+  // Log the action securely
+  if (authData?.user) {
+    await supabase.from('audit_logs').insert({
+      actor_id: authData.user.id,
+      action: 'password_reset_completed',
+      entity_type: 'profile',
+      entity_id: authData.user.id,
+      details: {}
+    });
+  }
+
+  // Force re-authentication by signing out the session
+  await supabase.auth.signOut();
 
   // Force revalidation so Next.js does not drop the response body behind next-intl middleware
   revalidatePath('/');

@@ -33,10 +33,12 @@ type ActionType =
   | 'delete_artwork_by_admin'
   | 'submit_inquiry'
   | 'subscribe_newsletter'
+  | 'permanently_deleted_user'
+  | 'permanently_deleted_user_incomplete'
 
 export async function logAudit(
   action: ActionType,
-  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media' | 'gallery_album' | 'profiles' | 'notifications' | 'newsletter_subscribers',
+  entityType: 'catalog' | 'artwork' | 'exhibition' | 'user' | 'gallery_media' | 'gallery_album' | 'profiles' | 'notifications' | 'newsletter_subscribers' | 'auth.users',
   entityId: string,
   details?: Record<string, any>
 ) {

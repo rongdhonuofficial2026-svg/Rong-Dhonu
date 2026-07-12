@@ -86,6 +86,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
     isOpen: boolean
     title: string
     description: string
+    requiredConfirmationString?: string
     action: () => Promise<void>
   }>({
     isOpen: false,
@@ -98,6 +99,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
   const [feedbackRequired, setFeedbackRequired] = useState(false)
   const [artworkFeedback, setArtworkFeedback] = useState('')
   const [moderateTarget, setModerateTarget] = useState<{ id: string, status: 'approved' | 'rejected' | 'changes_requested' } | null>(null)
+  const [isActionLoading, setIsActionLoading] = useState(false)
 
   // Fetch users with filters
   const fetchUsers = async () => {
@@ -214,6 +216,7 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
       isOpen: true,
       title: 'Delete Account Permanently',
       description: 'WARNING: This will permanently delete this user account and all their records from the database. This action is irreversible.',
+      requiredConfirmationString: 'DELETE',
       action: async () => {
         const res = await deleteUser(userId)
         if (res.success) {
@@ -1086,13 +1089,18 @@ export function UserManager({ initialUsers, totalCount: initialTotalCount, local
       </Sheet>
 
       {/* Confirmation Dialog */}
-      <ConfirmationDialog 
+      <ConfirmationDialog
         isOpen={dialogConfig.isOpen}
-        onClose={() => setDialogConfig(prev => ({ ...prev, isOpen: false }))}
         title={dialogConfig.title}
         description={dialogConfig.description}
+        requiredConfirmationString={dialogConfig.requiredConfirmationString}
+        isDestructive={dialogConfig.title.includes('Suspend') || dialogConfig.title.includes('Delete') || dialogConfig.title.includes('Reject')}
+        isLoading={isActionLoading}
+        onClose={() => setDialogConfig(prev => ({ ...prev, isOpen: false }))}
         onConfirm={async () => {
+          setIsActionLoading(true)
           await dialogConfig.action()
+          setIsActionLoading(false)
           setDialogConfig(prev => ({ ...prev, isOpen: false }))
         }}
       />

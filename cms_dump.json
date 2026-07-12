@@ -1,0 +1,202 @@
+[
+  {
+    "slug": "about",
+    "cms_sections": []
+  },
+  {
+    "slug": "exhibitions",
+    "cms_sections": []
+  },
+  {
+    "slug": "gallery",
+    "cms_sections": []
+  },
+  {
+    "slug": "catalogs",
+    "cms_sections": []
+  },
+  {
+    "slug": "contact",
+    "cms_sections": [
+      {
+        "enabled": true,
+        "cms_content": [
+          {
+            "value_bn": "যোগাযোগ করুন",
+            "value_en": "Get in Touch",
+            "field_key": "title",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "আমরা আপনার কাছ থেকে শুনতে চাই। সিলভা তীর্থ আর্ট গ্যালারিতে আমাদের সাথে দেখা করুন।",
+            "value_en": "We would love to hear from you. Visit us at the Silva Tirtha Art Gallery.",
+            "field_key": "subtitle",
+            "field_type": "text"
+          }
+        ],
+        "section_key": "hero"
+      },
+      {
+        "enabled": true,
+        "cms_content": [
+          {
+            "value_bn": "সিলভা তীর্থ আর্ট গ্যালারি",
+            "value_en": "Silva Tirtha Art Gallery",
+            "field_key": "venue",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "রবীন্দ্র ভবন (সাউদার্ন অডিটোরিয়াম) এর বিপরীতে, বহরমপুর, পশ্চিমবঙ্গ, ভারত",
+            "value_en": "Opposite Rabindra Bhavan (Southern Auditorium), Berhampore, West Bengal, India",
+            "field_key": "address",
+            "field_type": "textarea"
+          },
+          {
+            "value_bn": "+91 98765 43210",
+            "value_en": "+91 98765 43210",
+            "field_key": "phone",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "rongdhonuofficial2026@gmail.com",
+            "value_en": "rongdhonuofficial2026@gmail.com",
+            "field_key": "email",
+            "field_type": "text"
+          }
+        ],
+        "section_key": "info"
+      }
+    ]
+  },
+  {
+    "slug": "global",
+    "cms_sections": [
+      {
+        "enabled": true,
+        "cms_content": [
+          {
+            "value_bn": "রংধনু শিল্পী সংঘের অফিসিয়াল ডিজিটাল মিউজিয়াম।",
+            "value_en": "Digital museum and gallery of Rongdhono Artists' Collective.",
+            "field_key": "site_description",
+            "field_type": "textarea"
+          },
+          {
+            "value_bn": "/images/logo.png",
+            "value_en": "/images/logo.png",
+            "field_key": "logo_url",
+            "field_type": "media"
+          },
+          {
+            "value_bn": "/favicon.ico",
+            "value_en": "/favicon.ico",
+            "field_key": "favicon_url",
+            "field_type": "media"
+          },
+          {
+            "value_bn": "রংধনু শিল্পী সংঘ। সর্বস্বত্ব সংরক্ষিত।",
+            "value_en": "Rongdhono Artists' Collective. All rights reserved.",
+            "field_key": "copyright_text",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "আপনার ব্রাউজিং অভিজ্ঞতা উন্নত করতে আমরা কুকি ব্যবহার করি।",
+            "value_en": "We use cookies to improve your digital browsing experience.",
+            "field_key": "cookie_consent_text",
+            "field_type": "textarea"
+          },
+          {
+            "value_bn": "রংধনু কন্টেন্ট স্টুডিও ২.০-তে আপনাকে স্বাগতম!",
+            "value_en": "Welcome to Rongdhono Content Studio 2.0!",
+            "field_key": "announcement_banner",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "false",
+            "value_en": "false",
+            "field_key": "maintenance_mode",
+            "field_type": "boolean"
+          },
+          {
+            "value_bn": "রংধনু",
+            "value_en": "Rong-Dhonu",
+            "field_key": "site_name",
+            "field_type": "text"
+          }
+        ],
+        "section_key": "settings"
+      },
+      {
+        "enabled": true,
+        "cms_content": [
+          {
+            "value_bn": "[{\"label_en\":\"Home\",\"label_bn\":\"হোম\",\"href\":\"/\"},{\"label_en\":\"About\",\"label_bn\":\"আমাদের সম্পর্কে\",\"href\":\"/about\"},{\"label_en\":\"Exhibitions\",\"label_bn\":\"প্রদর্শনী সমূহ\",\"href\":\"/exhibitions\"},{\"label_en\":\"Gallery\",\"label_bn\":\"অ্যালবাম\",\"href\":\"/gallery\"},{\"label_en\":\"Catalogs\",\"label_bn\":\"ক্যাটালগ\",\"href\":\"/catalogs\"},{\"label_en\":\"Contact\",\"label_bn\":\"যোগাযোগ\",\"href\":\"/contact\"}]",
+            "value_en": "[{\"label_en\":\"Home\",\"label_bn\":\"হোম\",\"href\":\"/\"},{\"label_en\":\"About\",\"label_bn\":\"আমাদের সম্পর্কে\",\"href\":\"/about\"},{\"label_en\":\"Exhibitions\",\"label_bn\":\"প্রদর্শনী সমূহ\",\"href\":\"/exhibitions\"},{\"label_en\":\"Gallery\",\"label_bn\":\"অ্যালবাম\",\"href\":\"/gallery\"},{\"label_en\":\"Catalogs\",\"label_bn\":\"ক্যাটালগ\",\"href\":\"/catalogs\"},{\"label_en\":\"Contact\",\"label_bn\":\"যোগাযোগ\",\"href\":\"/contact\"}]",
+            "field_key": "menu_items",
+            "field_type": "json"
+          }
+        ],
+        "section_key": "navigation"
+      },
+      {
+        "enabled": true,
+        "cms_content": [
+          {
+            "value_bn": "[{\"label_en\":\"Home\",\"label_bn\":\"হোম\",\"href\":\"/\"},{\"label_en\":\"About\",\"label_bn\":\"আমাদের সম্পর্কে\",\"href\":\"/about\"},{\"label_en\":\"Exhibitions\",\"label_bn\":\"প্রদর্শনী সমূহ\",\"href\":\"/exhibitions\"}]",
+            "value_en": "[{\"label_en\":\"Home\",\"label_bn\":\"হোম\",\"href\":\"/\"},{\"label_en\":\"About\",\"label_bn\":\"আমাদের সম্পর্কে\",\"href\":\"/about\"},{\"label_en\":\"Exhibitions\",\"label_bn\":\"প্রদর্শনী সমূহ\",\"href\":\"/exhibitions\"}]",
+            "field_key": "quick_links",
+            "field_type": "json"
+          },
+          {
+            "value_bn": "[{\"label_en\":\"Privacy Policy\",\"label_bn\":\"গোপনীয়তা নীতি\",\"href\":\"/privacy\"},{\"label_en\":\"Terms of Service\",\"label_bn\":\"পরিষেবার শর্তাবলী\",\"href\":\"/terms\"}]",
+            "value_en": "[{\"label_en\":\"Privacy Policy\",\"label_bn\":\"গোপনীয়তা নীতি\",\"href\":\"/privacy\"},{\"label_en\":\"Terms of Service\",\"label_bn\":\"পরিষেবার শর্তাবলী\",\"href\":\"/terms\"}]",
+            "field_key": "legal_links",
+            "field_type": "json"
+          },
+          {
+            "value_bn": "rongdhonuofficial2026@gmail.com",
+            "value_en": "rongdhonuofficial2026@gmail.com",
+            "field_key": "email",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "বার্ষিক প্রদর্শনীর মাধ্যমে সমসাময়িক চারুকলার চর্চা এবং সাংস্কৃতিক ঐতিহ্যকে ধারণ করা।",
+            "value_en": "Cultivating contemporary art and preserving cultural heritage through annual exhibitions, fostering a thriving ecosystem for artists.",
+            "field_key": "brand_description",
+            "field_type": "textarea"
+          },
+          {
+            "value_bn": "রবীন্দ্র ভবনের বিপরীতে, বহরমপুর, পশ্চিমবঙ্গ, ভারত",
+            "value_en": "Opposite Rabindra Bhavan, Berhampore, West Bengal, India",
+            "field_key": "address",
+            "field_type": "textarea"
+          },
+          {
+            "value_bn": "+91 98765 43210",
+            "value_en": "+91 98765 43210",
+            "field_key": "phone",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "https://facebook.com",
+            "value_en": "https://facebook.com",
+            "field_key": "social_facebook",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "https://instagram.com",
+            "value_en": "https://instagram.com",
+            "field_key": "social_instagram",
+            "field_type": "text"
+          },
+          {
+            "value_bn": "https://twitter.com",
+            "value_en": "https://twitter.com",
+            "field_key": "social_twitter",
+            "field_type": "text"
+          }
+        ],
+        "section_key": "footer"
+      }
+    ]
+  }
+]

@@ -13,6 +13,11 @@ export async function GET(request: Request) {
     
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`)
+    } else {
+      // If code exchange fails (e.g. token expired or invalid), check if it was meant for reset-password
+      if (next.includes('reset-password')) {
+        return NextResponse.redirect(`${origin}/reset-password?error=${error.message.includes('expired') ? 'expired' : 'invalid_token'}`)
+      }
     }
   }
 

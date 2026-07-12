@@ -424,17 +424,119 @@ export async function deleteUser(id: string) {
       return { success: false, error: 'You cannot delete your own account.' }
     }
 
-    // Delete user from profiles (CASCADE constraints will handle cleanup)
-    const { error } = await supabase
+    // Safeguard: Check if this is the LAST owner/admin
+    const { data: adminCountData } = await supabase
       .from('profiles')
-      .delete()
+      .select('id', { count: 'exact' })
+      .in('role', ['admin', 'owner'])
+      
+    const { data: targetUser } = await supabase
+      .from('profiles')
+      .select('role, avatar_url')
       .eq('id', id)
+      .single()
+      
+    if (targetUser?.role === 'owner' || targetUser?.role === 'admin') {
+      if (adminCountData && adminCountData.length <= 1) {
+        return { success: false, error: 'Cannot delete the last remaining administrator or owner.' }
+      }
+    }
 
-    if (error) return { success: false, error: error.message }
+    // 1. Fetch pre-flight storage items to delete asynchronously
+    const { data: artworksData } = await supabase.from('artworks').select('main_image_url').eq('artist_id', id)
+    const { data: galleryData } = await supabase.from('gallery_media').select('url').eq('uploaded_by', id)
+    
+    // 2. Perform atomic relational DB deletion via our custom RPC transaction
+    const { error: dbError } = await supabase.rpc('permanently_delete_user_data', {
+      target_user_id: id
+    })
 
-    await logAudit('delete_user_by_admin', 'profiles', id, {})
+    if (dbError) {
+      return { success: false, error: `Database cleanup failed: ${dbError.message}` }
+    }
 
+    // 3. Initiate Auth Deletion via Service Role Key (Server-side)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!serviceRoleKey) throw new Error('Missing service role key')
+    
+    // Create admin client instance (we import dynamically or create in-line)
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
+    const supabaseAdmin = createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
+    
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id)
+
+    if (authError) {
+      // 3b. Failure Recovery
+      console.error(`Auth Deletion Failed for user ${id}:`, authError)
+      // We log this as an incomplete deletion so an admin can manually retry purging the auth identity
+      await logAudit('permanently_deleted_user_incomplete', 'auth.users', id, { 
+        error: authError.message, 
+        note: 'Database relations deleted, but Supabase Auth identity failed to delete.' 
+      })
+      // But we still return an error so the admin knows it partially failed
+      return { success: false, error: `Database cleanup succeeded, but Auth user deletion failed: ${authError.message}` }
+    }
+
+    // 4. Log successful permanent deletion
+    await logAudit('permanently_deleted_user', 'auth.users', id, {})
+
+    // 5. Asynchronous Storage Cleanup (Fire-and-forget to prevent timeouts)
+    ;(async () => {
+      try {
+        const adminStorage = supabaseAdmin.storage
+        
+        // Delete avatar
+        if (targetUser?.avatar_url) {
+          const avatarUrl = new URL(targetUser.avatar_url)
+          const avatarPath = avatarUrl.pathname.split('/avatars/')[1]
+          if (avatarPath) await adminStorage.from('avatars').remove([avatarPath])
+        }
+
+        // Delete artworks
+        if (artworksData && artworksData.length > 0) {
+          const artworkPaths = artworksData
+            .map(a => a.main_image_url)
+            .filter(Boolean)
+            .map(url => {
+              try {
+                return new URL(url).pathname.split('/artworks/')[1]
+              } catch { return null }
+            })
+            .filter(Boolean) as string[]
+          
+          if (artworkPaths.length > 0) {
+            await adminStorage.from('artworks').remove(artworkPaths)
+          }
+        }
+
+        // Delete gallery media
+        if (galleryData && galleryData.length > 0) {
+          const galleryPaths = galleryData
+            .map(g => g.url)
+            .filter(Boolean)
+            .map(url => {
+              try {
+                return new URL(url).pathname.split('/gallery/')[1]
+              } catch { return null }
+            })
+            .filter(Boolean) as string[]
+            
+          if (galleryPaths.length > 0) {
+            await adminStorage.from('gallery').remove(galleryPaths)
+          }
+        }
+      } catch (storageErr) {
+        console.error('Async storage cleanup failed post-deletion:', storageErr)
+      }
+    })()
+
+    // 6. Global Cache Revalidation
+    revalidatePath('/')
+    revalidatePath('/gallery')
+    revalidatePath('/artists')
+    revalidatePath('/exhibitions')
     revalidatePath('/admin/users')
+
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message }
