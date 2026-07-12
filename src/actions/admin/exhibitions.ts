@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath, updateTag } from "next/cache"
 
 // ─── Permission Helpers ───────────────────────────────────────────────────────
 
@@ -47,9 +47,9 @@ function revalidateExhibitionCaches(id?: string) {
     revalidatePath(`/${loc}`) // Homepage
   })
   // Cache tags for ISR / React cache
-  revalidateTag('featured_exhibition')
-  revalidateTag('curated_collection')
-  revalidateTag('homepage_stats')
+  updateTag('featured_exhibition')
+  updateTag('curated_collection')
+  updateTag('homepage_stats')
 }
 
 export async function createExhibition(payload: any) {

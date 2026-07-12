@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
 import { PremiumImage } from "@/components/ui/PremiumImage"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useRef } from "react"
 
 export function HomeAboutContent({ content, locale, stats }: { content: any, locale?: string, stats?: any }) {
@@ -41,7 +42,9 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
             <div className="frame-edge"></div>
           </div>
           <div className="about-note">
-            <p>"{history}"</p>
+            <ScrollArea className="h-32">
+              <p>"{history}"</p>
+            </ScrollArea>
             <div className="sig">
               {locale === 'bn' ? '— প্রতিষ্ঠিত ২০২২, বেলডাঙ্গা' : '— EST, 2022, BELDANGA'}
             </div>
@@ -87,7 +90,9 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
               return <span dangerouslySetInnerHTML={{ __html: mission }} />
             })()}
           </h2>
-          <p className="about-vision">{vision}</p>
+          <ScrollArea className="h-40">
+            <p className="about-vision">{vision}</p>
+          </ScrollArea>
           
           <div className="about-stats">
             <div>
