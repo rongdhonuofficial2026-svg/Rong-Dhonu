@@ -1258,7 +1258,18 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                 <div className="space-y-8">
                   {sections.filter(s => s.enabled !== false).map((sec: any) => {
                     const mappedContent = (sec.cms_content || []).reduce((acc: any, c: any) => {
-                      acc[c.field_key] = previewLocale === 'bn' ? (c.value_bn || c.value_en) : c.value_en;
+                      const value = previewLocale === 'bn' ? (c.value_bn || c.value_en) : c.value_en;
+                      
+                      if (c.field_type === 'json') {
+                        try {
+                          acc[c.field_key] = typeof value === 'string' ? JSON.parse(value || '[]') : (value || []);
+                        } catch {
+                          acc[c.field_key] = [];
+                        }
+                      } else {
+                        acc[c.field_key] = value;
+                      }
+
                       // Handle button links
                       if (c.field_type === 'button' && c.metadata) {
                          acc[`${c.field_key}_url`] = c.metadata.url;
