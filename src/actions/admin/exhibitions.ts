@@ -65,7 +65,12 @@ export async function createExhibition(payload: any) {
     }
   }
 
-  // 4. Database Insert
+  // 4. Handle Featured Status Override
+  if (payload.is_featured === true) {
+    await supabase.from('exhibitions').update({ is_featured: false }).neq('is_deleted', true)
+  }
+
+  // 5. Database Insert
   const { data, error } = await supabase.from('exhibitions').insert([{
     year: startYear,
     theme_en: payload.theme_en,
@@ -171,7 +176,15 @@ export async function updateExhibition(id: string, payload: any) {
     hero_image_url: payload.hero_image_url || null
   }
 
-  // 4. Database Update
+  // 4. Handle Featured Status Override
+  if (payload.is_featured !== undefined) {
+    updateData.is_featured = payload.is_featured === true
+    if (updateData.is_featured) {
+      await supabase.from('exhibitions').update({ is_featured: false }).neq('id', id)
+    }
+  }
+
+  // 5. Database Update
   const { data, error } = await supabase.from('exhibitions').update(updateData).eq('id', id).select().single()
 
   // 5. Explicit Error Handling

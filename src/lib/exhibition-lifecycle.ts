@@ -112,6 +112,14 @@ export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
 }
 
 /**
+ * Backward compatibility wrapper.
+ * Deprecated: Use getPrimaryPublicExhibition() instead.
+ */
+export async function getFeaturedExhibition() {
+  return getPrimaryPublicExhibition();
+}
+
+/**
  * Batch synchronization of all active exhibition lifecycles.
  * Queries ONLY exhibitions that require state transitions based on today's date.
  */
@@ -143,18 +151,19 @@ export async function batchSyncExhibitions(supabase: any) {
  * Fetches the currently featured exhibition and ensures its lifecycle status is synchronized.
  * Priority: manually featured → any active (non-draft, non-archived) exhibition → most recent archived.
  */
-export async function getFeaturedExhibition() {
+export async function getPrimaryPublicExhibition() {
   const supabase = await createClient();
 
   // Run a quick batch sync first to ensure database consistency before fetching
   await batchSyncExhibitions(supabase).catch(err => console.error('[Featured Exhibition] batchSync failed:', err));
 
-  // 1. Try manually featured first
+  // 1. Try manually featured first (strictly order chronologically to safeguard against duplicate flags)
   let { data: featured } = await supabase
     .from('exhibitions')
     .select('*')
     .eq('is_featured', true)
     .neq('is_deleted', true)
+    .order('exhibition_start', { ascending: false, nullsFirst: false })
     .limit(1)
     .maybeSingle();
 
