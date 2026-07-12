@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/lib/i18n/routing"
 import { createExhibition } from "@/actions/admin/exhibitions"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -153,7 +153,7 @@ export function ExhibitionForm({ locale }: { locale: string }) {
         icon: <Sparkles className="w-4 h-4 text-yellow-400" />,
       })
 
-      router.push(`/${locale}/admin/exhibitions/${res.data.id}`)
+      router.push(`/admin/exhibitions/${res.data.id}`)
 
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)

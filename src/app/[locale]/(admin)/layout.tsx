@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/Sidebar'
 import { DebugErrorBoundary } from '@/components/DebugErrorBoundary'
+import { Toaster } from '@/components/ui/sonner'
 import '@/styles/responsive-admin.css'
 
 import { getUserRole, canAccessAdmin } from '@/lib/auth/roles'
@@ -51,6 +52,8 @@ export default async function AdminLayout({
         </div>
         
       </main>
+      {/* Admin-scoped toast portal */}
+      <Toaster richColors closeButton position="bottom-right" />
     </div>
   )
 }

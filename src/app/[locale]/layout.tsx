@@ -1,4 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl';
+import { Toaster } from '@/components/ui/sonner';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/lib/i18n/routing';
@@ -86,6 +87,8 @@ export default async function LocaleLayout({
           <main id="main-content" className="flex-grow flex flex-col" tabIndex={-1}>
             {children}
           </main>
+          {/* Global toast portal — must be inside NextIntlClientProvider */}
+          <Toaster richColors closeButton position="bottom-right" />
         </NextIntlClientProvider>
       </body>
     </html>
