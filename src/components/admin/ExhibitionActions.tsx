@@ -16,16 +16,20 @@ import {
   softDeleteExhibition, 
   restoreExhibition, 
   permanentDeleteExhibition,
-  updateExhibitionFeatureStatus 
+  updateExhibitionFeatureStatus,
+  type DeletionReport
 } from "@/actions/admin/exhibitions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Link } from "@/lib/i18n/routing"
 import { ConfirmationDialog } from "@/components/admin/ui/ConfirmationDialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 
 export function ExhibitionActions({ exhibition, locale }: { exhibition: any, locale: string }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const [confirmAction, setConfirmAction] = React.useState<'none' | 'archive' | 'delete' | 'permanent_delete'>('none')
+  const [deletionReport, setDeletionReport] = React.useState<DeletionReport | null>(null)
   const router = useRouter()
 
   const executeAction = async (
@@ -59,7 +63,26 @@ export function ExhibitionActions({ exhibition, locale }: { exhibition: any, loc
     } else if (confirmAction === 'delete') {
       executeAction(() => softDeleteExhibition(exhibition.id), "Exhibition moved to trash.")
     } else if (confirmAction === 'permanent_delete') {
-      executeAction(() => permanentDeleteExhibition(exhibition.id), "Exhibition permanently deleted.")
+      executePermanentDelete()
+    }
+  }
+
+  const executePermanentDelete = async () => {
+    setIsLoading(true)
+    try {
+      const res = await permanentDeleteExhibition(exhibition.id)
+      if (res.error) {
+        toast.error("Deletion Failed", { description: res.error })
+      } else if (res.report) {
+        // Show report dialogue
+        setDeletionReport(res.report)
+        router.refresh()
+      }
+    } catch (err: any) {
+      toast.error("Unexpected Error", { description: err.message || "An unexpected error occurred." })
+    } finally {
+      setIsLoading(false)
+      setConfirmAction('none')
     }
   }
 
@@ -169,6 +192,102 @@ export function ExhibitionActions({ exhibition, locale }: { exhibition: any, loc
         isDestructive={dialogConfig.isDestructive}
         isLoading={isLoading}
       />
+
+      <Dialog open={!!deletionReport} onOpenChange={() => setDeletionReport(null)}>
+        <DialogContent className="sm:max-w-[550px] bg-[#1C1C1E] border-border text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {deletionReport?.verificationPassed ? (
+                <span className="text-emerald-500 flex items-center gap-2"><Trash2 className="w-5 h-5"/> Deletion Successful</span>
+              ) : (
+                <span className="text-amber-500 flex items-center gap-2"><AlertTriangle className="w-5 h-5"/> Deletion Completed with Warnings</span>
+              )}
+            </DialogTitle>
+            <DialogDescription>
+              Summary for: <span className="font-semibold text-white">{deletionReport?.exhibitionName}</span>
+            </DialogDescription>
+          </DialogHeader>
+          
+          {deletionReport && (
+            <ScrollArea className="max-h-[60vh] pr-4 mt-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                    <p className="text-sm text-muted-foreground mb-1">Artworks Removed</p>
+                    <p className="text-2xl font-semibold font-mono">{deletionReport.artworksRemoved}</p>
+                  </div>
+                  <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                    <p className="text-sm text-muted-foreground mb-1">Gallery Media</p>
+                    <p className="text-2xl font-semibold font-mono">{deletionReport.galleryMediaRemoved}</p>
+                  </div>
+                  <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                    <p className="text-sm text-muted-foreground mb-1">Catalogs</p>
+                    <p className="text-2xl font-semibold font-mono">{deletionReport.catalogsRemoved}</p>
+                  </div>
+                  <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                    <p className="text-sm text-muted-foreground mb-1">Participants</p>
+                    <p className="text-2xl font-semibold font-mono">{deletionReport.participantsRemoved}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Storage Actions</h4>
+                  <div className="flex items-center justify-between text-sm p-3 bg-black/20 rounded-lg border border-white/5">
+                    <span>Files successfully deleted</span>
+                    <span className="font-mono text-emerald-400">{deletionReport.storageFilesRemoved}</span>
+                  </div>
+                  {deletionReport.storageFilesQueuedForRetry > 0 && (
+                    <div className="flex items-center justify-between text-sm p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 text-amber-500">
+                      <span>Files queued for retry</span>
+                      <span className="font-mono">{deletionReport.storageFilesQueuedForRetry}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Cache Invalidation</h4>
+                  <ul className="text-sm space-y-2">
+                    <li className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${deletionReport.homepageRefreshed ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                      Homepage & Global Caches
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${deletionReport.searchRefreshed ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                      Search Index & Results
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${deletionReport.statisticsRefreshed ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                      Dashboard Statistics
+                    </li>
+                  </ul>
+                </div>
+
+                {deletionReport.warnings && deletionReport.warnings.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-500 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" /> Warnings
+                    </h4>
+                    <ul className="text-sm space-y-2 bg-amber-500/10 border border-amber-500/20 p-4 rounded-lg text-amber-200/90">
+                      {deletionReport.warnings.map((warning, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="shrink-0 mt-0.5">•</span>
+                          <span>{warning}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          )}
+
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setDeletionReport(null)} className="w-full sm:w-auto">
+              Close Report
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

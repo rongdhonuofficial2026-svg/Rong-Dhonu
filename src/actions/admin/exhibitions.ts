@@ -1,9 +1,11 @@
 'use server'
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 
-// Validate admin/committee helper
+// ─── Permission Helpers ───────────────────────────────────────────────────────
+
+/** Allows admin / committee / owner */
 async function requireAdmin(supabase: any, user: any) {
   if (!user) throw new Error('Unauthorized')
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
@@ -11,17 +13,43 @@ async function requireAdmin(supabase: any, user: any) {
   return profile.role
 }
 
+/** Allows ONLY owner — used exclusively for permanent deletion */
+async function requireOwner(supabase: any, user: any): Promise<string> {
+  if (!user) throw new Error('Unauthorized')
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  if (!profile || profile.role !== 'owner') {
+    throw new Error('Forbidden: Only owners can permanently delete exhibitions.')
+  }
+  return profile.role
+}
+
+// ─── Cache Revalidation ───────────────────────────────────────────────────────
+
 function revalidateExhibitionCaches(id?: string) {
   const locales = ['en', 'bn']
   locales.forEach(loc => {
+    // Admin pages
     revalidatePath(`/${loc}/admin/exhibitions`)
+    revalidatePath(`/${loc}/admin/statistics`)
+    revalidatePath(`/${loc}/admin/gallery`)
+    revalidatePath(`/${loc}/admin/catalogs`)
     if (id) {
       revalidatePath(`/${loc}/admin/exhibitions/${id}`)
+      // Public exhibition detail
       revalidatePath(`/${loc}/exhibitions/${id}`)
     }
+    // Public listing pages
     revalidatePath(`/${loc}/exhibitions`)
+    revalidatePath(`/${loc}/gallery`)
+    revalidatePath(`/${loc}/catalogs`)
+    revalidatePath(`/${loc}/artists`)
+    revalidatePath(`/${loc}/search`)
     revalidatePath(`/${loc}`) // Homepage
   })
+  // Cache tags for ISR / React cache
+  revalidateTag('featured_exhibition')
+  revalidateTag('curated_collection')
+  revalidateTag('homepage_stats')
 }
 
 export async function createExhibition(payload: any) {
@@ -384,43 +412,482 @@ export async function softDeleteExhibition(id: string) {
   return { success: true }
 }
 
-export async function permanentDeleteExhibition(id: string) {
+// ─── Storage Path Utilities ───────────────────────────────────────────────────
+
+/**
+ * Parses the relative storage path from a Supabase public URL.
+ * e.g. https://xxx.supabase.co/storage/v1/object/public/gallery/exhibitions/abc/hero.jpg
+ *      → 'exhibitions/abc/hero.jpg'
+ * Returns null for non-storage or empty URLs.
+ */
+function parseStoragePath(url: string | null | undefined, bucket: string): string | null {
+  if (!url || !url.includes('/storage/v1/object/public/')) return null
+  const marker = `/storage/v1/object/public/${bucket}/`
+  const idx = url.indexOf(marker)
+  if (idx === -1) return null
+  const path = url.slice(idx + marker.length)
+  return path || null
+}
+
+interface StorageFile {
+  bucket: string
+  path: string
+}
+
+/**
+ * Collects all storage file references linked to an exhibition, across all buckets.
+ * MUST be called before the database row is deleted.
+ */
+async function collectExhibitionStorageFiles(supabase: any, exhibitionId: string): Promise<StorageFile[]> {
+  const files: StorageFile[] = []
+
+  const push = (bucket: string, url: string | null | undefined) => {
+    const path = parseStoragePath(url, bucket)
+    if (path) files.push({ bucket, path })
+  }
+
+  // 1. Exhibition hero image
+  const { data: exh } = await supabase
+    .from('exhibitions')
+    .select('hero_image_url')
+    .eq('id', exhibitionId)
+    .maybeSingle()
+  if (exh) push('gallery', exh.hero_image_url)
+
+  // 2. Gallery media for this exhibition
+  const { data: mediaItems } = await supabase
+    .from('gallery_media')
+    .select('url, thumbnail_url')
+    .eq('exhibition_id', exhibitionId)
+  for (const m of mediaItems || []) {
+    push('gallery', m.url)
+    push('gallery', m.thumbnail_url)
+  }
+
+  // 3. Gallery albums og_image_url
+  const { data: albums } = await supabase
+    .from('gallery_albums')
+    .select('og_image_url')
+    .eq('exhibition_id', exhibitionId)
+  for (const a of albums || []) {
+    push('gallery', a.og_image_url)
+  }
+
+  // 4. Artwork images (raw + optimized)
+  const { data: artworks } = await supabase
+    .from('artworks')
+    .select('id')
+    .eq('exhibition_id', exhibitionId)
+  const artworkIds = (artworks || []).map((a: any) => a.id)
+
+  if (artworkIds.length > 0) {
+    const { data: artworkImages } = await supabase
+      .from('artwork_images')
+      .select('url_thumbnail, url_medium, url_high, url_zoom')
+      .in('artwork_id', artworkIds)
+    for (const img of artworkImages || []) {
+      push('artworks_optimized', img.url_thumbnail)
+      push('artworks_optimized', img.url_medium)
+      push('artworks_optimized', img.url_high)
+      push('artworks_optimized', img.url_zoom)
+    }
+
+    // Also check for raw artwork URLs directly on artworks table
+    const { data: artworkRaw } = await supabase
+      .from('artworks')
+      .select('image_url')
+      .eq('exhibition_id', exhibitionId)
+    for (const a of artworkRaw || []) {
+      push('artworks_raw', a.image_url)
+      push('artworks_optimized', a.image_url)
+    }
+  }
+
+  // 5. Catalogs
+  const { data: catalogs } = await supabase
+    .from('catalogs')
+    .select('pdf_url, cover_image_url')
+    .eq('exhibition_id', exhibitionId)
+  for (const c of catalogs || []) {
+    push('catalogs', c.pdf_url)
+    push('gallery', c.cover_image_url)
+  }
+
+  // De-duplicate by bucket+path
+  const seen = new Set<string>()
+  return files.filter(f => {
+    const key = `${f.bucket}::${f.path}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+/**
+ * Attempts to remove a list of storage files grouped by bucket.
+ * Returns separate lists of succeeded and failed paths.
+ */
+async function cleanupStorageFiles(
+  supabase: any,
+  files: StorageFile[]
+): Promise<{ succeeded: StorageFile[]; failed: Array<StorageFile & { error: string }> }> {
+  const succeeded: StorageFile[] = []
+  const failed: Array<StorageFile & { error: string }> = []
+
+  // Group by bucket
+  const byBucket: Record<string, string[]> = {}
+  for (const f of files) {
+    if (!byBucket[f.bucket]) byBucket[f.bucket] = []
+    byBucket[f.bucket].push(f.path)
+  }
+
+  for (const [bucket, paths] of Object.entries(byBucket)) {
+    if (paths.length === 0) continue
+    // Supabase storage.remove() returns data with errors per-file or a top-level error
+    const { error } = await supabase.storage.from(bucket).remove(paths)
+    if (error) {
+      // Mark all paths in this bucket as failed
+      for (const path of paths) {
+        failed.push({ bucket, path, error: error.message })
+      }
+    } else {
+      for (const path of paths) {
+        succeeded.push({ bucket, path })
+      }
+    }
+  }
+
+  return { succeeded, failed }
+}
+
+// ─── Post-Deletion Summary Type ───────────────────────────────────────────────
+
+export interface DeletionReport {
+  exhibitionId: string
+  exhibitionName: string
+  artworksRemoved: number
+  galleryMediaRemoved: number
+  catalogsRemoved: number
+  participantsRemoved: number
+  storageFilesRemoved: number
+  storageFilesQueuedForRetry: number
+  homepageRefreshed: boolean
+  searchRefreshed: boolean
+  statisticsRefreshed: boolean
+  verificationPassed: boolean
+  warnings: string[]
+}
+
+// ─── Permanent Delete (Single) ────────────────────────────────────────────────
+
+export async function permanentDeleteExhibition(
+  id: string
+): Promise<{ success?: boolean; error?: string; report?: DeletionReport }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  await requireAdmin(supabase, user)
 
-  // Only allow permanent delete for items in trash (is_deleted = true)
-  const { data: exhibition, error: fetchError } = await supabase.from('exhibitions').select('is_deleted, theme_en').eq('id', id).single()
-  if (fetchError || !exhibition) return { error: 'Exhibition not found' }
-  if (!exhibition.is_deleted) return { error: 'Only items in the trash can be permanently deleted.' }
+  let actorRole: string
+  try {
+    actorRole = await requireOwner(supabase, user)
+  } catch (e: any) {
+    return { error: e.message }
+  }
 
-  // Check dependencies
-  const [artworksRes, participantsRes, galleriesRes, catalogsRes] = await Promise.all([
+  // ── Phase 0: Pre-flight fetch ────────────────────────────────────────────
+  const { data: exhibition, error: fetchError } = await supabase
+    .from('exhibitions')
+    .select('id, theme_en, is_deleted, is_featured, status, approved_artists_count')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (fetchError) return { error: `Failed to fetch exhibition: ${fetchError.message}` }
+  if (!exhibition) return { error: 'Exhibition not found.' }
+  if (!exhibition.is_deleted) {
+    return { error: 'Only exhibitions in the Trash can be permanently deleted. Move the exhibition to Trash first.' }
+  }
+
+  const exhibitionName = exhibition.theme_en || id
+  const warnings: string[] = []
+
+  // ── Phase 1: Count dependent records (for the report) ───────────────────
+  const [artworksRes, participantsRes, galleryRes, catalogsRes] = await Promise.all([
     supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
     supabase.from('exhibition_participants').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
     supabase.from('gallery_media').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
-    supabase.from('catalogs').select('id', { count: 'exact', head: true }).eq('exhibition_id', id)
+    supabase.from('catalogs').select('id', { count: 'exact', head: true }).eq('exhibition_id', id),
   ])
 
-  const depsCount = (artworksRes.count || 0) + (participantsRes.count || 0) + (galleriesRes.count || 0) + (catalogsRes.count || 0)
-  
-  if (depsCount > 0) {
-    return { error: `Cannot permanently delete exhibition because it has ${depsCount} dependencies (artworks, galleries, etc.). Please clean up dependencies first.` }
-  }
+  const artworksCount = artworksRes.count ?? 0
+  const participantsCount = participantsRes.count ?? 0
+  const galleryCount = galleryRes.count ?? 0
+  const catalogsCount = catalogsRes.count ?? 0
 
-  const { error } = await supabase.from('exhibitions').delete().eq('id', id)
-  if (error) return { error: error.message }
+  // ── Phase 2: Collect storage file paths (before DB deletion) ────────────
+  const storageFiles = await collectExhibitionStorageFiles(supabase, id)
 
-  // Log action
+  // ── Phase 3: Audit — STARTED ─────────────────────────────────────────────
   await supabase.from('audit_logs').insert([{
     actor_id: user!.id,
-    action: 'PERMANENT_DELETE_EXHIBITION',
+    action: 'PERMANENT_DELETE_STARTED',
     entity_type: 'exhibition',
     entity_id: id,
-    details: { theme: exhibition.theme_en }
+    details: {
+      theme_en: exhibitionName,
+      deleted_by_role: actorRole,
+      artworks_count: artworksCount,
+      participants_count: participantsCount,
+      gallery_count: galleryCount,
+      catalogs_count: catalogsCount,
+      storage_files_identified: storageFiles.length,
+    }
   }])
 
+  // ── Phase 4: Atomic database delete (CASCADE handles all children) ───────
+  const { error: deleteError } = await supabase
+    .from('exhibitions')
+    .delete()
+    .eq('id', id)
+
+  if (deleteError) {
+    // Audit FAILED
+    await supabase.from('audit_logs').insert([{
+      actor_id: user!.id,
+      action: 'PERMANENT_DELETE_FAILED',
+      entity_type: 'exhibition',
+      entity_id: id,
+      details: { theme_en: exhibitionName, reason: deleteError.message }
+    }])
+    return { error: `Database deletion failed: ${deleteError.message}` }
+  }
+
+  // ── Phase 5: Storage cleanup ──────────────────────────────────────────────
+  const { succeeded: storageSucceeded, failed: storageFailed } =
+    await cleanupStorageFiles(supabase, storageFiles)
+
+  // Queue failed storage deletions for retry
+  if (storageFailed.length > 0) {
+    const retryRows = storageFailed.map(f => ({
+      exhibition_id: id,
+      exhibition_name: exhibitionName,
+      storage_bucket: f.bucket,
+      storage_path: f.path,
+      retry_count: 0,
+      status: 'pending',
+      last_error: f.error,
+    }))
+    const { error: queueError } = await supabase
+      .from('pending_storage_deletions')
+      .insert(retryRows)
+    if (queueError) {
+      warnings.push(`Storage retry queue insert failed: ${queueError.message}. ${storageFailed.length} file(s) may need manual cleanup.`)
+      console.error('[permanentDeleteExhibition] Failed to queue storage retries:', queueError.message)
+    } else {
+      warnings.push(`${storageFailed.length} storage file(s) could not be deleted and have been queued for retry.`)
+    }
+  }
+
+  // ── Phase 6: Post-deletion verification ──────────────────────────────────
+  let verificationPassed = true
+
+  const { data: checkExhibition } = await supabase
+    .from('exhibitions')
+    .select('id')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (checkExhibition) {
+    verificationPassed = false
+    warnings.push('CRITICAL: Exhibition record still exists after deletion. Database may be in an inconsistent state.')
+    console.error('[permanentDeleteExhibition] VERIFICATION FAILED: Exhibition still exists:', id)
+  }
+
+  // Check for orphaned artworks (should never happen with CASCADE, but we verify)
+  const { count: orphanArtworks } = await supabase
+    .from('artworks')
+    .select('id', { count: 'exact', head: true })
+    .eq('exhibition_id', id)
+
+  if (orphanArtworks && orphanArtworks > 0) {
+    verificationPassed = false
+    warnings.push(`CRITICAL: ${orphanArtworks} orphaned artwork record(s) remain after deletion.`)
+    console.error('[permanentDeleteExhibition] ORPHAN ARTWORKS DETECTED:', orphanArtworks)
+  }
+
+  // ── Phase 7: Full cache revalidation ─────────────────────────────────────
   revalidateExhibitionCaches(id)
-  return { success: true }
+
+  // ── Phase 8: Audit — COMPLETED ───────────────────────────────────────────
+  const report: DeletionReport = {
+    exhibitionId: id,
+    exhibitionName,
+    artworksRemoved: artworksCount,
+    galleryMediaRemoved: galleryCount,
+    catalogsRemoved: catalogsCount,
+    participantsRemoved: participantsCount,
+    storageFilesRemoved: storageSucceeded.length,
+    storageFilesQueuedForRetry: storageFailed.length,
+    homepageRefreshed: true,
+    searchRefreshed: true,
+    statisticsRefreshed: true,
+    verificationPassed,
+    warnings,
+  }
+
+  await supabase.from('audit_logs').insert([{
+    actor_id: user!.id,
+    action: 'PERMANENT_DELETE_COMPLETED',
+    entity_type: 'exhibition',
+    entity_id: id,
+    details: {
+      theme_en: exhibitionName,
+      deleted_by_role: actorRole,
+      artworks_removed: artworksCount,
+      gallery_media_removed: galleryCount,
+      catalogs_removed: catalogsCount,
+      participants_removed: participantsCount,
+      storage_files_removed: storageSucceeded.length,
+      storage_files_queued: storageFailed.length,
+      verification_passed: verificationPassed,
+      warnings,
+    }
+  }])
+
+  return { success: true, report }
 }
 
+// ─── Permanent Delete (Bulk) ──────────────────────────────────────────────────
+
+export interface BulkDeletionResult {
+  succeeded: Array<{ id: string; name: string; report: DeletionReport }>
+  failed: Array<{ id: string; name: string; error: string }>
+}
+
+export async function bulkPermanentDeleteExhibitions(
+  ids: string[]
+): Promise<{ success?: boolean; error?: string; result?: BulkDeletionResult }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  try {
+    await requireOwner(supabase, user)
+  } catch (e: any) {
+    return { error: e.message }
+  }
+
+  if (!ids || ids.length === 0) return { error: 'No exhibition IDs provided.' }
+  if (ids.length > 20) {
+    return { error: `Safety cap exceeded: cannot permanently delete more than 20 exhibitions at once (received ${ids.length}). Split the request into smaller batches.` }
+  }
+
+  const result: BulkDeletionResult = { succeeded: [], failed: [] }
+
+  for (const id of ids) {
+    const res = await permanentDeleteExhibition(id)
+    if (res.error) {
+      // Fetch name for error report (may not exist if ID is wrong)
+      const { data: exh } = await supabase
+        .from('exhibitions')
+        .select('theme_en')
+        .eq('id', id)
+        .maybeSingle()
+      result.failed.push({ id, name: exh?.theme_en ?? id, error: res.error })
+    } else if (res.report) {
+      result.succeeded.push({ id, name: res.report.exhibitionName, report: res.report })
+    }
+  }
+
+  return { success: true, result }
+}
+
+// ─── Storage Retry ────────────────────────────────────────────────────────────
+
+export interface StorageRetryResult {
+  totalAttempted: number
+  succeeded: number
+  failed: number
+  details: Array<{ id: string; bucket: string; path: string; status: 'success' | 'failed'; error?: string }>
+}
+
+export async function retryStorageCleanup(): Promise<{ success?: boolean; error?: string; result?: StorageRetryResult }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  try {
+    await requireOwner(supabase, user)
+  } catch (e: any) {
+    return { error: e.message }
+  }
+
+  // Fetch all pending or failed items (up to 100 at a time)
+  const { data: pendingItems, error: fetchError } = await supabase
+    .from('pending_storage_deletions')
+    .select('id, exhibition_id, exhibition_name, storage_bucket, storage_path, retry_count')
+    .in('status', ['pending', 'failed'])
+    .order('created_at', { ascending: true })
+    .limit(100)
+
+  if (fetchError) return { error: `Failed to fetch retry queue: ${fetchError.message}` }
+  if (!pendingItems || pendingItems.length === 0) {
+    return { success: true, result: { totalAttempted: 0, succeeded: 0, failed: 0, details: [] } }
+  }
+
+  const details: StorageRetryResult['details'] = []
+
+  for (const item of pendingItems) {
+    const { error: removeError } = await supabase
+      .storage
+      .from(item.storage_bucket)
+      .remove([item.storage_path])
+
+    const now = new Date().toISOString()
+
+    if (!removeError) {
+      await supabase
+        .from('pending_storage_deletions')
+        .update({
+          status: 'success',
+          last_retried_at: now,
+          retry_count: item.retry_count + 1,
+          last_error: null,
+        })
+        .eq('id', item.id)
+
+      details.push({ id: item.id, bucket: item.storage_bucket, path: item.storage_path, status: 'success' })
+    } else {
+      await supabase
+        .from('pending_storage_deletions')
+        .update({
+          status: 'failed',
+          last_retried_at: now,
+          retry_count: item.retry_count + 1,
+          last_error: removeError.message,
+        })
+        .eq('id', item.id)
+
+      details.push({
+        id: item.id,
+        bucket: item.storage_bucket,
+        path: item.storage_path,
+        status: 'failed',
+        error: removeError.message,
+      })
+    }
+  }
+
+  const succeeded = details.filter(d => d.status === 'success').length
+  const failed = details.filter(d => d.status === 'failed').length
+
+  // Audit the retry run
+  await supabase.from('audit_logs').insert([{
+    actor_id: user!.id,
+    action: 'STORAGE_RETRY_CLEANUP',
+    entity_type: 'storage',
+    entity_id: user!.id,
+    details: { total: pendingItems.length, succeeded, failed }
+  }])
+
+  return {
+    success: true,
+    result: { totalAttempted: pendingItems.length, succeeded, failed, details }
+  }
+}
