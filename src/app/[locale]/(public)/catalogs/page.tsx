@@ -121,7 +121,13 @@ export default async function PublicCatalogsPage({
         <div className="page-hero-inner">
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'প্রকাশনা' : 'Publications'}</div>
-            <h1 dangerouslySetInnerHTML={{ __html: heroData?.title || (locale === 'bn' ? 'প্রদর্শনী <em>ক্যাটালগ আর্কাইভ</em>' : 'Exhibition <em>Catalog Archive</em>') }} />
+            <h1>
+              {locale === 'bn' ? (
+                <span dangerouslySetInnerHTML={{ __html: 'প্রদর্শনী <em>ক্যাটালগ আর্কাইভ</em>' }} />
+              ) : (
+                <span dangerouslySetInnerHTML={{ __html: 'Exhibition <em>Catalog Archive</em>' }} />
+              )}
+            </h1>
             <p className="page-hero-sub">
               {heroData?.subtitle || (locale === 'bn' 
                 ? 'রংধনুর প্রতিটি অফিসিয়াল প্রদর্শনী ক্যাটালগ ব্রাউজ করুন। সুন্দরভাবে কিউরেট করা ডিজিটাল প্রকাশনাগুলোর মাধ্যমে প্রতিটি প্রদর্শনী অন্বেষণ করুন।'

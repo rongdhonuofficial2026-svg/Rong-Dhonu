@@ -122,7 +122,13 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
         <div className="page-hero-inner">
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Visual Archive'}</div>
-            <h1 dangerouslySetInnerHTML={{ __html: heroTitle }} />
+            <h1>
+              {locale === 'bn' ? (
+                <span dangerouslySetInnerHTML={{ __html: 'আমাদের গ্যালারি <em>ঘুরে দেখুন</em>' }} />
+              ) : (
+                <span dangerouslySetInnerHTML={{ __html: 'Walk Through <em>Our Gallery</em>' }} />
+              )}
+            </h1>
             <p className="page-hero-sub">
               {heroSubtitle}
             </p>

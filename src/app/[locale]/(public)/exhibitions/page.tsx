@@ -105,7 +105,13 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
         <div className="page-hero-inner">
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'মিউজিয়াম কালানুক্রম' : 'Museum Chronology'}</div>
-            <h1 dangerouslySetInnerHTML={{ __html: heroTitle }} />
+            <h1>
+              {locale === 'bn' ? (
+                <span dangerouslySetInnerHTML={{ __html: 'প্রদর্শনী <em>ইতিহাস</em>' }} />
+              ) : (
+                <span dangerouslySetInnerHTML={{ __html: 'Exhibitions <em>Through the Years</em>' }} />
+              )}
+            </h1>
             <p className="page-hero-sub">
               {heroSubtitle}
             </p>
