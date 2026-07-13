@@ -131,8 +131,11 @@ export async function forgotPasswordAction(data: z.infer<typeof forgotPasswordSc
   
   // Actually, to prevent enumeration, we ALWAYS return success. 
   // We will only send the email if the user exists, but we don't tell the client.
+  const { getBaseUrl } = await import('@/lib/utils');
+  const baseUrl = getBaseUrl();
+  
   const { error } = await supabase.auth.resetPasswordForEmail(result.data.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback?next=/reset-password`
+    redirectTo: `${baseUrl}/api/auth/callback?next=/reset-password`
   });
 
   if (error) {

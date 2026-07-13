@@ -35,12 +35,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const supabase = await createClient()
 
-  // Dynamic exhibition pages
-  const { data: exhibitions } = await supabase
-    .from('exhibitions')
-    .select('id, updated_at')
-    .in('status', ['upcoming', 'ongoing', 'archived'])
-    .neq('is_deleted', true)
+  // Dynamic pages from DB
+  let exhibitions: any[] | null = []
+  let artworks: any[] | null = []
+  let artists: any[] | null = []
+
+  try {
+    const [exhRes, artRes, prfRes] = await Promise.all([
+      supabase.from('exhibitions').select('id, updated_at').in('status', ['upcoming', 'ongoing', 'archived']).neq('is_deleted', true),
+      supabase.from('artworks').select('id, updated_at').eq('status', 'approved'),
+      supabase.from('profiles').select('slug, updated_at').eq('role', 'member').not('slug', 'is', null)
+    ])
+    exhibitions = exhRes.data
+    artworks = artRes.data
+    artists = prfRes.data
+  } catch (error) {
+    console.error('Sitemap generation error:', error)
+  }
 
   const exhibitionEntries: MetadataRoute.Sitemap = (exhibitions || []).flatMap(
     (ex) =>
@@ -57,12 +68,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
   )
 
-  // Dynamic artwork / gallery pages
-  const { data: artworks } = await supabase
-    .from('artworks')
-    .select('id, updated_at')
-    .eq('status', 'approved')
-
   const artworkEntries: MetadataRoute.Sitemap = (artworks || []).flatMap((art) =>
     locales.map((locale) => ({
       url: `${baseUrl}/${locale}/gallery/artwork/${art.id}`,
@@ -76,13 +81,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     }))
   )
-
-  // Artist profile pages
-  const { data: artists } = await supabase
-    .from('profiles')
-    .select('slug, updated_at')
-    .eq('role', 'member')
-    .not('slug', 'is', null)
 
   const artistEntries: MetadataRoute.Sitemap = (artists || []).flatMap(
     (artist) =>

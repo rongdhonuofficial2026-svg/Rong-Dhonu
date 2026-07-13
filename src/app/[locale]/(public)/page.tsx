@@ -157,12 +157,14 @@ export default async function HomePage({
         .order('exhibition_start', { ascending: false, nullsFirst: false })
         .limit(5)
 
-      if (archivedEx) {
-        for (const arch of archivedEx) {
-          const archArtworks = await fetchCuratedCollection(arch.id)
+      if (archivedEx && archivedEx.length > 0) {
+        const archivedArtworksResults = await Promise.all(
+          archivedEx.map(arch => fetchCuratedCollection(arch.id))
+        );
+        for (const archArtworks of archivedArtworksResults) {
           if (archArtworks.length > 0) {
-            artworks = archArtworks
-            break
+            artworks = archArtworks;
+            break;
           }
         }
       }

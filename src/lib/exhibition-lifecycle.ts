@@ -63,14 +63,34 @@ export async function syncExhibitionLifecycle(exhibition: any, supabase: any) {
         const titleEn = `The exhibition "${data.theme_en}" has officially started!`;
         const titleBn = `"${data.theme_bn || data.theme_en}" প্রদর্শনী শুরু হয়েছে!`;
         
-        const { data: users } = await supabase.from('profiles').select('id').in('role', ['member', 'committee', 'admin']);
-        if (users) {
-          for (const u of users) {
-            await createNotification(u.id, 'new_exhibition', titleEn, titleBn, {
-              subject: `Rongdhonu: Exhibition Started`,
-              html: `<p>The exhibition <strong>${data.theme_en}</strong> is now ongoing! Visit the gallery to see the artworks.</p>`,
-              category: 'notify_new_exhibition',
-            }).catch(e => console.error(e));
+        const { data: users } = await supabase.from('profiles').select('id, email, notify_email, notify_in_app').in('role', ['member', 'committee', 'admin']);
+        if (users && users.length > 0) {
+          // Bulk insert in-app notifications
+          const inserts = users.filter((u: any) => u.notify_in_app !== false).map((u: any) => ({
+            user_id: u.id,
+            type: 'new_exhibition',
+            message_en: titleEn,
+            message_bn: titleBn,
+            read_status: false
+          }));
+          
+          if (inserts.length > 0) {
+            await supabase.from('notifications').insert(inserts).catch((e: any) => console.error('Bulk notification insert failed', e));
+          }
+          
+          // Bulk trigger emails (fire & forget)
+          const emailsToNotify = users.filter((u: any) => u.notify_email !== false && u.email).map((u: any) => u.email);
+          if (emailsToNotify.length > 0) {
+            // Note: Sending an array to the edge function if it supports it, or just iterating non-blocking
+            emailsToNotify.forEach((email: string) => {
+               supabase.functions.invoke('send-email', {
+                  body: {
+                    to: email,
+                    subject: `Rongdhonu: Exhibition Started`,
+                    html: `<p>The exhibition <strong>${data.theme_en}</strong> is now ongoing! Visit the gallery to see the artworks.</p>`
+                  }
+               }).catch((err: any) => console.warn('Email send failed:', err));
+            });
           }
         }
       }
@@ -142,9 +162,7 @@ export async function batchSyncExhibitions(supabase: any) {
   const candidates = [...(toOngoing || []), ...(toArchived || [])];
   if (candidates.length === 0) return;
 
-  for (const exh of candidates) {
-    await syncExhibitionLifecycle(exh, supabase);
-  }
+  await Promise.all(candidates.map(exh => syncExhibitionLifecycle(exh, supabase)));
 }
 
 /**
@@ -159,56 +177,21 @@ export async function getPrimaryPublicExhibition() {
   const supabase = await createClient();
 
   // Run a quick batch sync first to ensure database consistency before fetching
+  // Do not block page render for sync if possible, but we need correct state.
   await batchSyncExhibitions(supabase).catch(err => console.error('[Featured Exhibition] batchSync failed:', err));
 
-  // 1. Try manually featured first, BUT only if it's ongoing or upcoming
-  const { data: featuredActive } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .eq('is_featured', true)
-    .in('status', ['ongoing', 'upcoming'])
-    .neq('is_deleted', true)
-    .order('exhibition_start', { ascending: false, nullsFirst: false })
-    .limit(1)
-    .maybeSingle();
+  // Instead of a 4-query waterfall, fetch top candidates for each category in parallel
+  const [featuredRes, ongoingRes, upcomingRes, archivedRes] = await Promise.all([
+    supabase.from('exhibitions').select('id, theme_en, theme_bn, description_en, description_bn, year, hero_image_url, status, exhibition_start, exhibition_end, is_featured, registration_start, submission_end, venue_en, venue_bn').eq('is_featured', true).in('status', ['ongoing', 'upcoming']).neq('is_deleted', true).order('exhibition_start', { ascending: false }).limit(1).maybeSingle(),
+    supabase.from('exhibitions').select('id, theme_en, theme_bn, description_en, description_bn, year, hero_image_url, status, exhibition_start, exhibition_end, is_featured, registration_start, submission_end, venue_en, venue_bn').eq('status', 'ongoing').neq('is_deleted', true).order('exhibition_start', { ascending: false }).limit(1).maybeSingle(),
+    supabase.from('exhibitions').select('id, theme_en, theme_bn, description_en, description_bn, year, hero_image_url, status, exhibition_start, exhibition_end, is_featured, registration_start, submission_end, venue_en, venue_bn').eq('status', 'upcoming').neq('is_deleted', true).order('exhibition_start', { ascending: true }).limit(1).maybeSingle(),
+    supabase.from('exhibitions').select('id, theme_en, theme_bn, description_en, description_bn, year, hero_image_url, status, exhibition_start, exhibition_end, is_featured, registration_start, submission_end, venue_en, venue_bn').eq('status', 'archived').neq('is_deleted', true).order('exhibition_start', { ascending: false }).limit(1).maybeSingle(),
+  ]);
 
-  if (featuredActive) return featuredActive;
-
-  // 2. Ongoing (newest start date)
-  const { data: ongoing } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .eq('status', 'ongoing')
-    .neq('is_deleted', true)
-    .order('exhibition_start', { ascending: false, nullsFirst: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (ongoing) return ongoing;
-
-  // 3. Upcoming (nearest start date, so ascending)
-  const { data: upcoming } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .eq('status', 'upcoming')
-    .neq('is_deleted', true)
-    .order('exhibition_start', { ascending: true, nullsFirst: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (upcoming) return upcoming;
-
-  // 4. Latest Archived
-  const { data: archived } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .eq('status', 'archived')
-    .neq('is_deleted', true)
-    .order('exhibition_start', { ascending: false, nullsFirst: false })
-    .limit(1)
-    .maybeSingle();
-
-  return archived || null;
+  if (featuredRes.data) return featuredRes.data;
+  if (ongoingRes.data) return ongoingRes.data;
+  if (upcomingRes.data) return upcomingRes.data;
+  return archivedRes.data || null;
 }
 
 /**

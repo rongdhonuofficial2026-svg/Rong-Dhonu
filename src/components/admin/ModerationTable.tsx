@@ -204,21 +204,7 @@ export function ModerationTable({ artworks: initialArtworks, locale }: { artwork
         setFeedback('')
         toast.error('Action Failed', { description: res.error })
       } else {
-        // Check server debug payload
-        const debugPayload = 'debug' in res ? res.debug : null
-        console.log('[MODERATION-CLIENT] STEP C6: SUCCESS — server returned no error', {
-          debugPayload,
-          statusCommitted: debugPayload?.statusCommitted,
-          preRpcStatus:   debugPayload?.preRpcStatus,
-          postRpcStatus:  debugPayload?.postRpcStatus,
-        })
-        if (debugPayload && !debugPayload.statusCommitted) {
-          console.error(
-            '[MODERATION-CLIENT] ⚠️ SERVER RETURNED SUCCESS BUT DATABASE STATUS DID NOT CHANGE!',
-            '\n  Expected:', status,
-            '\n  Actual in DB:', debugPayload.postRpcStatus,
-          )
-        }
+        console.log('[MODERATION-CLIENT] STEP C6: SUCCESS — server returned no error')
         const actionLabel = status === 'approved' ? 'approved' : status === 'rejected' ? 'rejected' : 'sent for revision'
         toast.success('Decision Recorded', {
           description: `Artwork "${selectedArtwork.title_en}" has been ${actionLabel}.`,

@@ -432,38 +432,32 @@ async function collectExhibitionStorageFiles(supabase: any, exhibitionId: string
     if (path) files.push({ bucket, path })
   }
 
-  // 1. Exhibition hero image
-  const { data: exh } = await supabase
-    .from('exhibitions')
-    .select('hero_image_url')
-    .eq('id', exhibitionId)
-    .maybeSingle()
+  // Parallelize the initial 5 queries
+  const [
+    { data: exh },
+    { data: mediaItems },
+    { data: albums },
+    { data: artworks },
+    { data: catalogs }
+  ] = await Promise.all([
+    supabase.from('exhibitions').select('hero_image_url').eq('id', exhibitionId).maybeSingle(),
+    supabase.from('gallery_media').select('url, thumbnail_url').eq('exhibition_id', exhibitionId),
+    supabase.from('gallery_albums').select('og_image_url').eq('exhibition_id', exhibitionId),
+    supabase.from('artworks').select('id, image_url').eq('exhibition_id', exhibitionId),
+    supabase.from('catalogs').select('pdf_url, cover_image_url').eq('exhibition_id', exhibitionId)
+  ]);
+
   if (exh) push('gallery', exh.hero_image_url)
 
-  // 2. Gallery media for this exhibition
-  const { data: mediaItems } = await supabase
-    .from('gallery_media')
-    .select('url, thumbnail_url')
-    .eq('exhibition_id', exhibitionId)
   for (const m of mediaItems || []) {
     push('gallery', m.url)
     push('gallery', m.thumbnail_url)
   }
 
-  // 3. Gallery albums og_image_url
-  const { data: albums } = await supabase
-    .from('gallery_albums')
-    .select('og_image_url')
-    .eq('exhibition_id', exhibitionId)
   for (const a of albums || []) {
     push('gallery', a.og_image_url)
   }
 
-  // 4. Artwork images (raw + optimized)
-  const { data: artworks } = await supabase
-    .from('artworks')
-    .select('id')
-    .eq('exhibition_id', exhibitionId)
   const artworkIds = (artworks || []).map((a: any) => a.id)
 
   if (artworkIds.length > 0) {
@@ -471,6 +465,7 @@ async function collectExhibitionStorageFiles(supabase: any, exhibitionId: string
       .from('artwork_images')
       .select('url_thumbnail, url_medium, url_high, url_zoom')
       .in('artwork_id', artworkIds)
+      
     for (const img of artworkImages || []) {
       push('artworks_optimized', img.url_thumbnail)
       push('artworks_optimized', img.url_medium)
@@ -478,22 +473,12 @@ async function collectExhibitionStorageFiles(supabase: any, exhibitionId: string
       push('artworks_optimized', img.url_zoom)
     }
 
-    // Also check for raw artwork URLs directly on artworks table
-    const { data: artworkRaw } = await supabase
-      .from('artworks')
-      .select('image_url')
-      .eq('exhibition_id', exhibitionId)
-    for (const a of artworkRaw || []) {
+    for (const a of artworks || []) {
       push('artworks_raw', a.image_url)
       push('artworks_optimized', a.image_url)
     }
   }
 
-  // 5. Catalogs
-  const { data: catalogs } = await supabase
-    .from('catalogs')
-    .select('pdf_url, cover_image_url')
-    .eq('exhibition_id', exhibitionId)
   for (const c of catalogs || []) {
     push('catalogs', c.pdf_url)
     push('gallery', c.cover_image_url)

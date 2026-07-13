@@ -494,7 +494,7 @@
   text-align: center;
 }
 .contact-inner h1 {
-  font-family: var(--font-apparel), var(--font-serif-bn), serif !important;
+  font-family: var(--font-serif), var(--font-serif-bn), serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   font-size: clamp(46px, 6vw, 86px) !important;
@@ -507,7 +507,7 @@
   text-rendering: optimizeLegibility !important;
 }
 .contact-inner h1 em {
-  font-family: var(--font-afera), var(--font-serif-bn), cursive !important;
+  font-family: var(--font-serif), var(--font-serif-bn), cursive !important;
   font-weight: 500 !important;
   font-style: normal !important;
   color: var(--color-gold-bright) !important;
@@ -2210,7 +2210,7 @@
 }
 
 .exhibitions-page-hero h1 em {
-  font-family: var(--font-afera), var(--font-serif-bn), cursive !important;
+  font-family: var(--font-serif), var(--font-serif-bn), cursive !important;
   font-weight: 500 !important;
   font-style: normal !important;
   color: var(--color-gold-bright) !important;
@@ -2234,7 +2234,7 @@
 }
 
 .gallery-page-hero h1 em {
-  font-family: var(--font-afera), var(--font-serif-bn), cursive !important;
+  font-family: var(--font-serif), var(--font-serif-bn), cursive !important;
   font-weight: 500 !important;
   font-style: normal !important;
   color: var(--color-gold-bright) !important;
@@ -2242,7 +2242,7 @@
 
 /* ================= CATALOGS PAGE HERO TYPOGRAPHY ================= */
 .catalogs-page-hero h1 {
-  font-family: var(--font-apparel), var(--font-serif-bn), serif !important;
+  font-family: var(--font-serif), var(--font-serif-bn), serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   font-size: clamp(46px, 6.4vw, 96px) !important;

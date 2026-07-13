@@ -35,9 +35,10 @@ export default async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  // Remove locale prefix for checking paths
-  const pathWithoutLocale = pathname.replace(/^\/(en|bn)/, '') || '/';
-  const currentLocale = pathname.split('/')[1] || 'en';
+  // Remove locale prefix for checking paths dynamically
+  const localeRegex = new RegExp(`^/(${routing.locales.join('|')})`);
+  const pathWithoutLocale = pathname.replace(localeRegex, '') || '/';
+  const currentLocale = pathname.split('/')[1] || routing.defaultLocale;
 
   // Fetch role if user exists
   let role = 'guest';

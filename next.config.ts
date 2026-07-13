@@ -26,7 +26,7 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       // Scripts: self + Next.js inline scripts + Vercel analytics
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+      "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
       // Styles: self + Google Fonts + inline (Tailwind/CSS-in-JS)
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Fonts: Google Fonts

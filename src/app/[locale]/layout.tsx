@@ -7,56 +7,24 @@ import '@/styles/globals.css';
 import '@/styles/responsive-public.css';
 import '@/styles/responsive-mobile-polish.css';
 import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali } from 'next/font/google';
-import localFont from 'next/font/local';
+import { generateDynamicMetadata } from '@/lib/seo';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-serif' });
-const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn' });
-const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
+const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-serif', display: 'swap' });
+const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn', display: 'swap' });
+const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn', display: 'swap' });
 
-const calligraphicAfera = localFont({
-  src: [
-    {
-      path: '../../../public/fonts/calligraphicaferabeautytrial-bold.otf',
-      weight: '700',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/calligraphicaferabeautytrial-midi.otf',
-      weight: '500',
-      style: 'normal',
-    }
-  ],
-  variable: '--font-afera',
-});
-
-const arsenica = localFont({
-  src: [
-    {
-      path: '../../../public/fonts/ArsenicaTrial-Regular.ttf',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/ArsenicaTrial-Medium.ttf',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/ArsenicaTrial-MediumItalic.ttf',
-      weight: '500',
-      style: 'italic',
-    }
-  ],
-  variable: '--font-arsenica',
-});
-
-const apparel = localFont({
-  src: '../../../public/fonts/Fontspring-DEMO-appareldisplay-bold.otf',
-  variable: '--font-apparel',
-  weight: '400',
-  style: 'normal',
-});
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return generateDynamicMetadata({
+    title: locale === 'bn' ? 'রংধনু' : 'Rongdhonu',
+    description: locale === 'bn' 
+      ? 'রংধনু প্রদর্শনী, কিউরেট করা সংগ্রহ এবং মেধাবী শিল্পীদের মাধ্যমে সমসাময়িক শিল্পের জগত অন্বেষণ করুন।' 
+      : 'Explore the world of contemporary art through Rongdhonu exhibitions, curated collections, and talented artists.',
+    url: '/',
+    locale
+  });
+}
 
 export default async function LocaleLayout({
   children,
@@ -72,12 +40,19 @@ export default async function LocaleLayout({
     notFound();
   }
  
-  // Providing all messages to the client
-  // side is the easiest way to get started
+  // Providing all messages to the client side
   const messages = await getMessages();
  
+  // Only load Bengali fonts if the locale is Bengali
+  const fontVariables = [
+    inter.variable,
+    fraunces.variable,
+    locale === 'bn' ? notoSansBn.variable : '',
+    locale === 'bn' ? notoSerifBn.variable : ''
+  ].filter(Boolean).join(' ');
+ 
   return (
-    <html lang={locale} className={`${inter.variable} ${fraunces.variable} ${notoSansBn.variable} ${notoSerifBn.variable} ${calligraphicAfera.variable} ${arsenica.variable} ${apparel.variable}`}>
+    <html lang={locale} className={fontVariables}>
       <body className="min-h-screen flex flex-col font-sans text-charcoal bg-cream">
         <NextIntlClientProvider messages={messages}>
           {/* Accessibility: skip navigation for keyboard/screen reader users */}
