@@ -104,7 +104,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
   // Fetch CMS hero configurations
   const heroData = await getCmsContent('gallery', 'hero', locale)
 
-  const heroTitle = heroData?.title || (locale === 'bn' ? 'প্রদর্শনী অ্যালবাম' : 'Exhibition Albums')
+  const heroTitle = heroData?.title || (locale === 'bn' ? 'আমাদের <em>গ্যালারি</em>' : 'Walk Through <em>Our Gallery</em>')
   const heroSubtitle = heroData?.subtitle || (locale === 'bn' 
     ? 'আমাদের প্রদর্শনী ও ইভেন্টের স্মৃতিগুলো অন্বেষণ করুন।' 
     : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes — every album a room in the museum.')
@@ -122,9 +122,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
         <div className="page-hero-inner">
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Visual Archive'}</div>
-            <h1>
-              {heroData?.title || (locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Exhibition Albums')}
-            </h1>
+            <h1 dangerouslySetInnerHTML={{ __html: heroTitle }} />
             <p className="page-hero-sub">
               {heroSubtitle}
             </p>

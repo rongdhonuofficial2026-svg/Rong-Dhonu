@@ -71,7 +71,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
 
   // Fetch CMS hero configurations
   const heroData = await getCmsContent('exhibitions', 'hero', locale)
-  const heroTitle = heroData?.title || (locale === 'bn' ? 'প্রদর্শনী আর্কাইভ' : 'Exhibitions')
+  const heroTitle = heroData?.title || (locale === 'bn' ? 'প্রদর্শনী <em>আর্কাইভ</em>' : 'Exhibitions <em>Through the Years</em>')
   const heroSubtitle = heroData?.subtitle || (locale === 'bn' 
     ? 'আমাদের বর্তমান এবং অতীতের সমস্ত প্রদর্শনীর একটি আর্কাইভ।' 
     : "Explore the legacy of our annual fine art exhibitions — a decade and a half of showcasing generations of Bengal's most distinctive artistic voices.")
@@ -105,9 +105,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
         <div className="page-hero-inner">
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'মিউজিয়াম কালানুক্রম' : 'Museum Chronology'}</div>
-            <h1>
-              {heroTitle}
-            </h1>
+            <h1 dangerouslySetInnerHTML={{ __html: heroTitle }} />
             <p className="page-hero-sub">
               {heroSubtitle}
             </p>
