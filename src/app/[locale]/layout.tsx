@@ -7,6 +7,7 @@ import '@/styles/globals.css';
 import '@/styles/responsive-public.css';
 import '@/styles/responsive-mobile-polish.css';
 import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali, Playfair_Display, Great_Vibes, Cormorant_Garamond } from 'next/font/google';
+import localFont from 'next/font/local';
 import { generateDynamicMetadata } from '@/lib/seo';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
@@ -16,6 +17,33 @@ const greatVibes = Great_Vibes({ weight: '400', subsets: ['latin'], variable: '-
 const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn', display: 'swap' });
 const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn', display: 'swap' });
 const cormorantGaramond = Cormorant_Garamond({ weight: ['400', '500', '600', '700'], subsets: ['latin'], variable: '--font-cormorant', display: 'swap', style: ['normal', 'italic'] });
+
+const calligraphicAfera = localFont({
+  src: [
+    { path: '../../../public/fonts/calligraphicaferabeautytrial-bold.otf', weight: '700', style: 'normal' },
+    { path: '../../../public/fonts/calligraphicaferabeautytrial-midi.otf', weight: '500', style: 'normal' }
+  ],
+  variable: '--font-afera',
+  display: 'swap',
+});
+
+const arsenica = localFont({
+  src: [
+    { path: '../../../public/fonts/ArsenicaTrial-Regular.ttf', weight: '400', style: 'normal' },
+    { path: '../../../public/fonts/ArsenicaTrial-Medium.ttf', weight: '500', style: 'normal' },
+    { path: '../../../public/fonts/ArsenicaTrial-MediumItalic.ttf', weight: '500', style: 'italic' }
+  ],
+  variable: '--font-arsenica',
+  display: 'swap',
+});
+
+const apparel = localFont({
+  src: '../../../public/fonts/Fontspring-DEMO-appareldisplay-bold.otf',
+  variable: '--font-apparel',
+  weight: '400',
+  style: 'normal',
+  display: 'swap',
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -53,6 +81,9 @@ export default async function LocaleLayout({
     playfair.variable,
     greatVibes.variable,
     cormorantGaramond.variable,
+    calligraphicAfera.variable,
+    arsenica.variable,
+    apparel.variable,
     locale === 'bn' ? notoSansBn.variable : '',
     locale === 'bn' ? notoSerifBn.variable : ''
   ].filter(Boolean).join(' ');

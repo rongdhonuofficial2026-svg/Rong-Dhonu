@@ -123,7 +123,7 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Visual Archive'}</div>
             <h1>
-              {heroData?.title ? heroData.title : (locale === 'bn' ? <span>আমাদের <em>গ্যালারি</em> ঘুরে দেখুন</span> : <>Walk Through <em>Our</em> <em>Gallery</em></>)}
+              {heroData?.title || (locale === 'bn' ? 'ভিজ্যুয়াল আর্কাইভ' : 'Exhibition Albums')}
             </h1>
             <p className="page-hero-sub">
               {heroSubtitle}

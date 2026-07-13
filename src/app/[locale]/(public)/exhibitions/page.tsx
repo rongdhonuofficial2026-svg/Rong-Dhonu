@@ -106,9 +106,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'মিউজিয়াম কালানুক্রম' : 'Museum Chronology'}</div>
             <h1>
-              {heroData?.title ? heroData.title : (locale === 'bn'
-                ? <span>প্রদর্শনী <em>কালানুক্রম</em></span>
-                : <>Exhibitions <em>Through the Years</em></>)}
+              {heroTitle}
             </h1>
             <p className="page-hero-sub">
               {heroSubtitle}
