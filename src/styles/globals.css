@@ -7,10 +7,7 @@
 @theme {
   --font-sans: "Inter", var(--font-sans-bn), ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Fraunces", var(--font-serif-bn), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-afera: var(--font-cormorant), var(--font-playfair), "Fraunces", serif;
-  --font-apparel: var(--font-cormorant), var(--font-playfair), "Fraunces", serif;
-  --font-arsenica: var(--font-cormorant), var(--font-playfair), "Fraunces", serif;
-  --font-script: var(--font-great-vibes), cursive;
+
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -103,6 +100,11 @@
 
 @layer base {
   :root {
+    --font-afera: var(--font-cormorant, "Cormorant Garamond"), var(--font-playfair, "Playfair Display"), "Fraunces", serif;
+    --font-apparel: var(--font-cormorant, "Cormorant Garamond"), var(--font-playfair, "Playfair Display"), "Fraunces", serif;
+    --font-arsenica: var(--font-cormorant, "Cormorant Garamond"), var(--font-playfair, "Playfair Display"), "Fraunces", serif;
+    --font-script: var(--font-great-vibes, "Great Vibes"), cursive;
+
     /* Premium Museum Aesthetic: Light Mode (Warm Ivory) */
     --background: 40 33% 93%;      /* #F5EFE6 Warm Ivory */
     --foreground: 0 0% 7%;         /* #111111 Deep Matte Black */
