@@ -122,7 +122,9 @@ export default async function PublicCatalogsPage({
           <div className="reveal in">
             <div className="eyebrow center">{locale === 'bn' ? 'প্রকাশনা' : 'Publications'}</div>
             <h1>
-              {heroData?.title || (locale === 'bn' ? <span>প্রদর্শনী <em>ক্যাটালগ আর্কাইভ</em></span> : <>Exhibition <em>Catalog Archive</em></>)}
+              {heroData?.title ? heroData.title : (locale === 'bn'
+                ? <span>প্রদর্শনী <em>ক্যাটালগ আর্কাইভ</em></span>
+                : <>Exhibition <em>Catalog Archive</em></>)}
             </h1>
             <p className="page-hero-sub">
               {heroData?.subtitle || (locale === 'bn' 

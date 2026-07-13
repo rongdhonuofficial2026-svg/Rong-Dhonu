@@ -138,7 +138,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
         <div className="lg:col-span-4 space-y-8">
           <div>
             <Badge variant="outline" className="mb-4">{artwork.category || 'Artwork'}</Badge>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-2">{title}</h1>
+            <h1 className="artwork-detail-title">{title}</h1>
             <p className="text-xl text-muted-foreground mb-4">
               by{' '}
               <Link href={`/artists/${artistId}`} className="text-foreground hover:text-accent font-medium hover:underline transition-colors">

@@ -500,23 +500,25 @@
   text-align: center;
 }
 .contact-inner h1 {
-  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
-  font-weight: 400 !important;
-  font-style: normal !important;
-  font-size: clamp(46px, 6vw, 86px) !important;
-  color: var(--color-parchment) !important;
-  letter-spacing: -.02em !important;
-  line-height: 1 !important;
-  font-synthesis: none !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  text-rendering: optimizeLegibility !important;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif;
+  font-size: clamp(48px, 7vw, 110px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+  color: var(--color-parchment);
+  max-width: 1000px;
+  margin: 0 auto;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 .contact-inner h1 em {
-  font-family: var(--font-script), var(--font-serif-bn), cursive !important;
-  font-weight: 500 !important;
-  font-style: normal !important;
-  color: var(--color-gold-bright) !important;
+  font-family: inherit;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-gold-bright);
 }
 .contact-inner p {
   margin: 22px auto 0;
@@ -1083,18 +1085,24 @@
   display: inline-block;
 }
 .page-hero h1 {
-  font-size: clamp(46px, 6.4vw, 96px);
-  line-height: .98;
-  letter-spacing: -.02em;
-  max-width: 900px;
-  margin: 0 auto;
   font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif;
-  font-weight: 500;
+  font-size: clamp(48px, 7vw, 110px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  font-weight: 400;
   color: var(--color-parchment);
+  max-width: 1000px;
+  margin: 0 auto;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 .page-hero h1 em {
+  font-family: inherit;
   font-style: italic;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--color-gold-bright);
 }
 .page-hero-sub {
@@ -2091,18 +2099,19 @@
   margin: 0 auto !important;
 }
 .about-page-hero h1 {
-  font-family: var(--font-arsenica), serif !important;
-  font-weight: 500 !important;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), serif !important;
+  font-weight: 400 !important;
   font-style: normal !important;
-  font-size: clamp(46px, 6vw, 84px) !important;
-  letter-spacing: -.02em !important;
-  line-height: 1.02 !important;
+  font-size: clamp(44px, 6vw, 90px) !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1.08 !important;
   margin: 6px 0 26px !important;
   max-width: none !important;
   font-synthesis: none !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
   text-rendering: optimizeLegibility !important;
+  font-feature-settings: "kern" 1, "liga" 1 !important;
 }
 .about-page-hero .hero-rule {
   width: 64px;
@@ -2198,76 +2207,59 @@
   }
 }
 
-/* ================= EXHIBITIONS PAGE HERO TYPOGRAPHY ================= */
-.exhibitions-page-hero h1 {
-  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
-  font-weight: 400 !important;
-  font-style: normal !important;
-  font-size: clamp(46px, 6.4vw, 96px) !important;
-  line-height: .98 !important;
-  letter-spacing: -.02em !important;
-  color: var(--color-parchment) !important;
-  max-width: 900px !important;
-  margin: 0 auto !important;
-  font-synthesis: none !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  text-rendering: optimizeLegibility !important;
+/* ================================================================
+   UNIFIED DETAIL PAGE HEADING SYSTEM — Cormorant Garamond Display
+   ================================================================ */
+
+/* Shared display font mixin for all non-hero page titles */
+.exhibition-detail-title,
+.album-detail-title,
+.artwork-detail-title,
+.artist-page-hero-title {
+  font-family: var(--font-cormorant, "Cormorant Garamond"), serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+  font-synthesis: none;
+  color: var(--color-parchment, #F5EFE6);
 }
 
-.exhibitions-page-hero h1 em {
-  font-family: var(--font-script), var(--font-serif-bn), cursive !important;
-  font-weight: 500 !important;
-  font-style: normal !important;
-  color: var(--color-gold-bright) !important;
+/* Exhibition detail hero title */
+.exhibition-detail-title {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.6);
 }
 
-/* ================= GALLERY PAGE HERO TYPOGRAPHY ================= */
-.gallery-page-hero h1 {
-  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
-  font-weight: 400 !important;
-  font-style: normal !important;
-  font-size: clamp(46px, 6.4vw, 96px) !important;
-  line-height: .98 !important;
-  letter-spacing: -.02em !important;
-  color: var(--color-parchment) !important;
-  max-width: 900px !important;
-  margin: 0 auto !important;
-  font-synthesis: none !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  text-rendering: optimizeLegibility !important;
+/* Gallery album detail hero title */
+.album-detail-title {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.5);
 }
 
-.gallery-page-hero h1 em {
-  font-family: var(--font-script), var(--font-serif-bn), cursive !important;
-  font-weight: 500 !important;
-  font-style: normal !important;
-  color: var(--color-gold-bright) !important;
+/* Artwork detail page title */
+.artwork-detail-title {
+  font-size: clamp(1.875rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
 }
 
-/* ================= CATALOGS PAGE HERO TYPOGRAPHY ================= */
-.catalogs-page-hero h1 {
-  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
-  font-weight: 400 !important;
-  font-style: normal !important;
-  font-size: clamp(46px, 6.4vw, 96px) !important;
-  line-height: .98 !important;
-  letter-spacing: -.02em !important;
-  color: var(--color-parchment) !important;
-  max-width: 900px !important;
-  margin: 0 auto !important;
-  font-synthesis: none !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  text-rendering: optimizeLegibility !important;
-}
-
-.catalogs-page-hero h1 em {
-  font-family: var(--font-script), var(--font-serif-bn), cursive !important;
-  font-weight: 500 !important;
-  font-style: normal !important;
-  color: var(--color-gold-bright) !important;
+/* Artist profile page title */
+.artist-page-hero-title {
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
 }
 
 .soul {

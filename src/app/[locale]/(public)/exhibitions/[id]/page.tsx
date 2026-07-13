@@ -127,7 +127,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
           >
             {statusBadgeText}
           </Badge>
-          <h1 className="font-serif text-6xl md:text-8xl font-bold drop-shadow-2xl leading-[1.1] tracking-tight exhibition-detail-title">{title}</h1>
+          <h1 className="exhibition-detail-title">{title}</h1>
           
           <div className="flex flex-wrap items-center justify-center gap-6 text-base md:text-lg text-white/90 font-light tracking-wide pt-4">
             {exStart && (

@@ -86,7 +86,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
         <div className="space-y-4 flex-1">
           <div>
             <Badge variant="outline" className="mb-2 capitalize">{profile.role}</Badge>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold">{name}</h1>
+            <h1 className="artist-page-hero-title">{name}</h1>
           </div>
           
           <div className="flex flex-wrap gap-4 text-muted-foreground text-sm">

@@ -180,7 +180,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ locale: 
               {locale === 'bn' ? 'অ্যালবাম' : 'Album'}
             </div>
             
-            <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-[#F4EEDF] leading-[1.1] drop-shadow-xl">
+            <h1 className="album-detail-title">
               {title}
             </h1>
             
