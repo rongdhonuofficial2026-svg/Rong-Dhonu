@@ -6,11 +6,13 @@ import { routing } from '@/lib/i18n/routing';
 import '@/styles/globals.css';
 import '@/styles/responsive-public.css';
 import '@/styles/responsive-mobile-polish.css';
-import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali } from 'next/font/google';
+import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali, Playfair_Display, Great_Vibes } from 'next/font/google';
 import { generateDynamicMetadata } from '@/lib/seo';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-serif', display: 'swap' });
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap' });
+const greatVibes = Great_Vibes({ weight: '400', subsets: ['latin'], variable: '--font-great-vibes', display: 'swap' });
 const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn', display: 'swap' });
 const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn', display: 'swap' });
 
@@ -47,6 +49,8 @@ export default async function LocaleLayout({
   const fontVariables = [
     inter.variable,
     fraunces.variable,
+    playfair.variable,
+    greatVibes.variable,
     locale === 'bn' ? notoSansBn.variable : '',
     locale === 'bn' ? notoSerifBn.variable : ''
   ].filter(Boolean).join(' ');
