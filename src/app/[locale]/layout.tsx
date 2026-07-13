@@ -6,7 +6,7 @@ import { routing } from '@/lib/i18n/routing';
 import '@/styles/globals.css';
 import '@/styles/responsive-public.css';
 import '@/styles/responsive-mobile-polish.css';
-import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali, Playfair_Display, Great_Vibes } from 'next/font/google';
+import { Inter, Fraunces, Noto_Sans_Bengali, Noto_Serif_Bengali, Playfair_Display, Great_Vibes, Cormorant_Garamond } from 'next/font/google';
 import { generateDynamicMetadata } from '@/lib/seo';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
@@ -15,6 +15,7 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 const greatVibes = Great_Vibes({ weight: '400', subsets: ['latin'], variable: '--font-great-vibes', display: 'swap' });
 const notoSansBn = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-sans-bn', display: 'swap' });
 const notoSerifBn = Noto_Serif_Bengali({ subsets: ['bengali'], variable: '--font-serif-bn', display: 'swap' });
+const cormorantGaramond = Cormorant_Garamond({ weight: ['400', '500', '600', '700'], subsets: ['latin'], variable: '--font-cormorant', display: 'swap', style: ['normal', 'italic'] });
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -51,6 +52,7 @@ export default async function LocaleLayout({
     fraunces.variable,
     playfair.variable,
     greatVibes.variable,
+    cormorantGaramond.variable,
     locale === 'bn' ? notoSansBn.variable : '',
     locale === 'bn' ? notoSerifBn.variable : ''
   ].filter(Boolean).join(' ');

@@ -7,9 +7,9 @@
 @theme {
   --font-sans: "Inter", var(--font-sans-bn), ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Fraunces", var(--font-serif-bn), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-afera: var(--font-playfair), "Fraunces", serif;
-  --font-apparel: var(--font-playfair), "Fraunces", serif;
-  --font-arsenica: var(--font-playfair), "Fraunces", serif;
+  --font-afera: var(--font-cormorant), var(--font-playfair), "Fraunces", serif;
+  --font-apparel: var(--font-cormorant), var(--font-playfair), "Fraunces", serif;
+  --font-arsenica: var(--font-cormorant), var(--font-playfair), "Fraunces", serif;
   --font-script: var(--font-great-vibes), cursive;
 
   --color-background: var(--background);
@@ -498,7 +498,7 @@
   text-align: center;
 }
 .contact-inner h1 {
-  font-family: var(--font-apparel), var(--font-serif-bn), serif !important;
+  font-family: var(--font-afera), var(--font-serif-bn), serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   font-size: clamp(46px, 6vw, 86px) !important;
@@ -1086,8 +1086,8 @@
   letter-spacing: -.02em;
   max-width: 900px;
   margin: 0 auto;
-  font-family: var(--font-display);
-  font-weight: 700;
+  font-family: var(--font-afera), var(--font-serif-bn), serif;
+  font-weight: 500;
   color: var(--color-parchment);
 }
 .page-hero h1 em {
