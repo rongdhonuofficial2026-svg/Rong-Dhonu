@@ -500,7 +500,7 @@
   text-align: center;
 }
 .contact-inner h1 {
-  font-family: var(--font-afera), var(--font-serif-bn), serif !important;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   font-size: clamp(46px, 6vw, 86px) !important;
@@ -1088,7 +1088,7 @@
   letter-spacing: -.02em;
   max-width: 900px;
   margin: 0 auto;
-  font-family: var(--font-afera), var(--font-serif-bn), serif;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif;
   font-weight: 500;
   color: var(--color-parchment);
 }
@@ -2200,7 +2200,7 @@
 
 /* ================= EXHIBITIONS PAGE HERO TYPOGRAPHY ================= */
 .exhibitions-page-hero h1 {
-  font-family: var(--font-arsenica), var(--font-serif-bn), serif !important;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   font-size: clamp(46px, 6.4vw, 96px) !important;
@@ -2224,7 +2224,7 @@
 
 /* ================= GALLERY PAGE HERO TYPOGRAPHY ================= */
 .gallery-page-hero h1 {
-  font-family: var(--font-arsenica), var(--font-serif-bn), serif !important;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   font-size: clamp(46px, 6.4vw, 96px) !important;
@@ -2248,7 +2248,7 @@
 
 /* ================= CATALOGS PAGE HERO TYPOGRAPHY ================= */
 .catalogs-page-hero h1 {
-  font-family: var(--font-apparel), var(--font-serif-bn), serif !important;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), var(--font-serif-bn), serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   font-size: clamp(46px, 6.4vw, 96px) !important;
