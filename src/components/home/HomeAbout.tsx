@@ -3,5 +3,6 @@ import { HomeAboutContent } from "./HomeAboutContent"
 
 export async function HomeAbout({ locale, stats }: { locale: string, stats?: any }) {
   const content = await getCmsContent('home', 'about', locale)
+  if (content?.enabled === false) return null
   return <HomeAboutContent content={content} locale={locale} stats={stats} />
 }

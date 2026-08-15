@@ -47,7 +47,7 @@ export default async function AdminDashboardOverview({
 
       {/* SECTION 3: Priority Center */}
       <section className="space-y-6">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-charcoal capitalize">
           Priority Center
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
@@ -59,7 +59,7 @@ export default async function AdminDashboardOverview({
 
       {/* SECTION 4: Operational Activity */}
       <section className="space-y-6">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-charcoal capitalize">
           Operational Activity
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
@@ -86,7 +86,7 @@ export default async function AdminDashboardOverview({
 
       {/* SECTION 5: Platform Modules */}
       <section className="space-y-6">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-charcoal capitalize">
           Platform Modules
         </h2>
         <PlatformMiniPanels
@@ -99,7 +99,7 @@ export default async function AdminDashboardOverview({
 
       {/* SECTION 6: Analytics Snapshot */}
       <section className="space-y-6">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-charcoal capitalize">
           Analytics Snapshot
         </h2>
         <UserOverviewPanel kpis={data.kpis} />
@@ -107,7 +107,7 @@ export default async function AdminDashboardOverview({
 
       {/* SECTION 7: System Health */}
       <section className="space-y-6">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-white capitalize">
+        <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-charcoal capitalize">
           System Health
         </h2>
         <SystemHealthPanel />

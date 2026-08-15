@@ -43,7 +43,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
           </div>
           <div className="about-note">
             <ScrollArea className="h-32">
-              <p>"{history}"</p>
+              <p className="break-words">"{history}"</p>
             </ScrollArea>
             <div className="sig">
               {locale === 'bn' ? '— প্রতিষ্ঠিত ২০২২, বেলডাঙ্গা' : '— EST, 2022, BELDANGA'}
@@ -54,7 +54,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
         {/* Right Copy Panel */}
         <div className="about-copy reveal">
           <div className="eyebrow on-paper">
-            {locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhonu'}
+            {content?.title || (locale === 'bn' ? 'রংধনু সম্পর্কে' : 'About Rongdhonu')}
           </div>
           <h2>
             {(() => {
@@ -87,11 +87,11 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
                   </>
                 )
               }
-              return <span dangerouslySetInnerHTML={{ __html: mission }} />
+              return <span className="break-words" dangerouslySetInnerHTML={{ __html: mission }} />
             })()}
           </h2>
           <ScrollArea className="h-40">
-            <p className="about-vision">{vision}</p>
+            <p className="about-vision break-words">{vision}</p>
           </ScrollArea>
           
           <div className="about-stats">

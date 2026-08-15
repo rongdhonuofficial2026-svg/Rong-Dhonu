@@ -9,7 +9,8 @@ interface HomeHeroProps {
 
 export async function HomeHero({ locale, exhibition, stats }: HomeHeroProps) {
   const content = await getCmsContent('home', 'hero', locale)
-  
+  if (content?.enabled === false) return null
+
   return (
     <HomeHeroContent 
       locale={locale} 

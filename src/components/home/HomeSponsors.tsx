@@ -3,10 +3,12 @@ import { HomeSponsorsContent, HomeTestimonialsContent } from "./HomeSponsorsCont
 
 export async function HomeSponsors({ locale }: { locale: string }) {
   const content = await getCmsContent('home', 'sponsors', locale)
+  if (content?.enabled === false) return null
   return <HomeSponsorsContent locale={locale} content={content} />
 }
 
 export async function HomeTestimonials({ locale }: { locale: string }) {
   const content = await getCmsContent('home', 'testimonials', locale)
+  if (content?.enabled === false) return null
   return <HomeTestimonialsContent locale={locale} content={content} />
 }

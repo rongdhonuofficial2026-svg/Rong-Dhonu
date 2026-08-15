@@ -42,8 +42,8 @@ export function HomeNewsletterContent({ locale, content }: { locale: string, con
     <section className="newsletter reveal" id="newsletter">
       <div className="newsletter-bg">
         <div className="newsletter-inner">
-          <h2 dangerouslySetInnerHTML={{ __html: title }} />
-          <p>{description}</p>
+          <h2 className="break-words" dangerouslySetInnerHTML={{ __html: title }} />
+          <p className="break-words">{description}</p>
           
           <form className="newsletter-form" onSubmit={handleSubmit}>
             <input

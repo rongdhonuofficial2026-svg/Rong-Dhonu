@@ -32,6 +32,24 @@ interface CMSEngineManagerProps {
   locale: string
 }
 
+// Common acronyms that should stay uppercase once the key is title-cased
+const LABEL_ACRONYMS: Record<string, string> = { Cta: 'CTA', Url: 'URL', Seo: 'SEO', Id: 'ID', Cms: 'CMS' }
+
+// Turns a raw camelCase/snake_case DB key (e.g. "ctaPrimary", "image_url") into a
+// human-readable label ("CTA Primary", "Image URL") for display in the Builder UI.
+function humanizeKey(key: string): string {
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/_/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .map(w => {
+      const titled = w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+      return LABEL_ACRONYMS[titled] || titled
+    })
+    .join(' ')
+}
+
 export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps) {
   const router = useRouter()
   const [pages, setPages] = useState<any[]>(initialPages)
@@ -180,6 +198,28 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
     }
   }, [])
 
+  // Switch the page being edited, flushing any pending debounced autosave for the page
+  // being left first — otherwise switching within the 3s debounce window silently
+  // cancels and discards that edit.
+  const handlePageSwitch = (newSlug: string) => {
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current)
+      autosaveTimeoutRef.current = null
+      const pendingSlug = selectedPageSlug
+      const pendingSections = sections
+      setIsAutosaving(true)
+      saveCMSDraft(pendingSlug, pendingSections).then((res) => {
+        setIsAutosaving(false)
+        if (res.success) {
+          setPages(prev => prev.map(p => p.slug === pendingSlug ? { ...p, cms_sections: pendingSections, status: 'draft' } : p))
+        } else {
+          toast.error('Autosave failed', { description: res.error })
+        }
+      })
+    }
+    setSelectedPageSlug(newSlug)
+  }
+
   // Content field change handler
   const handleFieldChange = (sectionId: string, fieldKey: string, fieldName: 'value_en' | 'value_bn', value: string) => {
     const updated = sections.map((sec: any) => {
@@ -291,6 +331,25 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
       return
     }
 
+    // Flush any pending debounced autosave first — publishCMSPage reads straight from the
+    // DB, so an edit still sitting in the 3s autosave window would otherwise be silently
+    // left out of the published snapshot.
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current)
+      autosaveTimeoutRef.current = null
+      setIsAutosaving(true)
+      setSaveStatus('saving')
+      const flushRes = await saveCMSDraft(selectedPageSlug, sections)
+      setIsAutosaving(false)
+      if (!flushRes.success) {
+        setSaveStatus('dirty')
+        toast.error('Could not save your latest changes', { description: flushRes.error })
+        return
+      }
+      setSaveStatus('saved')
+      setPages(prev => prev.map(p => p.slug === selectedPageSlug ? { ...p, cms_sections: sections, status: 'draft' } : p))
+    }
+
     setIsPublishing(true)
     const res = await publishCMSPage(selectedPageSlug, changeSummary)
     if (res.success) {
@@ -345,7 +404,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
           {/* Selector group */}
           <div className="flex flex-col gap-1 w-full lg:w-[220px]">
             <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-white/72">Page Area</span>
-            <Select value={selectedPageSlug} onValueChange={setSelectedPageSlug}>
+            <Select value={selectedPageSlug} onValueChange={handlePageSwitch}>
               <SelectTrigger className="bg-[#222222] border-white/[0.08] hover:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] text-white rounded-[14px] h-12 text-sm">
                 <SelectValue placeholder="Select Page" />
               </SelectTrigger>
@@ -373,7 +432,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                   : 'bg-white/5 border border-white/[0.08] text-white/92 hover:border-[#C9A227] hover:bg-white/10'
               )}
             >
-              <LayoutTemplate className="w-5 h-5 text-white/70" />
+              <LayoutTemplate className={cn("w-5 h-5", activeView === 'editor' ? 'text-black' : 'text-white/70')} />
               <span>Builder</span>
             </button>
             
@@ -386,7 +445,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                   : 'bg-white/5 border border-white/[0.08] text-white/92 hover:border-[#C9A227] hover:bg-white/10'
               )}
             >
-              <ImageIcon className="w-5 h-5 text-white/70" />
+              <ImageIcon className={cn("w-5 h-5", activeView === 'media' ? 'text-black' : 'text-white/70')} />
               <span>Media</span>
             </button>
             
@@ -399,7 +458,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                   : 'bg-white/5 border border-white/[0.08] text-white/92 hover:border-[#C9A227] hover:bg-white/10'
               )}
             >
-              <Share2 className="w-5 h-5 text-white/70" />
+              <Share2 className={cn("w-5 h-5", activeView === 'seo' ? 'text-black' : 'text-white/70')} />
               <span>SEO</span>
             </button>
             
@@ -412,7 +471,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                   : 'bg-white/5 border border-white/[0.08] text-white/92 hover:border-[#C9A227] hover:bg-white/10'
               )}
             >
-              <History className="w-5 h-5 text-white/70" />
+              <History className={cn("w-5 h-5", activeView === 'history' ? 'text-black' : 'text-white/70')} />
               <span>History</span>
             </button>
 
@@ -425,7 +484,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                   : 'bg-white/5 border border-white/[0.08] text-white/92 hover:border-[#C9A227] hover:bg-white/10'
               )}
             >
-              <Calendar className="w-5 h-5 text-white/70" />
+              <Calendar className={cn("w-5 h-5", activeView === 'schedule' ? 'text-black' : 'text-white/70')} />
               <span>Scheduler</span>
             </button>
 
@@ -438,7 +497,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                   : 'bg-white/5 border border-white/[0.08] text-white/92 hover:border-[#C9A227] hover:bg-white/10'
               )}
             >
-              <BarChart3 className="w-5 h-5 text-white/70" />
+              <BarChart3 className={cn("w-5 h-5", activeView === 'analytics' ? 'text-black' : 'text-white/70')} />
               <span>Analytics</span>
             </button>
           </div>
@@ -545,8 +604,8 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                     {/* Header: Title, Description, controls */}
                     <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8 pb-6 border-b border-white/[0.08]">
                       <div>
-                        <h2 className="font-serif text-3xl font-bold text-white tracking-tight leading-tight capitalize">
-                          {sec.section_key.replace(/([A-Z])/g, ' $1')}
+                        <h2 className="font-serif text-3xl font-bold text-white tracking-tight leading-tight">
+                          {humanizeKey(sec.section_key)}
                         </h2>
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/[0.08] text-white/52 text-[10px] uppercase font-mono tracking-wider rounded-full mt-2">
                           {sec.component_type} Section
@@ -599,7 +658,7 @@ export function CMSEngineManager({ initialPages, locale }: CMSEngineManagerProps
                         return (
                           <div key={field.id} className="space-y-2">
                             <span className="text-xs font-semibold tracking-[0.08em] uppercase text-white/72 block">
-                              {field.field_key.replace(/_/g, ' ')} 
+                              {humanizeKey(field.field_key)}
                               <span className="text-white/28 font-mono lowercase ml-1.5 font-normal">({field.field_type})</span>
                             </span>
 

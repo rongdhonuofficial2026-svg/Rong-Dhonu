@@ -69,7 +69,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const heroImage = "/images/home/hero_painting_bw.jpg"
+  const heroImage = content?.imageUrl || "/images/home/hero_painting_bw.jpg"
 
   const title = content?.title || (locale === 'bn' 
     ? "যেখানে শিল্প<br>স্পর্শ করে <em>আত্মাকে</em>" 
@@ -135,18 +135,18 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
                 </h1>
               )
             }
-            return <h1 dangerouslySetInnerHTML={{ __html: title }} />
+            return <h1 className="break-words" dangerouslySetInnerHTML={{ __html: title }} />
           })()}
         </div>
 
         <div className="hero-bottom reveal">
-          <p className="hero-sub">{subtitle}</p>
+          <p className="hero-sub break-words">{subtitle}</p>
           <div className="hero-ctas">
-            <Link href="#collection" className="btn btn-gold magnetic">
-              {locale === 'bn' ? "গ্যালারি দেখুন" : "View Gallery"}
+            <Link href={content?.ctaPrimary_url || "#collection"} className="btn btn-gold magnetic">
+              {content?.ctaPrimary || (locale === 'bn' ? "গ্যালারি দেখুন" : "View Gallery")}
             </Link>
-            <Link href="/exhibitions" className="btn btn-line magnetic">
-              {locale === 'bn' ? "প্রদর্শনী অনুসন্ধান →" : "Explore Exhibitions →"}
+            <Link href={content?.ctaSecondary_url || "/exhibitions"} className="btn btn-line magnetic">
+              {content?.ctaSecondary || (locale === 'bn' ? "প্রদর্শনী অনুসন্ধান →" : "Explore Exhibitions →")}
             </Link>
           </div>
           

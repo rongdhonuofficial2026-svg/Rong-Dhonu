@@ -51,7 +51,7 @@ export function HomeTestimonialsContent({ locale, content }: { locale: string, c
     }
   ]
 
-  const items = (content?.items && content.items.length >= 3) ? content.items : defaultItems
+  const items = (content?.items && content.items.length > 0) ? content.items : defaultItems
 
   return (
     <section className="testimonials" id="testimonials">
@@ -71,13 +71,13 @@ export function HomeTestimonialsContent({ locale, content }: { locale: string, c
           return (
             <div key={i} className={`testi-card ${colorClass} reveal`}>
               <div className="testi-mark">"</div>
-              <p>{quote}</p>
+              <p className="break-words">{quote}</p>
               <div className="testi-person">
                 <svg className="testi-avatar" viewBox="0 0 42 42">
                   <rect width="42" height="42" rx="21" fill={avatarColor} />
                 </svg>
                 <div>
-                  <b>{item.author}</b>
+                  <b className="break-words">{item.author}</b>
                   <span>{role}</span>
                 </div>
               </div>
