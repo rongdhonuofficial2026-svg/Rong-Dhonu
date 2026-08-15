@@ -146,18 +146,21 @@ export async function getFeaturedExhibition() {
 export async function batchSyncExhibitions(supabase: any) {
   const now = new Date().toISOString();
 
-  // Find exhibitions that need transition
-  const { data: toOngoing } = await supabase
-    .from('exhibitions')
-    .select('id, status, exhibition_start, exhibition_end')
-    .eq('status', 'upcoming')
-    .lte('exhibition_start', now);
-
-  const { data: toArchived } = await supabase
-    .from('exhibitions')
-    .select('id, status, exhibition_start, exhibition_end')
-    .eq('status', 'ongoing')
-    .lt('exhibition_end', now);
+  // Find exhibitions that need transition. These two lookups are independent
+  // of one another, so run them in parallel instead of paying two sequential
+  // round-trips.
+  const [{ data: toOngoing }, { data: toArchived }] = await Promise.all([
+    supabase
+      .from('exhibitions')
+      .select('id, status, exhibition_start, exhibition_end')
+      .eq('status', 'upcoming')
+      .lte('exhibition_start', now),
+    supabase
+      .from('exhibitions')
+      .select('id, status, exhibition_start, exhibition_end')
+      .eq('status', 'ongoing')
+      .lt('exhibition_end', now),
+  ]);
 
   const candidates = [...(toOngoing || []), ...(toArchived || [])];
   if (candidates.length === 0) return;
@@ -176,11 +179,7 @@ export async function batchSyncExhibitions(supabase: any) {
 export async function getPrimaryPublicExhibition() {
   const supabase = await createClient();
 
-  // Run a quick batch sync first to ensure database consistency before fetching
-  // Do not block page render for sync if possible, but we need correct state.
-  await batchSyncExhibitions(supabase).catch(err => console.error('[Featured Exhibition] batchSync failed:', err));
-
-  // Instead of a 4-query waterfall, fetch top candidates for each category in parallel
+  // Fetch top candidates for each category in parallel (no waterfall).
   const [featuredRes, ongoingRes, upcomingRes, archivedRes] = await Promise.all([
     supabase.from('exhibitions').select('id, theme_en, theme_bn, description_en, description_bn, year, hero_image_url, status, exhibition_start, exhibition_end, is_featured, registration_start, submission_end, venue_en, venue_bn').eq('is_featured', true).in('status', ['ongoing', 'upcoming']).neq('is_deleted', true).order('exhibition_start', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('exhibitions').select('id, theme_en, theme_bn, description_en, description_bn, year, hero_image_url, status, exhibition_start, exhibition_end, is_featured, registration_start, submission_end, venue_en, venue_bn').eq('status', 'ongoing').neq('is_deleted', true).order('exhibition_start', { ascending: false }).limit(1).maybeSingle(),
@@ -188,10 +187,16 @@ export async function getPrimaryPublicExhibition() {
     supabase.from('exhibitions').select('id, theme_en, theme_bn, description_en, description_bn, year, hero_image_url, status, exhibition_start, exhibition_end, is_featured, registration_start, submission_end, venue_en, venue_bn').eq('status', 'archived').neq('is_deleted', true).order('exhibition_start', { ascending: false }).limit(1).maybeSingle(),
   ]);
 
-  if (featuredRes.data) return featuredRes.data;
-  if (ongoingRes.data) return ongoingRes.data;
-  if (upcomingRes.data) return upcomingRes.data;
-  return archivedRes.data || null;
+  const candidate = featuredRes.data || ongoingRes.data || upcomingRes.data || archivedRes.data || null;
+  if (!candidate) return null;
+
+  // Ensure the ONE exhibition we're about to show is up to date. This is a
+  // no-op read plus, at most, a single-row update when its status has
+  // genuinely drifted (e.g. its start/end date passed since the last daily
+  // cron run at /api/cron/sync-lifecycle) — not the full-table batch scan,
+  // which is already handled on a schedule and doesn't need to be repeated
+  // on every page render across every route that calls this function.
+  return syncExhibitionLifecycle(candidate, supabase);
 }
 
 /**

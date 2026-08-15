@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient, getCachedUser } from "@/lib/supabase/server"
 import { Link } from "@/lib/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -8,8 +8,8 @@ import { ArtworkCard } from "@/components/dashboard/artworks/ArtworkCard"
 export default async function MyArtworksPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
+  const { user } = await getCachedUser()
+
   if (!user) return null
 
   const { data: artworks } = await supabase

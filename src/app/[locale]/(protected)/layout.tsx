@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
+import { getCachedUser } from "@/lib/supabase/server"
 import { DashboardSidebar } from "@/components/dashboard/Sidebar"
 
 
@@ -11,18 +11,19 @@ export default async function ProtectedLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const supabase = await createClient()
-  
-  // Verify authentication
-  const { data: { user }, error } = await supabase.auth.getUser()
-  
+
+  // Verify authentication. Memoized per-request via getCachedUser(), so pages
+  // rendered under this layout that also need the user don't pay for a second
+  // Supabase Auth round-trip.
+  const { user, error } = await getCachedUser()
+
   if (error || !user) {
     redirect(`/${locale}/login`)
   }
 
   return (
     <div className="flex min-h-screen bg-muted/10">
-      <DashboardSidebar locale={locale} />
+      <DashboardSidebar locale={locale} userId={user.id} />
       
       {/* Main Content Area */}
       <main className="flex-1 lg:pl-72 pt-16 lg:pt-0">

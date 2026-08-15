@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient, getCachedUser } from "@/lib/supabase/server"
 import { DashboardHero } from "@/components/dashboard/ui/DashboardHero"
 import { DashboardStatistics } from "@/components/dashboard/ui/DashboardStatistics"
 import { DashboardTimeline } from "@/components/dashboard/ui/DashboardTimeline"
@@ -7,22 +7,31 @@ import { DashboardAnnouncements } from "@/components/dashboard/ui/DashboardAnnou
 export default async function DashboardOverview({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
+  const { user } = await getCachedUser()
+
   if (!user) return null
 
-  // Fetch Profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  // Fetch Artworks Stats
-  const { data: artworks } = await supabase
-    .from('artworks')
-    .select('status')
-    .eq('artist_id', user.id)
+  // These three queries are independent of one another (all only need
+  // user.id), so they run in parallel instead of paying three sequential
+  // round-trips to Supabase.
+  const [{ data: profile }, { data: artworks }, { data: exhibition }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('artworks')
+      .select('status')
+      .eq('artist_id', user.id),
+    supabase
+      .from('exhibitions')
+      .select('*')
+      .in('status', ['active', 'upcoming'])
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ])
 
   const stats = {
     total: artworks?.length || 0,
@@ -30,15 +39,6 @@ export default async function DashboardOverview({ params }: { params: Promise<{ 
     pending: artworks?.filter(a => a.status === 'pending').length || 0,
     rejected: artworks?.filter(a => a.status === 'rejected').length || 0,
   }
-
-  // Fetch Current Exhibition for Countdown
-  const { data: exhibition } = await supabase
-    .from('exhibitions')
-    .select('*')
-    .in('status', ['active', 'upcoming'])
-    .order('start_date', { ascending: false })
-    .limit(1)
-    .maybeSingle()
 
   const name = locale === 'bn' ? (profile?.full_name_bn || profile?.full_name_en) : profile?.full_name_en
 

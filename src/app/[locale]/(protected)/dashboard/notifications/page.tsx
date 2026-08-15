@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getCachedUser } from '@/lib/supabase/server'
 import { Bell, Check, CalendarClock, BookOpen, AlertCircle, ThumbsUp, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { markAllNotificationsAsRead } from '@/actions/notifications'
@@ -8,8 +8,8 @@ import { redirect } from 'next/navigation'
 export default async function NotificationsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
+
+  const { user } = await getCachedUser()
   if (!user) redirect(`/${locale}/login`)
 
   const { data: notifications } = await supabase

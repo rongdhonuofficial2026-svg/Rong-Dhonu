@@ -40,9 +40,19 @@ export default async function proxy(request: NextRequest) {
   const pathWithoutLocale = pathname.replace(localeRegex, '') || '/';
   const currentLocale = pathname.split('/')[1] || routing.defaultLocale;
 
-  // Fetch role if user exists
+  // The role lookup is a DB round-trip that's only needed to decide the
+  // redirects below (dashboard/admin/login/register). Every other route
+  // (public pages, catalogs, gallery, etc.) is guarded purely by whether
+  // `user` exists, so skip the query there instead of paying for it on
+  // every single authenticated navigation across the whole site.
+  const needsRole =
+    pathWithoutLocale.startsWith('/dashboard') ||
+    pathWithoutLocale.startsWith('/admin') ||
+    pathWithoutLocale === '/login' ||
+    pathWithoutLocale === '/register';
+
   let role = 'guest';
-  if (user) {
+  if (user && needsRole) {
     role = await getUserRole(supabase, user.id, user.email);
   }
 
@@ -75,7 +85,7 @@ export default async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   }
-  
+
   // Bounce authenticated users from auth pages or base /dashboard route appropriately
   if (pathWithoutLocale === '/login' || pathWithoutLocale === '/register') {
     if (user) {
