@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local-only project blueprint documents (sensitive, not for public repo)
+project.md
+prompt.md

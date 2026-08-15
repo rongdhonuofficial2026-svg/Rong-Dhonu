@@ -45,6 +45,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
 
   /* Premium Luxury Palette */
+  --color-charcoal: #1C1C1C;
   --color-matte-black: #111111;
   --color-off-white: #F8F6F2;
   --color-warm-ivory: #F5EFE6;
