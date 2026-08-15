@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient, getCachedUser } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { FolderHeart, ArrowLeft } from "lucide-react"
@@ -14,9 +14,10 @@ export default async function GalleryAlbumsPage({ params }: { params: Promise<{ 
   const { locale } = await params
   const supabase = await createClient()
 
-  // 1. Authorization check
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  // 1. Authorization check — getCachedUser() memoizes the real getUser() network
+  // check per request, so this doesn't add a second Supabase Auth round-trip.
+  const { user, error: authError } = await getCachedUser()
+  if (authError || !user) {
     notFound()
   }
 

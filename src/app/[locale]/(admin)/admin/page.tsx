@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getCachedUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { fetchDashboardData } from '@/lib/dashboard-service'
 
@@ -26,9 +26,11 @@ export default async function AdminDashboardOverview({
   const { locale } = await params
   const supabase = await createClient()
 
-  // Auth guard — layout already redirects, but verify here for type safety
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/${locale}/login`)
+  // Auth guard — layout already redirects, but verify here for type safety.
+  // getCachedUser() memoizes the real getUser() network check per request, so this
+  // doesn't pay for a second Supabase Auth round-trip on top of the layout's.
+  const { user, error } = await getCachedUser()
+  if (error || !user) redirect(`/${locale}/login`)
 
   // ── Single batched data fetch (all queries fired in parallel) ─────────────
   const data = await fetchDashboardData(supabase, user.id)

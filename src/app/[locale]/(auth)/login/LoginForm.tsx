@@ -8,7 +8,7 @@ import { loginAction } from '@/lib/actions/auth';
 import { z } from 'zod';
 import { Link, useRouter } from '@/lib/i18n/routing';
 import { useLocale } from 'next-intl';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 
 type LoginFormType = z.infer<typeof loginSchema>;
 
@@ -112,6 +112,16 @@ export function LoginForm() {
           </button>
         </div>
       </form>
+
+      <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-charcoal transition-colors min-h-11"
+        >
+          <ArrowLeft size={15} />
+          Back to Website
+        </Link>
+      </div>
     </div>
   );
 }

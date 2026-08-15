@@ -56,7 +56,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
         <p className="text-[10px] text-muted-foreground/80 mt-2 uppercase tracking-[0.2em] font-medium ml-11">Operating System</p>
       </div>
 
-      <nav className="flex-1 px-4 space-y-1 mt-6 overflow-y-auto pb-6 relative">
+      <nav className="flex-1 flex flex-col justify-center px-4 space-y-1 mt-6 overflow-y-auto pb-6 relative">
         {links.map((link) => {
           // Moderation routes (/admin/exhibitions/*/moderation and /admin/artworks)
           // must highlight "Moderation", not "Exhibitions"
@@ -82,7 +82,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
               {isActive && (
                 <motion.div
                   layoutId="active-sidebar-indicator"
-                  className="absolute inset-0 bg-accent/15 dark:bg-accent/20 rounded-2xl border border-accent/20"
+                  className="absolute inset-0 bg-accent/20 rounded-2xl border border-accent/30 border-l-[3px] border-l-accent shadow-sm"
                   initial={false}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />

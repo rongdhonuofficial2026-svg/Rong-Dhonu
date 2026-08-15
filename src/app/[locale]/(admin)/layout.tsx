@@ -1,11 +1,9 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getCachedUser } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/Sidebar'
 import { DebugErrorBoundary } from '@/components/DebugErrorBoundary'
 import { Toaster } from '@/components/ui/sonner'
 import '@/styles/responsive-admin.css'
-
-import { getUserRole, canAccessAdmin } from '@/lib/auth/roles'
 
 export default async function AdminLayout({
   children,
@@ -15,20 +13,21 @@ export default async function AdminLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const supabase = await createClient()
 
-  // Get current user session
-  const { data: { session }, error } = await supabase.auth.getSession()
+  // Role-based access is already fully verified by middleware.ts on every request
+  // matched by its config (which covers all /admin/* paths, including client-side
+  // RSC navigation fetches) — it redirects unauthorized/unauthenticated requests to
+  // /login or /unauthorized before this layout ever renders, so re-running
+  // getUserRole()'s DB query here was pure duplicate work. Identity is still
+  // verified with the real, network-revalidated getUser() — not a downgraded local
+  // cookie read — via getCachedUser(), which memoizes that call per request (React
+  // cache()) so pages under this layout that also need the user (admin/page.tsx,
+  // users/page.tsx, etc.) don't pay for a second Supabase Auth round-trip. Same
+  // pattern already used across the (protected)/dashboard route group.
+  const { user, error } = await getCachedUser()
 
-  if (error || !session) {
+  if (error || !user) {
     redirect(`/${locale}/login`)
-  }
-
-  // Check if user is admin, owner, or committee
-  const role = await getUserRole(supabase, session.user.id, session.user.email)
-
-  if (!canAccessAdmin(role)) {
-    redirect(`/${locale}/dashboard`)
   }
 
   return (
