@@ -39,7 +39,7 @@ export function MetricTile({ title, value, subtitle, icon: Icon, colorTheme, hre
     )}>
       {/* Header Row: Title & Icon */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-[11px] font-semibold text-white/50 uppercase tracking-widest leading-none">{title}</p>
+        <p className="text-[11px] font-semibold text-white/70 uppercase tracking-widest leading-none">{title}</p>
         <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-md', theme.bg, theme.text)}>
           <Icon className="w-4.5 h-4.5 stroke-[1.8]" />
         </div>
@@ -59,7 +59,7 @@ export function MetricTile({ title, value, subtitle, icon: Icon, colorTheme, hre
           <p className={cn('text-xs font-medium', 
             trendPositive !== undefined 
               ? (trendPositive ? 'text-emerald-400' : 'text-rose-400') 
-              : 'text-white/60'
+              : 'text-white/72'
           )}>
             {trend || subtitle}
           </p>

@@ -11,7 +11,7 @@ function RoleBar({ label, count, total, color }: { label: string; count: number;
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-white/60">{label}</span>
+        <span className="text-xs font-medium text-white/72">{label}</span>
         <span className="text-xs font-bold text-white font-mono">{count}</span>
       </div>
       <div className="h-2.5 bg-white/5 border border-white/[0.04] rounded-full overflow-hidden shadow-inner">
@@ -41,8 +41,8 @@ export function UserOverviewPanel({ kpis }: UserOverviewPanelProps) {
 
       {/* Total count */}
       <div className="mb-6 p-5 rounded-xl bg-black/30 border border-white/[0.06] shadow-inner">
-        <p className="text-4xl font-serif font-bold text-foreground">{totalUsers}</p>
-        <p className="text-xs text-muted-foreground mt-1 uppercase tracking-widest">Total Platform Users</p>
+        <p className="text-4xl font-serif font-bold text-white">{totalUsers}</p>
+        <p className="text-xs text-white/58 mt-1 uppercase tracking-widest">Total Platform Users</p>
         {kpis.newArtistsThisMonth > 0 && (
           <p className="text-xs text-emerald-500 mt-2 font-medium">+{kpis.newArtistsThisMonth} new this month</p>
         )}
@@ -69,7 +69,7 @@ export function UserOverviewPanel({ kpis }: UserOverviewPanelProps) {
       {kpis.approvalRate > 0 && (
         <div className="mt-6 pt-4 border-t border-white/[0.06]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-white/60">Artwork Approval Rate</span>
+            <span className="text-xs text-white/72">Artwork Approval Rate</span>
             <span className="text-sm font-bold text-accent">{kpis.approvalRate}%</span>
           </div>
           <div className="h-2 bg-white/5 rounded-full overflow-hidden">
@@ -78,7 +78,7 @@ export function UserOverviewPanel({ kpis }: UserOverviewPanelProps) {
               style={{ width: `${kpis.approvalRate}%` }}
             />
           </div>
-          <p className="text-[10px] text-white/40 mt-1">
+          <p className="text-[11px] text-white/58 mt-1">
             {kpis.approvedArtworks} approved · {kpis.rejectedArtworks} rejected
           </p>
         </div>

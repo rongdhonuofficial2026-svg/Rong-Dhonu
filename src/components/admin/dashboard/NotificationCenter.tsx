@@ -50,7 +50,7 @@ export function NotificationCenter({ notifications }: NotificationCenterProps) {
             <CheckCircle className="w-6 h-6 text-emerald-400" />
           </div>
           <p className="text-sm font-semibold text-white">System is healthy</p>
-          <p className="text-xs text-white/50 mt-1.5 max-w-[240px] mx-auto leading-relaxed">
+          <p className="text-xs text-white/65 mt-1.5 max-w-[240px] mx-auto leading-relaxed">
             All notifications are processed and everything is running smoothly.
           </p>
         </div>
@@ -78,10 +78,10 @@ export function NotificationCenter({ notifications }: NotificationCenterProps) {
                   <Icon className={cn('w-3.5 h-3.5', cfg.color)} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={cn('text-xs leading-relaxed line-clamp-2', isNew ? 'text-foreground font-medium' : 'text-muted-foreground')}>
+                  <p className={cn('text-xs leading-relaxed line-clamp-2', isNew ? 'text-white font-medium' : 'text-white/62')}>
                     {notif.message_en}
                   </p>
-                  <p className="text-[10px] text-muted-foreground/60 font-mono mt-1">
+                  <p className="text-[11px] text-white/55 font-mono mt-1">
                     {getRelativeTime(notif.created_at || new Date().toISOString())}
                   </p>
                 </div>

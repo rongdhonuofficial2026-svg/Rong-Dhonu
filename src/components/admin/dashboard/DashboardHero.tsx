@@ -15,7 +15,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   submission_closed: { label: 'Submissions Closed', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
   reviewing:         { label: 'Under Review',       color: 'bg-purple-500/20 text-purple-300 border-purple-500/30' },
   published:         { label: 'Published & Live',   color: 'bg-accent/20 text-accent border-accent/30' },
-  archived:          { label: 'Archived',           color: 'bg-white/5 text-white/40 border-white/5' },
+  archived:          { label: 'Archived',           color: 'bg-white/5 text-white/65 border-white/5' },
 }
 
 function getGreeting(): string {
@@ -49,7 +49,7 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
           <Wifi className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-xs font-medium tracking-widest uppercase text-white/70">System Operational</span>
         </div>
-        <div className="text-xs font-mono text-white/40 tracking-wider">
+        <div className="text-xs font-mono text-white/55 tracking-wider">
           {now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           {' · '}
           {now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
@@ -58,8 +58,8 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
 
       {/* Main content */}
       <div className="relative z-10 mt-6 md:mt-8 order-2">
-        <p className="text-white/50 text-sm font-medium tracking-wide mb-2">
-          {getGreeting()}, <span className="text-white/80">{currentUser.full_name_en || 'Administrator'}</span>
+        <p className="text-white/65 text-sm font-medium tracking-wide mb-2">
+          {getGreeting()}, <span className="text-white/90">{currentUser.full_name_en || 'Administrator'}</span>
         </p>
 
         {activeExhibition ? (
@@ -74,9 +74,9 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
                   {statusInfo.label}
                 </span>
               )}
-              <span className="text-white/40 text-sm font-mono">Exhibition {activeExhibition.year}</span>
+              <span className="text-white/60 text-sm font-mono">Exhibition {activeExhibition.year}</span>
               {activeExhibition.venue_en && (
-                <span className="text-white/40 text-sm">· {activeExhibition.venue_en}</span>
+                <span className="text-white/60 text-sm">· {activeExhibition.venue_en}</span>
               )}
             </div>
             {activeExhibition.exhibition_start && (
@@ -99,10 +99,10 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
           </>
         ) : (
           <div>
-            <h1 className="font-serif text-3xl md:text-4xl font-bold text-white/50 leading-tight mb-2">
+            <h1 className="font-serif text-3xl md:text-4xl font-bold text-white/85 leading-tight mb-2">
               No Active Exhibition
             </h1>
-            <p className="text-white/40 text-sm">
+            <p className="text-white/60 text-sm">
               Create a new exhibition to begin the administrative cycle.
             </p>
             <div className="mt-6">
@@ -129,11 +129,11 @@ export function DashboardHero({ currentUser, activeExhibition }: DashboardHeroPr
             )}
           </div>
           <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest">Logged in as</p>
+            <p className="text-xs text-white/55 uppercase tracking-widest">Logged in as</p>
             <p className="text-sm font-semibold text-white/80">{currentUser.full_name_en || 'Administrator'}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-white/30 font-mono">
+        <div className="flex items-center gap-2 text-xs text-white/45 font-mono">
           <Palette className="w-3.5 h-3.5" />
           <span>Rongdhonu Administrative OS · v1.0</span>
         </div>

@@ -93,7 +93,7 @@ export function PendingActionsPanel({ kpis }: PendingActionsPanelProps) {
             <CheckCircle2 className="w-6 h-6 text-emerald-500" />
           </div>
           <p className="font-medium text-white">All clear</p>
-          <p className="text-xs text-white/50 mt-1">No outstanding tasks require attention.</p>
+          <p className="text-xs text-white/65 mt-1">No outstanding tasks require attention.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -117,7 +117,7 @@ export function PendingActionsPanel({ kpis }: PendingActionsPanelProps) {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-white/60 mt-1 line-clamp-2 leading-relaxed">{action.description}</p>
+                    <p className="text-xs text-white/72 mt-1 line-clamp-2 leading-relaxed">{action.description}</p>
                   </div>
                 </div>
               </Link>

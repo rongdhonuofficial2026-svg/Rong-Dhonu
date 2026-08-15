@@ -81,7 +81,7 @@ export function SystemHealthPanel() {
         </div>
         <div className="flex items-center gap-3">
           {lastChecked && (
-            <span className="text-xs font-mono text-muted-foreground/60">
+            <span className="text-xs font-mono text-white/55">
               Last checked {lastChecked.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
@@ -91,7 +91,7 @@ export function SystemHealthPanel() {
             aria-label="Refresh system health checks"
             className="p-1.5 rounded-lg hover:bg-muted/20 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={cn('w-4 h-4 text-muted-foreground', isRefreshing && 'animate-spin')} />
+            <RefreshCw className={cn('w-4 h-4 text-white/55', isRefreshing && 'animate-spin')} />
           </button>
         </div>
       </div>
@@ -117,20 +117,20 @@ export function SystemHealthPanel() {
                 <Icon className={cn('w-4 h-4',
                   check.status === 'ok'       && 'text-emerald-400',
                   check.status === 'error'    && 'text-rose-400',
-                  check.status === 'checking' && 'text-muted-foreground'
+                  check.status === 'checking' && 'text-white/55'
                 )} />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">{check.name}</p>
+                <p className="text-sm font-semibold text-white">{check.name}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   {check.status === 'checking' ? (
-                    <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                    <Loader2 className="w-3 h-3 animate-spin text-white/55" />
                   ) : check.status === 'ok' ? (
                     <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
                   ) : (
                     <AlertCircle className="w-3 h-3 text-rose-400 shrink-0" />
                   )}
-                  <p className="text-xs text-muted-foreground truncate">{check.detail}</p>
+                  <p className="text-xs text-white/62 truncate">{check.detail}</p>
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@ export function SystemHealthPanel() {
       </div>
 
       {/* Platform info footer */}
-      <div className="mt-4 pt-4 border-t border-border/30 dark:border-white/5 flex flex-wrap gap-4 text-[10px] font-mono text-muted-foreground/50 uppercase tracking-wider">
+      <div className="mt-4 pt-4 border-t border-white/[0.06] flex flex-wrap gap-4 text-[11px] font-mono text-white/55 uppercase tracking-wider">
         <span>Rongdhonu Administrative OS · v1.0.0</span>
         <span>Next.js 16.2.10</span>
         <span>Supabase SSR</span>

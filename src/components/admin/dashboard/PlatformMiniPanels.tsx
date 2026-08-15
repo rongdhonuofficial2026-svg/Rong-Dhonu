@@ -17,13 +17,13 @@ function MiniPanel({ title, href, icon: Icon, children }: {
 }) {
   return (
     <Link href={href as any}>
-      <div className="group bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-2xl p-5 h-full hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
+      <div className="group bg-[#171717]/90 border border-white/[0.08] rounded-[20px] p-5 h-full shadow-xl shadow-black/25 hover:border-white/[0.15] hover:-translate-y-1 transition-all duration-300 cursor-pointer">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Icon className="w-4 h-4 text-muted-foreground" />
-            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+            <Icon className="w-4 h-4 text-white/50" />
+            <h3 className="text-sm font-semibold text-white">{title}</h3>
           </div>
-          <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-accent group-hover:translate-x-0.5 transition-all" />
+          <ArrowRight className="w-3.5 h-3.5 text-white/40 group-hover:text-accent group-hover:translate-x-0.5 transition-all" />
         </div>
         {children}
       </div>
@@ -33,9 +33,9 @@ function MiniPanel({ title, href, icon: Icon, children }: {
 
 function StatRow({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-border/20 dark:border-white/5 last:border-0">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-xs font-semibold text-foreground">{value}</span>
+    <div className="flex items-center justify-between py-1.5 border-b border-white/[0.06] last:border-0">
+      <span className="text-xs text-white/62">{label}</span>
+      <span className="text-xs font-semibold text-white">{value}</span>
     </div>
   )
 }

@@ -19,8 +19,8 @@ export function RecentArtistsPanel({ artists }: RecentArtistsPanelProps) {
 
       {artists.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <User className="w-8 h-8 text-muted-foreground/30 mb-3" />
-          <p className="text-sm text-muted-foreground">No artists registered yet.</p>
+          <User className="w-8 h-8 text-white/38 mb-3" />
+          <p className="text-sm text-white/62">No artists registered yet.</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -34,7 +34,7 @@ export function RecentArtistsPanel({ artists }: RecentArtistsPanelProps) {
                   {artist.avatar_url ? (
                     <Image src={artist.avatar_url} alt={artist.full_name_en ?? 'Artist'} fill sizes="40px" className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-serif font-bold text-white/50 text-sm bg-gradient-to-br from-[#C9A227]/10 to-transparent">
+                    <div className="w-full h-full flex items-center justify-center font-serif font-bold text-white/70 text-sm bg-gradient-to-br from-[#C9A227]/10 to-transparent">
                       {initial}
                     </div>
                   )}
@@ -45,14 +45,14 @@ export function RecentArtistsPanel({ artists }: RecentArtistsPanelProps) {
                   <p className="text-sm font-bold text-white group-hover:text-[#C9A227] transition-colors truncate">
                     {artist.full_name_en || 'Unnamed Artist'}
                   </p>
-                  <p className="text-[11px] text-white/55 truncate mt-0.5">
+                  <p className="text-xs text-white/68 truncate mt-0.5">
                     {artist.bio_en || 'Member Artist'}
                   </p>
                 </div>
 
                 {/* Join date */}
                 <div className="shrink-0 text-right">
-                  <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">{joinDate}</span>
+                  <span className="text-[11px] font-mono text-white/58 uppercase tracking-wider">{joinDate}</span>
                 </div>
               </div>
             )

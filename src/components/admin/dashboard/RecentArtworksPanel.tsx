@@ -27,10 +27,10 @@ export function RecentArtworksPanel({ artworks }: RecentArtworksPanelProps) {
       {artworks.length === 0 ? (
         <div className="py-12 text-center bg-black/20 rounded-xl border border-white/5">
           <div className="w-12 h-12 rounded-full bg-muted/20 flex items-center justify-center mb-3 mx-auto">
-            <ImageIcon className="w-6 h-6 text-muted-foreground/40" />
+            <ImageIcon className="w-6 h-6 text-white/40" />
           </div>
           <p className="font-serif text-lg mb-1 text-white/70">No artworks yet</p>
-          <p className="text-xs text-muted-foreground">Artwork submissions will appear here.</p>
+          <p className="text-xs text-white/62">Artwork submissions will appear here.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -56,7 +56,7 @@ export function RecentArtworksPanel({ artworks }: RecentArtworksPanelProps) {
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <ImageIcon className="w-8 h-8 text-muted-foreground/20" />
+                        <ImageIcon className="w-8 h-8 text-white/30" />
                       </div>
                     )}
                     {/* Status badge */}
@@ -69,14 +69,14 @@ export function RecentArtworksPanel({ artworks }: RecentArtworksPanelProps) {
 
                   {/* Info */}
                   <div className="p-3.5 flex-grow">
-                    <p className="font-serif font-semibold text-sm text-foreground line-clamp-1 group-hover:text-accent transition-colors">{artwork.title_en}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{artwork.profiles?.full_name_en || 'Unknown Artist'}</p>
+                    <p className="font-serif font-semibold text-sm text-white line-clamp-1 group-hover:text-accent transition-colors">{artwork.title_en}</p>
+                    <p className="text-xs text-white/65 mt-0.5">{artwork.profiles?.full_name_en || 'Unknown Artist'}</p>
                     <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                       {artwork.medium_en && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-white/50">{artwork.medium_en}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-white/68">{artwork.medium_en}</span>
                       )}
                       {artwork.category && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-white/50">{artwork.category}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-white/68">{artwork.category}</span>
                       )}
                     </div>
                   </div>

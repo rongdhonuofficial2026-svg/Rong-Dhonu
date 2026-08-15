@@ -66,10 +66,10 @@ export function ActivityTimeline({ audits }: ActivityTimelineProps) {
       {audits.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="w-12 h-12 rounded-full bg-muted/30 flex items-center justify-center mb-3">
-            <Activity className="w-6 h-6 text-muted-foreground/50" />
+            <Activity className="w-6 h-6 text-white/40" />
           </div>
-          <p className="font-medium text-foreground">The halls are quiet.</p>
-          <p className="text-sm text-muted-foreground mt-1">No activity recorded yet.</p>
+          <p className="font-medium text-white">The halls are quiet.</p>
+          <p className="text-sm text-white/62 mt-1">No activity recorded yet.</p>
         </div>
       ) : (
         <div className="relative space-y-0">
@@ -98,14 +98,14 @@ export function ActivityTimeline({ audits }: ActivityTimelineProps) {
                 <div className="flex-1 min-w-0 pt-0.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
                   <div className="min-w-0 flex flex-wrap items-center gap-2">
                     <span className="text-sm font-semibold text-white tracking-wide truncate max-w-[140px] sm:max-w-none">{actorName}</span>
-                    <span className="text-xs text-white/60">{formatAction(log.action)}</span>
+                    <span className="text-xs text-white/72">{formatAction(log.action)}</span>
                     {log.entity_type && (
-                      <span className="text-[9px] px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/5 text-white/50 font-mono uppercase tracking-wider">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/5 text-white/65 font-mono uppercase tracking-wider">
                         {log.entity_type}
                       </span>
                     )}
                   </div>
-                  <time className="shrink-0 text-[10px] font-mono text-white/40">
+                  <time className="shrink-0 text-[11px] font-mono text-white/58">
                     {getRelativeTime(log.created_at || new Date().toISOString())}
                   </time>
                 </div>
