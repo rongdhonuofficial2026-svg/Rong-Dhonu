@@ -77,7 +77,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
       <section className="flex flex-col md:flex-row gap-8 items-start bg-muted/30 p-8 rounded-3xl border border-border artist-profile-header">
         <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden shrink-0 border-4 border-background shadow-lg bg-muted">
           {profile.avatar_url ? (
-            <Image src={profile.avatar_url} alt={name} fill className="object-cover" priority />
+            <Image src={profile.avatar_url} alt={name} fill sizes="(max-width: 767px) 128px, 192px" className="object-cover" preload />
           ) : (
             <User className="w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
           )}
@@ -156,7 +156,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
               <Link key={art.id} href={`/gallery/artwork/${art.id}`} className="group space-y-3">
                 <div className="relative aspect-square bg-muted rounded-xl overflow-hidden border border-border">
                   {art.main_image_url && (
-                    <Image src={art.main_image_url} alt={art.title_en} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <Image src={art.main_image_url} alt={art.title_en} fill sizes="(max-width: 767px) 50vw, (max-width: 1023px) 33vw, 25vw" quality={85} className="object-cover group-hover:scale-105 transition-transform duration-500" />
                   )}
                   <div className="absolute top-2 left-2">
                     <Badge variant="secondary" className="shadow-md bg-white/80 backdrop-blur-sm border-0">{art.category}</Badge>

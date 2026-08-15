@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
-import { PremiumImage } from "@/components/ui/PremiumImage"
+import Image from "next/image"
 import { Calendar, MapPin, ArrowRight } from "lucide-react"
 import { useRef } from "react"
 
@@ -77,10 +77,13 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
   return (
     <section ref={ref} className="spotlight artwork" id="exhibition">
       {/* Background artwork */}
-      <img 
-        src={spotlightImage} 
-        alt={title} 
-        loading="lazy" 
+      <Image
+        src={spotlightImage}
+        alt={title}
+        fill
+        sizes="100vw"
+        quality={85}
+        loading="lazy"
       />
       <div className="scrim"></div>
       <div className="frame-edge"></div>

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { Link } from '@/lib/i18n/routing'
+import Image from 'next/image'
 import { ImageIcon } from 'lucide-react'
 import { SelectContent, SelectItem } from '@/components/ui/select'
 import * as SelectPrimitive from '@radix-ui/react-select'
@@ -240,9 +241,12 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
                 style={{ aspectRatio: styleRatio }}
               >
                 {album.hero_image_url ? (
-                  <img 
-                    src={album.hero_image_url} 
-                    alt={title} 
+                  <Image
+                    src={album.hero_image_url}
+                    alt={title}
+                    fill
+                    sizes="(max-width: 767px) 100vw, (max-width: 1080px) 50vw, 33vw"
+                    quality={85}
                     loading="lazy"
                   />
                 ) : (
@@ -300,9 +304,12 @@ export function AlbumGrid({ albums, locale, searchParams }: AlbumGridProps) {
                 <div key={`album-${album.id}`} className="album-card reveal in">
                   <div className="album-media artwork">
                     {album.hero_image_url ? (
-                      <img 
-                        src={album.hero_image_url} 
-                        alt={title} 
+                      <Image
+                        src={album.hero_image_url}
+                        alt={title}
+                        fill
+                        sizes="(max-width: 767px) 100vw, (max-width: 1080px) 50vw, 25vw"
+                        quality={85}
                         loading="lazy"
                       />
                     ) : (

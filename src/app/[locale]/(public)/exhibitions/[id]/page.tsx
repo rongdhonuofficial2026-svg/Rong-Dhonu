@@ -118,7 +118,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
       <section className="relative h-[80vh] min-h-[600px] flex items-end justify-center text-white pb-32 overflow-hidden exhibition-detail-hero">
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/40 to-transparent" />
         {exhibition.hero_image_url && (
-          <Image src={exhibition.hero_image_url} alt={title} fill className="object-cover scale-105" priority quality={100} />
+          <Image src={exhibition.hero_image_url} alt={title} fill sizes="100vw" className="object-cover scale-105" preload quality={85} />
         )}
         <div className="relative z-20 text-center max-w-5xl px-6 space-y-8 mt-auto w-full">
           <Badge 
@@ -310,7 +310,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
               {exhibition.artworks.slice(0, 4).map((art: Record<string, any>) => (
                 <Link key={art.id} href={`/gallery/artwork/${art.id}`} className="group relative aspect-[3/4] bg-muted overflow-hidden bg-card cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-black/20 transition-all duration-500">
                   {art.main_image_url && (
-                    <Image src={art.main_image_url} alt="Artwork" fill className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105" />
+                    <Image src={art.main_image_url} alt="Artwork" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" quality={85} className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105" />
                   )}
                   <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                   <div className="absolute inset-x-0 bottom-0 z-10 p-6 flex flex-col justify-end translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
@@ -344,7 +344,7 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                 <div key={member.id} className="text-center space-y-6 group w-48">
                   <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden bg-muted shadow-lg transition-transform duration-500 group-hover:scale-110">
                     {member.profiles?.avatar_url ? (
-                      <Image src={member.profiles.avatar_url} alt="Avatar" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                      <Image src={member.profiles.avatar_url} alt="Avatar" fill sizes="128px" className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
                     ) : (
                       <Users className="w-10 h-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/30" />
                     )}

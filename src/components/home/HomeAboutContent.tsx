@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
-import { PremiumImage } from "@/components/ui/PremiumImage"
+import Image from "next/image"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useRef } from "react"
 
@@ -33,10 +33,13 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
         {/* Left Visual Panel */}
         <div className="about-visual reveal">
           <div className="about-img-main artwork">
-            <img 
-              src={aboutImage} 
-              alt="Blue and red abstract studio painting" 
-              loading="lazy" 
+            <Image
+              src={aboutImage}
+              alt="Blue and red abstract studio painting"
+              fill
+              sizes="(max-width: 1080px) 100vw, 45vw"
+              quality={85}
+              loading="lazy"
             />
             <div className="scrim soft"></div>
             <div className="frame-edge"></div>

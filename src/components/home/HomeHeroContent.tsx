@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useScroll, useTransform, Variants } from 'framer-motion'
-import { PremiumImage } from '@/components/ui/PremiumImage'
+import Image from 'next/image'
 import { Link } from '@/lib/i18n/routing'
 import { useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
@@ -91,10 +91,13 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
         id="hero-art"
         style={{ transform: 'translate(0px, 0px) scale(1.05)', transition: 'transform 0.1s ease-out' }}
       >
-        <img 
+        <Image
           src={heroImage}
-          alt="Vibrant multicolored abstract painting" 
-          loading="eager"
+          alt="Vibrant multicolored abstract painting"
+          fill
+          sizes="100vw"
+          quality={85}
+          preload
         />
         <div className="scrim soft"></div>
         <div className="frame-edge"></div>
@@ -114,8 +117,12 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
             {locale === 'bn' ? '১৪তম বার্ষিক প্রদর্শনী — বর্তমানে উন্মুক্ত' : '14th Annual Exhibition — Now Open'}
           </div>
           {(() => {
-            const cleanTitle = title.replace(/<br\s*\/?>/gi, ' ');
-            if (locale === 'en' && (cleanTitle.toLowerCase().includes('where art') && cleanTitle.toLowerCase().includes('meets') && cleanTitle.toLowerCase().includes('soul'))) {
+            // Strip all HTML tags (not just <br>) and collapse/trim whitespace before
+            // matching, so CMS-entered variants (extra spacing, different tags) still
+            // receive the intended decorative treatment rather than only an exact string.
+            const cleanTitle = title.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            const cleanTitleLower = cleanTitle.toLowerCase();
+            if (locale === 'en' && (cleanTitleLower.includes('where art') && cleanTitleLower.includes('meets') && cleanTitleLower.includes('soul'))) {
               return (
                 <h1 style={{ textShadow: '0 6px 40px rgba(0,0,0,.35)' }}>
                   <span className="where-art-meets" style={{ fontFamily: "var(--font-afera), 'Calligraphic Afera Beauty Bold', var(--font-display)", fontWeight: 700 }}>Where Art</span>

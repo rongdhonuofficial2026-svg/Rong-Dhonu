@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
-import { PremiumImage } from "@/components/ui/PremiumImage"
+import Image from "next/image"
 import { ArrowUpRight, ArrowRight } from "lucide-react"
 
 export function FeaturedArtistsContent({ locale, artists }: { locale: string, artists: any[] }) {
@@ -43,9 +43,12 @@ export function FeaturedArtistsContent({ locale, artists }: { locale: string, ar
                 href={`/artists/${artist.id}`}
                 className="artist-card artwork reveal block"
               >
-                <img
+                <Image
                   src={artist.avatar_url || "/images/placeholders/artist.webp"}
                   alt={name}
+                  fill
+                  sizes="(max-width: 767px) 50vw, (max-width: 1080px) 50vw, 25vw"
+                  quality={85}
                   loading="lazy"
                 />
                 <div className="scrim"></div>

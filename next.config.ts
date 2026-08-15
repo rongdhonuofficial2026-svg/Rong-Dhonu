@@ -70,6 +70,9 @@ const nextConfig: NextConfig = {
       },
     ],
     minimumCacheTTL: 31536000, // 1 year (instant browser loading on revisit)
+    // Next.js 16 requires this allowlist explicitly (defaults to [75] only) — without
+    // it, any quality={85} prop elsewhere in the app is silently clamped to 75.
+    qualities: [75, 85],
   },
 
   async headers() {

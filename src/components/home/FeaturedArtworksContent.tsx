@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 import { Link } from "@/lib/i18n/routing"
-import { PremiumImage } from "@/components/ui/PremiumImage"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -50,7 +50,7 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
             : artwork.artist_name
           const year = artwork.year || (artwork.created_at ? new Date(artwork.created_at).getFullYear() : 2026)
           
-          const imgUrl = artwork.main_image_url
+          const imgUrl = artwork.main_image_url || "/images/placeholders/hero.webp"
           const artworkNo = `No. 0${index + 1}`
 
           return (
@@ -59,9 +59,12 @@ export function FeaturedArtworksContent({ locale, displayData, hasData }: Featur
               href={artwork.target_href || `/gallery/artwork/${artwork.id}`}
               className="bento-tile artwork reveal block"
             >
-              <img
+              <Image
                 src={imgUrl}
                 alt={artworkTitle}
+                fill
+                sizes="(max-width: 767px) 100vw, (max-width: 1080px) 50vw, 33vw"
+                quality={85}
                 loading="lazy"
               />
               <div className="scrim"></div>
