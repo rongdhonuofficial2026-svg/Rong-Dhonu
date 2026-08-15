@@ -60,7 +60,7 @@ export function HomeTestimonialsContent({ locale, content }: { locale: string, c
         <h2>{title}</h2>
       </div>
 
-      <div className="testi-grid">
+      <div className="testi-grid" style={{ '--testi-cols': Math.max(1, Math.min(items.length, 3)) } as React.CSSProperties}>
         {items.slice(0, 3).map((item: any, i: number) => {
           const quote = locale === 'bn' ? (item.quote_bn || item.quote_en) : item.quote_en
           const role = locale === 'bn' ? (item.role_bn || item.role_en) : item.role_en

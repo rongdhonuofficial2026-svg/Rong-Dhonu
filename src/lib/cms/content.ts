@@ -76,6 +76,23 @@ export async function getCmsContent(page: string, section: string, locale: strin
       }
     }
 
+    // Some fields are stored as separate per-locale rows (field_key literally
+    // suffixed "_en"/"_bn", e.g. ctaPrimary_en / ctaPrimary_bn) rather than using
+    // this table's own value_en/value_bn columns for localization. Resolve those
+    // down to a canonical unsuffixed key too, the same way extractLocalizedContent()
+    // already does for fallback content below, so consumers can read a single
+    // locale-appropriate `ctaPrimary` regardless of which storage convention a
+    // given field used. Original suffixed keys are left in place, nothing removed.
+    for (const key of Object.keys(contentObj)) {
+      const match = key.match(/^(.+)_(en|bn)$/)
+      if (!match) continue
+      const baseKey = match[1]
+      if (contentObj[baseKey] !== undefined) continue
+      contentObj[baseKey] = locale === 'bn'
+        ? (contentObj[`${baseKey}_bn`] || contentObj[`${baseKey}_en`])
+        : (contentObj[`${baseKey}_en`] || contentObj[`${baseKey}_bn`])
+    }
+
     return contentObj
   } catch (err) {
     console.error(`[CMS Exception] Failed to load ${page}/${section}:`, err)
