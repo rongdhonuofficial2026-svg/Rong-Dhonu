@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { submitInquiry } from '@/actions/public/contact'
 import { toast } from 'sonner'
+import { CheckCircle2 } from 'lucide-react'
 
 interface ContactFormProps {
   locale: string
@@ -12,7 +13,7 @@ type InquiryType = 'General Inquiry' | 'Artist Application' | 'Gallery Visit' | 
 
 export function ContactForm({ locale }: ContactFormProps) {
   const isBn = locale === 'bn'
-  
+
   // Tabs config
   const tabOptions: Array<{ key: InquiryType; labelEn: string; labelBn: string }> = [
     { key: 'General Inquiry', labelEn: 'General Inquiry', labelBn: 'সাধারণ অনুসন্ধান' },
@@ -27,6 +28,8 @@ export function ContactForm({ locale }: ContactFormProps) {
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [submittedName, setSubmittedName] = useState('')
 
   // Validation errors
   const [errors, setErrors] = useState<{ name?: string; email?: string; subject?: string; message?: string }>({})
@@ -52,7 +55,7 @@ export function ContactForm({ locale }: ContactFormProps) {
       newErrors.email = isBn ? 'সঠিক ইমেল ঠিকানা লিখুন।' : 'Invalid email address.'
     }
     if (!subject.trim()) {
-      newErrors.subject = isBn ? 'বিষয় আবশ্যক।' : 'Subject is required.'
+      newErrors.subject = isBn ? 'বিষয় আবশ্যক।' : 'Subject is required.'
     }
     if (!message.trim() || message.trim().length < 10) {
       newErrors.message = isBn ? 'বার্তা অত্যন্ত ১০টি অক্ষরে হতে হবে।' : 'Message must be at least 10 characters.'
@@ -69,8 +72,8 @@ export function ContactForm({ locale }: ContactFormProps) {
     }
 
     setLoading(true)
-    const activeTabLabel = isBn 
-      ? tabOptions.find(t => t.key === activeTab)?.labelBn || activeTab 
+    const activeTabLabel = isBn
+      ? tabOptions.find(t => t.key === activeTab)?.labelBn || activeTab
       : activeTab
 
     try {
@@ -85,7 +88,12 @@ export function ContactForm({ locale }: ContactFormProps) {
       if (res?.error) {
         toast.error(res.error)
       } else {
-        toast.success(isBn ? 'অনুসন্ধান সফলভাবে পাঠানো হয়েছে!' : 'Inquiry submitted successfully!')
+        // Admin notification succeeded. No visitor auto-reply email is sent
+        // (no verified sending domain yet) — the on-screen state below is the
+        // only confirmation the visitor receives, so it must be clear and
+        // persistent rather than a toast that disappears.
+        setSubmittedName(name)
+        setSubmitted(true)
         // Clear the form fields but preserve active tab
         setName('')
         setEmail('')
@@ -106,13 +114,42 @@ export function ContactForm({ locale }: ContactFormProps) {
     }
   }
 
+  if (submitted) {
+    return (
+      <div className="form-card reveal in" style={{ opacity: 1, transform: 'none' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
+          <CheckCircle2
+            aria-hidden="true"
+            style={{ width: '48px', height: '48px', color: 'var(--emerald-bright)', marginBottom: '20px' }}
+          />
+          <div className="form-eyebrow">{isBn ? "অনুসন্ধান গৃহীত হয়েছে" : "Inquiry Received"}</div>
+          <h2>{isBn ? `ধন্যবাদ, ${submittedName}।` : `Thank you, ${submittedName}.`}</h2>
+          <p>
+            {isBn
+              ? "আপনার অনুসন্ধান সফলভাবে গৃহীত হয়েছে। আমাদের দল আপনার বার্তা পর্যালোচনা করে যত দ্রুত সম্ভব সাড়া দেবে।"
+              : "Your inquiry has been successfully received. Our team will review your message and get back to you as soon as possible."}
+          </p>
+          <div className="form-submit">
+            <button
+              type="button"
+              className="btn btn-line magnetic"
+              onClick={() => setSubmitted(false)}
+            >
+              {isBn ? "আরেকটি অনুসন্ধান পাঠান" : "Send Another Inquiry"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="form-card reveal in" style={{ opacity: 1, transform: 'none' }}>
       <div className="form-eyebrow">{isBn ? "অনুসন্ধান ও অর্জন" : "Inquiries & Acquisitions"}</div>
       <h2>{isBn ? "আমাদের একটি বার্তা পাঠান" : "Send a Message"}</h2>
       <p>
-        {isBn 
-          ? "প্রদর্শনী বিবরণ, ব্যক্তিগত প্রদর্শনী, বা শিল্পকর্ম অর্জনের জন্য, দয়া করে নিচে আপনার বিবরণ দিন এবং আমাদের কিউরেটরিয়াল দল আপনাকে সহায়তা করবে।" 
+        {isBn
+          ? "প্রদর্শনী বিবরণ, ব্যক্তিগত প্রদর্শনী, বা শিল্পকর্ম অর্জনের জন্য, দয়া করে নিচে আপনার বিবরণ দিন এবং আমাদের কিউরেটরিয়াল দল আপনাকে সহায়তা করবে।"
           : "For exhibition details, private viewings, or artwork acquisitions, please leave your details below and our curatorial team will assist you."}
       </p>
 
@@ -141,17 +178,17 @@ export function ContactForm({ locale }: ContactFormProps) {
         <div className="field-row">
           <div className="field">
             <label htmlFor="inquiry_name">{isBn ? "সম্পূর্ণ নাম" : "Full Name"}</label>
-            <input 
+            <input
               ref={nameRef}
               id="inquiry_name"
-              type="text" 
-              placeholder={isBn ? "যেমন: জেন ডো" : "e.g. Jane Doe"} 
+              type="text"
+              placeholder={isBn ? "যেমন: জেন ডো" : "e.g. Jane Doe"}
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={loading}
               aria-invalid={!!errors.name}
               aria-describedby={errors.name ? "name_error" : undefined}
-              required 
+              required
             />
             {errors.name && (
               <span id="name_error" style={{ color: 'var(--color-crimson)', fontSize: '11px', marginTop: '4px', display: 'block' }}>
@@ -161,17 +198,17 @@ export function ContactForm({ locale }: ContactFormProps) {
           </div>
           <div className="field">
             <label htmlFor="inquiry_email">{isBn ? "ইমেইল ঠিকানা" : "Email Address"}</label>
-            <input 
+            <input
               ref={emailRef}
               id="inquiry_email"
-              type="email" 
-              placeholder="jane@example.com" 
+              type="email"
+              placeholder="jane@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email_error" : undefined}
-              required 
+              required
             />
             {errors.email && (
               <span id="email_error" style={{ color: 'var(--color-crimson)', fontSize: '11px', marginTop: '4px', display: 'block' }}>
@@ -182,11 +219,11 @@ export function ContactForm({ locale }: ContactFormProps) {
         </div>
         <div className="field" style={{ marginBottom: errors.subject ? '10px' : '30px' }}>
           <label htmlFor="inquiry_subject">{isBn ? "অনুসন্ধানের বিষয়" : "Subject of Inquiry"}</label>
-          <input 
+          <input
             ref={subjectRef}
             id="inquiry_subject"
-            type="text" 
-            placeholder={isBn ? "আমরা আপনাকে কীভাবে সাহায্য করতে পারি?" : "How can we assist you?"} 
+            type="text"
+            placeholder={isBn ? "আমরা আপনাকে কীভাবে সাহায্য করতে পারি?" : "How can we assist you?"}
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             disabled={loading}
@@ -202,10 +239,10 @@ export function ContactForm({ locale }: ContactFormProps) {
         </div>
         <div className="field" style={{ marginBottom: '8px' }}>
           <label htmlFor="inquiry_message">{isBn ? "বার্তা" : "Message"}</label>
-          <textarea 
+          <textarea
             ref={messageRef}
             id="inquiry_message"
-            rows={4} 
+            rows={4}
             placeholder={isBn ? "অনুগ্রহ করে আপনার অনুসন্ধানের বিবরণ শেয়ার করুন..." : "Please share the details of your inquiry…"}
             value={message}
             onChange={(e) => setMessage(e.target.value)}

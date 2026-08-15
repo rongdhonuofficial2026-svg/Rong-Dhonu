@@ -2,7 +2,7 @@
 
 import { contactInquirySchema } from '@/lib/validations/schemas'
 import { sendEmail } from '@/lib/email/client'
-import { adminInquiryTemplate, userAutoReplyTemplate } from '@/lib/email/templates'
+import { adminInquiryTemplate } from '@/lib/email/templates'
 import { logAudit } from '@/lib/audit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -43,20 +43,7 @@ export async function submitInquiry(locale: string, rawData: ContactFormInput) {
       return { error: locale === 'bn' ? 'আমরা এই মুহূর্তে আপনার বার্তা পাঠাতে পারছি না। অনুগ্রহ করে একটু পরে আবার চেষ্টা করুন।' : "We couldn't send your message right now. Please try again in a few moments." }
     }
 
-    // 3. Send automated confirmation/auto-reply email to the customer
-    const userHtml = userAutoReplyTemplate(name, subject, locale)
-    const userRes = await sendEmail({
-      to: email,
-      subject: locale === 'bn' ? 'যোগাযোগের জন্য ধন্যবাদ' : 'Inquiry Received - Rongdhonu',
-      html: userHtml
-    })
-
-    if (!userRes.success) {
-      console.error('Failed to deliver auto-reply email to visitor:', userRes.error)
-      return { error: locale === 'bn' ? 'আমরা এই মুহূর্তে নিশ্চিতকরণ ইমেল পাঠাতে পারছি না। অনুগ্রহ করে পরে চেষ্টা করুন।' : "We couldn't send the confirmation email. Please try again later." }
-    }
-
-    // 4. Log transaction inside database audit logs (fire and forget, safety caught)
+    // 3. Log transaction inside database audit logs (fire and forget, safety caught)
     try {
       const supabase = await createClient()
       const { data: newNotification, error: notifError } = await supabase
