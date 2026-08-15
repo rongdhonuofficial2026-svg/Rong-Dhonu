@@ -24,41 +24,65 @@ export interface InquiryEmailPayload {
   message: string
 }
 
+// User-submitted fields are interpolated directly into email HTML below; escape
+// them so a name/subject/message containing markup can't inject content into
+// the admin's email client.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 export function adminInquiryTemplate(payload: InquiryEmailPayload): string {
+  const submittedAt = new Date().toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Kolkata'
+  })
+
   return emailLayout(`
     <h2 style="color: #1E1A16; font-size: 18px; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #EFE6D2; padding-bottom: 10px;">New Contact Inquiry Received</h2>
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
       <tr>
         <td style="padding: 8px 0; font-size: 13px; color: #5C5347; width: 140px; font-weight: 600;">Inquiry Type:</td>
-        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16;">${payload.inquiryType}</td>
+        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16;">${escapeHtml(payload.inquiryType)}</td>
       </tr>
       <tr>
         <td style="padding: 8px 0; font-size: 13px; color: #5C5347; font-weight: 600;">Full Name:</td>
-        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16;">${payload.name}</td>
+        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16;">${escapeHtml(payload.name)}</td>
       </tr>
       <tr>
         <td style="padding: 8px 0; font-size: 13px; color: #5C5347; font-weight: 600;">Email Address:</td>
-        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16;"><a href="mailto:${payload.email}" style="color: #B4233A; text-decoration: none;">${payload.email}</a></td>
+        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16;"><a href="mailto:${escapeHtml(payload.email)}" style="color: #B4233A; text-decoration: none;">${escapeHtml(payload.email)}</a></td>
       </tr>
       <tr>
         <td style="padding: 8px 0; font-size: 13px; color: #5C5347; font-weight: 600;">Subject:</td>
-        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16; font-weight: 600;">${payload.subject}</td>
+        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16; font-weight: 600;">${escapeHtml(payload.subject)}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 0; font-size: 13px; color: #5C5347; font-weight: 600;">Submitted:</td>
+        <td style="padding: 8px 0; font-size: 14px; color: #1E1A16;">${submittedAt} (IST)</td>
       </tr>
     </table>
     <div style="background-color: #FDFDFD; border-left: 3px solid #B4233A; padding: 15px 20px; margin-top: 20px; border-radius: 2px;">
       <p style="margin: 0; font-size: 13px; font-weight: 600; color: #5C5347; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Message Details:</p>
-      <p style="margin: 0; font-size: 14px; color: #1E1A16; white-space: pre-wrap; line-height: 1.6;">${payload.message}</p>
+      <p style="margin: 0; font-size: 14px; color: #1E1A16; white-space: pre-wrap; line-height: 1.6;">${escapeHtml(payload.message)}</p>
     </div>
   `)
 }
 
 export function userAutoReplyTemplate(name: string, subject: string, locale: string): string {
   const isBn = locale === 'bn'
+  const name_ = escapeHtml(name)
+  const subject_ = escapeHtml(subject)
   const title = isBn ? 'যোগাযোগের জন্য ধন্যবাদ' : 'Inquiry Received'
-  const greeting = isBn ? `প্রিয় ${name},` : `Dear ${name},`
+  const greeting = isBn ? `প্রিয় ${name_},` : `Dear ${name_},`
   const bodyText = isBn
-    ? `রংধনু আর্টিস্টস কালেক্টিভে যোগাযোগ করার জন্য আপনাকে ধন্যবাদ। আমরা <b>"${subject}"</b> বিষয়ে আপনার অনুসন্ধান বার্তাটি পেয়েছি। আমাদের কিউরেটরিয়াল দল খুব শীঘ্রই আপনার বার্তার উত্তর দেবে।`
-    : `Thank you for contacting Rongdhonu. We have received your inquiry regarding <b>"${subject}"</b> and our curatorial team will respond to you personally shortly.`
+    ? `রংধনু আর্টিস্টস কালেক্টিভে যোগাযোগ করার জন্য আপনাকে ধন্যবাদ। আমরা <b>"${subject_}"</b> বিষয়ে আপনার অনুসন্ধান বার্তাটি পেয়েছি। আমাদের কিউরেটরিয়াল দল খুব শীঘ্রই আপনার বার্তার উত্তর দেবে।`
+    : `Thank you for contacting Rongdhonu. We have received your inquiry regarding <b>"${subject_}"</b> and our curatorial team will respond to you personally shortly.`
   const supportText = isBn
     ? 'আপনাকে আরও সাহায্য করতে পারলে আমরা আনন্দিত হব।'
     : 'We look forward to connecting with you.'

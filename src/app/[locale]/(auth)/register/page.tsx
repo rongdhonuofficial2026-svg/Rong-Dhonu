@@ -8,7 +8,7 @@ import { registerAction } from '@/lib/actions/auth';
 import { z } from 'zod';
 import { Link } from '@/lib/i18n/routing';
 import { useLocale } from 'next-intl';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 import zxcvbn from 'zxcvbn';
 
 type RegisterForm = z.infer<typeof registerSchema>;
@@ -47,6 +47,16 @@ export default function RegisterPage() {
         <div className="mt-6">
           <Link href="/login" className="font-medium text-accent-indigo hover:text-indigo-800 auth-link-row">
             Return to sign in
+          </Link>
+        </div>
+
+        <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-charcoal transition-colors min-h-11"
+          >
+            <ArrowLeft size={15} />
+            Back to Website
           </Link>
         </div>
       </div>
@@ -141,6 +151,16 @@ export default function RegisterPage() {
           </button>
         </div>
       </form>
+
+      <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-charcoal transition-colors min-h-11"
+        >
+          <ArrowLeft size={15} />
+          Back to Website
+        </Link>
+      </div>
     </div>
   );
 }

@@ -31,8 +31,11 @@ export async function submitInquiry(locale: string, rawData: ContactFormInput) {
     const adminHtml = adminInquiryTemplate({ inquiryType, name, email, subject, message })
     const adminRes = await sendEmail({
       to: adminRecipient,
-      subject: `New Contact Inquiry: ${subject}`,
-      html: adminHtml
+      subject: `New Website Inquiry — ${inquiryType}`,
+      html: adminHtml,
+      // Lets the admin hit "Reply" in their inbox and respond directly to the
+      // visitor, without ever using the visitor's address as the From sender.
+      replyTo: email
     })
 
     if (!adminRes.success) {

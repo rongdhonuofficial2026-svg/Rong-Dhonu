@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { to, subject, html } = await req.json()
+    const { to, subject, html, replyTo } = await req.json()
 
     if (!resendApiKey) {
       console.warn("RESEND_API_KEY is not set. Simulating email send to:", to, subject)
@@ -29,18 +29,22 @@ serve(async (req) => {
     let toEmail = to
     let subjectLine = subject
 
+    const buildBody = (from: string) => {
+      const body: Record<string, unknown> = { from, to: toEmail, subject: subjectLine, html }
+      // Never send as the visitor's own address (SPF/DMARC risk) — the verified
+      // sender above stays the From address; reply_to lets the admin reply
+      // directly to the visitor without impersonating them.
+      if (replyTo) body.reply_to = replyTo
+      return body
+    }
+
     let res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${resendApiKey}`
       },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: toEmail,
-        subject: subjectLine,
-        html
-      })
+      body: JSON.stringify(buildBody(fromEmail))
     })
 
     let data = await res.json()
@@ -58,12 +62,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${resendApiKey}`
         },
-        body: JSON.stringify({
-          from: fromEmail,
-          to: toEmail,
-          subject: subjectLine,
-          html
-        })
+        body: JSON.stringify(buildBody(fromEmail))
       })
       data = await res.json()
     }

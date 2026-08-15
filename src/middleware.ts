@@ -12,6 +12,27 @@ export default async function proxy(request: NextRequest) {
   // 1. Next-Intl handles Locale
   const response = intlMiddleware(request);
 
+  const pathname = request.nextUrl.pathname;
+  // Remove locale prefix for checking paths dynamically
+  const localeRegex = new RegExp(`^/(${routing.locales.join('|')})`);
+  const pathWithoutLocale = pathname.replace(localeRegex, '') || '/';
+  const currentLocale = pathname.split('/')[1] || routing.defaultLocale;
+
+  // `user` is only ever read below to gate /dashboard, /admin, /login, and
+  // /register. Every other route — the entire public site (home, about,
+  // exhibitions, gallery, catalogs, contact, etc.) — never consults it at all,
+  // so skip the Supabase Auth network round-trip there entirely instead of
+  // paying for it on every single public navigation.
+  const needsAuth =
+    pathWithoutLocale.startsWith('/dashboard') ||
+    pathWithoutLocale.startsWith('/admin') ||
+    pathWithoutLocale === '/login' ||
+    pathWithoutLocale === '/register';
+
+  if (!needsAuth) {
+    return response;
+  }
+
   // 2. Supabase Auth Check
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,25 +55,8 @@ export default async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-  // Remove locale prefix for checking paths dynamically
-  const localeRegex = new RegExp(`^/(${routing.locales.join('|')})`);
-  const pathWithoutLocale = pathname.replace(localeRegex, '') || '/';
-  const currentLocale = pathname.split('/')[1] || routing.defaultLocale;
-
-  // The role lookup is a DB round-trip that's only needed to decide the
-  // redirects below (dashboard/admin/login/register). Every other route
-  // (public pages, catalogs, gallery, etc.) is guarded purely by whether
-  // `user` exists, so skip the query there instead of paying for it on
-  // every single authenticated navigation across the whole site.
-  const needsRole =
-    pathWithoutLocale.startsWith('/dashboard') ||
-    pathWithoutLocale.startsWith('/admin') ||
-    pathWithoutLocale === '/login' ||
-    pathWithoutLocale === '/register';
-
   let role = 'guest';
-  if (user && needsRole) {
+  if (user) {
     role = await getUserRole(supabase, user.id, user.email);
   }
 

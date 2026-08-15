@@ -4,15 +4,16 @@ export interface SendEmailParams {
   to: string
   subject: string
   html: string
+  replyTo?: string
 }
 
-export async function sendEmail({ to, subject, html }: SendEmailParams) {
+export async function sendEmail({ to, subject, html, replyTo }: SendEmailParams) {
   const timestamp = new Date().toISOString()
   try {
     console.log(`[Email Audit] [${timestamp}] Attempting email dispatch to: ${to}, subject: "${subject}"`)
     const supabase = await createClient()
     const { data, error } = await supabase.functions.invoke('send-email', {
-      body: { to, subject, html }
+      body: { to, subject, html, replyTo }
     })
     
     if (error) {
