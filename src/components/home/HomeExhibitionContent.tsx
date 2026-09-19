@@ -73,6 +73,7 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
 
   const yearSuffix = currentExhibition.year ? String(currentExhibition.year).slice(-2) : '26'
   const spotlightImage = currentExhibition.hero_image_url || "/images/home/spotlight_bg.jpg"
+  const mobileFocalPoint = currentExhibition.mobile_image_position || 'center center'
 
   return (
     <section ref={ref} className="spotlight artwork" id="exhibition">
@@ -84,6 +85,8 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         sizes="100vw"
         quality={85}
         loading="lazy"
+        style={{ '--mobile-focal': mobileFocalPoint } as React.CSSProperties}
+        className="spotlight-bg-img"
       />
       <div className="scrim"></div>
       <div className="frame-edge"></div>

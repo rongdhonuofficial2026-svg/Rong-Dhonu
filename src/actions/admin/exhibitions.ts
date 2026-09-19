@@ -201,7 +201,9 @@ export async function updateExhibition(id: string, payload: any) {
     submission_end,
     venue_en: payload.venue_en || null,
     venue_bn: payload.venue_bn || null,
-    hero_image_url: payload.hero_image_url || null
+    hero_image_url: payload.hero_image_url || null,
+    // Mobile focal point — CSS object-position value (e.g. 'right top', 'center center')
+    mobile_image_position: payload.mobile_image_position || 'center center',
   }
 
   // 4. Handle Featured Status Override
