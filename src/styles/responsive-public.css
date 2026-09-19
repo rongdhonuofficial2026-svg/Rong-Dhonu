@@ -246,6 +246,169 @@
   }
 }
 
+/* ── Exhibition Spotlight Banner — mobile optimisation ──────────────────────
+   Targets .spotlight used on both the Home page (HomeExhibitionContent)
+   and the Exhibitions listing page. Desktop layout (≥1025px) is UNTOUCHED.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Tablet (761px – 1024px): reduce top/bottom padding, scale card */
+@media (max-width: 1024px) and (min-width: 761px) {
+  .spotlight {
+    padding: 100px var(--edge);
+  }
+
+  .spotlight h2 {
+    font-size: clamp(30px, 5vw, 52px);
+    max-width: 100%;
+  }
+
+  .spotlight-sub {
+    font-size: 15px;
+    margin: 18px 0 36px;
+    max-width: 100%;
+  }
+
+  .spotlight-card {
+    padding: 28px 24px;
+    gap: 28px;
+  }
+
+  /* Scale down the decorative year watermark so it doesn't overwhelm content */
+  .spotlight-bgtext {
+    font-size: min(22vw, 280px);
+    opacity: 0.6;
+  }
+}
+
+/* Phone (≤760px): tighter layout, better image focus, readable text */
+@media (max-width: 760px) {
+  .spotlight {
+    /* Reduce vertical padding so the section height is phone-friendly */
+    padding: 80px var(--edge) 56px;
+    /* Ensure minimum height so image reads as a proper banner */
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  /* Focus the banner image on the subject rather than the full frame */
+  .spotlight > img,
+  .spotlight > [style*="position"] img,
+  .spotlight [data-nimg] {
+    object-fit: cover !important;
+    object-position: center top !important;
+  }
+
+  /* Pull the watermark year behind so it doesn't compete with text */
+  .spotlight-bgtext {
+    font-size: min(55vw, 200px);
+    right: -4%;
+    top: 12%;
+    transform: none;
+    opacity: 0.5;
+    color: rgba(244, 238, 223, 0.05);
+  }
+
+  /* Give the content inner full width */
+  .spotlight-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Slightly smaller heading — still impactful */
+  .spotlight h2 {
+    font-size: clamp(28px, 8.5vw, 44px);
+    max-width: 100%;
+    line-height: 1.1;
+  }
+
+  /* Limit description to 3 lines on tiny screens to save space */
+  .spotlight-sub {
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin: 14px 0 28px;
+    max-width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Compact info card */
+  .spotlight-card {
+    padding: 20px 18px;
+    gap: 16px;
+    border-radius: 12px;
+    /* Stack vertically, content before the CTA column */
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* Tighter detail rows */
+  .spotlight-detail {
+    gap: 10px;
+  }
+
+  .spotlight-detail b {
+    font-size: 14px;
+  }
+
+  .spotlight-detail span {
+    font-size: 12.5px;
+  }
+
+  /* Make tag + CTA button sit side by side on mobile */
+  .spotlight-card > div:last-child {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-left: none !important;
+    padding-top: 14px !important;
+    padding-left: 0 !important;
+    margin-top: 4px;
+  }
+
+  /* Tag pill: compact */
+  .spotlight-tag {
+    font-size: 10px;
+    padding: 6px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* CTA button: full width on mobile */
+  .spotlight-card .btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* Extra-small phones (≤430px) */
+@media (max-width: 430px) {
+  .spotlight {
+    padding: 70px var(--edge) 44px;
+    min-height: 90vh;
+  }
+
+  .spotlight h2 {
+    font-size: clamp(24px, 9vw, 36px);
+  }
+
+  .spotlight-sub {
+    font-size: 14px;
+    -webkit-line-clamp: 2;
+  }
+
+  .spotlight-card {
+    padding: 16px 14px;
+  }
+}
+
+
 /* ── Forms (contact + public) ─────────────────────────────────────────────── */
 @media (max-width: 760px) {
   .field input,
