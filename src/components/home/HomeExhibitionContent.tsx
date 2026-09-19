@@ -86,7 +86,15 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
   }
 
   return (
-    <section ref={ref} className="spotlight artwork" id="exhibition">
+    <section 
+      ref={ref} 
+      className="spotlight artwork" 
+      id="exhibition"
+      style={{ 
+        '--mobile-focal': mobileFocal,
+        '--mobile-zoom': mobileZoom,
+      } as React.CSSProperties}
+    >
       {/* Background artwork */}
       <Image
         src={spotlightImage}

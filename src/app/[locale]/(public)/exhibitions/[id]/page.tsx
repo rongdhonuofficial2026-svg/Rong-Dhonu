@@ -115,36 +115,69 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
   return (
     <main className="min-h-screen bg-background pb-32">
       {/* Hero Section */}
-      <section className="relative h-[80vh] min-h-[600px] flex items-end justify-center text-white pb-32 overflow-hidden exhibition-detail-hero">
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/40 to-transparent" />
-        {exhibition.hero_image_url && (
-          <Image src={exhibition.hero_image_url} alt={title} fill sizes="100vw" className="object-cover scale-105" preload quality={85} />
-        )}
-        <div className="relative z-20 text-center max-w-5xl px-6 space-y-8 mt-auto w-full">
-          <Badge 
-            variant="outline" 
-            className={`text-xs tracking-[0.3em] font-bold uppercase px-4 py-1.5 shadow-xl backdrop-blur-md rounded-none transition-colors ${statusBadgeColor}`}
+      {(() => {
+        const rawMobilePos = exhibition.mobile_image_position || 'center center'
+        let mobileFocal = 'center center'
+        let mobileZoom = '1'
+        if (rawMobilePos.includes('/')) {
+          const [posPart, zoomPart] = rawMobilePos.split('/')
+          mobileFocal = posPart.trim()
+          mobileZoom = zoomPart.trim() || '1'
+        } else {
+          mobileFocal = rawMobilePos
+        }
+        return (
+          <section 
+            className="relative h-[80vh] min-h-[600px] flex items-end justify-center text-white pb-32 overflow-hidden exhibition-detail-hero"
+            style={{
+              '--mobile-focal': mobileFocal,
+              '--mobile-zoom': mobileZoom,
+            } as React.CSSProperties}
           >
-            {statusBadgeText}
-          </Badge>
-          <h1 className="exhibition-detail-title">{title}</h1>
-          
-          <div className="flex flex-wrap items-center justify-center gap-6 text-base md:text-lg text-white/90 font-light tracking-wide pt-4">
-            {exStart && (
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-white/60" strokeWidth={1.5} />
-                <span>{exEnd ? `${shortDateFmt.format(exStart)} — ${dateFmt.format(exEnd)}` : dateFmt.format(exStart)}</span>
-              </div>
+            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/40 to-transparent" />
+            {exhibition.hero_image_url && (
+              <Image 
+                src={exhibition.hero_image_url} 
+                alt={title} 
+                fill 
+                sizes="100vw" 
+                className="object-cover scale-105 exhibition-detail-hero-img" 
+                preload 
+                quality={85}
+                style={{
+                  '--mobile-focal': mobileFocal,
+                  '--mobile-zoom': mobileZoom,
+                } as React.CSSProperties}
+              />
             )}
-            {venue && (
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-white/60" strokeWidth={1.5} />
-                <span>{venue}</span>
+            <div className="relative z-20 text-center max-w-5xl px-6 space-y-8 mt-auto w-full">
+              <Badge 
+                variant="outline" 
+                className={`text-xs tracking-[0.3em] font-bold uppercase px-4 py-1.5 shadow-xl backdrop-blur-md rounded-none transition-colors ${statusBadgeColor}`}
+              >
+                {statusBadgeText}
+              </Badge>
+              <h1 className="exhibition-detail-title">{title}</h1>
+              
+              <div className="flex flex-wrap items-center justify-center gap-6 text-base md:text-lg text-white/90 font-light tracking-wide pt-4">
+                {exStart && (
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-white/60" strokeWidth={1.5} />
+                    <span>{exEnd ? `${shortDateFmt.format(exStart)} — ${dateFmt.format(exEnd)}` : dateFmt.format(exStart)}</span>
+                  </div>
+                )}
+                {venue && (
+                  <div className="flex items-center gap-3">
+                    <MapPin className="w-5 h-5 text-white/60" strokeWidth={1.5} />
+                    <span>{venue}</span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-      </section>
+            </div>
+          </section>
+        )
+      })()}
+
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-24 space-y-40">
         

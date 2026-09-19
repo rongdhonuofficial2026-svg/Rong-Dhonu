@@ -252,10 +252,15 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 /* Apply the admin-chosen focal point and zoom on mobile.
-   The --mobile-focal and --mobile-zoom CSS variables are set as inline styles on .spotlight-bg-img
-   by both HomeExhibitionContent and the exhibitions page. */
+   The --mobile-focal and --mobile-zoom CSS variables are set as inline styles on .spotlight
+   and .exhibition-detail-hero containers and their images. */
 @media (max-width: 760px) {
-  .spotlight-bg-img {
+  .spotlight > img,
+  .spotlight > [style*="position"] img,
+  .spotlight [data-nimg],
+  .spotlight .spotlight-bg-img,
+  .spotlight img {
+    object-fit: cover !important;
     object-position: var(--mobile-focal, center center) !important;
     transform: scale(var(--mobile-zoom, 1)) !important;
     transform-origin: var(--mobile-focal, center center) !important;
@@ -301,14 +306,6 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-  }
-
-  /* Focus the banner image on the subject rather than the full frame */
-  .spotlight > img,
-  .spotlight > [style*="position"] img,
-  .spotlight [data-nimg] {
-    object-fit: cover !important;
-    object-position: center top !important;
   }
 
   /* Pull the watermark year behind so it doesn't compete with text */
@@ -535,6 +532,14 @@
     min-height: 380px !important;
     height: 60vh !important;
     padding-bottom: 4rem !important;
+  }
+
+  .exhibition-detail-hero img,
+  .exhibition-detail-hero [data-nimg],
+  .exhibition-detail-hero-img {
+    object-position: var(--mobile-focal, center center) !important;
+    transform: scale(var(--mobile-zoom, 1)) !important;
+    transform-origin: var(--mobile-focal, center center) !important;
   }
 
   .exhibition-detail-title {

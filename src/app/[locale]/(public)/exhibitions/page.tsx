@@ -135,35 +135,39 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
       </header>
 
       {/* ============ UPCOMING / FEATURED SPOTLIGHT ============ */}
-      {spotlightEx && (
-        <section className="spotlight artwork" id="upcoming">
-          {(() => {
-            const rawMobilePos = spotlightEx.mobile_image_position || 'center center'
-            let mobileFocal = 'center center'
-            let mobileZoom = '1'
-            if (rawMobilePos.includes('/')) {
-              const [posPart, zoomPart] = rawMobilePos.split('/')
-              mobileFocal = posPart.trim()
-              mobileZoom = zoomPart.trim() || '1'
-            } else {
-              mobileFocal = rawMobilePos
-            }
-            return (
-              <img 
-                src={spotlightEx.hero_image_url || 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?q=80&w=2400&auto=format&fit=crop'} 
-                alt={locale === 'bn' && spotlightEx.theme_bn ? spotlightEx.theme_bn : spotlightEx.theme_en} 
-                loading="lazy"
-                className="spotlight-bg-img"
-                style={{ 
-                  '--mobile-focal': mobileFocal,
-                  '--mobile-zoom': mobileZoom,
-                } as React.CSSProperties}
-              />
-            )
-          })()}
-          <div className="scrim"></div>
-          <div className="spotlight-bgtext">{spotlightYearShort}</div>
-          <div className="spotlight-inner">
+      {spotlightEx && (() => {
+        const rawMobilePos = spotlightEx.mobile_image_position || 'center center'
+        let mobileFocal = 'center center'
+        let mobileZoom = '1'
+        if (rawMobilePos.includes('/')) {
+          const [posPart, zoomPart] = rawMobilePos.split('/')
+          mobileFocal = posPart.trim()
+          mobileZoom = zoomPart.trim() || '1'
+        } else {
+          mobileFocal = rawMobilePos
+        }
+        return (
+          <section 
+            className="spotlight artwork" 
+            id="upcoming"
+            style={{ 
+              '--mobile-focal': mobileFocal,
+              '--mobile-zoom': mobileZoom,
+            } as React.CSSProperties}
+          >
+            <img 
+              src={spotlightEx.hero_image_url || 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?q=80&w=2400&auto=format&fit=crop'} 
+              alt={locale === 'bn' && spotlightEx.theme_bn ? spotlightEx.theme_bn : spotlightEx.theme_en} 
+              loading="lazy"
+              className="spotlight-bg-img"
+              style={{ 
+                '--mobile-focal': mobileFocal,
+                '--mobile-zoom': mobileZoom,
+              } as React.CSSProperties}
+            />
+            <div className="scrim"></div>
+            <div className="spotlight-bgtext">{spotlightYearShort}</div>
+            <div className="spotlight-inner">
             <div className="eyebrow reveal in">
               {spotlightEx.status === 'ongoing' 
                 ? (locale === 'bn' ? 'চলমান প্রদর্শনী' : 'Ongoing Exhibition') 
@@ -208,7 +212,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
             </div>
           </div>
         </section>
-      )}
+      )})()}
 
       {/* ============ BEHIND THE CURATION ============ */}
       <section className="about" id="curation">
