@@ -251,12 +251,14 @@
    and the Exhibitions listing page. Desktop layout (≥1025px) is UNTOUCHED.
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* Apply the admin-chosen focal point on mobile.
-   The --mobile-focal CSS variable is set as an inline style on .spotlight-bg-img
+/* Apply the admin-chosen focal point and zoom on mobile.
+   The --mobile-focal and --mobile-zoom CSS variables are set as inline styles on .spotlight-bg-img
    by both HomeExhibitionContent and the exhibitions page. */
 @media (max-width: 760px) {
   .spotlight-bg-img {
     object-position: var(--mobile-focal, center center) !important;
+    transform: scale(var(--mobile-zoom, 1)) !important;
+    transform-origin: var(--mobile-focal, center center) !important;
   }
 }
 

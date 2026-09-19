@@ -137,13 +137,30 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
       {/* ============ UPCOMING / FEATURED SPOTLIGHT ============ */}
       {spotlightEx && (
         <section className="spotlight artwork" id="upcoming">
-          <img 
-            src={spotlightEx.hero_image_url || 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?q=80&w=2400&auto=format&fit=crop'} 
-            alt={locale === 'bn' && spotlightEx.theme_bn ? spotlightEx.theme_bn : spotlightEx.theme_en} 
-            loading="lazy"
-            className="spotlight-bg-img"
-            style={{ '--mobile-focal': spotlightEx.mobile_image_position || 'center center' } as React.CSSProperties}
-          />
+          {(() => {
+            const rawMobilePos = spotlightEx.mobile_image_position || 'center center'
+            let mobileFocal = 'center center'
+            let mobileZoom = '1'
+            if (rawMobilePos.includes('/')) {
+              const [posPart, zoomPart] = rawMobilePos.split('/')
+              mobileFocal = posPart.trim()
+              mobileZoom = zoomPart.trim() || '1'
+            } else {
+              mobileFocal = rawMobilePos
+            }
+            return (
+              <img 
+                src={spotlightEx.hero_image_url || 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?q=80&w=2400&auto=format&fit=crop'} 
+                alt={locale === 'bn' && spotlightEx.theme_bn ? spotlightEx.theme_bn : spotlightEx.theme_en} 
+                loading="lazy"
+                className="spotlight-bg-img"
+                style={{ 
+                  '--mobile-focal': mobileFocal,
+                  '--mobile-zoom': mobileZoom,
+                } as React.CSSProperties}
+              />
+            )
+          })()}
           <div className="scrim"></div>
           <div className="spotlight-bgtext">{spotlightYearShort}</div>
           <div className="spotlight-inner">
