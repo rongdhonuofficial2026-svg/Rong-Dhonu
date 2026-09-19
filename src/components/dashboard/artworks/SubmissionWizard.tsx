@@ -80,9 +80,26 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
   const handleNext = () => {
     // Validate required fields per step
     if (step === 1 && !formData.title_en.trim()) {
-      toast.error("Title Required", { description: "Please enter the artwork title in English." })
+      toast.error(
+        locale === 'bn' ? "শিরোনাম আবশ্যক" : "Title Required", 
+        { description: locale === 'bn' ? "অনুগ্রহ করে ইংরেজিতে শিল্পকর্মের শিরোনাম লিখুন।" : "Please enter the artwork title in English." }
+      )
       return
     }
+
+    // Step 5: Image is strictly mandatory
+    if (step === 5 && !formData.main_image_url && !formData.image_file) {
+      toast.error(
+        locale === 'bn' ? "শিল্পকর্মের ছবি আবশ্যক" : "Artwork Image Required",
+        {
+          description: locale === 'bn'
+            ? "পরবর্তী ধাপে যাওয়ার জন্য অনুগ্রহ করে আপনার শিল্পকর্মের ছবিটি আপলোড করুন (সর্বোচ্চ ২ মেগাবাইট)।"
+            : "Please upload your artwork image (max 2MB) before proceeding to the next step.",
+        }
+      )
+      return
+    }
+
     setStep(s => Math.min(s + 1, 6))
   }
   const handlePrev = () => setStep(s => Math.max(s - 1, 1))
@@ -143,6 +160,14 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
     }
     if (!formData.title_en.trim()) {
       toast.error("Title Required", { description: "Please go back and enter the artwork title." })
+      return
+    }
+    if (!formData.main_image_url && !formData.image_file) {
+      toast.error(
+        locale === 'bn' ? "শিল্পকর্মের ছবি আবশ্যক" : "Artwork Image Required", 
+        { description: locale === 'bn' ? "শিল্পকর্ম জমা দেওয়ার জন্য ছবি আপলোড করা আবশ্যক।" : "Please upload your artwork image before submitting." }
+      )
+      setStep(5)
       return
     }
 
@@ -521,9 +546,11 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
                 </a>
               </div>
 
-              <p className="text-xs sm:text-sm font-medium text-[#6B655C] flex items-center gap-2 justify-center">
-                <AlertCircle className="w-4 h-4 text-accent-gold" />
-                {locale === 'bn' ? "ছবি দেওয়া বাঞ্ছনীয় তবে বাধ্যতামূলক নয়। আপনি পরেও যোগ করতে পারেন।" : "An image is recommended but not required. You can add it later."}
+              <p className="text-xs sm:text-sm font-medium text-charcoal/80 flex items-center gap-2 justify-center">
+                <AlertCircle className="w-4 h-4 text-accent-gold shrink-0" />
+                {locale === 'bn' 
+                  ? "পরবর্তী ধাপে যাওয়ার জন্য শিল্পকর্মের ছবি আপলোড করা আবশ্যক (সর্বোচ্চ ২MB)।" 
+                  : "Artwork image upload is required to proceed to the next step (max 2MB)."}
               </p>
             </div>
           )}
