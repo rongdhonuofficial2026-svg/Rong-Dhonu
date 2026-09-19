@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
-import { Upload, X, Check, Loader2, ArrowRight, ArrowLeft, AlertCircle } from "lucide-react"
+import { Upload, X, Check, Loader2, ArrowRight, ArrowLeft, AlertCircle, ExternalLink } from "lucide-react"
 import Image from "next/image"
 
 const DRAFT_KEY = "rongdhonu_artwork_draft_v2"
@@ -91,9 +91,21 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
 
-      // Validate size (10MB max)
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File Too Large", { description: "Please upload an image under 10MB." })
+      // Strictly validate size (2MB max)
+      const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+      if (file.size > MAX_FILE_SIZE) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1)
+        toast.error(
+          locale === 'bn' ? "ছবির আকার খুব বড় (সর্বোচ্চ ২ মেগাবাইট)" : "Artwork Image Too Large",
+          {
+            description: locale === 'bn'
+              ? `আপনার নির্বাচিত ছবির আকার ${fileSizeMB}MB। সর্বোচ্চ ২ মেগাবাইট (2MB) অনুমোদিত। নিচে দেওয়া 'Compress your image' লিঙ্কে গিয়ে ছবিটি ছোট করুন।`
+              : `Your image is ${fileSizeMB}MB. Maximum allowed file size is 2MB. Please use the "Compress your image" tool below to compress your image.`,
+            duration: 6000,
+          }
+        )
+        // Reset file input
+        e.target.value = ''
         return
       }
 
@@ -421,8 +433,8 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
 
           {/* Step 5: Image Upload */}
           {step === 5 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="border-2 border-dashed border-[#E5E0D8] rounded-2xl p-6 sm:p-10 flex flex-col items-center justify-center min-h-[320px] bg-[#FAF9F6] hover:bg-[#F5F2EB] transition-colors group relative overflow-hidden">
+            <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="border-2 border-dashed border-[#E5E0D8] rounded-2xl p-6 sm:p-10 flex flex-col items-center justify-center min-h-[300px] bg-[#FAF9F6] hover:bg-[#F5F2EB] transition-colors group relative overflow-hidden">
                 {formData.main_image_url ? (
                   <div className="relative w-full h-[280px] rounded-xl overflow-hidden bg-white shadow-sm border border-[#E5E0D8]/60">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -444,12 +456,19 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
                     </Button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center cursor-pointer w-full h-full py-10">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-[#E5E0D8]/60 group-hover:scale-105 transition-transform duration-300">
+                  <label className="flex flex-col items-center cursor-pointer w-full h-full py-8">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center mb-5 shadow-sm border border-[#E5E0D8]/60 group-hover:scale-105 transition-transform duration-300">
                       <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-accent-gold opacity-80" />
                     </div>
-                    <p className="text-lg sm:text-xl font-serif font-medium text-charcoal text-center mb-2">Click to upload Artwork Image</p>
-                    <p className="text-sm font-medium text-[#6B655C]">JPG, PNG, WebP — max 10MB</p>
+                    <p className="text-lg sm:text-xl font-serif font-medium text-charcoal text-center mb-2">
+                      {locale === 'bn' ? "শিল্পকর্মের ছবি আপলোড করতে ক্লিক করুন" : "Click to upload Artwork Image"}
+                    </p>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-900 mb-1">
+                      {locale === 'bn' ? "সর্বোচ্চ আকার: ২ মেগাবাইট (Max 2MB)" : "JPG, PNG, WebP — max 2MB"}
+                    </div>
+                    <p className="text-xs text-[#6B655C] mt-1 text-center">
+                      {locale === 'bn' ? "২ মেগাবাইটের বেশি ছবি আপলোড করা যাবে না" : "Files larger than 2MB will not be accepted"}
+                    </p>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
@@ -469,9 +488,42 @@ export function SubmissionWizard({ locale, exhibitions }: { locale: string; exhi
                   </div>
                 )}
               </div>
+
+              {/* Compression Helper Card with Direct Link Button */}
+              <div className="bg-[#FAF9F6] border border-[#E5E0D8] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <ExternalLink className="w-4 h-4 text-amber-700" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-charcoal flex items-center gap-2">
+                      {locale === 'bn' ? "ছবির সাইজ ২MB এর বেশি?" : "Image larger than 2MB?"}
+                      <span className="text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/15 text-emerald-800 px-2 py-0.5 rounded-full">
+                        Free Tool
+                      </span>
+                    </p>
+                    <p className="text-xs text-[#6B655C] mt-0.5">
+                      {locale === 'bn'
+                        ? "I Love IMG ব্যবহার করে সহজেই আপনার ছবির আকার ২MB এর নিচে কম্প্রেস করুন।"
+                        : "Use I Love IMG to quickly compress and reduce your artwork image under 2MB."}
+                    </p>
+                  </div>
+                </div>
+
+                <a
+                  href="https://www.iloveimg.com/compress-image"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#1C1C1C] hover:bg-black text-white text-xs font-semibold shadow-sm transition-all hover:shadow hover:scale-[1.02] active:scale-[0.98] shrink-0 w-full sm:w-auto text-center"
+                >
+                  <span>{locale === 'bn' ? "ছবি কম্প্রেস করুন (Compress your image)" : "Compress your image"}</span>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-80 shrink-0" />
+                </a>
+              </div>
+
               <p className="text-xs sm:text-sm font-medium text-[#6B655C] flex items-center gap-2 justify-center">
                 <AlertCircle className="w-4 h-4 text-accent-gold" />
-                An image is recommended but not required. You can add it later.
+                {locale === 'bn' ? "ছবি দেওয়া বাঞ্ছনীয় তবে বাধ্যতামূলক নয়। আপনি পরেও যোগ করতে পারেন।" : "An image is recommended but not required. You can add it later."}
               </p>
             </div>
           )}

@@ -119,8 +119,17 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File Too Large", { description: "Please upload an image under 10MB." })
+      if (file.size > 2 * 1024 * 1024) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1)
+        toast.error(
+          locale === 'bn' ? "ছবির আকার খুব বড় (সর্বোচ্চ ২ মেগাবাইট)" : "File Too Large",
+          {
+            description: locale === 'bn'
+              ? `আপনার নির্বাচিত ছবির আকার ${fileSizeMB}MB। সর্বোচ্চ ২ মেগাবাইট (2MB) অনুমোদিত। 'Compress your image' টুল ব্যবহার করে ছবিটি কম্প্রেস করুন।`
+              : `Image is ${fileSizeMB}MB. Please upload an image under 2MB. Use the compress tool below to reduce size.`,
+          }
+        )
+        e.target.value = ''
         return
       }
       setImageFile(file)
@@ -540,25 +549,44 @@ export function ArtworkCard({ artwork, locale }: ArtworkCardProps) {
                   )}
                 </div>
                 
-                {/* Upload Button */}
-                <div className="flex-1 w-full text-center sm:text-left space-y-2">
-                  <p className="text-xs text-zinc-400">
-                    {locale === 'bn' 
-                      ? 'নতুন ফাইল নির্বাচন করতে ক্লিক করুন (সর্বোচ্চ ১০ মেগাবাইট)' 
-                      : 'Choose a new file to upload (maximum size 10MB)'}
-                  </p>
-                  <div className="relative inline-block">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      id="revision-image-file"
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      onChange={handleImageSelect}
-                    />
-                    <Button type="button" variant="outline" size="sm" className="border-zinc-800 text-zinc-300 hover:bg-zinc-900">
-                      Choose Image
-                    </Button>
+                {/* Upload Button & Compression Link */}
+                <div className="flex-1 w-full text-center sm:text-left space-y-3">
+                  <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300">
+                      {locale === 'bn' ? 'সর্বোচ্চ আকার: ২ মেগাবাইট (Max 2MB)' : 'Max 2MB'}
+                    </span>
+                    <p className="text-xs text-zinc-400">
+                      {locale === 'bn' 
+                        ? 'নতুন ফাইল নির্বাচন করতে ক্লিক করুন' 
+                        : 'Choose a new file to upload'}
+                    </p>
                   </div>
+                  
+                  <div className="flex flex-wrap items-center gap-3 justify-center sm:justify-start">
+                    <div className="relative inline-block">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="revision-image-file"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        onChange={handleImageSelect}
+                      />
+                      <Button type="button" variant="outline" size="sm" className="border-zinc-800 text-zinc-300 hover:bg-zinc-900">
+                        Choose Image
+                      </Button>
+                    </div>
+
+                    <a
+                      href="https://www.iloveimg.com/compress-image"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-medium border border-zinc-700 transition-colors"
+                    >
+                      <span>{locale === 'bn' ? 'ছবি কম্প্রেস করুন' : 'Compress your image'}</span>
+                      <ExternalLink className="w-3 h-3 text-zinc-400" />
+                    </a>
+                  </div>
+
                   {uploadProgress > 0 && (
                     <div className="w-full bg-zinc-900 rounded-full h-1.5 overflow-hidden mt-2">
                       <div className="bg-accent h-1.5 transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
