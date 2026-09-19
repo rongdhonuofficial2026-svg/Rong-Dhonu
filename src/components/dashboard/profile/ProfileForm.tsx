@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { Camera, Trash2, Loader2, User, Check } from "lucide-react"
+import { Camera, Trash2, Loader2, User, Check, ExternalLink } from "lucide-react"
 
 interface Profile {
   id?: string
@@ -36,8 +36,19 @@ function AvatarUploader({ currentUrl, locale }: { currentUrl?: string | null; lo
     const file = e.target.files?.[0]
     if (!file) return
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("File too large", { description: "Please select an image under 5MB." })
+    const MAX_AVATAR_SIZE = 2 * 1024 * 1024 // 2MB
+    if (file.size > MAX_AVATAR_SIZE) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1)
+      toast.error(
+        locale === 'bn' ? "ছবির আকার খুব বড় (সর্বোচ্চ ২ মেগাবাইট)" : "Profile Picture Too Large",
+        {
+          description: locale === 'bn'
+            ? `আপনার নির্বাচিত ছবির আকার ${fileSizeMB}MB। সর্বোচ্চ ২ মেগাবাইট (2MB) অনুমোদিত। নিচে দেওয়া 'Compress your image' বোতামে ক্লিক করে ছবিটি কম্প্রেস করুন।`
+            : `Image is ${fileSizeMB}MB. Maximum allowed file size is 2MB. Please use the "Compress your image" tool to compress your picture.`,
+          duration: 6000,
+        }
+      )
+      if (fileInputRef.current) fileInputRef.current.value = ""
       return
     }
 
@@ -125,10 +136,10 @@ function AvatarUploader({ currentUrl, locale }: { currentUrl?: string | null; lo
         </p>
         <p className="text-[#6B655C] text-sm leading-relaxed max-w-sm">
           {locale === 'bn'
-            ? "JPG, PNG, বা WebP, সর্বোচ্চ ৫ MB। এটি গ্যালারি এবং শিল্পী প্রোফাইলে দেখাবে।"
-            : "JPG, PNG or WebP, max 5MB. Shown in gallery, artist profile, and moderation cards."}
+            ? "JPG, PNG, বা WebP, সর্বোচ্চ ২ MB। এটি গ্যালারি এবং শিল্পী প্রোফাইলে দেখাবে।"
+            : "JPG, PNG or WebP, max 2MB. Shown in gallery, artist profile, and moderation cards."}
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full">
+        <div className="flex flex-wrap items-center gap-3 mt-2 w-full justify-center sm:justify-start">
           <Button
             type="button"
             variant="outline"
@@ -141,6 +152,17 @@ function AvatarUploader({ currentUrl, locale }: { currentUrl?: string | null; lo
               ? (locale === 'bn' ? "ছবি বদলান" : "Change Photo")
               : (locale === 'bn' ? "ছবি আপলোড করুন" : "Upload Photo")}
           </Button>
+
+          <a
+            href="https://www.iloveimg.com/compress-image"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full bg-[#1C1C1C] hover:bg-black text-white text-xs font-semibold shadow-sm transition-all hover:shadow hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto text-center"
+          >
+            <span>{locale === 'bn' ? "ছবি কম্প্রেস করুন" : "Compress your image"}</span>
+            <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+          </a>
+
           {preview && (
             <Button
               type="button"
@@ -200,7 +222,7 @@ export function ProfileForm({ profile, locale }: { profile: Profile | null; loca
               {locale === 'bn' ? "প্রাথমিক তথ্য" : "Basic Information"}
             </h3>
             <p className="text-sm sm:text-base font-medium text-[#6B655C] mt-1.5">
-              {locale === 'bn' ? "আপনার নাম এবং শিল্পী বায়ো আপডেট করুন।" : "Your name and artist biography."}
+              {locale === 'bn' ? "আপনার নাম এবং শিল্পী বায়ো আপডেট করুন।" : "Your name and artist bio."}
             </p>
           </div>
           
@@ -221,14 +243,14 @@ export function ProfileForm({ profile, locale }: { profile: Profile | null; loca
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "বায়ো (ইংরেজি)" : "Biography (English)"}</label>
+              <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "বায়ো (ইংরেজি)" : "Bio (English)"}</label>
               <Textarea name="bio_en" defaultValue={profile?.bio_en || ''} rows={4}
                 placeholder="Tell visitors about yourself, your artistic journey and inspiration..." 
                 className="rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal resize-none leading-relaxed" />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "বায়ো (বাংলা)" : "Biography (Bengali)"}</label>
+              <label className="text-sm font-medium text-charcoal">{locale === 'bn' ? "বায়ো (বাংলা)" : "Bio (Bengali)"}</label>
               <Textarea name="bio_bn" defaultValue={profile?.bio_bn || ''} rows={4}
                 placeholder="আপনার শিল্পী পরিচয় এবং অনুপ্রেরণা সম্পর্কে লিখুন..." 
                 className="rounded-xl border-[#E5E0D8]/80 focus:border-charcoal focus:ring-1 focus:ring-charcoal resize-none leading-relaxed" />

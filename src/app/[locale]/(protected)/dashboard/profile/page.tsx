@@ -21,7 +21,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           {locale === 'bn' ? "প্রোফাইল সেটিংস" : "Profile Settings"}
         </h1>
         <p className="text-muted-foreground">
-          {locale === 'bn' ? "আপনার ব্যক্তিগত তথ্য এবং শিল্পী বায়ো পরিচালনা করুন।" : "Manage your personal information and artist biography."}
+          {locale === 'bn' ? "আপনার ব্যক্তিগত তথ্য এবং শিল্পী বায়ো পরিচালনা করুন।" : "Manage your personal information and artist bio."}
         </p>
       </div>
 
