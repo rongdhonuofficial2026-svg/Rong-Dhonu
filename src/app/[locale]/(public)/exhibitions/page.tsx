@@ -165,6 +165,17 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
                 '--mobile-zoom': mobileZoom,
               } as React.CSSProperties}
             />
+            {/* Scoped style to guarantee mobile focal point position */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media (max-width: 768px) {
+                #upcoming .spotlight-bg-img,
+                #upcoming img {
+                  object-position: ${mobileFocal} !important;
+                  transform: scale(${mobileZoom}) !important;
+                  transform-origin: ${mobileFocal} !important;
+                }
+              }
+            `}} />
             <div className="scrim"></div>
             <div className="spotlight-bgtext">{spotlightYearShort}</div>
             <div className="spotlight-inner">

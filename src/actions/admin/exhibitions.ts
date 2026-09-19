@@ -115,6 +115,7 @@ export async function createExhibition(payload: any) {
     venue_bn: payload.venue_bn || null,
     status: 'draft', // Always force new exhibitions to draft
     hero_image_url: payload.hero_image_url || null,
+    mobile_image_position: payload.mobile_image_position || 'center center',
     is_featured: payload.is_featured === true,
     is_deleted: false,
     views_count: 0,

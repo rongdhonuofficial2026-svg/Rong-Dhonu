@@ -109,6 +109,17 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
         } as React.CSSProperties}
         className="spotlight-bg-img"
       />
+      {/* Scoped style to guarantee mobile focal point position */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 768px) {
+          #exhibition .spotlight-bg-img,
+          #exhibition img {
+            object-position: ${mobileFocal} !important;
+            transform: scale(${mobileZoom}) !important;
+            transform-origin: ${mobileFocal} !important;
+          }
+        }
+      `}} />
       <div className="scrim"></div>
       <div className="frame-edge"></div>
       

@@ -150,6 +150,17 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
                 } as React.CSSProperties}
               />
             )}
+            {/* Scoped style to guarantee mobile focal point position */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media (max-width: 768px) {
+                .exhibition-detail-hero-img,
+                .exhibition-detail-hero img {
+                  object-position: ${mobileFocal} !important;
+                  transform: scale(${mobileZoom}) !important;
+                  transform-origin: ${mobileFocal} !important;
+                }
+              }
+            `}} />
             <div className="relative z-20 text-center max-w-5xl px-6 space-y-8 mt-auto w-full">
               <Badge 
                 variant="outline" 
