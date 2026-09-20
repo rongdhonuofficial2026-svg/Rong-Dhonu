@@ -62,11 +62,23 @@ export function MobileNavigation() {
         </nav>
 
         <div className="mobile-nav-footer">
-          <Button asChild variant="outline" className="w-full justify-center border-[#F4EEDF]/20 text-[#F4EEDF] hover:bg-white/5">
-            <Link href="/login" onClick={() => setOpen(false)}>{t('login')}</Link>
+          <Button 
+            asChild 
+            className="w-full justify-center bg-white hover:bg-white/90 text-[#0B0908] font-semibold border border-white/20 shadow-sm"
+            style={{ backgroundColor: '#ffffff', color: '#0B0908' }}
+          >
+            <Link href="/login" onClick={() => setOpen(false)} style={{ color: '#0B0908' }}>
+              {t('login')}
+            </Link>
           </Button>
-          <Button asChild className="w-full justify-center bg-[#F4C662] text-[#0B0908] hover:bg-[#ebd083]">
-            <Link href="/register" onClick={() => setOpen(false)}>{t('register')}</Link>
+          <Button 
+            asChild 
+            className="w-full justify-center bg-[#F4C662] text-[#0B0908] hover:bg-[#ebd083] font-semibold shadow-sm"
+            style={{ backgroundColor: '#F4C662', color: '#0B0908' }}
+          >
+            <Link href="/register" onClick={() => setOpen(false)} style={{ color: '#0B0908' }}>
+              {t('register')}
+            </Link>
           </Button>
         </div>
       </SheetContent>
