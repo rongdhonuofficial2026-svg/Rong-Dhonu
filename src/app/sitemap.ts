@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 export const revalidate = 3600 // Regenerate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://rongdhonu.art'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://rong-dhonu.vercel.app'
   const locales = ['en', 'bn']
   const now = new Date()
 
