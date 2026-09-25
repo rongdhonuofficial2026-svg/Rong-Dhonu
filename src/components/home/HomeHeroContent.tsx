@@ -97,7 +97,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
           fill
           sizes="100vw"
           quality={85}
-          preload
+          priority
         />
         <div className="scrim soft"></div>
         <div className="frame-edge"></div>
