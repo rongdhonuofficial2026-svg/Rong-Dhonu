@@ -104,5 +104,5 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   // Match only internationalized pathnames and api/trpc
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html|xml|txt)$).*)']
 };
