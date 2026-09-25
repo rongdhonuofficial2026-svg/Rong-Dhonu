@@ -1,3 +1,4 @@
+import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { Toaster } from '@/components/ui/sonner';
 import { getMessages } from 'next-intl/server';
@@ -91,6 +92,16 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={fontVariables}>
       <body className="min-h-screen flex flex-col font-sans text-charcoal bg-cream">
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-PXF3G4EZ9F" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-PXF3G4EZ9F');
+          `}
+        </Script>
         <NextIntlClientProvider messages={messages}>
           {/* Accessibility: skip navigation for keyboard/screen reader users */}
           <a href="#main-content" className="skip-to-content">
