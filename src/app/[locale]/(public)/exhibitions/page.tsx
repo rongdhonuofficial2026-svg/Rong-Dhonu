@@ -127,7 +127,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
               <span>{locale === 'bn' ? 'চলমান / আসন্ন' : 'Upcoming'}</span>
             </div>
             <div>
-              <b>2012</b>
+              <b>2023</b>
               <span>{locale === 'bn' ? 'প্রতিষ্ঠা বছর' : 'Founding Year'}</span>
             </div>
           </div>

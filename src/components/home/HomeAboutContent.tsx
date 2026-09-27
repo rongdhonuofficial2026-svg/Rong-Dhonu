@@ -18,8 +18,8 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
     : "Our vision: to become the definitive destination for contemporary Bengal art, preserving cultural heritage while championing bold, uncompromising new artistic voices.")
   
   const history = content?.history || (locale === 'bn' 
-    ? "২০১২ সালে শিল্পকলার প্রতি গভীর অনুরাগের মধ্য দিয়ে প্রতিষ্ঠিত রংধনু স্থানীয় চিত্রশিল্পীদের একটি ক্ষুদ্র বৃত্ত থেকে বাংলার অন্যতম সেরা প্রদর্শনী সংস্থায় পরিণত হয়েছে।" 
-    : "Founded in 2012 with a passion for the arts, Rongdhonu has grown from a small circle of local painters into Bengal's premier exhibition collective.")
+    ? "২০২৩ সালে শিল্পকলার প্রতি গভীর অনুরাগের মধ্য দিয়ে প্রতিষ্ঠিত রংধনু স্থানীয় চিত্রশিল্পীদের একটি ক্ষুদ্র বৃত্ত থেকে বাংলার অন্যতম সেরা প্রদর্শনী সংস্থায় পরিণত হয়েছে।" 
+    : "Founded in 2023 with a passion for the arts, Rongdhonu has grown from a small circle of local painters into Bengal's premier exhibition collective.")
 
   const totalExhibitions = stats?.totalExhibitions || 14
   const totalArtists = stats?.totalArtists || 340
