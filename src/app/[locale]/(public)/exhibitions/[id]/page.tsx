@@ -338,8 +338,8 @@ export default async function ExhibitionDetailPage({ params }: { params: Promise
           </div>
         </section>
 
-        {/* Featured Artworks Preview */}
-        {exhibition.status !== 'upcoming' && exhibition.status !== 'draft' && exhibition.artworks && exhibition.artworks.length > 0 && (
+        {/* Featured Artworks Preview — only visible after exhibition ends */}
+        {exhibition.status === 'archived' && exhibition.artworks && exhibition.artworks.length > 0 && (
           <section className="space-y-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-border/50 pb-6">
               <h2 className="font-serif text-4xl font-bold">{locale === 'bn' ? 'নির্বাচিত শিল্পকর্ম' : 'Exhibition Highlights'}</h2>

@@ -42,7 +42,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
       avatar_url, instagram_url, website_url, slug, role,
       artworks!artist_id(
         id, title_en, title_bn, main_image_url, category, medium_en, status,
-        exhibitions(id, year, theme_en, theme_bn)
+        exhibitions(id, year, theme_en, theme_bn, status)
       ),
       exhibition_participants(role, exhibitions(id, year, theme_en, theme_bn))
     `)
@@ -65,7 +65,11 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
 
   const name = locale === 'bn' && profile.full_name_bn ? profile.full_name_bn : (profile.full_name_en || 'Artist')
   const bio = locale === 'bn' && profile.bio_bn ? profile.bio_bn : profile.bio_en
-  const approvedArtworks = (profile.artworks as any[])?.filter((art) => art.status === 'approved') || []
+  const approvedArtworks = (profile.artworks as any[])?.filter((art) => {
+    if (art.status !== 'approved') return false
+    const exh = Array.isArray(art.exhibitions) ? art.exhibitions[0] : art.exhibitions
+    return !exh || exh.status === 'archived'
+  }) || []
   const exhibitions = (profile.exhibition_participants as any[])?.map((p) => p.exhibitions).filter(Boolean) || []
 
   return (

@@ -11,12 +11,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const supabase = await createClient()
   const { data: artwork } = await supabase
     .from('artworks')
-    .select('title_en, title_bn, description_en, description_bn, main_image_url, profiles!artist_id(full_name_en, full_name_bn)')
+    .select('title_en, title_bn, description_en, description_bn, main_image_url, profiles!artist_id(full_name_en, full_name_bn), exhibitions!exhibition_id(status)')
     .eq('id', id)
     .eq('status', 'approved')
     .maybeSingle()
 
   if (!artwork) return {}
+
+  // Only expose metadata if the exhibition has ended
+  const exhibitionData = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : artwork.exhibitions
+  if (exhibitionData && exhibitionData.status !== 'archived') return {}
 
   const title = locale === 'bn' && artwork.title_bn ? artwork.title_bn : artwork.title_en
   const desc = locale === 'bn' && artwork.description_bn ? artwork.description_bn : artwork.description_en
@@ -47,13 +51,19 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
       main_image_url, additional_images, year,
       exhibition_id, artist_id, created_at,
       profiles!artist_id(id, full_name_en, full_name_bn, avatar_url, bio_en, slug),
-      exhibitions!exhibition_id(id, year, theme_en, theme_bn)
+      exhibitions!exhibition_id(id, year, theme_en, theme_bn, status, exhibition_end)
     `)
     .eq('id', id)
     .eq('status', 'approved')
     .maybeSingle()
 
   if (error || !artwork) return notFound()
+
+  // Artwork is only publicly visible after its exhibition has ended (status = archived)
+  // If the artwork's exhibition is still ongoing or upcoming, it should not be accessible yet
+  const exhibitionData = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : artwork.exhibitions
+  const exhibitionEnded = !exhibitionData || exhibitionData.status === 'archived'
+  if (!exhibitionEnded) return notFound()
 
   const profile = Array.isArray(artwork.profiles) ? artwork.profiles[0] : artwork.profiles
   const exhibition = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : artwork.exhibitions

@@ -217,8 +217,9 @@ export function isRegistrationOpen(exhibition: any): boolean {
 
 /**
  * Determines if the gallery/catalog can be accessed publicly.
+ * Artworks are unlocked only once the exhibition has ended and transitioned to archived.
  */
 export function isGalleryUnlocked(exhibition: any): boolean {
   if (!exhibition) return false;
-  return exhibition.status === 'ongoing' || exhibition.status === 'archived';
+  return exhibition.status === 'archived';
 }

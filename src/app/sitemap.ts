@@ -43,11 +43,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const [exhRes, artRes, prfRes] = await Promise.all([
       supabase.from('exhibitions').select('id, updated_at').in('status', ['upcoming', 'ongoing', 'archived']).neq('is_deleted', true),
-      supabase.from('artworks').select('id, updated_at').eq('status', 'approved'),
+      supabase.from('artworks').select('id, updated_at, exhibitions!exhibition_id(status)').eq('status', 'approved'),
       supabase.from('profiles').select('slug, updated_at').eq('role', 'member').not('slug', 'is', null)
     ])
     exhibitions = exhRes.data
-    artworks = artRes.data
+    artworks = (artRes.data || []).filter((art: any) => {
+      const exh = Array.isArray(art.exhibitions) ? art.exhibitions[0] : art.exhibitions
+      return !exh || exh.status === 'archived'
+    })
     artists = prfRes.data
   } catch (error) {
     console.error('Sitemap generation error:', error)

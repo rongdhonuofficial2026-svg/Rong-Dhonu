@@ -19,13 +19,13 @@ export async function globalSearch(query: string, locale: string = 'en'): Promis
 
   // Execute parallel queries across main entities
   const [artworksRes, profilesRes, exhibitionsRes] = await Promise.all([
-    // Search approved artworks
+    // Search approved artworks whose exhibition has ended (archived)
     supabase
       .from('artworks')
-      .select('id, title_en, title_bn, category, main_image_url, profiles(first_name_en, last_name_en)')
+      .select('id, title_en, title_bn, category, main_image_url, profiles(first_name_en, last_name_en), exhibitions!exhibition_id(status)')
       .eq('status', 'approved')
       .or(`title_en.ilike.${q},title_bn.ilike.${q},description_en.ilike.${q}`)
-      .limit(5),
+      .limit(10),
     
     // Search members / artists
     supabase
@@ -48,6 +48,10 @@ export async function globalSearch(query: string, locale: string = 'en'): Promis
 
   if (artworksRes.data) {
     artworksRes.data.forEach((item: Record<string, unknown>) => {
+      const exh = Array.isArray(item.exhibitions) ? item.exhibitions[0] : item.exhibitions
+      // Only include artworks whose exhibition is archived (or not attached to an active exhibition)
+      if (exh && (exh as any).status !== 'archived') return
+
       const artistName = item.profiles ? `${(item.profiles as any).first_name_en} ${(item.profiles as any).last_name_en}` : 'Unknown Artist'
       results.push({
         id: item.id as string,
@@ -55,7 +59,7 @@ export async function globalSearch(query: string, locale: string = 'en'): Promis
         title: locale === 'bn' && item.title_bn ? item.title_bn as string : item.title_en as string,
         subtitle: artistName,
         image_url: item.main_image_url as string,
-        href: `/${locale}/gallery/${item.id}`
+        href: `/${locale}/gallery/artwork/${item.id}`
       })
     })
   }

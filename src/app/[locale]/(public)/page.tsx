@@ -120,6 +120,7 @@ export default async function HomePage({
 
   if (exhibition) {
     // 1. Fetch Featured Artists for CURRENT exhibition only
+    // Artists are always shown (they submitted, they should be credited regardless of exhibition phase)
     const artistArtworkRowsRes = await supabase.from('artworks')
       .select(`
         artist_id,
@@ -145,10 +146,14 @@ export default async function HomePage({
       })
     }
 
-    // 2. Fetch Curated Collection with Fallback Priority Logic
-    artworks = await fetchCuratedCollection(exhibition.id)
+    // 2. Fetch Curated Collection — ONLY from archived (ended) exhibitions
+    // Artworks are not visible publicly until the exhibition has fully ended
+    if (exhibition.status === 'archived') {
+      artworks = await fetchCuratedCollection(exhibition.id)
+    }
 
-    // Priority 2: If current exhibition has no artworks, locate most recent archived exhibition that DOES
+    // If current exhibition is still active (ongoing/upcoming), or has no artworks,
+    // fall back to the most recent archived exhibition that DOES have artworks
     if (artworks.length === 0) {
       const { data: archivedEx } = await supabase
         .from('exhibitions')
