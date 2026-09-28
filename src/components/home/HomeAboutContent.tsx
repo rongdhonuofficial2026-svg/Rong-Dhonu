@@ -21,9 +21,9 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
     ? "২০২৩ সালে শিল্পকলার প্রতি গভীর অনুরাগের মধ্য দিয়ে প্রতিষ্ঠিত রংধনু স্থানীয় চিত্রশিল্পীদের একটি ক্ষুদ্র বৃত্ত থেকে বাংলার অন্যতম সেরা প্রদর্শনী সংস্থায় পরিণত হয়েছে।" 
     : "Founded in 2023 with a passion for the arts, Rongdhonu has grown from a small circle of local painters into Bengal's premier exhibition collective.")
 
-  const totalExhibitions = stats?.totalExhibitions || 14
-  const totalArtists = stats?.totalArtists || 340
-  const totalArtworks = stats?.totalArtworks || 1200
+  const totalExhibitions = stats?.totalExhibitions || 4
+  const totalArtists = stats?.totalArtists || 8
+  const totalArtworks = stats?.totalArtworks || 100
 
   const aboutImage = content?.imageUrl || "https://images.unsplash.com/photo-1531913764164-f85c52e6e654?q=80&w=1400&auto=format&fit=crop"
 
@@ -49,7 +49,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
               <p className="break-words">"{history}"</p>
             </ScrollArea>
             <div className="sig">
-              {locale === 'bn' ? '— প্রতিষ্ঠিত ২০২২, বেলডাঙ্গা' : '— EST, 2022, BELDANGA'}
+              {locale === 'bn' ? '— প্রতিষ্ঠিত ২০২৩, বেলডাঙ্গা' : '— EST, 2023, BELDANGA'}
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@ export function HomeAboutContent({ content, locale, stats }: { content: any, loc
             </div>
             <div>
               <b>{totalArtworks >= 1000 ? `${(totalArtworks / 1000).toFixed(1)}K` : totalArtworks}+</b>
-              <span>{locale === 'bn' ? 'সংগ্রাহক ও পৃষ্ঠপোষক' : 'Collectors & Patrons'}</span>
+              <span>{locale === 'bn' ? 'শিল্পকর্ম' : 'Artworks'}</span>
             </div>
           </div>
 

@@ -78,9 +78,9 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
     ? "রংধনু শিল্পী সংঘের বার্ষিক প্রদর্শনী — বর্ধমান ও তার বাইরে থেকে সমসাময়িক খোদাইকৃত শিল্পকর্ম এবং প্রদর্শনীর একটি সমৃদ্ধ সংগ্রহ।" 
     : "A living archive of contemporary Bengali art — original works, working studios, and stories carried forward from Bardhaman and beyond.")
 
-  const totalExhibitions = stats?.totalExhibitions || 14
-  const totalArtists = stats?.totalArtists || 340
-  const totalArtworks = stats?.totalArtworks || 1200
+  const totalExhibitions = stats?.totalExhibitions || 4
+  const totalArtists = stats?.totalArtists || 8
+  const totalArtworks = stats?.totalArtworks || 100
 
   return (
     <header ref={ref} className="hero">
@@ -114,7 +114,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
         <div className="reveal">
           <div className="hero-status">
             <span className="dot"></span> 
-            {locale === 'bn' ? '১৪তম বার্ষিক প্রদর্শনী — বর্তমানে উন্মুক্ত' : '14th Annual Exhibition — Now Open'}
+            {locale === 'bn' ? '৪র্থ বার্ষিক প্রদর্শনী — বর্তমানে উন্মুক্ত' : '4th Annual Exhibition — Now Open'}
           </div>
           {(() => {
             // Strip all HTML tags (not just <br>) and collapse/trim whitespace before
@@ -168,7 +168,7 @@ export function HomeHeroContent({ locale, content, exhibition, stats }: HomeHero
             </div>
             <div>
               <b>{totalArtworks >= 1000 ? `${(totalArtworks / 1000).toFixed(1)}K` : totalArtworks}+</b>
-              <span>{locale === 'bn' ? 'পৃষ্ঠপোষক' : 'Patrons'}</span>
+              <span>{locale === 'bn' ? 'শিল্পকর্ম' : 'Artworks'}</span>
             </div>
           </div>
         </div>

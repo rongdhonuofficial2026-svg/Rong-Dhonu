@@ -44,19 +44,19 @@ export function AboutContent({ content, locale }: AboutContentProps) {
 
   const committee = [
     {
-      name: locale === 'bn' ? 'রনিতা বসু' : 'Ronita Basu',
+      name: locale === 'bn' ? 'সন্তু সাহা' : 'Santu Saha',
       role: locale === 'bn' ? 'প্রতিষ্ঠাতা ও সভাপতি' : 'Founder & Chair',
       image: 'https://images.unsplash.com/photo-1622542796254-5b9c46ab0d2f?q=80&w=900&auto=format&fit=crop',
       index: 'No. 01'
     },
     {
-      name: locale === 'bn' ? 'অরিন্দম সেন' : 'Arindam Sen',
+      name: locale === 'bn' ? 'বিশ্বপ্রিয় দত্ত' : 'Biswapriya Dutta',
       role: locale === 'bn' ? 'বোর্ড সদস্য' : 'Board Member',
       image: 'https://images.unsplash.com/photo-1578059457717-721408f0758e?q=80&w=900&auto=format&fit=crop',
       index: 'No. 02'
     },
     {
-      name: locale === 'bn' ? 'প্রিয়াঙ্কা দত্ত' : 'Priyanka Dutta',
+      name: locale === 'bn' ? 'স্নেহা দত্ত' : 'Sneha Dutta',
       role: locale === 'bn' ? 'বোর্ড সদস্য' : 'Board Member',
       image: 'https://images.unsplash.com/photo-1531056416665-266c4099c928?q=80&w=900&auto=format&fit=crop',
       index: 'No. 03'
@@ -88,8 +88,8 @@ export function AboutContent({ content, locale }: AboutContentProps) {
           <div className="hero-rule"></div>
           <p>
             {locale === 'bn' 
-              ? '২০১০ সাল থেকে সৃজনশীলতা লালন এবং ঐতিহ্য সংরক্ষণে ললিতকলার একটি উত্তরাধিকার।' 
-              : 'A legacy of fine arts, nurturing creativity and preserving heritage since 2010.'}
+              ? '২০২৩ সাল থেকে সৃজনশীলতা লালন এবং ঐতিহ্য সংরক্ষণে ললিতকলার একটি উত্তরাধিকার।' 
+              : 'A legacy of fine arts, nurturing creativity and preserving heritage since 2023.'}
           </p>
         </div>
       </header>
@@ -195,16 +195,16 @@ export function AboutContent({ content, locale }: AboutContentProps) {
           </p>
           <div className="legacy-stats">
             <div>
-              <b>2010</b>
+              <b>2023</b>
               <span>{locale === 'bn' ? 'প্রতিষ্ঠা' : 'Foundation'}</span>
             </div>
             <div>
-              <b>50+</b>
+              <b>3+</b>
               <span>{locale === 'bn' ? 'প্রধান প্রদর্শনীসমূহ' : 'Major Exhibitions'}</span>
             </div>
             <div>
-              <b>2K+</b>
-              <span>{locale === 'bn' ? 'আন্তর্জাতিক শিল্পী' : 'Global Artists'}</span>
+              <b>20+</b>
+              <span>{locale === 'bn' ? 'উদীয়মান স্থানীয় শিল্পী' : 'Aspiring Local Artists'}</span>
             </div>
           </div>
         </div>

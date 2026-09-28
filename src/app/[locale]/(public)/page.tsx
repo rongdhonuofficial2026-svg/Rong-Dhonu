@@ -59,9 +59,9 @@ export default async function HomePage({
     supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('status', 'approved')
   ])
 
-  const totalExhibitions = exhibitionsCountRes.count || 14
-  const totalArtists = artistsCountRes.count || 340
-  const totalArtworks = artworksCountRes.count || 1200
+  const totalExhibitions = exhibitionsCountRes.count || 4
+  const totalArtists = artistsCountRes.count || 8
+  const totalArtworks = Math.max(artworksCountRes.count || 0, 100)
   const stats = { totalExhibitions, totalArtists, totalArtworks }
 
   // Helper to fetch artworks and gallery media for an exhibition
