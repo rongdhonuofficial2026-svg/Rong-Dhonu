@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { createClient } from "@/lib/supabase/client"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Loader2, X, PlayCircle, ChevronLeft, ChevronRight } from "lucide-react"
 
 export function AlbumMediaGrid({ initialMedia, locale, albumId }: { initialMedia: any[], locale: string, albumId: string }) {
@@ -13,11 +13,18 @@ export function AlbumMediaGrid({ initialMedia, locale, albumId }: { initialMedia
   
   // Lightbox selection by index for seamless keyboard and arrow navigation
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
+
+  // Mounted guard — ensures createPortal is only called after client-side hydration
+  const [mounted, setMounted] = React.useState(false)
   
   const supabase = createClient()
 
   // Intersection Observer for Infinite Scroll
   const observerTarget = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   React.useEffect(() => {
     setMedia(initialMedia)
@@ -172,100 +179,106 @@ export function AlbumMediaGrid({ initialMedia, locale, albumId }: { initialMedia
         )}
       </div>
 
-      {/* Immersive Lightbox Dialog matching centered gallery.html specification */}
-      <Dialog open={selectedIndex !== null} onOpenChange={(open) => !open && setSelectedIndex(null)}>
-        <DialogContent className="max-w-[100vw] max-h-[100vh] w-screen h-screen p-0 border-0 bg-[#0B0908]/94 backdrop-blur-md flex items-center justify-center shadow-2xl rounded-none">
-          {selectedIndex !== null && selectedItem && (
-            <div className="lightbox open relative w-full h-full flex items-center justify-center" onClick={() => setSelectedIndex(null)}>
-              {/* Close Button */}
-              <button 
-                className="lightbox-close absolute top-8 right-8 z-50 w-[44px] h-[44px] border border-white/14 rounded-full flex items-center justify-center text-[#F4EEDF] hover:bg-white/10 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setSelectedIndex(null)
-                }}
-              >
-                <X className="w-5 h-5" />
-              </button>
+      {/* Immersive Lightbox via Portal — no Radix Dialog conflicts */}
+      {mounted && selectedIndex !== null && selectedItem && createPortal(
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image lightbox"
+          className="lightbox open fixed inset-0 z-[9999] flex items-center justify-center bg-[#0B0908]/94 backdrop-blur-md"
+          onClick={() => setSelectedIndex(null)}
+        >
+          {/* Close Button */}
+          <button
+            className="lightbox-close absolute top-8 right-8 z-50 w-[44px] h-[44px] border border-white/14 rounded-full flex items-center justify-center text-[#F4EEDF] hover:bg-white/10 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              setSelectedIndex(null)
+            }}
+            aria-label="Close lightbox"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-              {/* Prev Button */}
-              {selectedIndex > 0 && (
-                <button 
-                  className="absolute left-8 z-50 p-3 rounded-full bg-white/5 hover:bg-white/20 text-[#F4EEDF]/70 hover:text-[#F4EEDF] transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handlePrev()
-                  }}
-                >
-                  <ChevronLeft className="w-8 h-8" />
-                </button>
-              )}
-
-              {/* Main Media Display */}
-              <div 
-                className="relative max-w-[86vw] max-h-[80vh] flex items-center justify-center rounded-sm overflow-hidden" 
-                style={{ boxShadow: '0 60px 100px -30px rgba(0,0,0,.6)' }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {selectedItem.media_type === 'image' ? (
-                  <img 
-                    src={selectedItem.url} 
-                    alt={selectedItem.alt_text || selectedItem.title_en || 'Gallery Image'} 
-                    style={{ maxWidth: '86vw', maxHeight: '80vh', objectFit: 'contain' }}
-                  />
-                ) : (
-                  <video 
-                    key={selectedItem.id}
-                    src={selectedItem.url} 
-                    controls 
-                    autoPlay 
-                    style={{ maxWidth: '86vw', maxHeight: '80vh', objectFit: 'contain' }}
-                  />
-                )}
-              </div>
-
-              {/* Next Button */}
-              {selectedIndex < media.length - 1 && (
-                <button 
-                  className="absolute right-8 z-50 p-3 rounded-full bg-white/5 hover:bg-white/20 text-[#F4EEDF]/70 hover:text-[#F4EEDF] transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleNext()
-                  }}
-                >
-                  <ChevronRight className="w-8 h-8" />
-                </button>
-              )}
-
-              {/* Center Caption Overlay */}
-              <div 
-                className="lightbox-caption absolute bottom-[44px] left-1/2 -translate-x-1/2 text-center text-[#F4EEDF] max-w-xl px-6"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <b className="block font-serif text-lg md:text-xl font-bold mb-1">
-                  {locale === 'bn' && selectedItem.title_bn ? selectedItem.title_bn : (selectedItem.title_en || 'Untitled')}
-                </b>
-                <span className="text-xs text-[#F4EEDF]/46 tracking-wide">
-                  {selectedItem.exhibitions ? `${selectedItem.exhibitions.theme_en} · ${selectedItem.exhibitions.year}` : ''}
-                  {selectedItem.photographer ? ` · Photographer: ${selectedItem.photographer}` : ''}
-                </span>
-                {(selectedItem.description_en || selectedItem.caption_en) && (
-                  <p className="text-xs text-[#F4EEDF]/72 leading-relaxed mt-2 max-h-[60px] overflow-y-auto">
-                    {locale === 'bn' 
-                      ? (selectedItem.description_bn || selectedItem.caption_bn) 
-                      : (selectedItem.description_en || selectedItem.caption_en)}
-                  </p>
-                )}
-              </div>
-
-              {/* Preload Next Image Assets cleanly */}
-              {selectedIndex < media.length - 1 && media[selectedIndex + 1].media_type === 'image' && (
-                <img src={media[selectedIndex + 1].url} className="hidden" alt="preload-next" />
-              )}
-            </div>
+          {/* Prev Button */}
+          {selectedIndex > 0 && (
+            <button
+              className="absolute left-8 z-50 p-3 rounded-full bg-white/5 hover:bg-white/20 text-[#F4EEDF]/70 hover:text-[#F4EEDF] transition-all"
+              onClick={(e) => {
+                e.stopPropagation()
+                handlePrev()
+              }}
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
           )}
-        </DialogContent>
-      </Dialog>
+
+          {/* Main Media Display */}
+          <div
+            className="relative max-w-[86vw] max-h-[80vh] flex items-center justify-center rounded-sm overflow-hidden"
+            style={{ boxShadow: '0 60px 100px -30px rgba(0,0,0,.6)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selectedItem.media_type === 'image' ? (
+              <img
+                src={selectedItem.url}
+                alt={selectedItem.alt_text || selectedItem.title_en || 'Gallery Image'}
+                style={{ maxWidth: '86vw', maxHeight: '80vh', objectFit: 'contain' }}
+              />
+            ) : (
+              <video
+                key={selectedItem.id}
+                src={selectedItem.url}
+                controls
+                autoPlay
+                style={{ maxWidth: '86vw', maxHeight: '80vh', objectFit: 'contain' }}
+              />
+            )}
+          </div>
+
+          {/* Next Button */}
+          {selectedIndex < media.length - 1 && (
+            <button
+              className="absolute right-8 z-50 p-3 rounded-full bg-white/5 hover:bg-white/20 text-[#F4EEDF]/70 hover:text-[#F4EEDF] transition-all"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleNext()
+              }}
+              aria-label="Next image"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          )}
+
+          {/* Caption Overlay */}
+          <div
+            className="lightbox-caption absolute bottom-[44px] left-1/2 -translate-x-1/2 text-center text-[#F4EEDF] max-w-xl px-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <b className="block font-serif text-lg md:text-xl font-bold mb-1">
+              {locale === 'bn' && selectedItem.title_bn ? selectedItem.title_bn : (selectedItem.title_en || 'Untitled')}
+            </b>
+            <span className="text-xs text-[#F4EEDF]/46 tracking-wide">
+              {selectedItem.exhibitions ? `${selectedItem.exhibitions.theme_en} · ${selectedItem.exhibitions.year}` : ''}
+              {selectedItem.photographer ? ` · Photographer: ${selectedItem.photographer}` : ''}
+            </span>
+            {(selectedItem.description_en || selectedItem.caption_en) && (
+              <p className="text-xs text-[#F4EEDF]/72 leading-relaxed mt-2 max-h-[60px] overflow-y-auto">
+                {locale === 'bn'
+                  ? (selectedItem.description_bn || selectedItem.caption_bn)
+                  : (selectedItem.description_en || selectedItem.caption_en)}
+              </p>
+            )}
+          </div>
+
+          {/* Preload Next Image */}
+          {selectedIndex < media.length - 1 && media[selectedIndex + 1].media_type === 'image' && (
+            <img src={media[selectedIndex + 1].url} className="hidden" alt="preload-next" />
+          )}
+        </div>,
+        document.body
+      )}
     </div>
   )
 }

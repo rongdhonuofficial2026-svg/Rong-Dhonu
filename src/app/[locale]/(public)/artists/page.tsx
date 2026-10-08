@@ -5,7 +5,8 @@ import { generateDynamicMetadata } from "@/lib/seo"
 import { Link } from "@/lib/i18n/routing"
 import { EmptyState } from "@/components/museum/states"
 
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   return generateDynamicMetadata({
     title: locale === 'bn' ? "শিল্পীবৃন্দ" : "Artists",
     description: locale === 'bn' ? "রংধনু শিল্পী সংঘের মেধাবী সদস্যদের আবিষ্কার করুন।" : "Discover the talented members of the Rongdhonu artists' collective.",
@@ -20,7 +21,8 @@ const fallbackArtists = [
   { id: '3', full_name_en: "MF Husain", full_name_bn: "এম এফ হুসেন", role: "Guest Artist", bio_en: "Known for executing bold, vibrantly coloured narrative paintings.", avatar_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200" },
 ]
 
-export default async function ArtistsDirectoryPage({ params: { locale } }: { params: { locale: string } }) {
+export default async function ArtistsDirectoryPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   const supabase = await createClient()
   
   const { data: artists } = await supabase
