@@ -56,6 +56,31 @@ export async function submitArtwork(payload: {
     }
   }
 
+  // ── Server-side submission deadline enforcement ────────────────────────────
+  // If a target exhibition was resolved, verify its submission window is still open.
+  // This is the authoritative security gate — the UI also blocks access, but this
+  // ensures the rule is enforced even if someone calls the action directly.
+  if (targetExhibitionId) {
+    const { data: exhCheck } = await supabase
+      .from('exhibitions')
+      .select('submission_end, registration_start, status')
+      .eq('id', targetExhibitionId)
+      .single()
+
+    if (exhCheck) {
+      const now = new Date()
+      if (exhCheck.status === 'draft' || exhCheck.status === 'archived') {
+        return { error: 'This exhibition is not currently accepting submissions.' }
+      }
+      if (exhCheck.registration_start && now < new Date(exhCheck.registration_start)) {
+        return { error: 'The submission window for this exhibition has not opened yet.' }
+      }
+      if (exhCheck.submission_end && now > new Date(exhCheck.submission_end)) {
+        return { error: 'The submission deadline for this exhibition has passed. Artworks can no longer be submitted.' }
+      }
+    }
+  }
+
   // Build dimensions string
   const dimensionsStr = payload.width && payload.height
     ? `${payload.width} x ${payload.height} inches${payload.framed ? ' (Framed)' : ''}`

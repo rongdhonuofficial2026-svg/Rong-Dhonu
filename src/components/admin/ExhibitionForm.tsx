@@ -283,8 +283,20 @@ export function ExhibitionForm({ locale }: { locale: string }) {
                   <strong className="text-blue-300"> Exhibition Year</strong> is derived from the start date — multiple exhibitions per year are supported.
                 </p>
               </div>
+              {/* Submission window rule callout */}
+              <div className="p-4 mb-2 rounded-xl border border-amber-500/20 bg-amber-500/5 flex gap-3">
+                <Info className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                <p className="text-sm text-amber-300/90">
+                  <strong className="text-amber-300">Submission Window Rule:</strong> Artists can submit artworks from{' '}
+                  <strong className="text-amber-300">Registration Opens</strong> until{' '}
+                  <strong className="text-amber-300">11:59 PM on the Submission Deadline date</strong>.
+                  The deadline must be on or before the Exhibition Opens date.
+                  After the deadline passes, the student portal automatically blocks all new submissions.
+                </p>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Registration Opens" required hint="When artists can start applying.">
+                <Field label="Registration Opens" required hint="When artists can start submitting artworks.">
                   <Input
                     id="registration_start"
                     type="date"
@@ -294,25 +306,35 @@ export function ExhibitionForm({ locale }: { locale: string }) {
                     className="h-11"
                   />
                 </Field>
-                <Field label="Submission Deadline" required hint="Last day for artwork submission.">
+                <Field
+                  label="Submission Deadline"
+                  required
+                  hint="Artists can submit until 11:59 PM on this date. Must be on or before Exhibition Opens."
+                >
                   <Input
                     id="submission_end"
                     type="date"
                     required
                     value={formData.submission_end}
-                    onChange={e => updateField("submission_end", e.target.value)}
+                    onChange={e => {
+                      updateField("submission_end", e.target.value)
+                      // Clear exhibition_start if it would violate the constraint
+                      if (formData.exhibition_start && e.target.value > formData.exhibition_start) {
+                        updateField("exhibition_start", "")
+                      }
+                    }}
                     min={formData.registration_start || undefined}
                     className="h-11"
                   />
                 </Field>
-                <Field label="Exhibition Opens" required hint="Triggers auto-transition to 'Ongoing'.">
+                <Field label="Exhibition Opens" required hint="Must be on or after Submission Deadline. Triggers auto-transition to 'Ongoing'.">
                   <Input
                     id="exhibition_start"
                     type="date"
                     required
                     value={formData.exhibition_start}
                     onChange={e => updateField("exhibition_start", e.target.value)}
-                    min={formData.submission_end || undefined}
+                    min={formData.submission_end || formData.registration_start || undefined}
                     className="h-11"
                   />
                 </Field>

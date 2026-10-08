@@ -58,14 +58,26 @@ export async function createExhibition(payload: any) {
   await requireAdmin(supabase, user)
 
   // 1. Sanitize optional dates to prevent PostgreSQL type cast crashes (empty string -> null)
-  const safeDate = (dateStr: any) => (dateStr && typeof dateStr === 'string' && dateStr.trim() !== '') ? dateStr : null;
+  const safeDate = (dateStr: any) => (dateStr && typeof dateStr === 'string' && dateStr.trim() !== '') ? dateStr.trim() : null;
   const exhibition_start = safeDate(payload.exhibition_start);
   const exhibition_end = safeDate(payload.exhibition_end);
   const registration_start = safeDate(payload.registration_start);
-  const submission_end = safeDate(payload.submission_end);
+  const raw_submission_end = safeDate(payload.submission_end);
 
-  if (!exhibition_start || !exhibition_end || !registration_start || !submission_end) {
+  if (!exhibition_start || !exhibition_end || !registration_start || !raw_submission_end) {
     return { error: `All 4 timeline dates (Registration Opens, Submission Deadline, Exhibition Opens, Exhibition Closes) are mandatory.` }
+  }
+
+  // Normalize submission_end to 23:59:59 Bangladesh Time (UTC+6 = +06:00).
+  // If the value is a plain date string (YYYY-MM-DD), we append end-of-day time so
+  // submissions close at midnight on that date regardless of what time the admin saves.
+  // If admin already passed a datetime string, we still re-stamp it to end-of-day.
+  const submissionDateOnly = raw_submission_end.slice(0, 10) // "YYYY-MM-DD"
+  const submission_end = `${submissionDateOnly}T23:59:59+06:00`
+
+  // Validate: submission_end must be on or before exhibition_start
+  if (submissionDateOnly > exhibition_start.slice(0, 10)) {
+    return { error: `Submission Deadline (${submissionDateOnly}) cannot be after the Exhibition Opens date (${exhibition_start.slice(0, 10)}). Artists must submit before the exhibition begins.` }
   }
 
   // 2. Derive year from start date (display / ordering only — NOT a uniqueness key)
@@ -153,14 +165,26 @@ export async function updateExhibition(id: string, payload: any) {
   await requireAdmin(supabase, user)
 
   // 1. Sanitize optional dates to prevent PostgreSQL type cast crashes (empty string -> null)
-  const safeDate = (dateStr: any) => (dateStr && typeof dateStr === 'string' && dateStr.trim() !== '') ? dateStr : null;
+  const safeDate = (dateStr: any) => (dateStr && typeof dateStr === 'string' && dateStr.trim() !== '') ? dateStr.trim() : null;
   const exhibition_start = safeDate(payload.exhibition_start);
   const exhibition_end = safeDate(payload.exhibition_end);
   const registration_start = safeDate(payload.registration_start);
-  const submission_end = safeDate(payload.submission_end);
+  const raw_submission_end = safeDate(payload.submission_end);
 
-  if (!exhibition_start || !exhibition_end || !registration_start || !submission_end) {
+  if (!exhibition_start || !exhibition_end || !registration_start || !raw_submission_end) {
     return { error: `All 4 timeline dates (Registration Opens, Submission Deadline, Exhibition Opens, Exhibition Closes) are mandatory.` }
+  }
+
+  // Normalize submission_end to 23:59:59 Bangladesh Time (UTC+6 = +06:00).
+  // Always store end-of-day regardless of what time the admin saves — this ensures
+  // the submission window rule (closes at 11:59 PM on the deadline date) is enforced
+  // uniformly for all exhibitions, present and future.
+  const submissionDateOnly = raw_submission_end.slice(0, 10) // "YYYY-MM-DD"
+  const submission_end = `${submissionDateOnly}T23:59:59+06:00`
+
+  // Validate: submission_end must be on or before exhibition_start
+  if (submissionDateOnly > exhibition_start.slice(0, 10)) {
+    return { error: `Submission Deadline (${submissionDateOnly}) cannot be after the Exhibition Opens date (${exhibition_start.slice(0, 10)}). Artists must submit before the exhibition begins.` }
   }
 
   // 2. Derive year from start date (display / ordering only — NOT a uniqueness key)
@@ -242,7 +266,11 @@ export async function updateExhibitionStatus(id: string, newStatus: string) {
   await requireAdmin(supabase, user)
 
   // Fetch current to validate transition
-  const { data: current, error: fetchError } = await supabase.from('exhibitions').select('status').eq('id', id).single()
+  const { data: current, error: fetchError } = await supabase
+    .from('exhibitions')
+    .select('status, registration_start, submission_end, exhibition_start, exhibition_end')
+    .eq('id', id)
+    .single()
   if (fetchError) return { error: fetchError.message }
 
   // Enforce manual transition ONLY from draft -> upcoming
@@ -250,7 +278,34 @@ export async function updateExhibitionStatus(id: string, newStatus: string) {
     return { error: 'Transitions other than Draft to Upcoming are automatically date-driven and cannot be manually triggered.' }
   }
 
-  const { data, error } = await supabase.from('exhibitions').update({ status: newStatus }).eq('id', id).select().single()
+  // ── Pre-publish validation ─────────────────────────────────────────────────
+  // Before we publish (make the exhibition visible to students), verify that the
+  // submission window is properly configured so the portal rules work correctly.
+  const missing: string[] = []
+  if (!current.registration_start) missing.push('Registration Opens date')
+  if (!current.submission_end)     missing.push('Submission Deadline')
+  if (!current.exhibition_start)   missing.push('Exhibition Opens date')
+  if (!current.exhibition_end)     missing.push('Exhibition Closes date')
+
+  if (missing.length > 0) {
+    return { error: `Cannot publish: the following required dates are missing — ${missing.join(', ')}. Please set all dates before publishing.` }
+  }
+
+  // Ensure submission_end is on or before exhibition_start
+  const submissionDate = current.submission_end.slice(0, 10)
+  const exhibitionOpenDate = current.exhibition_start.slice(0, 10)
+  if (submissionDate > exhibitionOpenDate) {
+    return {
+      error: `Cannot publish: Submission Deadline (${submissionDate}) is after the Exhibition Opens date (${exhibitionOpenDate}). Artists must submit before the exhibition begins. Please update the dates.`
+    }
+  }
+
+  const { data, error } = await supabase
+    .from('exhibitions')
+    .update({ status: newStatus })
+    .eq('id', id)
+    .select()
+    .single()
   if (error) return { error: error.message }
 
   await supabase.from('audit_logs').insert([{
@@ -258,7 +313,11 @@ export async function updateExhibitionStatus(id: string, newStatus: string) {
     action: 'UPDATE_EXHIBITION_STATUS',
     entity_type: 'exhibition',
     entity_id: id,
-    details: { old_status: current.status, new_status: newStatus }
+    details: {
+      old_status: current.status,
+      new_status: newStatus,
+      submission_window: { opens: current.registration_start, closes: current.submission_end }
+    }
   }])
 
   revalidateExhibitionCaches(id)

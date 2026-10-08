@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { updateExhibitionStatus } from "@/actions/admin/exhibitions"
 import { toast } from "sonner"
-import { Loader2, ArrowRight } from "lucide-react"
+import { Loader2, ArrowRight, AlertCircle, CalendarCheck } from "lucide-react"
 
 export function StatusControlCard({ exhibition }: { exhibition: any }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
@@ -28,27 +28,39 @@ export function StatusControlCard({ exhibition }: { exhibition: any }) {
     }
   }
 
+  // Format a date string for display
+  const fmtDate = (d: string | null | undefined) => {
+    if (!d) return 'Not set'
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  }
+
+  const submissionWindowReady =
+    exhibition.registration_start &&
+    exhibition.submission_end &&
+    exhibition.exhibition_start &&
+    exhibition.submission_end.slice(0, 10) <= exhibition.exhibition_start.slice(0, 10)
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Lifecycle Status</CardTitle>
         <CardDescription>Advance the exhibition through its lifecycle stages.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <div className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-lg">
           <div>
             <p className="font-medium capitalize">Current Phase: {exhibition.status}</p>
             <p className="text-sm text-muted-foreground mt-1">
               {exhibition.status === 'draft' && 'Private. Setup gallery and catalog before publishing.'}
-              {exhibition.status === 'upcoming' && `Publicly visible. Transitions to Ongoing automatically on start date (${exhibition.exhibition_start ? new Date(exhibition.exhibition_start).toLocaleDateString() : 'TBD'}).`}
-              {exhibition.status === 'ongoing' && `Live event. Transitions to Archived automatically after end date (${exhibition.exhibition_end ? new Date(exhibition.exhibition_end).toLocaleDateString() : 'TBD'}).`}
+              {exhibition.status === 'upcoming' && `Publicly visible. Submissions open until ${fmtDate(exhibition.submission_end)} at 11:59 PM. Auto-transitions to Ongoing on ${fmtDate(exhibition.exhibition_start)}.`}
+              {exhibition.status === 'ongoing' && `Live event. Transitions to Archived automatically after end date (${fmtDate(exhibition.exhibition_end)}).`}
               {exhibition.status === 'archived' && 'Permanent archive. Read-only for visitors.'}
             </p>
           </div>
           {exhibition.status === 'draft' && nextStage && (
             <Button onClick={handleAdvance} disabled={isSubmitting} className="shrink-0 ml-4">
               {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              Advance to {nextStage} <ArrowRight className="w-4 h-4 ml-2" />
+              Publish (→ Upcoming) <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           )}
           {exhibition.status !== 'draft' && (
@@ -57,6 +69,34 @@ export function StatusControlCard({ exhibition }: { exhibition: any }) {
             </span>
           )}
         </div>
+
+        {/* Submission window preview — only shown in draft so admin can verify before publishing */}
+        {exhibition.status === 'draft' && (
+          <div className={`p-4 rounded-xl border flex gap-3 ${submissionWindowReady ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-amber-500/20 bg-amber-500/5'}`}>
+            {submissionWindowReady
+              ? <CalendarCheck className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+              : <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+            }
+            <div className="text-sm space-y-1">
+              <p className={`font-semibold ${submissionWindowReady ? 'text-emerald-300' : 'text-amber-300'}`}>
+                {submissionWindowReady ? 'Submission Window Ready' : 'Submission Window — Action Required'}
+              </p>
+              <p className="text-muted-foreground">
+                <span className="font-medium text-foreground">Opens:</span> {fmtDate(exhibition.registration_start)}
+              </p>
+              <p className="text-muted-foreground">
+                <span className="font-medium text-foreground">Closes:</span> {fmtDate(exhibition.submission_end)} at 11:59 PM (Bangladesh Time)
+              </p>
+              {!submissionWindowReady && (
+                <p className="text-amber-400/90 text-xs mt-1">
+                  {!exhibition.registration_start || !exhibition.submission_end || !exhibition.exhibition_start
+                    ? 'All dates must be set before publishing.'
+                    : 'Submission Deadline cannot be after Exhibition Opens date.'}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
