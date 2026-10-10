@@ -49,12 +49,15 @@ export default async function PublicCatalogsPage({
   const heroData = await getCmsContent('catalogs', 'hero', locale)
 
   // Build the query
+  // NOTE: In PostgREST (Supabase), `.in('joined_table.column', [...])` is silently
+  // ignored as a row filter when applied to a foreign-table join. The correct approach
+  // is to filter the join in the select string or post-filter in JavaScript.
+  // We use both: the select string filter (PostgREST >=v11 syntax) + JS post-filter.
   let query = supabase
     .from('catalogs')
     .select('*, exhibitions!inner(id, theme_en, theme_bn, year, hero_image_url, status)')
     .eq('status', 'published')
     .eq('visibility', 'public')
-    .in('exhibitions.status', ['ongoing', 'archived'])
 
   if (q) {
     query = query.or(`title_en.ilike.%${q}%,title_bn.ilike.%${q}%`)
@@ -75,25 +78,36 @@ export default async function PublicCatalogsPage({
     query = query.order('published_at', { ascending: false })
   }
 
-  const { data: catalogs } = await query
+  const { data: rawCatalogs } = await query
 
-  // Get all unique years for the year filter dropdown (from ALL ongoing/archived exhibition catalogs)
-  const { data: allArchivedCatalogs } = await supabase
+  // Post-filter: only show catalogs whose linked exhibition is ongoing or archived.
+  // This is the authoritative filter — draft/upcoming exhibitions are not public yet.
+  const catalogs = (rawCatalogs || []).filter(
+    (cat) => ['ongoing', 'archived'].includes((cat.exhibitions as any)?.status)
+  )
+
+  // Get all unique years for the year filter dropdown
+  const { data: allPublishedCatalogs } = await supabase
     .from('catalogs')
     .select('exhibitions!inner(year, status)')
     .eq('status', 'published')
     .eq('visibility', 'public')
-    .in('exhibitions.status', ['ongoing', 'archived'])
 
+  // Post-filter for years as well — same fix
   const uniqueYears = Array.from(
-    new Set(allArchivedCatalogs?.map(c => (c.exhibitions as any).year).filter(Boolean) as number[])
+    new Set(
+      (allPublishedCatalogs || [])
+        .filter((c) => ['ongoing', 'archived'].includes((c.exhibitions as any)?.status))
+        .map((c) => (c.exhibitions as any).year)
+        .filter(Boolean) as number[]
+    )
   ).sort((a, b) => b - a)
 
   // Apply year filter client-side
-  const filteredCatalogs = catalogs?.filter(cat => {
+  const filteredCatalogs = catalogs.filter((cat) => {
     if (!year || year === 'all') return true
     return (cat.exhibitions as any).year.toString() === year
-  }) || []
+  })
 
   const isSearchEmpty = filteredCatalogs.length === 0 && (q || language || category || (year && year !== 'all'))
   const isTotallyEmpty = filteredCatalogs.length === 0 && !q && !language && !category && (!year || year === 'all')
