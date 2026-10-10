@@ -126,17 +126,18 @@ export function AlbumMediaGrid({ initialMedia, locale, albumId }: { initialMedia
               const title = locale === 'bn' && item.title_bn ? item.title_bn : (item.title_en || 'Untitled')
               const dateDisplay = item.created_at ? new Date(item.created_at).toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', { month: 'short', year: 'numeric' }) : ''
 
-              // Sequence of ratios to match dynamic grid alignment of gallery.html
-              const ratioStyles = ['3/4', '4/3', '1/1', '4/5']
-              const styleRatio = ratioStyles[index % ratioStyles.length]
-
               const categoryTag = locale === 'bn' ? 'আর্টওয়ার্ক' : 'Artwork'
+
+              // Derive intrinsic aspect ratio if dimensions are available in metadata
+              const itemAspectRatio = (item.width && item.height && item.width > 0 && item.height > 0)
+                ? `${item.width} / ${item.height}`
+                : undefined
 
               return (
                 <div 
                   key={item.id} 
                   className="masonry-tile artwork reveal in group cursor-pointer"
-                  style={{ aspectRatio: styleRatio }}
+                  style={itemAspectRatio ? { aspectRatio: itemAspectRatio } : undefined}
                   onClick={() => setSelectedIndex(index)}
                 >
                   {item.media_type === 'image' ? (
@@ -144,10 +145,13 @@ export function AlbumMediaGrid({ initialMedia, locale, albumId }: { initialMedia
                       src={item.url} 
                       alt={item.alt_text || title} 
                       loading="lazy"
+                      width={item.width || undefined}
+                      height={item.height || undefined}
+                      className="w-full h-auto block"
                     />
                   ) : (
-                    <div className="absolute inset-0">
-                      <video src={item.url} className="absolute inset-0 w-full h-full object-cover opacity-80" muted playsInline loop />
+                    <div className="relative w-full aspect-video bg-black/40">
+                      <video src={item.url} className="w-full h-full object-cover opacity-80" muted playsInline loop />
                       <div className="absolute inset-0 flex items-center justify-center">
                          <PlayCircle className="w-16 h-16 text-white/50 group-hover:text-accent transition-colors duration-300 drop-shadow-xl" strokeWidth={1.5} />
                       </div>

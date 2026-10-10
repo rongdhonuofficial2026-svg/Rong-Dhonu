@@ -1518,6 +1518,12 @@
   width: 100%;
   height: auto;
   display: block;
+  object-fit: cover;
+}
+.masonry-tile video {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 .masonry-tile .scrim {
   opacity: 0;
