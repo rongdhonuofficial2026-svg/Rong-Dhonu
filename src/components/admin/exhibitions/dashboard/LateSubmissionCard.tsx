@@ -44,7 +44,7 @@ export function LateSubmissionCard({ exhibition }: LateSubmissionCardProps) {
   // Form state
   const [label, setLabel] = React.useState('')
   const [expiresInHours, setExpiresInHours] = React.useState<string>('48')
-  const [maxUses, setMaxUses] = React.useState<string>('1')
+  const [maxUses, setMaxUses] = React.useState<string>('')
 
   // Store the just-generated raw token (one-time only)
   const [newRawToken, setNewRawToken] = React.useState<string | null>(null)
@@ -238,10 +238,10 @@ export function LateSubmissionCard({ exhibition }: LateSubmissionCardProps) {
                   min={1}
                   value={maxUses}
                   onChange={e => setMaxUses(e.target.value)}
-                  placeholder="1"
+                  placeholder="Unlimited"
                   className="h-9 rounded-lg text-sm"
                 />
-                <p className="text-[11px] text-muted-foreground">Leave blank for unlimited</p>
+                <p className="text-[11px] text-muted-foreground">Blank = unlimited (any number of participants)</p>
               </div>
             </div>
 
