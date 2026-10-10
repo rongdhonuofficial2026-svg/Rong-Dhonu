@@ -14,6 +14,7 @@ import { CatalogManagementCard } from "@/components/admin/exhibitions/dashboard/
 import { ExhibitionAnalyticsCard } from "@/components/admin/exhibitions/dashboard/ExhibitionAnalyticsCard"
 import { ArtistParticipationCard } from "@/components/admin/exhibitions/dashboard/ArtistParticipationCard"
 import { ArtworkSubmissionsCard } from "@/components/admin/exhibitions/dashboard/ArtworkSubmissionsCard"
+import { LateSubmissionCard } from "@/components/admin/exhibitions/dashboard/LateSubmissionCard"
 
 export default async function ExhibitionDashboardPage({ params }: { params: Promise<{ locale: string, id: string }> }) {
   const { id } = await params
@@ -85,6 +86,7 @@ export default async function ExhibitionDashboardPage({ params }: { params: Prom
           <HomepagePromotionCard exhibition={exhibition} />
           <ArtistParticipationCard exhibition={exhibition} count={artistsCount} />
           <ArtworkSubmissionsCard exhibition={exhibition} count={artworksCount} />
+          <LateSubmissionCard exhibition={exhibition} />
           <ExhibitionAnalyticsCard exhibition={exhibition} />
         </div>
       </div>

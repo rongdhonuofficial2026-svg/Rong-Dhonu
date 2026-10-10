@@ -20,6 +20,10 @@ export async function submitArtwork(payload: {
   category?: string
   theme?: string
   availability?: string
+  /** Raw bearer token from an admin-generated late-submission link (optional). */
+  lateToken?: string
+  /** Exhibition ID encoded in the late-submission URL — must match exhibitionId. */
+  lateTokenExhibitionId?: string
   [key: string]: unknown
 }) {
   const supabase = await createClient()
@@ -37,7 +41,7 @@ export async function submitArtwork(payload: {
 
   // Resolve exhibition: explicit selection takes priority, then auto-assign to active exhibition
   let targetExhibitionId: string | null = null
-  
+
   const rawExhibitionId = payload.exhibitionId
   if (rawExhibitionId && rawExhibitionId !== 'none' && rawExhibitionId !== '') {
     // Validate it looks like a UUID before using it
@@ -56,11 +60,35 @@ export async function submitArtwork(payload: {
     }
   }
 
+  // ── Late token override ────────────────────────────────────────────────────
+  // When a valid admin-issued late submission token is supplied the normal
+  // deadline gate is bypassed. Validation is done via a SECURITY DEFINER
+  // RPC that atomically checks validity AND increments the usage counter
+  // so a token cannot be replayed beyond its max_uses limit.
+  //
+  // Security invariant: the token must be bound to the SAME exhibition that
+  // the artwork targets. A token for exhibition A cannot unlock exhibition B.
+  const rawLateToken = (payload.lateToken as string | undefined)?.trim() || null
+  const lateTokenExhibitionId = (payload.lateTokenExhibitionId as string | undefined)?.trim() || null
+  let deadlineBypassedByToken = false
+
+  if (rawLateToken && lateTokenExhibitionId) {
+    if (lateTokenExhibitionId !== targetExhibitionId) {
+      return { error: 'The late submission link is not valid for this exhibition.' }
+    }
+
+    const { validateLateTokenForSubmission } = await import('@/actions/admin/late-tokens')
+    const tokenCheck = await validateLateTokenForSubmission(rawLateToken, lateTokenExhibitionId)
+    if (!tokenCheck.valid) {
+      return { error: tokenCheck.error || 'Invalid or expired late submission token.' }
+    }
+    deadlineBypassedByToken = true
+  }
+
   // ── Server-side submission deadline enforcement ────────────────────────────
-  // If a target exhibition was resolved, verify its submission window is still open.
-  // This is the authoritative security gate — the UI also blocks access, but this
-  // ensures the rule is enforced even if someone calls the action directly.
-  if (targetExhibitionId) {
+  // Authoritative security gate — enforces the rule even if someone calls
+  // this action directly without going through the UI.
+  if (targetExhibitionId && !deadlineBypassedByToken) {
     const { data: exhCheck } = await supabase
       .from('exhibitions')
       .select('submission_end, registration_start, status')
@@ -79,6 +107,17 @@ export async function submitArtwork(payload: {
         return { error: 'The submission deadline for this exhibition has passed. Artworks can no longer be submitted.' }
       }
     }
+  } else if (targetExhibitionId && deadlineBypassedByToken) {
+    // Even with a late token the exhibition must exist and not be in draft
+    const { data: exhCheck } = await supabase
+      .from('exhibitions')
+      .select('status')
+      .eq('id', targetExhibitionId)
+      .single()
+
+    if (!exhCheck || exhCheck.status === 'draft') {
+      return { error: 'This exhibition is not accepting submissions.' }
+    }
   }
 
   // Build dimensions string
@@ -87,8 +126,8 @@ export async function submitArtwork(payload: {
     : null
 
   // Build price value
-  const priceVal = payload.price && payload.price !== '' 
-    ? parseFloat(payload.price) 
+  const priceVal = payload.price && payload.price !== ''
+    ? parseFloat(payload.price)
     : null
 
   const artworkRecord = {
@@ -166,10 +205,10 @@ export async function submitArtwork(payload: {
   // Audit log
   await supabase.from('audit_logs').insert({
     actor_id: user.id,
-    action: 'submit_artwork',
+    action: deadlineBypassedByToken ? 'late_submit_artwork' : 'submit_artwork',
     entity_type: 'artwork',
     entity_id: artworkId,
-    details: { title: title, exhibition_id: targetExhibitionId },
+    details: { title: title, exhibition_id: targetExhibitionId, via_late_token: deadlineBypassedByToken },
   })
 
   // Revalidate all affected pages so moderation + dashboards refresh immediately
