@@ -2,8 +2,7 @@
 
 import { useEffect } from 'react'
 import { Link } from '@/lib/i18n/routing'
-import { Button } from '@/components/ui/button'
-import { BookOpen, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react'
 
 export default function CatalogError({
   error,
@@ -13,34 +12,42 @@ export default function CatalogError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error(error)
+    console.error('Catalog preview error:', error)
   }, [error])
 
   return (
-    <div className="min-h-screen bg-background pb-20 pt-32 flex flex-col items-center justify-center">
-      <div className="container mx-auto px-4 max-w-2xl text-center">
-        <div className="w-24 h-24 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6 shadow-sm border border-destructive/20">
-          <AlertTriangle className="w-10 h-10 text-destructive/80" />
+    <div className="min-h-screen bg-[#0B0908] text-[#F4EEDF] pt-28 pb-20 flex flex-col items-center justify-center">
+      <div className="w-full max-w-xl mx-auto px-6 text-center space-y-6">
+        <div className="w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto shadow-2xl">
+          <AlertCircle className="w-10 h-10 text-[#F4C662]" />
         </div>
         
-        <h1 className="text-3xl font-serif font-bold mb-4">
-          Failed to Load Catalog
-        </h1>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-serif font-bold text-white tracking-tight">
+            Unable to Load Catalog Preview
+          </h1>
+          <p className="text-sm text-[#F4EEDF]/70 leading-relaxed font-light">
+            We encountered a problem while retrieving this exhibition publication. The document might be temporarily unavailable or unlinked.
+          </p>
+        </div>
         
-        <p className="text-lg text-muted-foreground mb-8">
-          We encountered an unexpected error while trying to retrieve this catalog. It might have been moved or deleted.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button onClick={reset} variant="default" size="lg">
-            Try Again
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="/catalogs" className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4" />
-              Return to Archive
-            </Link>
-          </Button>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+          <button
+            type="button"
+            onClick={reset}
+            className="px-6 py-3 rounded-full bg-[#F4C662] hover:bg-[#ebd083] text-[#0B0908] text-xs font-bold tracking-wider uppercase transition-all shadow-lg shadow-[#F4C662]/10 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Try Again</span>
+          </button>
+          
+          <Link
+            href="/catalogs"
+            className="px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-bold tracking-wider uppercase text-white transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Return to Catalogs</span>
+          </Link>
         </div>
       </div>
     </div>
