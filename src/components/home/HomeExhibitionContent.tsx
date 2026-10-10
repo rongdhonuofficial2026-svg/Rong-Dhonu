@@ -67,8 +67,8 @@ export function HomeExhibitionContent({ locale, currentExhibition, timelineItems
   const venue = locale === 'bn' ? (currentExhibition.venue_bn || currentExhibition.venue_en) : currentExhibition.venue_en
   const startDateStr = currentExhibition.exhibition_start || new Date().toISOString()
   const startDate = new Date(startDateStr)
-  const formattedDate = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-US', {
-    month: 'long', day: 'numeric', year: 'numeric'
+  const formattedDate = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-IN', {
+    month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Kolkata'
   }).format(startDate)
 
   const yearSuffix = currentExhibition.year ? String(currentExhibition.year).slice(-2) : '26'

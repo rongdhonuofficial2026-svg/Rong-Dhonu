@@ -33,6 +33,12 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
   const { locale } = await params
   const supabase = await createClient()
 
+  // Lazily synchronize all exhibition lifecycles before rendering so that
+  // stale statuses (e.g. upcoming → ongoing, ongoing → archived) are
+  // corrected even if the nightly cron hasn't run yet.
+  const { batchSyncExhibitions } = await import('@/lib/exhibition-lifecycle')
+  await batchSyncExhibitions(supabase)
+
   const { data: exhibitions, error } = await supabase
     .from('exhibitions')
     .select('*')
@@ -48,7 +54,9 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
   // Spotlight is determined by the single source of truth
   const spotlightEx = await getFeaturedExhibition()
   const spotlightYearShort = spotlightEx && spotlightEx.exhibition_start
-    ? new Date(spotlightEx.exhibition_start).getFullYear().toString().slice(-2)
+    ? new Intl.DateTimeFormat('en-IN', { year: 'numeric', timeZone: 'Asia/Kolkata' })
+        .format(new Date(spotlightEx.exhibition_start))
+        .slice(-2)
     : '26'
 
   // The rest remain in the archive listing. Archived exhibitions are ALWAYS kept.
@@ -83,10 +91,11 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
     const start = new Date(startStr)
     const end = new Date(endStr)
     
-    const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }
-    const endOptions: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' }
+    const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata' }
+    const endOptions: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Kolkata' }
     
-    return `${start.toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', options)} — ${end.toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', endOptions)}`
+    return `${start.toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-IN', options)} — ${end.toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-IN', endOptions)}`
+
   }
 
   return (
@@ -199,7 +208,7 @@ export default async function ExhibitionsArchivePage({ params }: { params: Promi
                 </svg>
                 <div>
                   <b>{formatDateRange(spotlightEx.exhibition_start, spotlightEx.exhibition_end)}</b>
-                  <span>{locale === 'bn' ? 'প্রতিদিন, সকাল ১০টা - রাত ৮টা' : 'Daily, 10 AM – 8 PM'}</span>
+                  <span>{locale === 'bn' ? 'প্রতিদিন, বিকাল ৩টা - রাত ৮টা' : 'Daily, 3 PM – 8 PM'}</span>
                 </div>
               </div>
               <div className="spotlight-detail">
