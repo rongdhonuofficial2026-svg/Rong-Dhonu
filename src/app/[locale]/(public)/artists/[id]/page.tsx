@@ -44,7 +44,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
         id, title_en, title_bn, main_image_url, category, medium_en, status,
         exhibitions(id, year, theme_en, theme_bn, status)
       ),
-      exhibition_participants(role, exhibitions(id, year, theme_en, theme_bn))
+      exhibition_participants(status, exhibitions(id, year, theme_en, theme_bn))
     `)
     .eq('id', id)
     .maybeSingle()
@@ -134,7 +134,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
             {exhibitions.map((ex: Record<string, any>) => (
               <Button key={ex.id} variant="secondary" asChild className="rounded-full shadow-sm">
                 <Link href={`/exhibitions/${ex.id}`}>
-                  {ex.year} - {locale === 'bn' && ex.title_bn ? ex.title_bn : ex.title_en}
+                  {ex.year} - {locale === 'bn' && ex.theme_bn ? ex.theme_bn : ex.theme_en}
                 </Link>
               </Button>
             ))}

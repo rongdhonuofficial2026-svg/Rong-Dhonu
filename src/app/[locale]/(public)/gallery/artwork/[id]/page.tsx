@@ -11,20 +11,30 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const supabase = await createClient()
   const { data: artwork } = await supabase
     .from('artworks')
-    .select('title_en, title_bn, description_en, description_bn, main_image_url, profiles!artist_id(full_name_en, full_name_bn), exhibitions!exhibition_id(status)')
+    .select('title_en, title_bn, description_en, description_bn, main_image_url, profiles!artist_id(full_name_en, full_name_bn), exhibitions!exhibition_id(id, status, exhibition_end)')
     .eq('id', id)
     .eq('status', 'approved')
     .maybeSingle()
 
   if (!artwork) return {}
 
-  // Only expose metadata if the exhibition has ended
-  const exhibitionData = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : artwork.exhibitions
-  if (exhibitionData && exhibitionData.status !== 'archived') return {}
+  // Lazy-sync the exhibition lifecycle so a physically-ended exhibition
+  // gets its status updated before we check visibility
+  const rawExh = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : (artwork.exhibitions as any)
+  let exhibitionStatus = rawExh?.status
+  if (rawExh && exhibitionStatus && exhibitionStatus !== 'archived' && exhibitionStatus !== 'draft') {
+    const { syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle')
+    const synced = await syncExhibitionLifecycle(rawExh, supabase)
+    if (synced) exhibitionStatus = synced.status
+  }
+  // Belt-and-suspenders: also allow access if exhibition_end date has passed
+  const exhibitionEnd = rawExh?.exhibition_end ? new Date(rawExh.exhibition_end) : null
+  const physicallyEnded = exhibitionEnd ? new Date() > exhibitionEnd : false
+  if (exhibitionStatus && exhibitionStatus !== 'archived' && !physicallyEnded) return {}
 
   const title = locale === 'bn' && artwork.title_bn ? artwork.title_bn : artwork.title_en
   const desc = locale === 'bn' && artwork.description_bn ? artwork.description_bn : artwork.description_en
-  const p = Array.isArray(artwork.profiles) ? artwork.profiles[0] : artwork.profiles
+  const p = Array.isArray(artwork.profiles) ? artwork.profiles[0] : (artwork.profiles as any)
   const artist = (locale === 'bn' && p?.full_name_bn) ? p.full_name_bn : (p?.full_name_en ?? 'Unknown')
 
   return {
@@ -48,7 +58,7 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
       id, title_en, title_bn, description_en, description_bn,
       medium_en, medium_bn, materials_en, materials_bn,
       dimensions, category, theme, price, availability,
-      main_image_url, additional_images, year,
+      main_image_url, year,
       exhibition_id, artist_id, created_at,
       profiles!artist_id(id, full_name_en, full_name_bn, avatar_url, bio_en, slug),
       exhibitions!exhibition_id(id, year, theme_en, theme_bn, status, exhibition_end)
@@ -59,14 +69,28 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
 
   if (error || !artwork) return notFound()
 
-  // Artwork is only publicly visible after its exhibition has ended (status = archived)
-  // If the artwork's exhibition is still ongoing or upcoming, it should not be accessible yet
-  const exhibitionData = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : artwork.exhibitions
-  const exhibitionEnded = !exhibitionData || exhibitionData.status === 'archived'
+  // Lazy-sync the exhibition lifecycle so that a physically-ended exhibition
+  // has its status updated before we gate artwork visibility.
+  // This ensures artworks are accessible even if the cron hasn't run yet.
+  const rawExhibition = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : (artwork.exhibitions as any)
+  let liveExhibition = rawExhibition
+  if (rawExhibition && rawExhibition.status && rawExhibition.status !== 'archived' && rawExhibition.status !== 'draft') {
+    const { syncExhibitionLifecycle } = await import('@/lib/exhibition-lifecycle')
+    const synced = await syncExhibitionLifecycle(rawExhibition, supabase)
+    if (synced) liveExhibition = synced
+  }
+
+  // Artwork is publicly visible when:
+  // (a) it has no exhibition record (standalone artwork), OR
+  // (b) its exhibition is archived (ended), OR
+  // (c) the exhibition_end date has passed (belt-and-suspenders for un-synced records)
+  const exhibitionEnd = liveExhibition?.exhibition_end ? new Date(liveExhibition.exhibition_end) : null
+  const physicallyEnded = exhibitionEnd ? new Date() > exhibitionEnd : false
+  const exhibitionEnded = !liveExhibition || liveExhibition.status === 'archived' || physicallyEnded
   if (!exhibitionEnded) return notFound()
 
-  const profile = Array.isArray(artwork.profiles) ? artwork.profiles[0] : artwork.profiles
-  const exhibition = Array.isArray(artwork.exhibitions) ? artwork.exhibitions[0] : artwork.exhibitions
+  const profile = Array.isArray(artwork.profiles) ? artwork.profiles[0] : (artwork.profiles as any)
+  const exhibition = liveExhibition
   const artistName = (locale === 'bn' && profile?.full_name_bn) ? profile.full_name_bn : (profile?.full_name_en ?? 'Unknown Artist')
   const artistId = profile?.id ?? artwork.artist_id
 
@@ -131,17 +155,6 @@ export default async function ArtworkDetailPage({ params }: { params: Promise<{ 
               </Button>
             </div>
           </div>
-
-          {/* Additional images */}
-          {artwork.additional_images && artwork.additional_images.length > 0 && (
-            <div className="flex gap-4 overflow-x-auto pb-4">
-              {artwork.additional_images.map((url: string, idx: number) => (
-                <div key={idx} className="relative w-24 h-24 rounded-lg bg-muted border border-border overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
-                  <Image src={url} alt={`Detail ${idx + 1}`} fill className="object-cover" />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Details */}

@@ -146,9 +146,11 @@ export default async function HomePage({
       })
     }
 
-    // 2. Fetch Curated Collection — ONLY from archived (ended) exhibitions
-    // Artworks are not visible publicly until the exhibition has fully ended
-    if (exhibition.status === 'archived') {
+    // Artworks are visible once the exhibition has ended — either the DB status
+    // is 'archived' OR the exhibition_end date has physically passed.
+    const exhibitionEndDate = exhibition.exhibition_end ? new Date(exhibition.exhibition_end) : null
+    const physicallyEnded = exhibitionEndDate ? new Date() > exhibitionEndDate : false
+    if (exhibition.status === 'archived' || physicallyEnded) {
       artworks = await fetchCuratedCollection(exhibition.id)
     }
 

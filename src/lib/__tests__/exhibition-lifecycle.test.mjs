@@ -245,12 +245,15 @@ test('Test 12: registration_start not yet reached → rejected', () => {
 test('Test 13: exhibition ongoing, submission deadline passed, event still live', () => {
   // Exhibition is ongoing (Oct 10) but submission_end (Oct 9 17:00) has passed
   // → status is "ongoing" but submissions are CLOSED
+  // withFakeNow ensures this test is deterministic regardless of the real date.
   const now = new Date('2026-10-10T04:30:00Z'); // 10 AM IST, within exhibition
-  const statusResult = evaluateExhibitionStatus({ ...base, status: 'ongoing' });
-  const submissionResult = checkSubmissionAllowed({ ...base, status: 'ongoing' }, now);
-  assertEqual(statusResult, 'ongoing', 'exhibition status'); // exhibition still live
-  assertEqual(submissionResult.allowed, false, 'submission allowed'); // but closed
-  assertEqual(submissionResult.reason, 'deadline-passed', 'reason');
+  withFakeNow('2026-10-10T04:30:00Z', () => {
+    const statusResult = evaluateExhibitionStatus({ ...base, status: 'ongoing' });
+    const submissionResult = checkSubmissionAllowed({ ...base, status: 'ongoing' }, now);
+    assertEqual(statusResult, 'ongoing', 'exhibition status'); // exhibition still live
+    assertEqual(submissionResult.allowed, false, 'submission allowed'); // but closed
+    assertEqual(submissionResult.reason, 'deadline-passed', 'reason');
+  });
 });
 
 // ── Section 3: Late token validation ─────────────────────────────────────────
