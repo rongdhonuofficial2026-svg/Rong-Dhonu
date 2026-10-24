@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { AlbumGrid } from "@/components/public/AlbumGrid"
+import { ExhibitionArtworksSection, ExhibitionArtwork } from "@/components/public/artwork/ExhibitionArtworksSection"
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { getCmsContent } from "@/lib/cms/content"
@@ -36,7 +37,58 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
 
   const supabase = await createClient()
 
-  // Fetch published albums along with their media to compute counts and cover images
+  // 1. Fetch primary/current exhibition to retrieve its official artworks
+  const { getPrimaryPublicExhibition } = await import('@/lib/exhibition-lifecycle')
+  const primaryExhibition = await getPrimaryPublicExhibition()
+
+  // 2. Fetch approved artworks for the exhibition
+  // Priority: If primary exhibition found, fetch its approved artworks.
+  // Fallback: If no artworks attached to primary exhibition, fetch the most recent approved artworks.
+  let exhibitionArtworks: ExhibitionArtwork[] = []
+  let exhibitionHeading: string | undefined
+
+  if (primaryExhibition?.id) {
+    const { data: artworksData } = await supabase
+      .from('artworks')
+      .select(`
+        id, title_en, title_bn, main_image_url, category, medium_en, medium_bn,
+        dimensions, year, created_at,
+        profiles!artist_id(id, full_name_en, full_name_bn, avatar_url),
+        exhibitions!exhibition_id(id, year, theme_en, theme_bn)
+      `)
+      .eq('status', 'approved')
+      .eq('exhibition_id', primaryExhibition.id)
+      .order('created_at', { ascending: false })
+
+    if (artworksData && artworksData.length > 0) {
+      exhibitionArtworks = artworksData as unknown as ExhibitionArtwork[]
+      const theme = locale === 'bn' && primaryExhibition.theme_bn ? primaryExhibition.theme_bn : primaryExhibition.theme_en
+      if (theme) {
+        exhibitionHeading = `${theme} — ${locale === 'bn' ? 'শিল্পকর্ম' : 'Artworks'}`
+      }
+    }
+  }
+
+  // Fallback if primary exhibition has no artworks yet: fetch latest approved artworks
+  if (exhibitionArtworks.length === 0) {
+    const { data: generalArtworks } = await supabase
+      .from('artworks')
+      .select(`
+        id, title_en, title_bn, main_image_url, category, medium_en, medium_bn,
+        dimensions, year, created_at,
+        profiles!artist_id(id, full_name_en, full_name_bn, avatar_url),
+        exhibitions!exhibition_id(id, year, theme_en, theme_bn)
+      `)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(24)
+
+    if (generalArtworks && generalArtworks.length > 0) {
+      exhibitionArtworks = generalArtworks as unknown as ExhibitionArtwork[]
+    }
+  }
+
+  // 3. Fetch published albums along with their media to compute counts and cover images
   const { data: dbAlbums, error: albumErr } = await supabase
     .from('gallery_albums')
     .select(`
@@ -104,7 +156,6 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
   // Fetch CMS hero configurations
   const heroData = await getCmsContent('gallery', 'hero', locale)
 
-  const heroTitle = heroData?.title || (locale === 'bn' ? 'আমাদের <em>গ্যালারি</em>' : 'Walk Through <em>Our Gallery</em>')
   const heroSubtitle = heroData?.subtitle || (locale === 'bn' 
     ? 'আমাদের প্রদর্শনী ও ইভেন্টের স্মৃতিগুলো অন্বেষণ করুন।' 
     : 'A curated visual journey through our exhibitions, ceremonies, and behind the scenes — every album a room in the museum.')
@@ -136,7 +187,14 @@ export default async function AlbumsPage({ params, searchParams }: { params: Pro
         </div>
       </header>
 
-      {/* ============ GRID & FILTERS ============ */}
+      {/* ============ DEDICATED EXHIBITION ARTWORKS SECTION ============ */}
+      <ExhibitionArtworksSection 
+        artworks={exhibitionArtworks}
+        locale={locale}
+        exhibitionTitle={exhibitionHeading}
+      />
+
+      {/* ============ ALBUM GRID & FILTERS (EXHIBITION PHOTOS & ARCHIVES) ============ */}
       <Suspense fallback={<div className="flex justify-center p-32 bg-[#0B0908]"><Loader2 className="w-10 h-10 animate-spin text-[#B4233A]" strokeWidth={1} /></div>}>
         <AlbumGrid 
           albums={albums} 
